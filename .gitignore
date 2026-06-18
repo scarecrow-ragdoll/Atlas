@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+.bun/
+
+# Build output
+dist/
+.next/
+out/
+
+# Nx
+.nx/
+
+# Go
+apps/api/tmp/
+apps/api/server
+
+# Generated
+apps/api/internal/graph/generated.go
+apps/api/internal/graph/model/models_gen.go
+apps/web/src/shared/api/generated/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+!tools/coverage/
+!tools/coverage/**
+*.out
+
+# Docker
+docker/postgres-data/
+
+# Misc
+/schema.json
+.worktrees/
+
+# Stale lockfiles
+**/pnpm-lock.yaml
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
