@@ -150,7 +150,7 @@ func main() {
 	atlasExerciseRepo := atlasPostgres.NewExerciseRepository(db.Pool)
 	atlasExerciseService := atlasService.NewExerciseService(atlasExerciseRepo)
 	atlasWorkoutRepo := atlasPostgres.NewWorkoutRepository(db.Pool)
-	atlasWorkoutService := atlasService.NewWorkoutService(atlasWorkoutRepo, atlasExerciseService)
+	atlasWorkoutService := atlasService.NewWorkoutService(atlasWorkoutRepo, atlasExerciseRepo)
 	atlasMediaHandler := healthHandler.NewAtlasMediaHandler(atlasExerciseService, cfg.Media.BasePath)
 
 	l.Info("[Atlas][bootstrap] ensuring default user and settings")
