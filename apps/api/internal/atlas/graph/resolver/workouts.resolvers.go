@@ -6,7 +6,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"monorepo-template/apps/api/internal/atlas/graph/generated"
 	"monorepo-template/apps/api/internal/atlas/models"
 	"time"
@@ -14,112 +13,140 @@ import (
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *dailyLogResolver) CreatedAt(ctx context.Context, obj *models.DailyLog) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	t, err := time.Parse(time.RFC3339Nano, obj.CreatedAt)
+	if err != nil {
+		return nil, nil
+	}
+	return &t, nil
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
 func (r *dailyLogResolver) UpdatedAt(ctx context.Context, obj *models.DailyLog) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
+	t, err := time.Parse(time.RFC3339Nano, obj.UpdatedAt)
+	if err != nil {
+		return nil, nil
+	}
+	return &t, nil
 }
 
 // ValidationError is the resolver for the validationError field.
 func (r *dailyLogResultResolver) ValidationError(ctx context.Context, obj *models.DailyLogResult) (*models.DailyLogValidationErr, error) {
-	panic(fmt.Errorf("not implemented: ValidationError - validationError"))
+	return obj.ValidationErr, nil
 }
 
 // NotFoundError is the resolver for the notFoundError field.
 func (r *dailyLogResultResolver) NotFoundError(ctx context.Context, obj *models.DailyLogResult) (*models.DailyLogNotFoundErr, error) {
-	panic(fmt.Errorf("not implemented: NotFoundError - notFoundError"))
+	return obj.NotFoundErr, nil
 }
 
 // ConflictError is the resolver for the conflictError field.
 func (r *dailyLogResultResolver) ConflictError(ctx context.Context, obj *models.DailyLogResult) (*models.DailyLogConflictErr, error) {
-	panic(fmt.Errorf("not implemented: ConflictError - conflictError"))
+	return obj.ConflictErr, nil
 }
 
 // AuthError is the resolver for the authError field.
 func (r *dailyLogResultResolver) AuthError(ctx context.Context, obj *models.DailyLogResult) (*models.DailyLogAuthErr, error) {
-	panic(fmt.Errorf("not implemented: AuthError - authError"))
+	return obj.AuthErr, nil
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
 func (r *dailyLogSummaryResolver) UpdatedAt(ctx context.Context, obj *models.DailyLogSummary) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
+	t, err := time.Parse(time.RFC3339Nano, obj.UpdatedAt)
+	if err != nil {
+		return nil, nil
+	}
+	return &t, nil
 }
 
 // UpdateDailyLogNotes is the resolver for the updateDailyLogNotes field.
 func (r *mutationResolver) UpdateDailyLogNotes(ctx context.Context, date models.Date, expectedVersion int, notes *string) (*models.DailyLogResult, error) {
-	panic(fmt.Errorf("not implemented: UpdateDailyLogNotes - updateDailyLogNotes"))
+	return r.Resolver.UpdateDailyLogNotes(ctx, date, expectedVersion, notes)
 }
 
 // AddWorkoutExercise is the resolver for the addWorkoutExercise field.
 func (r *mutationResolver) AddWorkoutExercise(ctx context.Context, date models.Date, expectedVersion int, input models.AddWorkoutExerciseInput) (*models.DailyLogResult, error) {
-	panic(fmt.Errorf("not implemented: AddWorkoutExercise - addWorkoutExercise"))
+	return r.Resolver.AddWorkoutExercise(ctx, date, expectedVersion, input)
 }
 
 // UpdateWorkoutExercise is the resolver for the updateWorkoutExercise field.
 func (r *mutationResolver) UpdateWorkoutExercise(ctx context.Context, id string, expectedVersion int, input models.UpdateWorkoutExerciseGraphQLInput) (*models.DailyLogResult, error) {
-	panic(fmt.Errorf("not implemented: UpdateWorkoutExercise - updateWorkoutExercise"))
+	return r.Resolver.UpdateWorkoutExercise(ctx, id, expectedVersion, input)
 }
 
 // RemoveWorkoutExercise is the resolver for the removeWorkoutExercise field.
 func (r *mutationResolver) RemoveWorkoutExercise(ctx context.Context, id string, expectedVersion int) (*models.DailyLogResult, error) {
-	panic(fmt.Errorf("not implemented: RemoveWorkoutExercise - removeWorkoutExercise"))
+	return r.Resolver.RemoveWorkoutExercise(ctx, id, expectedVersion)
 }
 
 // ReorderWorkoutExercises is the resolver for the reorderWorkoutExercises field.
 func (r *mutationResolver) ReorderWorkoutExercises(ctx context.Context, date models.Date, expectedVersion int, orderedIds []string) (*models.DailyLogResult, error) {
-	panic(fmt.Errorf("not implemented: ReorderWorkoutExercises - reorderWorkoutExercises"))
+	return r.Resolver.ReorderWorkoutExercises(ctx, date, expectedVersion, orderedIds)
 }
 
 // AddWorkoutSet is the resolver for the addWorkoutSet field.
 func (r *mutationResolver) AddWorkoutSet(ctx context.Context, workoutExerciseID string, expectedVersion int, input models.AddWorkoutSetInput) (*models.DailyLogResult, error) {
-	panic(fmt.Errorf("not implemented: AddWorkoutSet - addWorkoutSet"))
+	return r.Resolver.AddWorkoutSet(ctx, workoutExerciseID, expectedVersion, input)
 }
 
 // UpdateWorkoutSet is the resolver for the updateWorkoutSet field.
 func (r *mutationResolver) UpdateWorkoutSet(ctx context.Context, id string, expectedVersion int, input models.UpdateWorkoutSetGraphQLInput) (*models.DailyLogResult, error) {
-	panic(fmt.Errorf("not implemented: UpdateWorkoutSet - updateWorkoutSet"))
+	return r.Resolver.UpdateWorkoutSet(ctx, id, expectedVersion, input)
 }
 
 // RemoveWorkoutSet is the resolver for the removeWorkoutSet field.
 func (r *mutationResolver) RemoveWorkoutSet(ctx context.Context, id string, expectedVersion int) (*models.DailyLogResult, error) {
-	panic(fmt.Errorf("not implemented: RemoveWorkoutSet - removeWorkoutSet"))
+	return r.Resolver.RemoveWorkoutSet(ctx, id, expectedVersion)
 }
 
 // ReorderWorkoutSets is the resolver for the reorderWorkoutSets field.
 func (r *mutationResolver) ReorderWorkoutSets(ctx context.Context, workoutExerciseID string, expectedVersion int, orderedIds []string) (*models.DailyLogResult, error) {
-	panic(fmt.Errorf("not implemented: ReorderWorkoutSets - reorderWorkoutSets"))
+	return r.Resolver.ReorderWorkoutSets(ctx, workoutExerciseID, expectedVersion, orderedIds)
 }
 
 // DailyLog is the resolver for the dailyLog field.
 func (r *queryResolver) DailyLog(ctx context.Context, date models.Date) (*models.DailyLogResult, error) {
-	panic(fmt.Errorf("not implemented: DailyLog - dailyLog"))
+	return r.Resolver.GetDailyLog(ctx, date)
 }
 
 // DailyLogs is the resolver for the dailyLogs field.
 func (r *queryResolver) DailyLogs(ctx context.Context, from models.Date, to models.Date) ([]*models.DailyLogSummary, error) {
-	panic(fmt.Errorf("not implemented: DailyLogs - dailyLogs"))
+	return r.Resolver.DailyLogs(ctx, from, to)
 }
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *workoutExerciseResolver) CreatedAt(ctx context.Context, obj *models.WorkoutExercise) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	t, err := time.Parse(time.RFC3339Nano, obj.CreatedAt)
+	if err != nil {
+		return nil, nil
+	}
+	return &t, nil
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
 func (r *workoutExerciseResolver) UpdatedAt(ctx context.Context, obj *models.WorkoutExercise) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
+	t, err := time.Parse(time.RFC3339Nano, obj.UpdatedAt)
+	if err != nil {
+		return nil, nil
+	}
+	return &t, nil
 }
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *workoutSetResolver) CreatedAt(ctx context.Context, obj *models.WorkoutSet) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	t, err := time.Parse(time.RFC3339Nano, obj.CreatedAt)
+	if err != nil {
+		return nil, nil
+	}
+	return &t, nil
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
 func (r *workoutSetResolver) UpdatedAt(ctx context.Context, obj *models.WorkoutSet) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
+	t, err := time.Parse(time.RFC3339Nano, obj.UpdatedAt)
+	if err != nil {
+		return nil, nil
+	}
+	return &t, nil
 }
 
 // DailyLog returns generated.DailyLogResolver implementation.

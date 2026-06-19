@@ -8,4 +8,5 @@ type Resolver struct {
 	SettingsService service.SettingsService
 	PinService      service.PinService
 	ExerciseService service.ExerciseService
+	WorkoutService  service.WorkoutService
 }
