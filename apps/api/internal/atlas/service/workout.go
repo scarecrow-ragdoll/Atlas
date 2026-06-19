@@ -24,7 +24,7 @@
 //   ReorderWorkoutSets - Reorders sets only when IDs exactly match the exercise.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.0 - Added WAVE-03 workout service validation and versioned mutations.
+//   LAST_CHANGE: 1.0.1 - Avoided creating absent DailyLog rows for stale date-based mutation requests.
 // END_CHANGE_SUMMARY
 
 package service
@@ -102,8 +102,8 @@ func (s *workoutService) UpdateDailyLogNotes(ctx context.Context, userID string,
 	if err := validateExpectedVersion(expectedVersion); err != nil {
 		return nil, err
 	}
-	if _, err := s.workoutRepo.GetOrCreateDailyLogByDate(ctx, userID, date); err != nil {
-		return nil, fmt.Errorf("workout_service.UpdateDailyLogNotes: %w", err)
+	if err := s.ensureDailyLogForDateMutation(ctx, userID, date, expectedVersion, "workout_service.UpdateDailyLogNotes"); err != nil {
+		return nil, err
 	}
 
 	var out *models.DailyLog
@@ -143,8 +143,8 @@ func (s *workoutService) AddWorkoutExercise(ctx context.Context, userID string, 
 		return nil, notFoundError("exercise not found")
 	}
 
-	if _, err := s.workoutRepo.GetOrCreateDailyLogByDate(ctx, userID, date); err != nil {
-		return nil, fmt.Errorf("workout_service.AddWorkoutExercise: %w", err)
+	if err := s.ensureDailyLogForDateMutation(ctx, userID, date, expectedVersion, "workout_service.AddWorkoutExercise"); err != nil {
+		return nil, err
 	}
 
 	var out *models.DailyLog
@@ -464,6 +464,23 @@ func (s *workoutService) incrementAndLoad(ctx context.Context, tx atlasRepo.Work
 		return nil, fmt.Errorf("workout_service.incrementAndLoad: %w", err)
 	}
 	return s.dailyLogFromAggregate(ctx, aggregate)
+}
+
+func (s *workoutService) ensureDailyLogForDateMutation(ctx context.Context, userID string, date models.Date, expectedVersion int32, operation string) error {
+	record, err := s.workoutRepo.GetDailyLogByDate(ctx, userID, date)
+	if err != nil {
+		return fmt.Errorf("%s: %w", operation, err)
+	}
+	if record != nil {
+		return nil
+	}
+	if expectedVersion != 0 {
+		return conflictError(expectedVersion, 0, nil)
+	}
+	if _, err := s.workoutRepo.GetOrCreateDailyLogByDate(ctx, userID, date); err != nil {
+		return fmt.Errorf("%s: %w", operation, err)
+	}
+	return nil
 }
 
 func (s *workoutService) dailyLogFromAggregate(ctx context.Context, aggregate *atlasRepo.DailyLogAggregate) (*models.DailyLog, error) {

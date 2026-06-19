@@ -396,6 +396,22 @@ func TestWorkoutService_UpdateNotes_CreatesDailyLogAtExpectedVersionZero(t *test
 	assert.Equal(t, 1, repo.getOrCreateHits)
 }
 
+func TestWorkoutService_UpdateNotes_AbsentDateWithNonZeroExpectedVersionDoesNotCreateDailyLog(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	svc := service.NewWorkoutService(repo, &fakeExerciseRepo{})
+
+	log, err := svc.UpdateDailyLogNotes(ctx, testUserID, testWorkoutDate, 2, ptrStr("stale notes"))
+
+	require.Nil(t, log)
+	var conflictErr *models.DailyLogConflictErr
+	require.ErrorAs(t, err, &conflictErr)
+	assert.Equal(t, int32(0), conflictErr.CurrentVersion)
+	assert.Nil(t, conflictErr.CurrentDailyLog)
+	assert.Equal(t, 0, repo.getOrCreateHits)
+	assert.Empty(t, repo.dateIndex)
+	assert.Empty(t, repo.dailyLogs)
+}
+
 func TestWorkoutService_UpdateNotes_RejectsStaleVersion(t *testing.T) {
 	repo := newFakeWorkoutRepo()
 	aggregate := repo.seedDailyLog(testWorkoutDate, 3)
@@ -430,6 +446,25 @@ func TestWorkoutService_AddExercise_RequiresExistingExercise(t *testing.T) {
 	require.ErrorAs(t, err, &notFoundErr)
 	assert.Equal(t, int32(0), int32(repo.getOrCreateHits))
 	assert.Empty(t, repo.dailyLogs)
+}
+
+func TestWorkoutService_AddExercise_AbsentDateWithNonZeroExpectedVersionDoesNotCreateDailyLog(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(ptrFloat64(82.5)))
+
+	log, err := svc.AddWorkoutExercise(ctx, testUserID, testWorkoutDate, 2, models.AddWorkoutExerciseInput{
+		ExerciseID: testExerciseID,
+	})
+
+	require.Nil(t, log)
+	var conflictErr *models.DailyLogConflictErr
+	require.ErrorAs(t, err, &conflictErr)
+	assert.Equal(t, int32(0), conflictErr.CurrentVersion)
+	assert.Nil(t, conflictErr.CurrentDailyLog)
+	assert.Equal(t, 0, repo.getOrCreateHits)
+	assert.Empty(t, repo.dateIndex)
+	assert.Empty(t, repo.dailyLogs)
+	assert.Empty(t, repo.exerciseToLog)
 }
 
 func TestWorkoutService_AddExercise_CapturesWorkingWeightSnapshot(t *testing.T) {
