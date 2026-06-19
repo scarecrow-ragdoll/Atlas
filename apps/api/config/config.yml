@@ -83,3 +83,7 @@ atlas_pin_attempt:
   max_failures: 5
   lockout_duration: 5m
   escalated_duration: 30m
+
+media:
+  base_path: ./data/media
+  max_upload_size: 314572800

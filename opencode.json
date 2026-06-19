@@ -1,5 +1,49 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "reserved": 10000
+  },
+  "permission": {
+    "edit": "allow",
+    "bash": "ask",
+    "webfetch": "ask",
+    "websearch": "ask"
+  },
+  "agent": {
+    "cheap-reviewer": {
+      "description": "Cheap read-only review agent for quick sanity checks",
+      "mode": "subagent",
+      "model": "openrouter/qwen/qwen3-coder:free",
+      "prompt": "Review the changes briefly. Focus only on obvious bugs, scope creep, missing tests, and risky architectural choices. Be concise. Do not modify files.",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "git diff*": "allow",
+          "git status*": "allow",
+          "git log*": "allow",
+          "grep *": "allow",
+          "rg *": "allow"
+        },
+        "webfetch": "deny",
+        "websearch": "deny"
+      }
+    }
+  },
+  "watcher": {
+    "ignore": [
+      "node_modules/**",
+      "dist/**",
+      "build/**",
+      ".next/**",
+      ".nuxt/**",
+      "coverage/**",
+      ".git/**",
+      "*.log"
+    ]
+  }, 
   "model": "openrouter/deepseek/deepseek-v4-flash",
   "small_model": "openrouter/qwen/qwen3-coder:free"
 }

@@ -11,11 +11,29 @@ import (
 )
 
 type Querier interface {
+	ArchiveExercise(ctx context.Context, arg ArchiveExerciseParams) (Exercise, error)
 	CountAdminUsers(ctx context.Context) (int64, error)
+	CountExercises(ctx context.Context, arg CountExercisesParams) (int64, error)
 	CountUsers(ctx context.Context) (int64, error)
 	CreateAdminUser(ctx context.Context, arg CreateAdminUserParams) (AdminUser, error)
 	CreateAtlasSettings(ctx context.Context, userID pgtype.UUID) error
+	// FILE: apps/api/internal/repository/postgres/queries/exercises.sql
+	// VERSION: 1.0.0
+	// START_MODULE_CONTRACT
+	//   PURPOSE: Define sqlc queries for the exercises and exercise_media tables in WAVE-02 Exercise Library.
+	//   SCOPE: Exercise CRUD, list with pagination, allExercises, soft archive/restore, media CRUD, and user-scoped access.
+	//   DEPENDS: exercises table (00081_exercises.sql), exercise_media table (00082_exercise_media.sql).
+	//   LINKS: M-API / V-M-API / WAVE-02.
+	//   ROLE: CONFIG
+	//   MAP_MODE: SUMMARY
+	// END_MODULE_CONTRACT
+	// START_CHANGE_SUMMARY
+	//   LAST_CHANGE: 1.0.0 - Added exercise queries for WAVE-02.
+	// END_CHANGE_SUMMARY
+	CreateExercise(ctx context.Context, arg CreateExerciseParams) (Exercise, error)
+	CreateExerciseMedia(ctx context.Context, arg CreateExerciseMediaParams) (ExerciseMedium, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error)
+	DeleteExerciseMedia(ctx context.Context, arg DeleteExerciseMediaParams) (ExerciseMedium, error)
 	DeleteUser(ctx context.Context, id pgtype.UUID) error
 	GetAdminUserByEmail(ctx context.Context, lower string) (AdminUser, error)
 	GetAdminUserByID(ctx context.Context, id pgtype.UUID) (AdminUser, error)
@@ -34,10 +52,18 @@ type Querier interface {
 	//   LAST_CHANGE: 1.0.1 - Removed ON CONFLICT DO NOTHING from user upsert since atlas_users has no unique constraint on display_name.
 	// END_CHANGE_SUMMARY
 	GetAtlasSettingsByUserID(ctx context.Context, userID pgtype.UUID) (AtlasSetting, error)
+	GetExerciseByID(ctx context.Context, arg GetExerciseByIDParams) (Exercise, error)
+	GetExerciseMediaByID(ctx context.Context, arg GetExerciseMediaByIDParams) (ExerciseMedium, error)
 	GetUserByID(ctx context.Context, id pgtype.UUID) (GetUserByIDRow, error)
 	InsertAtlasDefaultUser(ctx context.Context, displayName string) (pgtype.UUID, error)
+	ListAllExercises(ctx context.Context, arg ListAllExercisesParams) ([]Exercise, error)
+	ListExerciseMediaByExercise(ctx context.Context, arg ListExerciseMediaByExerciseParams) ([]ExerciseMedium, error)
+	ListExercises(ctx context.Context, arg ListExercisesParams) ([]Exercise, error)
+	ListExercisesCursor(ctx context.Context, arg ListExercisesCursorParams) ([]Exercise, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]ListUsersRow, error)
+	RestoreExercise(ctx context.Context, arg RestoreExerciseParams) (Exercise, error)
 	UpdateAtlasPinState(ctx context.Context, arg UpdateAtlasPinStateParams) (AtlasSetting, error)
+	UpdateExercise(ctx context.Context, arg UpdateExerciseParams) (Exercise, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (UpdateUserRow, error)
 	UpsertAtlasSettings(ctx context.Context, arg UpsertAtlasSettingsParams) (AtlasSetting, error)
 }

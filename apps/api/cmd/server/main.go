@@ -147,6 +147,9 @@ func main() {
 		cfg.AtlasPin.MinLength,
 		cfg.AtlasPin.MaxLength,
 	)
+	atlasExerciseRepo := atlasPostgres.NewExerciseRepository(db.Pool)
+	atlasExerciseService := atlasService.NewExerciseService(atlasExerciseRepo)
+	atlasMediaHandler := healthHandler.NewAtlasMediaHandler(atlasExerciseService, cfg.Media.BasePath)
 
 	l.Info("[Atlas][bootstrap] ensuring default user and settings")
 	atlasUserID, err := atlasBootstrapService.EnsureDefaultUser(context.Background())
@@ -161,6 +164,7 @@ func main() {
 	atlasRes := &atlasResolver.Resolver{
 		SettingsService: atlasSettingsService,
 		PinService:      atlasPinService,
+		ExerciseService: atlasExerciseService,
 	}
 	atlasSrv := handler.NewDefaultServer(atlasGenerated.NewExecutableSchema(atlasGenerated.Config{Resolvers: atlasRes}))
 
@@ -234,9 +238,9 @@ func main() {
 		atlas.Use(atlasMiddleware.AtlasUserContext(atlasBootstrapService))
 		atlas.Use(atlasMiddleware.AtlasPinGuard(atlasPinService, atlasPinSessionStore, cfg.AtlasPinSession.CookieName))
 		atlas.Handle("/graphql/atlas", atlasSrv)
-		atlas.Post("/api/v1/media/upload", healthHandler.AtlasMediaUpload())
-		atlas.Get("/api/v1/media/{id}", healthHandler.AtlasMediaDownload())
-		atlas.Delete("/api/v1/media/{id}", healthHandler.AtlasMediaDelete())
+		atlas.Post("/api/v1/media/upload", atlasMediaHandler.Upload)
+		atlas.Get("/api/v1/media/{id}", atlasMediaHandler.Download)
+		atlas.Delete("/api/v1/media/{id}", atlasMediaHandler.Delete)
 	})
 
 	httpServer := &http.Server{

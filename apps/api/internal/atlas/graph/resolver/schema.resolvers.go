@@ -31,9 +31,44 @@ func (r *mutationResolver) ChangePin(ctx context.Context, input models.PinChange
 	panic(fmt.Errorf("not implemented: ChangePin - changePin"))
 }
 
+// CreateExercise is the resolver for the createExercise field.
+func (r *mutationResolver) CreateExercise(ctx context.Context, input models.CreateExerciseInput) (*models.ExerciseResult, error) {
+	return r.Resolver.CreateExercise(ctx, input)
+}
+
+// UpdateExercise is the resolver for the updateExercise field.
+func (r *mutationResolver) UpdateExercise(ctx context.Context, id string, input models.UpdateExerciseInput) (*models.ExerciseResult, error) {
+	return r.Resolver.UpdateExercise(ctx, id, input)
+}
+
+// ArchiveExercise is the resolver for the archiveExercise field.
+func (r *mutationResolver) ArchiveExercise(ctx context.Context, id string) (*models.ArchiveResult, error) {
+	return r.Resolver.ArchiveExercise(ctx, id)
+}
+
+// RestoreExercise is the resolver for the restoreExercise field.
+func (r *mutationResolver) RestoreExercise(ctx context.Context, id string) (*models.ArchiveResult, error) {
+	return r.Resolver.RestoreExercise(ctx, id)
+}
+
 // Settings is the resolver for the settings field.
 func (r *queryResolver) Settings(ctx context.Context) (*models.SettingsResult, error) {
 	panic(fmt.Errorf("not implemented: Settings - settings"))
+}
+
+// Exercises is the resolver for the exercises field.
+func (r *queryResolver) Exercises(ctx context.Context, first *int, after *string, includeInactive *bool) (*models.ExerciseConnection, error) {
+	return r.Resolver.Exercises(ctx, first, after, includeInactive)
+}
+
+// Exercise is the resolver for the exercise field.
+func (r *queryResolver) Exercise(ctx context.Context, id string) (*models.ExerciseResult, error) {
+	return r.Resolver.GetExercise(ctx, id)
+}
+
+// AllExercises is the resolver for the allExercises field.
+func (r *queryResolver) AllExercises(ctx context.Context, includeInactive *bool) ([]*models.Exercise, error) {
+	return r.Resolver.AllExercises(ctx, includeInactive)
 }
 
 // Mutation returns generated.MutationResolver implementation.

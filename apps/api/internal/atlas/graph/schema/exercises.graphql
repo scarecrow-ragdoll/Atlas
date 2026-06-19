@@ -1,0 +1,85 @@
+type Exercise {
+  id: ID!
+  userId: ID!
+  name: String!
+  muscleGroups: [String!]
+  description: String
+  personalNotes: String
+  workingWeight: Float
+  isActive: Boolean!
+  media: [ExerciseMedia!]!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type ExerciseMedia {
+  id: ID!
+  userId: ID!
+  exerciseId: ID!
+  fileName: String!
+  mimeType: String!
+  fileSize: Int!
+  createdAt: Time!
+}
+
+type ExerciseConnection {
+  items: [Exercise!]!
+  totalCount: Int!
+  pageInfo: PageInfo!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  endCursor: String
+}
+
+input CreateExerciseInput {
+  name: String!
+  muscleGroups: [String!]
+  description: String
+  personalNotes: String
+  workingWeight: Float
+}
+
+input UpdateExerciseInput {
+  name: String
+  muscleGroups: [String!]
+  description: String
+  personalNotes: String
+  workingWeight: Float
+}
+
+type ExerciseResult {
+  exercise: Exercise
+  validationError: ValidationError
+  notFoundError: NotFoundError
+  authError: AuthError
+}
+
+type ArchiveResult {
+  exercise: Exercise
+  notFoundError: NotFoundError
+  authError: AuthError
+}
+
+type ValidationError {
+  message: String!
+  code: ExerciseErrorCode!
+}
+
+type NotFoundError {
+  message: String!
+  code: ExerciseErrorCode!
+}
+
+type AuthError {
+  message: String!
+  code: ExerciseErrorCode!
+}
+
+enum ExerciseErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}

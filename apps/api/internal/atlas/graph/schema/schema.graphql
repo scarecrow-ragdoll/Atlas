@@ -2,6 +2,9 @@ scalar Time
 
 type Query {
   settings: SettingsResult!
+  exercises(first: Int = 20, after: String, includeInactive: Boolean = false): ExerciseConnection!
+  exercise(id: ID!): ExerciseResult!
+  allExercises(includeInactive: Boolean = false): [Exercise!]!
 }
 
 type Mutation {
@@ -9,4 +12,8 @@ type Mutation {
   enablePin(input: PinEnableInput!): PinOperationResult!
   disablePin(input: PinDisableInput!): PinOperationResult!
   changePin(input: PinChangeInput!): PinOperationResult!
+  createExercise(input: CreateExerciseInput!): ExerciseResult!
+  updateExercise(id: ID!, input: UpdateExerciseInput!): ExerciseResult!
+  archiveExercise(id: ID!): ArchiveResult!
+  restoreExercise(id: ID!): ArchiveResult!
 }

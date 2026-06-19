@@ -54,5 +54,29 @@ models:
     model: monorepo-template/apps/api/internal/atlas/models.PinError
   PinErrorCode:
     model: monorepo-template/apps/api/internal/atlas/models.PinErrorCode
+  Exercise:
+    model: monorepo-template/apps/api/internal/atlas/models.Exercise
+  ExerciseMedia:
+    model: monorepo-template/apps/api/internal/atlas/models.ExerciseMedia
+  ExerciseConnection:
+    model: monorepo-template/apps/api/internal/atlas/models.ExerciseConnection
+  PageInfo:
+    model: monorepo-template/apps/api/internal/atlas/models.PageInfo
+  CreateExerciseInput:
+    model: monorepo-template/apps/api/internal/atlas/models.CreateExerciseInput
+  UpdateExerciseInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateExerciseInput
+  ExerciseResult:
+    model: monorepo-template/apps/api/internal/atlas/models.ExerciseResult
+  ArchiveResult:
+    model: monorepo-template/apps/api/internal/atlas/models.ArchiveResult
+  ValidationError:
+    model: monorepo-template/apps/api/internal/atlas/models.ValidationErr
+  NotFoundError:
+    model: monorepo-template/apps/api/internal/atlas/models.NotFoundErr
+  AuthError:
+    model: monorepo-template/apps/api/internal/atlas/models.AuthErr
+  ExerciseErrorCode:
+    model: monorepo-template/apps/api/internal/atlas/models.ExerciseErrorCode
   Time:
     model: github.com/99designs/gqlgen/graphql.Time

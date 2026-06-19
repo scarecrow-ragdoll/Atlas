@@ -37,6 +37,30 @@ type AtlasUser struct {
 	UpdatedAt   pgtype.Timestamptz
 }
 
+type Exercise struct {
+	ID            pgtype.UUID
+	UserID        pgtype.UUID
+	Name          string
+	MuscleGroups  []string
+	Description   pgtype.Text
+	PersonalNotes pgtype.Text
+	WorkingWeight pgtype.Float4
+	IsActive      bool
+	CreatedAt     pgtype.Timestamptz
+	UpdatedAt     pgtype.Timestamptz
+}
+
+type ExerciseMedium struct {
+	ID         pgtype.UUID
+	UserID     pgtype.UUID
+	ExerciseID pgtype.UUID
+	FileName   string
+	FilePath   string
+	MimeType   string
+	FileSize   int64
+	CreatedAt  pgtype.Timestamptz
+}
+
 type User struct {
 	ID           pgtype.UUID
 	Email        string

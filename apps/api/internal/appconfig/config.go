@@ -67,6 +67,13 @@ type Config struct {
 	AtlasPin        AtlasPinConfig        `mapstructure:"atlas_pin"`
 	AtlasPinSession AtlasPinSessionConfig `mapstructure:"atlas_pin_session"`
 	AtlasPinAttempt AtlasPinAttemptConfig `mapstructure:"atlas_pin_attempt"`
+	Media           MediaConfig           `mapstructure:"media"`
+}
+
+// MediaConfig holds file storage settings for exercise media.
+type MediaConfig struct {
+	BasePath      string `mapstructure:"base_path"`
+	MaxUploadSize int64  `mapstructure:"max_upload_size"`
 }
 
 // AtlasPinConfig holds Argon2id parameters and PIN validation settings.
