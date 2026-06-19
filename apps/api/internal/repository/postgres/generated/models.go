@@ -37,6 +37,16 @@ type AtlasUser struct {
 	UpdatedAt   pgtype.Timestamptz
 }
 
+type DailyLog struct {
+	ID        pgtype.UUID
+	UserID    pgtype.UUID
+	Date      pgtype.Date
+	Notes     pgtype.Text
+	Version   int32
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+}
+
 type Exercise struct {
 	ID            pgtype.UUID
 	UserID        pgtype.UUID
@@ -68,4 +78,29 @@ type User struct {
 	PasswordHash string
 	CreatedAt    pgtype.Timestamptz
 	UpdatedAt    pgtype.Timestamptz
+}
+
+type WorkoutExercise struct {
+	ID                    pgtype.UUID
+	UserID                pgtype.UUID
+	DailyLogID            pgtype.UUID
+	ExerciseID            pgtype.UUID
+	Position              int32
+	WorkingWeightSnapshot pgtype.Float4
+	Notes                 pgtype.Text
+	CreatedAt             pgtype.Timestamptz
+	UpdatedAt             pgtype.Timestamptz
+}
+
+type WorkoutSet struct {
+	ID                pgtype.UUID
+	WorkoutExerciseID pgtype.UUID
+	SetNumber         int32
+	Weight            float32
+	Reps              int32
+	Rpe               pgtype.Float4
+	Rir               pgtype.Int4
+	Notes             pgtype.Text
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
 }
