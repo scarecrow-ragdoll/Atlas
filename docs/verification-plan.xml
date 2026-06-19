@@ -1,4 +1,4 @@
-<VerificationPlan VERSION="0.2.10">
+<VerificationPlan VERSION="0.2.11">
   <GlobalPolicy>
     <log-format>[Module][function][BLOCK_NAME] message</log-format>
     <deterministic-first>true</deterministic-first>
@@ -312,12 +312,22 @@
         <file>apps/api/sqlc.yaml</file>
         <file>apps/api/internal/repository/postgres/queries/users.sql</file>
         <file>apps/api/internal/repository/postgres/queries/admin_users.sql</file>
+        <file>apps/api/internal/repository/postgres/queries/workouts.sql</file>
         <file>apps/api/internal/repository/postgres/migrations/00079_admin_users.sql</file>
         <file>apps/api/internal/repository/postgres/migrations/00083_daily_logs.sql</file>
         <file>apps/api/internal/repository/postgres/migrations/00084_workout_exercises.sql</file>
         <file>apps/api/internal/repository/postgres/migrations/00085_workout_sets.sql</file>
+        <file>apps/api/atlas-gqlgen.yml</file>
+        <file>apps/api/internal/atlas/graph/schema/workouts.graphql</file>
+        <file>apps/api/internal/atlas/models/date.go</file>
+        <file>apps/api/internal/atlas/models/date_test.go</file>
+        <file>apps/api/internal/atlas/models/workout.go</file>
+        <file>apps/api/internal/atlas/service/workout.go</file>
+        <file>apps/api/internal/atlas/service/workout_service_test.go</file>
+        <file>apps/api/internal/atlas/repository/postgres/workout_repo.go</file>
         <file>apps/api/internal/repository/postgres/user_repo_test.go</file>
         <file>apps/api/internal/repository/postgres/admin_repo_test.go</file>
+        <file>apps/api/internal/repository/postgres/workout_repo_test.go</file>
         <file>apps/api/internal/repository/postgres/workout_migration_test.go</file>
         <file>apps/api/internal/repository/redis/admin_session_store_test.go</file>
         <file>apps/api/internal/repository/postgres/user_repo_unit_test.go</file>
@@ -351,6 +361,10 @@
         <check-12>cd apps/api &amp;&amp; go test ./internal/graph -run 'Test(Admin|LoginAdmin|LogoutAdmin|Me|CreateAdmin|ProtectedUser|CreateUser|Users|User|UpdateUser|DeleteUser)' -count=1</check-12>
         <check-13 id="TEST-W03-001">cd apps/api &amp;&amp; go test ./internal/repository/postgres -run 'TestWorkoutMigrations|TestNew_ConnectsAndPings' -count=1</check-13>
         <check-14 id="TEST-W03-007">cd apps/api &amp;&amp; go test ./internal/atlas/graph/resolver -run 'Test.*DailyLog|Test.*Workout' -count=1</check-14>
+        <check-15 id="TEST-W03-009">bunx nx run api:codegen &amp;&amp; bunx nx run api:codegen:atlas</check-15>
+        <check-16 id="TEST-W03-010">cd apps/api &amp;&amp; go test ./internal/atlas/models -run TestDate -count=1 &amp;&amp; go test ./internal/atlas/service -run 'TestWorkoutService' -count=1 &amp;&amp; go test ./internal/atlas/graph/resolver -run 'Test.*DailyLog|Test.*Workout' -count=1</check-16>
+        <check-17 id="TEST-W03-011">TEST_COMPOSE_PROJECT=atlas-w03-test TEST_POSTGRES_CONTAINER_NAME=atlas-w03-test-postgres TEST_REDIS_CONTAINER_NAME=atlas-w03-test-redis TEST_POSTGRES_VOLUME=atlas-w03-test-pg-data docker compose -f docker/docker-compose.test.yml up -d --wait postgres redis &amp;&amp; cd apps/api &amp;&amp; API_TEST_DATABASE_DSN=postgres://app:secret@localhost:17501/monorepo_test?sslmode=disable go test ./internal/repository/postgres -run 'TestWorkoutRepo|TestDailyLog' -count=1 -v</check-17>
+        <check-18 id="TEST-W03-012">bunx nx test api &amp;&amp; bunx nx build api</check-18>
       </module-checks>
       <scenarios>
         <scenario-1 kind="success">Health, admin GraphQL user operations, and public REST user operations return stable success shapes.</scenario-1>
@@ -361,6 +375,8 @@
         <scenario-6 kind="failure">Validation, auth, duplicate, and not-found paths return stable GraphQL unions or REST error envelopes without transport-specific business drift.</scenario-6>
         <scenario-7 kind="failure">Credentialed admin GraphQL requests from missing or rejected origins fail before protected resolver execution.</scenario-7>
         <scenario-8 kind="success">WAVE-03 DailyLog and workout GraphQL resolvers map auth, delegation, domain errors, omittable null update inputs, and unexpected internal errors without leaking raw internal details.</scenario-8>
+        <scenario-9 kind="failure">A stale DailyLog aggregate version returns a typed conflict result and does not silently overwrite another mutation.</scenario-9>
+        <scenario-10 kind="success">DailyLog remains the shared daily container with reusable version increments while WAVE-03 exposes no cardio CRUD, cardio enums, cardio placeholders, body weight persistence, frontend, charts, or AI export behavior.</scenario-10>
       </scenarios>
       <required-trace-assertions>
         <assertion-1>Invalid user mutation input must not persist partial state.</assertion-1>
@@ -369,6 +385,8 @@
         <assertion-4>Users repository tests must prove sqlc-generated queries against the goose-created `monorepo_test` schema before final closeout.</assertion-4>
         <assertion-5>Admin auth logs must include `[AdminAuth]` seed, login, session, logout, guard, and csrf markers without passwords, password hashes, raw cookies, or raw session ids.</assertion-5>
         <assertion-6>Public REST `/api/users` remains public while protected GraphQL user/admin operations require admin session context.</assertion-6>
+        <assertion-7>WAVE-03 child mutations must validate the expected DailyLog version before changing workout exercise or set state.</assertion-7>
+        <assertion-8>WAVE-03 generated Atlas GraphQL output must be refreshed through `bunx nx run api:codegen:atlas` whenever `apps/api/internal/atlas/graph/schema/workouts.graphql` or `apps/api/atlas-gqlgen.yml` changes.</assertion-8>
       </required-trace-assertions>
       <wave-follow-up>Run schema validation, web-admin generated typecheck, and web REST client tests when API contract changes.</wave-follow-up>
       <phase-follow-up>Run full root test and build gates.</phase-follow-up>

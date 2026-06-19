@@ -1,4 +1,4 @@
-<DevelopmentPlan VERSION="0.2.9">
+<DevelopmentPlan VERSION="0.2.10">
   <ArchitectureNotes>
     <objective>Keep the template usable as a production-grade starting point while making GRACE the primary agent workflow contract.</objective>
     <non-goal>Do not mirror every private helper in shared XML artifacts; use shared docs for public module boundaries and verification references.</non-goal>
@@ -274,13 +274,13 @@
 
     <M-API NAME="GoSharedHTTPAPI" TYPE="ENTRY_POINT" LAYER="1" ORDER="1" STATUS="implemented">
       <contract>
-        <purpose>Serve HTTP health, protected admin GraphQL, and public REST endpoints with PostgreSQL, Redis admin sessions, credentialed CORS/origin guards, goose migrations, sqlc-generated user/admin queries, and shared service logic.</purpose>
+        <purpose>Serve HTTP health, protected admin GraphQL, public REST, and Atlas GraphQL endpoints with PostgreSQL, Redis admin/PIN sessions, credentialed CORS/origin guards, goose migrations, sqlc-generated queries, and shared service logic.</purpose>
         <inputs>
-          <param name="http-requests" type="health, credentialed admin GraphQL, and public REST HTTP requests" />
+          <param name="http-requests" type="health, credentialed admin GraphQL, public REST, Atlas PIN auth, and Atlas GraphQL HTTP requests" />
           <param name="config" type="validated API config" />
         </inputs>
         <outputs>
-          <param name="responses" type="HTTP, GraphQL, and REST JSON responses" />
+          <param name="responses" type="HTTP, GraphQL, Atlas GraphQL, and REST JSON responses" />
         </outputs>
         <errors>
           <error code="VALIDATION_ERROR" />
@@ -299,6 +299,8 @@
         <export-user-rest-handler PURPOSE="Expose `/api/users` public REST handlers." />
         <export-user-resolvers PURPOSE="Expose generated admin user query and mutation resolvers protected by admin session context." />
         <export-admin-auth-resolvers PURPOSE="Expose loginAdmin, logoutAdmin, me, and createAdmin GraphQL resolvers." />
+        <export-atlas-foundation PURPOSE="Expose Atlas bootstrap, PIN guard, settings, exercise library, media routing, and guarded `/graphql/atlas` route group." />
+        <export-atlas-workout-diary PURPOSE="Expose WAVE-03 DailyLog aggregate, workout exercise/set repository transactions, service validation, optimistic version checks, Date scalar, and Atlas GraphQL workout resolvers." />
         <export-health PURPOSE="Expose API health endpoint." />
       </interface>
       <depends>M-GO-CONFIG, M-GO-LOGGER, M-GRAPHQL-SCHEMA</depends>
@@ -313,19 +315,32 @@
         <source>apps/api/internal/middleware/admin_origin.go</source>
         <source>apps/api/internal/repository/postgres/queries</source>
         <source>apps/api/internal/repository/postgres/generated</source>
+        <source>apps/api/internal/repository/postgres/migrations/00083_daily_logs.sql</source>
+        <source>apps/api/internal/repository/postgres/migrations/00084_workout_exercises.sql</source>
+        <source>apps/api/internal/repository/postgres/migrations/00085_workout_sets.sql</source>
+        <source>apps/api/internal/repository/postgres/queries/workouts.sql</source>
+        <source>apps/api/internal/atlas/models/date.go</source>
+        <source>apps/api/internal/atlas/models/workout.go</source>
+        <source>apps/api/internal/atlas/repository/postgres/workout_repo.go</source>
+        <source>apps/api/internal/atlas/service/workout.go</source>
+        <source>apps/api/internal/atlas/graph/schema/workouts.graphql</source>
+        <source>apps/api/internal/atlas/graph/resolver/workout.go</source>
         <tests>apps/api/internal/**/*_test.go</tests>
       </target>
       <observability>
         <log-prefix>[API]</log-prefix>
         <log-prefix>[AdminAuth]</log-prefix>
+        <log-prefix>[Atlas]</log-prefix>
         <critical-block>BLOCK_HANDLE_GRAPHQL_REQUEST</critical-block>
         <critical-block>BLOCK_HANDLE_REST_USERS_REQUEST</critical-block>
         <critical-block>BLOCK_BOOTSTRAP_ADMIN</critical-block>
         <critical-block>BLOCK_VALIDATE_SESSION</critical-block>
+        <critical-block>BLOCK_VALIDATE_DAILY_LOG_VERSION</critical-block>
       </observability>
       <verification-ref>V-M-API</verification-ref>
       <notes>
         <note-1>TODO(product-auth): Web-admin admin sessions authenticate operators for template admin GraphQL, but downstream products must still define owner/tenant scoping and per-resource authorization where the product requires it.</note-1>
+        <note-2>WAVE-03 keeps DailyLog as the canonical daily container for later WAVE-04 cardio attachment, but intentionally excludes cardio entries, cardio GraphQL, cardio enums, body weight persistence, frontend, charts, and AI export.</note-2>
       </notes>
     </M-API>
 

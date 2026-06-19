@@ -1,5 +1,5 @@
 <KnowledgeGraph>
-  <Project NAME="monorepo-template" VERSION="0.2.9">
+  <Project NAME="monorepo-template" VERSION="0.2.10">
     <keywords>monorepo-template, nx, bun, go, nextjs, vite, rest, graphql, gqlgen, postgresql, redis, telegram-bot, grace, product-verified, technical-verified, prd-waves, prd-wave-details, backend-waves</keywords>
     <annotation>Full-stack Nx monorepo template governed by GRACE artifacts and verification gates.</annotation>
 
@@ -118,7 +118,7 @@
     </M-GRAPHQL-SCHEMA>
 
     <M-API NAME="GoSharedHTTPAPI" TYPE="ENTRY_POINT" STATUS="implemented">
-      <purpose>Go HTTP API serving health, protected admin GraphQL, and public REST endpoints with goose migrations, sqlc-generated user/admin queries, and Redis-backed admin sessions.</purpose>
+      <purpose>Go HTTP API serving health, protected admin GraphQL, public REST, and Atlas GraphQL endpoints with goose migrations, sqlc-generated queries, Redis-backed admin/PIN sessions, Atlas settings/exercise/media foundation, and WAVE-03 DailyLog workout diary operations.</purpose>
       <path>apps/api</path>
       <path>apps/api/sqlc.yaml</path>
       <path>apps/api/internal/service/admin_auth.go</path>
@@ -129,10 +129,26 @@
       <path>apps/api/internal/middleware/admin_origin.go</path>
       <path>apps/api/internal/repository/postgres/queries</path>
       <path>apps/api/internal/repository/postgres/generated</path>
+      <path>apps/api/internal/repository/postgres/migrations/00083_daily_logs.sql</path>
+      <path>apps/api/internal/repository/postgres/migrations/00084_workout_exercises.sql</path>
+      <path>apps/api/internal/repository/postgres/migrations/00085_workout_sets.sql</path>
+      <path>apps/api/internal/repository/postgres/queries/workouts.sql</path>
+      <path>apps/api/internal/atlas/models/date.go</path>
+      <path>apps/api/internal/atlas/models/workout.go</path>
+      <path>apps/api/internal/atlas/repository/postgres/workout_repo.go</path>
+      <path>apps/api/internal/atlas/service/workout.go</path>
+      <path>apps/api/internal/atlas/graph/schema/workouts.graphql</path>
+      <path>apps/api/internal/atlas/graph/resolver/workout.go</path>
+      <path>apps/api/internal/atlas/models/date_test.go</path>
+      <path>apps/api/internal/atlas/service/workout_service_test.go</path>
+      <path>apps/api/internal/repository/postgres/workout_repo_test.go</path>
+      <path>apps/api/internal/repository/postgres/workout_migration_test.go</path>
+      <path>apps/api/internal/atlas/graph/resolver/workout_test.go</path>
       <depends>M-GO-CONFIG, M-GO-LOGGER, M-GRAPHQL-SCHEMA</depends>
       <verification-ref>V-M-API</verification-ref>
       <annotations>
         <export-main PURPOSE="API startup, config, middleware, REST routes, GraphQL server, and graceful shutdown." />
+        <export-atlasMain PURPOSE="API startup wires Atlas bootstrap, PIN auth, settings, exercise library, media handler, and WAVE-03 workout service into `/graphql/atlas`." />
         <fn-health PURPOSE="Health endpoint handler." />
         <fn-userRepository PURPOSE="PostgreSQL users repository adapter backed by sqlc-generated pgx/v5 queries." />
         <fn-userHandlers PURPOSE="REST `/api/users` handler entry points for public user operations." />
@@ -141,6 +157,10 @@
         <class-AdminAuthService PURPOSE="First-admin bootstrap, login, current admin, create admin, and logout service." />
         <fn-adminSessionStore PURPOSE="Redis-backed opaque session store using HMAC-derived keys." />
         <fn-adminAuthMiddleware PURPOSE="Session-cookie principal hydration, GraphQL cookie bridge, and admin origin guard." />
+        <class-DailyLogAggregate PURPOSE="Canonical user/date DailyLog container with reusable optimistic versioning for strength workout mutations and later WAVE-04 child mutations." />
+        <fn-workoutRepository PURPOSE="PostgreSQL transaction adapter for daily_logs, workout_exercises, workout_sets, ordering, snapshots, and aggregate version increments." />
+        <class-WorkoutService PURPOSE="Transport-neutral validation and conflict mapping for DailyLog notes, workout exercise mutations, workout set mutations, and reorder operations." />
+        <fn-workoutResolvers PURPOSE="Atlas GraphQL DailyLog query/mutations with PIN user context, typed result envelopes, Date scalar inputs, and no cardio/body-weight placeholder fields." />
       </annotations>
     </M-API>
 

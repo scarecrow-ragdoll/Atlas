@@ -8,8 +8,13 @@
 //   ROLE: TEST
 //   MAP_MODE: SUMMARY
 // END_MODULE_CONTRACT
+// START_MODULE_MAP
+//   TestWorkoutService_* - Unit coverage for DailyLog notes, exercise/set mutations, validation, conflict, not-found, snapshot, reorder, and no-op behavior.
+//   fakeWorkoutRepo - In-memory WorkoutRepository fake that tracks aggregate state and version changes.
+//   fakeExerciseRepo - ExerciseRepository fake used to prove exercise lookup and snapshot behavior.
+// END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.0 - Added WAVE-03 workout service unit coverage.
+//   LAST_CHANGE: 1.0.1 - Added GRACE MODULE_MAP summary for WAVE-03 service tests.
 // END_CHANGE_SUMMARY
 
 package service_test
