@@ -467,6 +467,24 @@ func TestWorkoutService_AddExercise_AbsentDateWithNonZeroExpectedVersionDoesNotC
 	assert.Empty(t, repo.exerciseToLog)
 }
 
+func TestWorkoutService_AddExercise_AbsentDateInvalidAppendPositionDoesNotCreateDailyLog(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(ptrFloat64(82.5)))
+
+	log, err := svc.AddWorkoutExercise(ctx, testUserID, testWorkoutDate, 0, models.AddWorkoutExerciseInput{
+		ExerciseID: testExerciseID,
+		Position:   ptrInt32(2),
+	})
+
+	require.Nil(t, log)
+	var validationErr *models.DailyLogValidationErr
+	require.ErrorAs(t, err, &validationErr)
+	assert.Equal(t, 0, repo.getOrCreateHits)
+	assert.Empty(t, repo.dateIndex)
+	assert.Empty(t, repo.dailyLogs)
+	assert.Empty(t, repo.exerciseToLog)
+}
+
 func TestWorkoutService_AddExercise_CapturesWorkingWeightSnapshot(t *testing.T) {
 	repo := newFakeWorkoutRepo()
 	svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(ptrFloat64(82.5)))
@@ -509,6 +527,39 @@ func TestWorkoutService_AddExercise_AllowsDuplicateExerciseID(t *testing.T) {
 	assert.Equal(t, testExerciseID, second.WorkoutExercises[1].ExerciseID)
 	assert.Equal(t, int32(1), second.WorkoutExercises[0].Position)
 	assert.Equal(t, int32(2), second.WorkoutExercises[1].Position)
+}
+
+func TestWorkoutService_UpdateExercise_RejectsEmptyInputWithoutVersionChange(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	aggregate := repo.seedDailyLog(testWorkoutDate, 5)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, testWorkoutExerciseID, testExerciseID, 1, nil)
+	svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(nil))
+
+	log, err := svc.UpdateWorkoutExercise(ctx, testUserID, testWorkoutExerciseID, 5, models.UpdateWorkoutExerciseInput{})
+
+	require.Nil(t, log)
+	var validationErr *models.DailyLogValidationErr
+	require.ErrorAs(t, err, &validationErr)
+	assert.Equal(t, int32(5), repo.dailyLogs[testDailyLogID].DailyLog.Version)
+	assert.Equal(t, []string{testWorkoutExerciseID}, repoWorkoutExerciseIDs(repo.dailyLogs[testDailyLogID].WorkoutExercises))
+}
+
+func TestWorkoutService_UpdateExercise_RejectsSamePositionOnlyWithoutVersionChange(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	aggregate := repo.seedDailyLog(testWorkoutDate, 5)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, testWorkoutExerciseID, testExerciseID, 1, nil)
+	svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(nil))
+
+	log, err := svc.UpdateWorkoutExercise(ctx, testUserID, testWorkoutExerciseID, 5, models.UpdateWorkoutExerciseInput{
+		Position: ptrInt32(1),
+	})
+
+	require.Nil(t, log)
+	var validationErr *models.DailyLogValidationErr
+	require.ErrorAs(t, err, &validationErr)
+	assert.Equal(t, int32(5), repo.dailyLogs[testDailyLogID].DailyLog.Version)
+	require.Len(t, repo.dailyLogs[testDailyLogID].WorkoutExercises, 1)
+	assert.Equal(t, int32(1), repo.dailyLogs[testDailyLogID].WorkoutExercises[0].Position)
 }
 
 func TestWorkoutService_RemoveExercise_KeepsEmptyDailyLog(t *testing.T) {
@@ -584,6 +635,43 @@ func TestWorkoutService_AddSet_ValidatesWeightRepsRpeRir(t *testing.T) {
 		assert.Equal(t, int32(0), *log.WorkoutExercises[0].Sets[0].RIR)
 		assert.Equal(t, int32(1), log.Version)
 	})
+}
+
+func TestWorkoutService_UpdateSet_RejectsEmptyInputWithoutVersionChange(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	aggregate := repo.seedDailyLog(testWorkoutDate, 7)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, testWorkoutExerciseID, testExerciseID, 1, nil)
+	repo.seedWorkoutSet(testWorkoutExerciseID, testWorkoutSetID, 1)
+	svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(nil))
+
+	log, err := svc.UpdateWorkoutSet(ctx, testUserID, testWorkoutSetID, 7, models.UpdateWorkoutSetInput{})
+
+	require.Nil(t, log)
+	var validationErr *models.DailyLogValidationErr
+	require.ErrorAs(t, err, &validationErr)
+	assert.Equal(t, int32(7), repo.dailyLogs[testDailyLogID].DailyLog.Version)
+	require.Len(t, repo.dailyLogs[testDailyLogID].WorkoutExercises, 1)
+	assert.Equal(t, []string{testWorkoutSetID}, repoWorkoutSetIDs(repo.dailyLogs[testDailyLogID].WorkoutExercises[0].Sets))
+}
+
+func TestWorkoutService_UpdateSet_RejectsSameSetNumberOnlyWithoutVersionChange(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	aggregate := repo.seedDailyLog(testWorkoutDate, 7)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, testWorkoutExerciseID, testExerciseID, 1, nil)
+	repo.seedWorkoutSet(testWorkoutExerciseID, testWorkoutSetID, 1)
+	svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(nil))
+
+	log, err := svc.UpdateWorkoutSet(ctx, testUserID, testWorkoutSetID, 7, models.UpdateWorkoutSetInput{
+		SetNumber: ptrInt32(1),
+	})
+
+	require.Nil(t, log)
+	var validationErr *models.DailyLogValidationErr
+	require.ErrorAs(t, err, &validationErr)
+	assert.Equal(t, int32(7), repo.dailyLogs[testDailyLogID].DailyLog.Version)
+	require.Len(t, repo.dailyLogs[testDailyLogID].WorkoutExercises, 1)
+	require.Len(t, repo.dailyLogs[testDailyLogID].WorkoutExercises[0].Sets, 1)
+	assert.Equal(t, int32(1), repo.dailyLogs[testDailyLogID].WorkoutExercises[0].Sets[0].SetNumber)
 }
 
 func TestWorkoutService_UpdateSet_ReindexesWhenSetNumberChanges(t *testing.T) {

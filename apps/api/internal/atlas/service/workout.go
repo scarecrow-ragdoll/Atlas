@@ -24,7 +24,7 @@
 //   ReorderWorkoutSets - Reorders sets only when IDs exactly match the exercise.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.1 - Avoided creating absent DailyLog rows for stale date-based mutation requests.
+//   LAST_CHANGE: 1.0.2 - Rejected failed absent-date adds and no-op updates before version increments.
 // END_CHANGE_SUMMARY
 
 package service
@@ -102,7 +102,7 @@ func (s *workoutService) UpdateDailyLogNotes(ctx context.Context, userID string,
 	if err := validateExpectedVersion(expectedVersion); err != nil {
 		return nil, err
 	}
-	if err := s.ensureDailyLogForDateMutation(ctx, userID, date, expectedVersion, "workout_service.UpdateDailyLogNotes"); err != nil {
+	if err := s.ensureDailyLogForDateMutation(ctx, userID, date, expectedVersion, "workout_service.UpdateDailyLogNotes", nil); err != nil {
 		return nil, err
 	}
 
@@ -143,7 +143,12 @@ func (s *workoutService) AddWorkoutExercise(ctx context.Context, userID string, 
 		return nil, notFoundError("exercise not found")
 	}
 
-	if err := s.ensureDailyLogForDateMutation(ctx, userID, date, expectedVersion, "workout_service.AddWorkoutExercise"); err != nil {
+	if err := s.ensureDailyLogForDateMutation(ctx, userID, date, expectedVersion, "workout_service.AddWorkoutExercise", func() error {
+		if input.Position != nil && *input.Position > 1 {
+			return validationError("position cannot exceed append position")
+		}
+		return nil
+	}); err != nil {
 		return nil, err
 	}
 
@@ -181,8 +186,8 @@ func (s *workoutService) UpdateWorkoutExercise(ctx context.Context, userID strin
 	if err := validateExpectedVersion(expectedVersion); err != nil {
 		return nil, err
 	}
-	if input.Position != nil && *input.Position <= 0 {
-		return nil, validationError("position must be greater than 0")
+	if err := validateUpdateWorkoutExerciseInput(input); err != nil {
+		return nil, err
 	}
 
 	var out *models.DailyLog
@@ -191,8 +196,15 @@ func (s *workoutService) UpdateWorkoutExercise(ctx context.Context, userID strin
 		if err != nil {
 			return err
 		}
+		current := findWorkoutExerciseRecord(aggregate, id)
+		if current == nil {
+			return notFoundError("workout exercise not found")
+		}
 		if input.Position != nil && *input.Position > int32(len(aggregate.WorkoutExercises)) {
 			return validationError("position must refer to an existing workout exercise slot")
+		}
+		if isWorkoutExercisePositionOnlyUpdate(input) && current.Position == *input.Position {
+			return validationError("update workout exercise requires at least one meaningful change")
 		}
 		updated, err := tx.UpdateWorkoutExercise(ctx, userID, id, atlasRepo.UpdateWorkoutExerciseInput{
 			Position: input.Position,
@@ -333,8 +345,15 @@ func (s *workoutService) UpdateWorkoutSet(ctx context.Context, userID string, id
 		if exercise == nil {
 			return notFoundError("workout set not found")
 		}
+		currentSet := findWorkoutSetRecord(exercise.Sets, id)
+		if currentSet == nil {
+			return notFoundError("workout set not found")
+		}
 		if input.SetNumber != nil && *input.SetNumber > int32(len(exercise.Sets)) {
 			return validationError("set number must refer to an existing set slot")
+		}
+		if isWorkoutSetNumberOnlyUpdate(input) && currentSet.SetNumber == *input.SetNumber {
+			return validationError("update workout set requires at least one meaningful change")
 		}
 		updated, err := tx.UpdateWorkoutSet(ctx, userID, exercise.ID, id, atlasRepo.UpdateWorkoutSetInput{
 			SetNumber: input.SetNumber,
@@ -466,7 +485,7 @@ func (s *workoutService) incrementAndLoad(ctx context.Context, tx atlasRepo.Work
 	return s.dailyLogFromAggregate(ctx, aggregate)
 }
 
-func (s *workoutService) ensureDailyLogForDateMutation(ctx context.Context, userID string, date models.Date, expectedVersion int32, operation string) error {
+func (s *workoutService) ensureDailyLogForDateMutation(ctx context.Context, userID string, date models.Date, expectedVersion int32, operation string, validateAbsent func() error) error {
 	record, err := s.workoutRepo.GetDailyLogByDate(ctx, userID, date)
 	if err != nil {
 		return fmt.Errorf("%s: %w", operation, err)
@@ -476,6 +495,11 @@ func (s *workoutService) ensureDailyLogForDateMutation(ctx context.Context, user
 	}
 	if expectedVersion != 0 {
 		return conflictError(expectedVersion, 0, nil)
+	}
+	if validateAbsent != nil {
+		if err := validateAbsent(); err != nil {
+			return err
+		}
 	}
 	if _, err := s.workoutRepo.GetOrCreateDailyLogByDate(ctx, userID, date); err != nil {
 		return fmt.Errorf("%s: %w", operation, err)
@@ -591,6 +615,16 @@ func validateAddWorkoutSetInput(input models.AddWorkoutSetInput) error {
 	return validateOptionalSetFields(input.RPE, input.RIR)
 }
 
+func validateUpdateWorkoutExerciseInput(input models.UpdateWorkoutExerciseInput) error {
+	if input.Position != nil && *input.Position <= 0 {
+		return validationError("position must be greater than 0")
+	}
+	if !hasWorkoutExerciseUpdate(input) {
+		return validationError("update workout exercise requires at least one meaningful change")
+	}
+	return nil
+}
+
 func validateUpdateWorkoutSetInput(input models.UpdateWorkoutSetInput) error {
 	if input.SetNumber != nil && *input.SetNumber <= 0 {
 		return validationError("set number must be greater than 0")
@@ -600,6 +634,9 @@ func validateUpdateWorkoutSetInput(input models.UpdateWorkoutSetInput) error {
 	}
 	if input.Reps != nil && *input.Reps <= 0 {
 		return validationError("reps must be greater than 0")
+	}
+	if !hasWorkoutSetUpdate(input) {
+		return validationError("update workout set requires at least one meaningful change")
 	}
 	return validateOptionalSetFields(input.RPE, input.RIR)
 }
@@ -664,6 +701,31 @@ func findWorkoutExerciseRecordBySetID(aggregate *atlasRepo.DailyLogAggregate, se
 		}
 	}
 	return nil
+}
+
+func findWorkoutSetRecord(records []atlasRepo.WorkoutSetRecord, id string) *atlasRepo.WorkoutSetRecord {
+	for i := range records {
+		if records[i].ID == id {
+			return &records[i]
+		}
+	}
+	return nil
+}
+
+func hasWorkoutExerciseUpdate(input models.UpdateWorkoutExerciseInput) bool {
+	return input.Position != nil || input.SetNotes || input.Notes != nil
+}
+
+func isWorkoutExercisePositionOnlyUpdate(input models.UpdateWorkoutExerciseInput) bool {
+	return input.Position != nil && !input.SetNotes && input.Notes == nil
+}
+
+func hasWorkoutSetUpdate(input models.UpdateWorkoutSetInput) bool {
+	return input.SetNumber != nil || input.Weight != nil || input.Reps != nil || input.SetRPE || input.RPE != nil || input.SetRIR || input.RIR != nil || input.SetNotes || input.Notes != nil
+}
+
+func isWorkoutSetNumberOnlyUpdate(input models.UpdateWorkoutSetInput) bool {
+	return input.SetNumber != nil && input.Weight == nil && input.Reps == nil && !input.SetRPE && input.RPE == nil && !input.SetRIR && input.RIR == nil && !input.SetNotes && input.Notes == nil
 }
 
 func workoutExerciseIDs(records []atlasRepo.WorkoutExerciseRecord) []string {
