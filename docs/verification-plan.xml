@@ -1,4 +1,4 @@
-<VerificationPlan VERSION="0.2.9">
+<VerificationPlan VERSION="0.2.10">
   <GlobalPolicy>
     <log-format>[Module][function][BLOCK_NAME] message</log-format>
     <deterministic-first>true</deterministic-first>
@@ -313,8 +313,12 @@
         <file>apps/api/internal/repository/postgres/queries/users.sql</file>
         <file>apps/api/internal/repository/postgres/queries/admin_users.sql</file>
         <file>apps/api/internal/repository/postgres/migrations/00079_admin_users.sql</file>
+        <file>apps/api/internal/repository/postgres/migrations/00083_daily_logs.sql</file>
+        <file>apps/api/internal/repository/postgres/migrations/00084_workout_exercises.sql</file>
+        <file>apps/api/internal/repository/postgres/migrations/00085_workout_sets.sql</file>
         <file>apps/api/internal/repository/postgres/user_repo_test.go</file>
         <file>apps/api/internal/repository/postgres/admin_repo_test.go</file>
+        <file>apps/api/internal/repository/postgres/workout_migration_test.go</file>
         <file>apps/api/internal/repository/redis/admin_session_store_test.go</file>
         <file>apps/api/internal/repository/postgres/user_repo_unit_test.go</file>
         <file>apps/api/internal/appconfig/config_test.go</file>
@@ -343,14 +347,16 @@
         <check-10>cd apps/api &amp;&amp; go test ./internal/service -run TestAdminAuth -count=1</check-10>
         <check-11>cd apps/api &amp;&amp; go test ./internal/middleware -run 'TestCORS|TestAdmin' -count=1</check-11>
         <check-12>cd apps/api &amp;&amp; go test ./internal/graph -run 'Test(Admin|LoginAdmin|LogoutAdmin|Me|CreateAdmin|ProtectedUser|CreateUser|Users|User|UpdateUser|DeleteUser)' -count=1</check-12>
+        <check-13 id="TEST-W03-001">cd apps/api &amp;&amp; go test ./internal/repository/postgres -run 'TestWorkoutMigrations|TestNew_ConnectsAndPings' -count=1</check-13>
       </module-checks>
       <scenarios>
         <scenario-1 kind="success">Health, admin GraphQL user operations, and public REST user operations return stable success shapes.</scenario-1>
         <scenario-2 kind="success">REST handlers map duplicate email, not-found, validation, and delete flows to stable HTTP status codes and JSON envelopes.</scenario-2>
         <scenario-3 kind="success">Empty admin table startup requires env-backed first-admin values, seeds exactly one admin, and later non-empty startup skips seed without `ADMIN_INITIAL_*`.</scenario-3>
         <scenario-4 kind="success">Login sets an httpOnly cookie, `me` resolves the current admin, logout revokes the Redis session and clears the cookie, and createAdmin requires an authenticated admin.</scenario-4>
-        <scenario-5 kind="failure">Validation, auth, duplicate, and not-found paths return stable GraphQL unions or REST error envelopes without transport-specific business drift.</scenario-5>
-        <scenario-6 kind="failure">Credentialed admin GraphQL requests from missing or rejected origins fail before protected resolver execution.</scenario-6>
+        <scenario-5 kind="success">WAVE-03 workout diary migrations create only daily_logs, workout_exercises, and workout_sets with version, ordering, validation, index, and FK contracts while excluding cardio and body-weight schema.</scenario-5>
+        <scenario-6 kind="failure">Validation, auth, duplicate, and not-found paths return stable GraphQL unions or REST error envelopes without transport-specific business drift.</scenario-6>
+        <scenario-7 kind="failure">Credentialed admin GraphQL requests from missing or rejected origins fail before protected resolver execution.</scenario-7>
       </scenarios>
       <required-trace-assertions>
         <assertion-1>Invalid user mutation input must not persist partial state.</assertion-1>

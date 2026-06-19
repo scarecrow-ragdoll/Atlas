@@ -13,9 +13,10 @@
 //   TestWorkoutMigrations_DailyLogSchema - Proves the canonical DailyLog container schema.
 //   TestWorkoutMigrations_WorkoutExerciseSchema - Proves exercise instances are ordered, user-scoped, and duplicate exercise IDs remain allowed.
 //   TestWorkoutMigrations_WorkoutSetSchema - Proves ordered strength set schema and validation constraints.
+//   TestWorkoutMigrations_WorkoutSetValidationRejectsInvalidBounds - Proves DB CHECK constraints reject invalid strength set values.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.0 - Added migration contract tests for WAVE-03 workout diary tables.
+//   LAST_CHANGE: 1.0.1 - Tightened WAVE-03 migration verification for review feedback.
 // END_CHANGE_SUMMARY
 
 package postgres_test
@@ -26,6 +27,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -43,6 +45,10 @@ func TestWorkoutMigrations_FilesExistWithGraceMarkup(t *testing.T) {
 			"daily_logs - Canonical daily aggregate container",
 			"-- +goose Up",
 			"CREATE TABLE daily_logs",
+			"CONSTRAINT uq_daily_logs_user_date UNIQUE (user_id, date)",
+			"CONSTRAINT chk_daily_logs_version CHECK (version >= 0)",
+			"CREATE INDEX idx_daily_logs_user_date ON daily_logs (user_id, date)",
+			"CREATE INDEX idx_daily_logs_user_date_desc ON daily_logs (user_id, date DESC)",
 			"-- +goose Down",
 		},
 		"migrations/00084_workout_exercises.sql": {
@@ -51,6 +57,11 @@ func TestWorkoutMigrations_FilesExistWithGraceMarkup(t *testing.T) {
 			"workout_exercises - Ordered strength exercise instances",
 			"-- +goose Up",
 			"CREATE TABLE workout_exercises",
+			"daily_log_id            UUID NOT NULL REFERENCES daily_logs(id) ON DELETE CASCADE",
+			"exercise_id             UUID NOT NULL REFERENCES exercises(id) ON DELETE RESTRICT",
+			"CONSTRAINT chk_workout_exercises_position CHECK (position > 0)",
+			"CONSTRAINT chk_workout_exercises_working_weight_snapshot CHECK (working_weight_snapshot IS NULL OR working_weight_snapshot > 0)",
+			"CONSTRAINT uq_workout_exercises_daily_log_position UNIQUE (daily_log_id, position)",
 			"-- +goose Down",
 		},
 		"migrations/00085_workout_sets.sql": {
@@ -59,6 +70,13 @@ func TestWorkoutMigrations_FilesExistWithGraceMarkup(t *testing.T) {
 			"workout_sets - Ordered strength set rows",
 			"-- +goose Up",
 			"CREATE TABLE workout_sets",
+			"workout_exercise_id UUID NOT NULL REFERENCES workout_exercises(id) ON DELETE CASCADE",
+			"CONSTRAINT chk_workout_sets_set_number CHECK (set_number > 0)",
+			"CONSTRAINT chk_workout_sets_weight CHECK (weight > 0)",
+			"CONSTRAINT chk_workout_sets_reps CHECK (reps > 0)",
+			"CONSTRAINT chk_workout_sets_rpe CHECK (rpe IS NULL OR (rpe >= 1 AND rpe <= 10))",
+			"CONSTRAINT chk_workout_sets_rir CHECK (rir IS NULL OR (rir >= 0 AND rir <= 10))",
+			"CONSTRAINT uq_workout_sets_exercise_set_number UNIQUE (workout_exercise_id, set_number)",
 			"-- +goose Down",
 		},
 	}
@@ -105,7 +123,7 @@ func TestWorkoutMigrations_DailyLogSchema(t *testing.T) {
 	requireUniqueConstraintColumns(t, pool, "daily_logs", "uq_daily_logs_user_date", []string{"user_id", "date"})
 	requireConstraint(t, pool, "daily_logs", "chk_daily_logs_version", "CHECK")
 	requireCheckConstraintDefinition(t, pool, "daily_logs", "chk_daily_logs_version", []string{"version >= 0"})
-	requireForeignKeyDeleteRule(t, pool, "daily_logs", "atlas_users", "NO ACTION")
+	requireForeignKeyDeleteRule(t, pool, "daily_logs", "user_id", "atlas_users", "NO ACTION")
 	requireIndex(t, pool, "idx_daily_logs_user_date")
 	requireIndex(t, pool, "idx_daily_logs_user_date_desc")
 	requireIndexDefinitionContains(t, pool, "idx_daily_logs_user_date_desc", "date DESC")
@@ -129,12 +147,11 @@ func TestWorkoutMigrations_WorkoutExerciseSchema(t *testing.T) {
 	requireConstraint(t, pool, "workout_exercises", "chk_workout_exercises_position", "CHECK")
 	requireCheckConstraintDefinition(t, pool, "workout_exercises", "chk_workout_exercises_position", []string{"position > 0"})
 	requireConstraint(t, pool, "workout_exercises", "chk_workout_exercises_working_weight_snapshot", "CHECK")
-	requireCheckConstraintDefinition(t, pool, "workout_exercises", "chk_workout_exercises_working_weight_snapshot", []string{"working_weight_snapshot IS NULL", "working_weight_snapshot > "})
 	requireConstraint(t, pool, "workout_exercises", "uq_workout_exercises_daily_log_position", "UNIQUE")
 	requireUniqueConstraintColumns(t, pool, "workout_exercises", "uq_workout_exercises_daily_log_position", []string{"daily_log_id", "position"})
 	requireNoUniqueConstraintOnColumns(t, pool, "workout_exercises", []string{"daily_log_id", "exercise_id"})
-	requireForeignKeyDeleteRule(t, pool, "workout_exercises", "daily_logs", "CASCADE")
-	requireForeignKeyDeleteRule(t, pool, "workout_exercises", "exercises", "RESTRICT")
+	requireForeignKeyDeleteRule(t, pool, "workout_exercises", "daily_log_id", "daily_logs", "CASCADE")
+	requireForeignKeyDeleteRule(t, pool, "workout_exercises", "exercise_id", "exercises", "RESTRICT")
 	requireIndex(t, pool, "idx_workout_exercises_user_daily_log")
 	requireIndex(t, pool, "idx_workout_exercises_exercise")
 }
@@ -157,17 +174,89 @@ func TestWorkoutMigrations_WorkoutSetSchema(t *testing.T) {
 	requireConstraint(t, pool, "workout_sets", "chk_workout_sets_set_number", "CHECK")
 	requireCheckConstraintDefinition(t, pool, "workout_sets", "chk_workout_sets_set_number", []string{"set_number > 0"})
 	requireConstraint(t, pool, "workout_sets", "chk_workout_sets_weight", "CHECK")
-	requireCheckConstraintDefinition(t, pool, "workout_sets", "chk_workout_sets_weight", []string{"weight > "})
 	requireConstraint(t, pool, "workout_sets", "chk_workout_sets_reps", "CHECK")
 	requireCheckConstraintDefinition(t, pool, "workout_sets", "chk_workout_sets_reps", []string{"reps > 0"})
 	requireConstraint(t, pool, "workout_sets", "chk_workout_sets_rpe", "CHECK")
-	requireCheckConstraintDefinition(t, pool, "workout_sets", "chk_workout_sets_rpe", []string{"rpe IS NULL", "rpe >= ", "rpe <= "})
 	requireConstraint(t, pool, "workout_sets", "chk_workout_sets_rir", "CHECK")
 	requireCheckConstraintDefinition(t, pool, "workout_sets", "chk_workout_sets_rir", []string{"rir IS NULL", "rir >= 0", "rir <= 10"})
 	requireConstraint(t, pool, "workout_sets", "uq_workout_sets_exercise_set_number", "UNIQUE")
 	requireUniqueConstraintColumns(t, pool, "workout_sets", "uq_workout_sets_exercise_set_number", []string{"workout_exercise_id", "set_number"})
-	requireForeignKeyDeleteRule(t, pool, "workout_sets", "workout_exercises", "CASCADE")
+	requireForeignKeyDeleteRule(t, pool, "workout_sets", "workout_exercise_id", "workout_exercises", "CASCADE")
 	requireIndex(t, pool, "idx_workout_sets_workout_exercise")
+}
+
+func TestWorkoutMigrations_WorkoutSetValidationRejectsInvalidBounds(t *testing.T) {
+	pool := workoutMigrationTestPool(t)
+	workoutExerciseID := seedWorkoutExercise(t, pool)
+
+	_, err := pool.Exec(context.Background(), `
+		INSERT INTO workout_sets (workout_exercise_id, set_number, weight, reps, rpe, rir)
+		VALUES ($1::uuid, 1, 1, 1, 1, 0)
+	`, workoutExerciseID)
+	require.NoError(t, err)
+
+	_, err = pool.Exec(context.Background(), `
+		INSERT INTO workout_sets (workout_exercise_id, set_number, weight, reps, rpe, rir)
+		VALUES ($1::uuid, 2, 1, 1, 10, 10)
+	`, workoutExerciseID)
+	require.NoError(t, err)
+
+	cases := []struct {
+		name       string
+		setNumber  int
+		weight     float64
+		reps       int
+		rpe        any
+		rir        any
+		constraint string
+	}{
+		{
+			name:       "zero weight",
+			setNumber:  3,
+			weight:     0,
+			reps:       1,
+			rpe:        nil,
+			rir:        nil,
+			constraint: "chk_workout_sets_weight",
+		},
+		{
+			name:       "negative weight",
+			setNumber:  4,
+			weight:     -1,
+			reps:       1,
+			rpe:        nil,
+			rir:        nil,
+			constraint: "chk_workout_sets_weight",
+		},
+		{
+			name:       "zero rpe",
+			setNumber:  5,
+			weight:     1,
+			reps:       1,
+			rpe:        0,
+			rir:        nil,
+			constraint: "chk_workout_sets_rpe",
+		},
+		{
+			name:       "rpe above ten",
+			setNumber:  6,
+			weight:     1,
+			reps:       1,
+			rpe:        11,
+			rir:        nil,
+			constraint: "chk_workout_sets_rpe",
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := pool.Exec(context.Background(), `
+				INSERT INTO workout_sets (workout_exercise_id, set_number, weight, reps, rpe, rir)
+				VALUES ($1::uuid, $2, $3, $4, $5, $6)
+			`, workoutExerciseID, tc.setNumber, tc.weight, tc.reps, tc.rpe, tc.rir)
+			requireCheckViolation(t, err, tc.constraint)
+		})
+	}
 }
 
 func workoutMigrationTestPool(t *testing.T) *pgxpool.Pool {
@@ -185,6 +274,33 @@ func workoutMigrationTestPool(t *testing.T) *pgxpool.Pool {
 	require.NoError(t, err)
 	t.Cleanup(pool.Close)
 	return pool
+}
+
+func seedWorkoutExercise(t *testing.T, pool *pgxpool.Pool) string {
+	t.Helper()
+	var workoutExerciseID string
+	err := pool.QueryRow(context.Background(), `
+		WITH user_row AS (
+			INSERT INTO atlas_users DEFAULT VALUES
+			RETURNING id
+		),
+		daily_log_row AS (
+			INSERT INTO daily_logs (user_id, date)
+			SELECT id, CURRENT_DATE FROM user_row
+			RETURNING id, user_id
+		),
+		exercise_row AS (
+			INSERT INTO exercises (user_id, name)
+			SELECT id, 'WAVE-03 migration constraint test exercise' FROM user_row
+			RETURNING id
+		)
+		INSERT INTO workout_exercises (user_id, daily_log_id, exercise_id, position)
+		SELECT daily_log_row.user_id, daily_log_row.id, exercise_row.id, 1
+		FROM daily_log_row, exercise_row
+		RETURNING id::text
+	`).Scan(&workoutExerciseID)
+	require.NoError(t, err)
+	return workoutExerciseID
 }
 
 func requireTable(t *testing.T, pool *pgxpool.Pool, table string) {
@@ -293,33 +409,47 @@ func requireCheckConstraintDefinition(t *testing.T, pool *pgxpool.Pool, table, c
 			AND c.conname = $2
 	`, table, constraintName).Scan(&definition)
 	require.NoError(t, err, "expected check constraint %s on %s", constraintName, table)
-	lowerDefinition := strings.ToLower(definition)
+	lowerDefinition := strings.ToLower(strings.ReplaceAll(definition, `"`, ""))
 	for _, snippet := range snippets {
 		assert.Contains(t, lowerDefinition, strings.ToLower(snippet), "constraint %s definition", constraintName)
 	}
 }
 
-func requireForeignKeyDeleteRule(t *testing.T, pool *pgxpool.Pool, table, referencedTable, deleteRule string) {
+func requireForeignKeyDeleteRule(t *testing.T, pool *pgxpool.Pool, table, column, referencedTable, deleteRule string) {
 	t.Helper()
 	var actualRule string
 	err := pool.QueryRow(context.Background(), `
 		SELECT rc.delete_rule
-		FROM information_schema.referential_constraints rc
-		JOIN information_schema.table_constraints tc
-			ON tc.constraint_catalog = rc.constraint_catalog
-			AND tc.constraint_schema = rc.constraint_schema
-			AND tc.constraint_name = rc.constraint_name
+		FROM information_schema.table_constraints tc
 		JOIN information_schema.key_column_usage kcu
-			ON kcu.constraint_catalog = rc.unique_constraint_catalog
-			AND kcu.constraint_schema = rc.unique_constraint_schema
-			AND kcu.constraint_name = rc.unique_constraint_name
+			ON kcu.constraint_catalog = tc.constraint_catalog
+			AND kcu.constraint_schema = tc.constraint_schema
+			AND kcu.constraint_name = tc.constraint_name
+		JOIN information_schema.referential_constraints rc
+			ON rc.constraint_catalog = tc.constraint_catalog
+			AND rc.constraint_schema = tc.constraint_schema
+			AND rc.constraint_name = tc.constraint_name
+		JOIN information_schema.constraint_column_usage ccu
+			ON ccu.constraint_catalog = rc.unique_constraint_catalog
+			AND ccu.constraint_schema = rc.unique_constraint_schema
+			AND ccu.constraint_name = rc.unique_constraint_name
 		WHERE tc.table_schema = 'public'
 			AND tc.table_name = $1
-			AND kcu.table_name = $2
-		LIMIT 1
-	`, table, referencedTable).Scan(&actualRule)
-	require.NoError(t, err, "expected FK from %s to %s", table, referencedTable)
+			AND tc.constraint_type = 'FOREIGN KEY'
+			AND kcu.column_name = $2
+			AND ccu.table_name = $3
+	`, table, column, referencedTable).Scan(&actualRule)
+	require.NoError(t, err, "expected FK from %s.%s to %s", table, column, referencedTable)
 	assert.Equal(t, deleteRule, actualRule)
+}
+
+func requireCheckViolation(t *testing.T, err error, constraintName string) {
+	t.Helper()
+	var pgErr *pgconn.PgError
+	if assert.ErrorAs(t, err, &pgErr) {
+		assert.Equal(t, "23514", pgErr.Code)
+		assert.Equal(t, constraintName, pgErr.ConstraintName)
+	}
 }
 
 func requireIndex(t *testing.T, pool *pgxpool.Pool, indexName string) {
