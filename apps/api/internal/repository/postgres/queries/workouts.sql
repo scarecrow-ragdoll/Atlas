@@ -101,7 +101,7 @@ RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snaps
 -- name: UpdateWorkoutExercise :one
 UPDATE workout_exercises
 SET position = COALESCE(sqlc.narg('position'), position),
-    notes = sqlc.narg('notes'),
+    notes = CASE WHEN sqlc.arg('set_notes')::boolean THEN sqlc.narg('notes') ELSE notes END,
     updated_at = now()
 WHERE user_id = sqlc.arg('user_id') AND id = sqlc.arg('id')
 RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at;
@@ -111,49 +111,41 @@ DELETE FROM workout_exercises
 WHERE user_id = sqlc.arg('user_id') AND id = sqlc.arg('id')
 RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at;
 
--- name: ShiftWorkoutExercisePositionsForInsert :many
-WITH moved AS (
-    UPDATE workout_exercises
-    SET position = position + 1000000,
-        updated_at = now()
-    WHERE workout_exercises.user_id = sqlc.arg('user_id')
-      AND workout_exercises.daily_log_id = sqlc.arg('daily_log_id')
-      AND workout_exercises.position >= sqlc.arg('position')
-    RETURNING id
-),
-normalized AS (
-    UPDATE workout_exercises we
-    SET position = we.position - 999999,
-        updated_at = now()
-    FROM moved
-    WHERE we.id = moved.id
-    RETURNING we.id, we.user_id, we.daily_log_id, we.exercise_id, we.position, we.working_weight_snapshot, we.notes, we.created_at, we.updated_at
-)
-SELECT id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at
-FROM normalized
-ORDER BY position ASC;
+-- name: TempShiftWorkoutExercisePositionsForInsert :many
+UPDATE workout_exercises
+SET position = position + 1000000,
+    updated_at = now()
+WHERE workout_exercises.user_id = sqlc.arg('user_id')
+  AND workout_exercises.daily_log_id = sqlc.arg('daily_log_id')
+  AND workout_exercises.position >= sqlc.arg('position')
+RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at;
 
--- name: ShiftWorkoutExercisePositionsAfterDelete :many
-WITH moved AS (
-    UPDATE workout_exercises
-    SET position = position + 1000000,
-        updated_at = now()
-    WHERE workout_exercises.user_id = sqlc.arg('user_id')
-      AND workout_exercises.daily_log_id = sqlc.arg('daily_log_id')
-      AND workout_exercises.position > sqlc.arg('deleted_position')
-    RETURNING id
-),
-normalized AS (
-    UPDATE workout_exercises we
-    SET position = we.position - 1000001,
-        updated_at = now()
-    FROM moved
-    WHERE we.id = moved.id
-    RETURNING we.id, we.user_id, we.daily_log_id, we.exercise_id, we.position, we.working_weight_snapshot, we.notes, we.created_at, we.updated_at
-)
-SELECT id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at
-FROM normalized
-ORDER BY position ASC;
+-- name: NormalizeWorkoutExercisePositionsForInsert :many
+UPDATE workout_exercises
+SET position = position - 999999,
+    updated_at = now()
+WHERE workout_exercises.user_id = sqlc.arg('user_id')
+  AND workout_exercises.daily_log_id = sqlc.arg('daily_log_id')
+  AND workout_exercises.position >= sqlc.arg('position')::integer + 1000000
+RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at;
+
+-- name: TempShiftWorkoutExercisePositionsAfterDelete :many
+UPDATE workout_exercises
+SET position = position + 1000000,
+    updated_at = now()
+WHERE workout_exercises.user_id = sqlc.arg('user_id')
+  AND workout_exercises.daily_log_id = sqlc.arg('daily_log_id')
+  AND workout_exercises.position > sqlc.arg('deleted_position')
+RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at;
+
+-- name: NormalizeWorkoutExercisePositionsAfterDelete :many
+UPDATE workout_exercises
+SET position = position - 1000001,
+    updated_at = now()
+WHERE workout_exercises.user_id = sqlc.arg('user_id')
+  AND workout_exercises.daily_log_id = sqlc.arg('daily_log_id')
+  AND workout_exercises.position > sqlc.arg('deleted_position')::integer + 1000000
+RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at;
 
 -- name: SetWorkoutExercisePosition :one
 UPDATE workout_exercises
@@ -196,9 +188,9 @@ UPDATE workout_sets
 SET set_number = COALESCE(sqlc.narg('set_number'), set_number),
     weight = COALESCE(sqlc.narg('weight'), weight),
     reps = COALESCE(sqlc.narg('reps'), reps),
-    rpe = sqlc.narg('rpe'),
-    rir = sqlc.narg('rir'),
-    notes = sqlc.narg('notes'),
+    rpe = CASE WHEN sqlc.arg('set_rpe')::boolean THEN sqlc.narg('rpe') ELSE rpe END,
+    rir = CASE WHEN sqlc.arg('set_rir')::boolean THEN sqlc.narg('rir') ELSE rir END,
+    notes = CASE WHEN sqlc.arg('set_notes')::boolean THEN sqlc.narg('notes') ELSE notes END,
     updated_at = now()
 WHERE workout_exercise_id = sqlc.arg('workout_exercise_id') AND id = sqlc.arg('id')
 RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at;
@@ -208,47 +200,37 @@ DELETE FROM workout_sets
 WHERE workout_exercise_id = sqlc.arg('workout_exercise_id') AND id = sqlc.arg('id')
 RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at;
 
--- name: ShiftWorkoutSetNumbersForInsert :many
-WITH moved AS (
-    UPDATE workout_sets
-    SET set_number = set_number + 1000000,
-        updated_at = now()
-    WHERE workout_sets.workout_exercise_id = sqlc.arg('workout_exercise_id')
-      AND workout_sets.set_number >= sqlc.arg('set_number')
-    RETURNING id
-),
-normalized AS (
-    UPDATE workout_sets ws
-    SET set_number = ws.set_number - 999999,
-        updated_at = now()
-    FROM moved
-    WHERE ws.id = moved.id
-    RETURNING ws.id, ws.workout_exercise_id, ws.set_number, ws.weight, ws.reps, ws.rpe, ws.rir, ws.notes, ws.created_at, ws.updated_at
-)
-SELECT id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at
-FROM normalized
-ORDER BY set_number ASC;
+-- name: TempShiftWorkoutSetNumbersForInsert :many
+UPDATE workout_sets
+SET set_number = set_number + 1000000,
+    updated_at = now()
+WHERE workout_sets.workout_exercise_id = sqlc.arg('workout_exercise_id')
+  AND workout_sets.set_number >= sqlc.arg('set_number')
+RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at;
 
--- name: ShiftWorkoutSetNumbersAfterDelete :many
-WITH moved AS (
-    UPDATE workout_sets
-    SET set_number = set_number + 1000000,
-        updated_at = now()
-    WHERE workout_sets.workout_exercise_id = sqlc.arg('workout_exercise_id')
-      AND workout_sets.set_number > sqlc.arg('deleted_set_number')
-    RETURNING id
-),
-normalized AS (
-    UPDATE workout_sets ws
-    SET set_number = ws.set_number - 1000001,
-        updated_at = now()
-    FROM moved
-    WHERE ws.id = moved.id
-    RETURNING ws.id, ws.workout_exercise_id, ws.set_number, ws.weight, ws.reps, ws.rpe, ws.rir, ws.notes, ws.created_at, ws.updated_at
-)
-SELECT id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at
-FROM normalized
-ORDER BY set_number ASC;
+-- name: NormalizeWorkoutSetNumbersForInsert :many
+UPDATE workout_sets
+SET set_number = set_number - 999999,
+    updated_at = now()
+WHERE workout_sets.workout_exercise_id = sqlc.arg('workout_exercise_id')
+  AND workout_sets.set_number >= sqlc.arg('set_number')::integer + 1000000
+RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at;
+
+-- name: TempShiftWorkoutSetNumbersAfterDelete :many
+UPDATE workout_sets
+SET set_number = set_number + 1000000,
+    updated_at = now()
+WHERE workout_sets.workout_exercise_id = sqlc.arg('workout_exercise_id')
+  AND workout_sets.set_number > sqlc.arg('deleted_set_number')
+RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at;
+
+-- name: NormalizeWorkoutSetNumbersAfterDelete :many
+UPDATE workout_sets
+SET set_number = set_number - 1000001,
+    updated_at = now()
+WHERE workout_sets.workout_exercise_id = sqlc.arg('workout_exercise_id')
+  AND workout_sets.set_number > sqlc.arg('deleted_set_number')::integer + 1000000
+RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at;
 
 -- name: SetWorkoutSetNumber :one
 UPDATE workout_sets
@@ -282,17 +264,21 @@ RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, cr
 --   CreateWorkoutExercise - Inserts a workout exercise and returns the persisted row.
 --   UpdateWorkoutExercise - Updates workout exercise notes or position and returns the persisted row.
 --   DeleteWorkoutExercise - Deletes a workout exercise and returns the deleted row.
---   ShiftWorkoutExercisePositionsForInsert - Opens a position gap before inserting an exercise.
---   ShiftWorkoutExercisePositionsAfterDelete - Closes a position gap after deleting an exercise.
+--   TempShiftWorkoutExercisePositionsForInsert - Moves insert-affected exercise positions to a temporary range.
+--   NormalizeWorkoutExercisePositionsForInsert - Maps temporary insert positions back to final position + 1 values.
+--   TempShiftWorkoutExercisePositionsAfterDelete - Moves delete-affected exercise positions to a temporary range.
+--   NormalizeWorkoutExercisePositionsAfterDelete - Maps temporary delete positions back to final position - 1 values.
 --   SetWorkoutExercisePosition - Assigns a final exercise position during reorder.
 --   ListWorkoutSetsByExerciseIDs - Lists sets for workout exercises in set-number order.
 --   CreateWorkoutSet - Inserts a workout set and returns the persisted row.
 --   UpdateWorkoutSet - Updates workout set fields and returns the persisted row.
 --   DeleteWorkoutSet - Deletes a workout set and returns the deleted row.
---   ShiftWorkoutSetNumbersForInsert - Opens a set-number gap before inserting a set.
---   ShiftWorkoutSetNumbersAfterDelete - Closes a set-number gap after deleting a set.
+--   TempShiftWorkoutSetNumbersForInsert - Moves insert-affected set numbers to a temporary range.
+--   NormalizeWorkoutSetNumbersForInsert - Maps temporary insert set numbers back to final set_number + 1 values.
+--   TempShiftWorkoutSetNumbersAfterDelete - Moves delete-affected set numbers to a temporary range.
+--   NormalizeWorkoutSetNumbersAfterDelete - Maps temporary delete set numbers back to final set_number - 1 values.
 --   SetWorkoutSetNumber - Assigns a final set number during reorder.
 -- END_MODULE_MAP
 -- START_CHANGE_SUMMARY
---   LAST_CHANGE: 1.0.0 - Added WAVE-03 workout diary sqlc queries.
+--   LAST_CHANGE: 1.0.1 - Split reordering helpers into sequential temp and normalize queries, and made nullable update fields explicit.
 -- END_CHANGE_SUMMARY

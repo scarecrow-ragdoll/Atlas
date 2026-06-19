@@ -542,6 +542,188 @@ func (q *Queries) LockDailyLogByWorkoutSetID(ctx context.Context, arg LockDailyL
 	return i, err
 }
 
+const normalizeWorkoutExercisePositionsAfterDelete = `-- name: NormalizeWorkoutExercisePositionsAfterDelete :many
+UPDATE workout_exercises
+SET position = position - 1000001,
+    updated_at = now()
+WHERE workout_exercises.user_id = $1
+  AND workout_exercises.daily_log_id = $2
+  AND workout_exercises.position > $3::integer + 1000000
+RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at
+`
+
+type NormalizeWorkoutExercisePositionsAfterDeleteParams struct {
+	UserID          pgtype.UUID
+	DailyLogID      pgtype.UUID
+	DeletedPosition int32
+}
+
+func (q *Queries) NormalizeWorkoutExercisePositionsAfterDelete(ctx context.Context, arg NormalizeWorkoutExercisePositionsAfterDeleteParams) ([]WorkoutExercise, error) {
+	rows, err := q.db.Query(ctx, normalizeWorkoutExercisePositionsAfterDelete, arg.UserID, arg.DailyLogID, arg.DeletedPosition)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []WorkoutExercise
+	for rows.Next() {
+		var i WorkoutExercise
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.DailyLogID,
+			&i.ExerciseID,
+			&i.Position,
+			&i.WorkingWeightSnapshot,
+			&i.Notes,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const normalizeWorkoutExercisePositionsForInsert = `-- name: NormalizeWorkoutExercisePositionsForInsert :many
+UPDATE workout_exercises
+SET position = position - 999999,
+    updated_at = now()
+WHERE workout_exercises.user_id = $1
+  AND workout_exercises.daily_log_id = $2
+  AND workout_exercises.position >= $3::integer + 1000000
+RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at
+`
+
+type NormalizeWorkoutExercisePositionsForInsertParams struct {
+	UserID     pgtype.UUID
+	DailyLogID pgtype.UUID
+	Position   int32
+}
+
+func (q *Queries) NormalizeWorkoutExercisePositionsForInsert(ctx context.Context, arg NormalizeWorkoutExercisePositionsForInsertParams) ([]WorkoutExercise, error) {
+	rows, err := q.db.Query(ctx, normalizeWorkoutExercisePositionsForInsert, arg.UserID, arg.DailyLogID, arg.Position)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []WorkoutExercise
+	for rows.Next() {
+		var i WorkoutExercise
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.DailyLogID,
+			&i.ExerciseID,
+			&i.Position,
+			&i.WorkingWeightSnapshot,
+			&i.Notes,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const normalizeWorkoutSetNumbersAfterDelete = `-- name: NormalizeWorkoutSetNumbersAfterDelete :many
+UPDATE workout_sets
+SET set_number = set_number - 1000001,
+    updated_at = now()
+WHERE workout_sets.workout_exercise_id = $1
+  AND workout_sets.set_number > $2::integer + 1000000
+RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at
+`
+
+type NormalizeWorkoutSetNumbersAfterDeleteParams struct {
+	WorkoutExerciseID pgtype.UUID
+	DeletedSetNumber  int32
+}
+
+func (q *Queries) NormalizeWorkoutSetNumbersAfterDelete(ctx context.Context, arg NormalizeWorkoutSetNumbersAfterDeleteParams) ([]WorkoutSet, error) {
+	rows, err := q.db.Query(ctx, normalizeWorkoutSetNumbersAfterDelete, arg.WorkoutExerciseID, arg.DeletedSetNumber)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []WorkoutSet
+	for rows.Next() {
+		var i WorkoutSet
+		if err := rows.Scan(
+			&i.ID,
+			&i.WorkoutExerciseID,
+			&i.SetNumber,
+			&i.Weight,
+			&i.Reps,
+			&i.Rpe,
+			&i.Rir,
+			&i.Notes,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const normalizeWorkoutSetNumbersForInsert = `-- name: NormalizeWorkoutSetNumbersForInsert :many
+UPDATE workout_sets
+SET set_number = set_number - 999999,
+    updated_at = now()
+WHERE workout_sets.workout_exercise_id = $1
+  AND workout_sets.set_number >= $2::integer + 1000000
+RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at
+`
+
+type NormalizeWorkoutSetNumbersForInsertParams struct {
+	WorkoutExerciseID pgtype.UUID
+	SetNumber         int32
+}
+
+func (q *Queries) NormalizeWorkoutSetNumbersForInsert(ctx context.Context, arg NormalizeWorkoutSetNumbersForInsertParams) ([]WorkoutSet, error) {
+	rows, err := q.db.Query(ctx, normalizeWorkoutSetNumbersForInsert, arg.WorkoutExerciseID, arg.SetNumber)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []WorkoutSet
+	for rows.Next() {
+		var i WorkoutSet
+		if err := rows.Scan(
+			&i.ID,
+			&i.WorkoutExerciseID,
+			&i.SetNumber,
+			&i.Weight,
+			&i.Reps,
+			&i.Rpe,
+			&i.Rir,
+			&i.Notes,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const setWorkoutExercisePosition = `-- name: SetWorkoutExercisePosition :one
 UPDATE workout_exercises
 SET position = $1,
@@ -613,56 +795,31 @@ func (q *Queries) SetWorkoutSetNumber(ctx context.Context, arg SetWorkoutSetNumb
 	return i, err
 }
 
-const shiftWorkoutExercisePositionsAfterDelete = `-- name: ShiftWorkoutExercisePositionsAfterDelete :many
-WITH moved AS (
-    UPDATE workout_exercises
-    SET position = position + 1000000,
-        updated_at = now()
-    WHERE workout_exercises.user_id = $1
-      AND workout_exercises.daily_log_id = $2
-      AND workout_exercises.position > $3
-    RETURNING id
-),
-normalized AS (
-    UPDATE workout_exercises we
-    SET position = we.position - 1000001,
-        updated_at = now()
-    FROM moved
-    WHERE we.id = moved.id
-    RETURNING we.id, we.user_id, we.daily_log_id, we.exercise_id, we.position, we.working_weight_snapshot, we.notes, we.created_at, we.updated_at
-)
-SELECT id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at
-FROM normalized
-ORDER BY position ASC
+const tempShiftWorkoutExercisePositionsAfterDelete = `-- name: TempShiftWorkoutExercisePositionsAfterDelete :many
+UPDATE workout_exercises
+SET position = position + 1000000,
+    updated_at = now()
+WHERE workout_exercises.user_id = $1
+  AND workout_exercises.daily_log_id = $2
+  AND workout_exercises.position > $3
+RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at
 `
 
-type ShiftWorkoutExercisePositionsAfterDeleteParams struct {
+type TempShiftWorkoutExercisePositionsAfterDeleteParams struct {
 	UserID          pgtype.UUID
 	DailyLogID      pgtype.UUID
 	DeletedPosition int32
 }
 
-type ShiftWorkoutExercisePositionsAfterDeleteRow struct {
-	ID                    pgtype.UUID
-	UserID                pgtype.UUID
-	DailyLogID            pgtype.UUID
-	ExerciseID            pgtype.UUID
-	Position              int32
-	WorkingWeightSnapshot pgtype.Float4
-	Notes                 pgtype.Text
-	CreatedAt             pgtype.Timestamptz
-	UpdatedAt             pgtype.Timestamptz
-}
-
-func (q *Queries) ShiftWorkoutExercisePositionsAfterDelete(ctx context.Context, arg ShiftWorkoutExercisePositionsAfterDeleteParams) ([]ShiftWorkoutExercisePositionsAfterDeleteRow, error) {
-	rows, err := q.db.Query(ctx, shiftWorkoutExercisePositionsAfterDelete, arg.UserID, arg.DailyLogID, arg.DeletedPosition)
+func (q *Queries) TempShiftWorkoutExercisePositionsAfterDelete(ctx context.Context, arg TempShiftWorkoutExercisePositionsAfterDeleteParams) ([]WorkoutExercise, error) {
+	rows, err := q.db.Query(ctx, tempShiftWorkoutExercisePositionsAfterDelete, arg.UserID, arg.DailyLogID, arg.DeletedPosition)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ShiftWorkoutExercisePositionsAfterDeleteRow
+	var items []WorkoutExercise
 	for rows.Next() {
-		var i ShiftWorkoutExercisePositionsAfterDeleteRow
+		var i WorkoutExercise
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
@@ -684,56 +841,31 @@ func (q *Queries) ShiftWorkoutExercisePositionsAfterDelete(ctx context.Context, 
 	return items, nil
 }
 
-const shiftWorkoutExercisePositionsForInsert = `-- name: ShiftWorkoutExercisePositionsForInsert :many
-WITH moved AS (
-    UPDATE workout_exercises
-    SET position = position + 1000000,
-        updated_at = now()
-    WHERE workout_exercises.user_id = $1
-      AND workout_exercises.daily_log_id = $2
-      AND workout_exercises.position >= $3
-    RETURNING id
-),
-normalized AS (
-    UPDATE workout_exercises we
-    SET position = we.position - 999999,
-        updated_at = now()
-    FROM moved
-    WHERE we.id = moved.id
-    RETURNING we.id, we.user_id, we.daily_log_id, we.exercise_id, we.position, we.working_weight_snapshot, we.notes, we.created_at, we.updated_at
-)
-SELECT id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at
-FROM normalized
-ORDER BY position ASC
+const tempShiftWorkoutExercisePositionsForInsert = `-- name: TempShiftWorkoutExercisePositionsForInsert :many
+UPDATE workout_exercises
+SET position = position + 1000000,
+    updated_at = now()
+WHERE workout_exercises.user_id = $1
+  AND workout_exercises.daily_log_id = $2
+  AND workout_exercises.position >= $3
+RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at
 `
 
-type ShiftWorkoutExercisePositionsForInsertParams struct {
+type TempShiftWorkoutExercisePositionsForInsertParams struct {
 	UserID     pgtype.UUID
 	DailyLogID pgtype.UUID
 	Position   int32
 }
 
-type ShiftWorkoutExercisePositionsForInsertRow struct {
-	ID                    pgtype.UUID
-	UserID                pgtype.UUID
-	DailyLogID            pgtype.UUID
-	ExerciseID            pgtype.UUID
-	Position              int32
-	WorkingWeightSnapshot pgtype.Float4
-	Notes                 pgtype.Text
-	CreatedAt             pgtype.Timestamptz
-	UpdatedAt             pgtype.Timestamptz
-}
-
-func (q *Queries) ShiftWorkoutExercisePositionsForInsert(ctx context.Context, arg ShiftWorkoutExercisePositionsForInsertParams) ([]ShiftWorkoutExercisePositionsForInsertRow, error) {
-	rows, err := q.db.Query(ctx, shiftWorkoutExercisePositionsForInsert, arg.UserID, arg.DailyLogID, arg.Position)
+func (q *Queries) TempShiftWorkoutExercisePositionsForInsert(ctx context.Context, arg TempShiftWorkoutExercisePositionsForInsertParams) ([]WorkoutExercise, error) {
+	rows, err := q.db.Query(ctx, tempShiftWorkoutExercisePositionsForInsert, arg.UserID, arg.DailyLogID, arg.Position)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ShiftWorkoutExercisePositionsForInsertRow
+	var items []WorkoutExercise
 	for rows.Next() {
-		var i ShiftWorkoutExercisePositionsForInsertRow
+		var i WorkoutExercise
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
@@ -755,55 +887,29 @@ func (q *Queries) ShiftWorkoutExercisePositionsForInsert(ctx context.Context, ar
 	return items, nil
 }
 
-const shiftWorkoutSetNumbersAfterDelete = `-- name: ShiftWorkoutSetNumbersAfterDelete :many
-WITH moved AS (
-    UPDATE workout_sets
-    SET set_number = set_number + 1000000,
-        updated_at = now()
-    WHERE workout_sets.workout_exercise_id = $1
-      AND workout_sets.set_number > $2
-    RETURNING id
-),
-normalized AS (
-    UPDATE workout_sets ws
-    SET set_number = ws.set_number - 1000001,
-        updated_at = now()
-    FROM moved
-    WHERE ws.id = moved.id
-    RETURNING ws.id, ws.workout_exercise_id, ws.set_number, ws.weight, ws.reps, ws.rpe, ws.rir, ws.notes, ws.created_at, ws.updated_at
-)
-SELECT id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at
-FROM normalized
-ORDER BY set_number ASC
+const tempShiftWorkoutSetNumbersAfterDelete = `-- name: TempShiftWorkoutSetNumbersAfterDelete :many
+UPDATE workout_sets
+SET set_number = set_number + 1000000,
+    updated_at = now()
+WHERE workout_sets.workout_exercise_id = $1
+  AND workout_sets.set_number > $2
+RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at
 `
 
-type ShiftWorkoutSetNumbersAfterDeleteParams struct {
+type TempShiftWorkoutSetNumbersAfterDeleteParams struct {
 	WorkoutExerciseID pgtype.UUID
 	DeletedSetNumber  int32
 }
 
-type ShiftWorkoutSetNumbersAfterDeleteRow struct {
-	ID                pgtype.UUID
-	WorkoutExerciseID pgtype.UUID
-	SetNumber         int32
-	Weight            float32
-	Reps              int32
-	Rpe               pgtype.Float4
-	Rir               pgtype.Int4
-	Notes             pgtype.Text
-	CreatedAt         pgtype.Timestamptz
-	UpdatedAt         pgtype.Timestamptz
-}
-
-func (q *Queries) ShiftWorkoutSetNumbersAfterDelete(ctx context.Context, arg ShiftWorkoutSetNumbersAfterDeleteParams) ([]ShiftWorkoutSetNumbersAfterDeleteRow, error) {
-	rows, err := q.db.Query(ctx, shiftWorkoutSetNumbersAfterDelete, arg.WorkoutExerciseID, arg.DeletedSetNumber)
+func (q *Queries) TempShiftWorkoutSetNumbersAfterDelete(ctx context.Context, arg TempShiftWorkoutSetNumbersAfterDeleteParams) ([]WorkoutSet, error) {
+	rows, err := q.db.Query(ctx, tempShiftWorkoutSetNumbersAfterDelete, arg.WorkoutExerciseID, arg.DeletedSetNumber)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ShiftWorkoutSetNumbersAfterDeleteRow
+	var items []WorkoutSet
 	for rows.Next() {
-		var i ShiftWorkoutSetNumbersAfterDeleteRow
+		var i WorkoutSet
 		if err := rows.Scan(
 			&i.ID,
 			&i.WorkoutExerciseID,
@@ -826,55 +932,29 @@ func (q *Queries) ShiftWorkoutSetNumbersAfterDelete(ctx context.Context, arg Shi
 	return items, nil
 }
 
-const shiftWorkoutSetNumbersForInsert = `-- name: ShiftWorkoutSetNumbersForInsert :many
-WITH moved AS (
-    UPDATE workout_sets
-    SET set_number = set_number + 1000000,
-        updated_at = now()
-    WHERE workout_sets.workout_exercise_id = $1
-      AND workout_sets.set_number >= $2
-    RETURNING id
-),
-normalized AS (
-    UPDATE workout_sets ws
-    SET set_number = ws.set_number - 999999,
-        updated_at = now()
-    FROM moved
-    WHERE ws.id = moved.id
-    RETURNING ws.id, ws.workout_exercise_id, ws.set_number, ws.weight, ws.reps, ws.rpe, ws.rir, ws.notes, ws.created_at, ws.updated_at
-)
-SELECT id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at
-FROM normalized
-ORDER BY set_number ASC
+const tempShiftWorkoutSetNumbersForInsert = `-- name: TempShiftWorkoutSetNumbersForInsert :many
+UPDATE workout_sets
+SET set_number = set_number + 1000000,
+    updated_at = now()
+WHERE workout_sets.workout_exercise_id = $1
+  AND workout_sets.set_number >= $2
+RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at
 `
 
-type ShiftWorkoutSetNumbersForInsertParams struct {
+type TempShiftWorkoutSetNumbersForInsertParams struct {
 	WorkoutExerciseID pgtype.UUID
 	SetNumber         int32
 }
 
-type ShiftWorkoutSetNumbersForInsertRow struct {
-	ID                pgtype.UUID
-	WorkoutExerciseID pgtype.UUID
-	SetNumber         int32
-	Weight            float32
-	Reps              int32
-	Rpe               pgtype.Float4
-	Rir               pgtype.Int4
-	Notes             pgtype.Text
-	CreatedAt         pgtype.Timestamptz
-	UpdatedAt         pgtype.Timestamptz
-}
-
-func (q *Queries) ShiftWorkoutSetNumbersForInsert(ctx context.Context, arg ShiftWorkoutSetNumbersForInsertParams) ([]ShiftWorkoutSetNumbersForInsertRow, error) {
-	rows, err := q.db.Query(ctx, shiftWorkoutSetNumbersForInsert, arg.WorkoutExerciseID, arg.SetNumber)
+func (q *Queries) TempShiftWorkoutSetNumbersForInsert(ctx context.Context, arg TempShiftWorkoutSetNumbersForInsertParams) ([]WorkoutSet, error) {
+	rows, err := q.db.Query(ctx, tempShiftWorkoutSetNumbersForInsert, arg.WorkoutExerciseID, arg.SetNumber)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ShiftWorkoutSetNumbersForInsertRow
+	var items []WorkoutSet
 	for rows.Next() {
-		var i ShiftWorkoutSetNumbersForInsertRow
+		var i WorkoutSet
 		if err := rows.Scan(
 			&i.ID,
 			&i.WorkoutExerciseID,
@@ -928,14 +1008,15 @@ func (q *Queries) UpdateDailyLogNotes(ctx context.Context, arg UpdateDailyLogNot
 const updateWorkoutExercise = `-- name: UpdateWorkoutExercise :one
 UPDATE workout_exercises
 SET position = COALESCE($1, position),
-    notes = $2,
+    notes = CASE WHEN $2::boolean THEN $3 ELSE notes END,
     updated_at = now()
-WHERE user_id = $3 AND id = $4
+WHERE user_id = $4 AND id = $5
 RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at
 `
 
 type UpdateWorkoutExerciseParams struct {
 	Position pgtype.Int4
+	SetNotes bool
 	Notes    pgtype.Text
 	UserID   pgtype.UUID
 	ID       pgtype.UUID
@@ -944,6 +1025,7 @@ type UpdateWorkoutExerciseParams struct {
 func (q *Queries) UpdateWorkoutExercise(ctx context.Context, arg UpdateWorkoutExerciseParams) (WorkoutExercise, error) {
 	row := q.db.QueryRow(ctx, updateWorkoutExercise,
 		arg.Position,
+		arg.SetNotes,
 		arg.Notes,
 		arg.UserID,
 		arg.ID,
@@ -968,11 +1050,11 @@ UPDATE workout_sets
 SET set_number = COALESCE($1, set_number),
     weight = COALESCE($2, weight),
     reps = COALESCE($3, reps),
-    rpe = $4,
-    rir = $5,
-    notes = $6,
+    rpe = CASE WHEN $4::boolean THEN $5 ELSE rpe END,
+    rir = CASE WHEN $6::boolean THEN $7 ELSE rir END,
+    notes = CASE WHEN $8::boolean THEN $9 ELSE notes END,
     updated_at = now()
-WHERE workout_exercise_id = $7 AND id = $8
+WHERE workout_exercise_id = $10 AND id = $11
 RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at
 `
 
@@ -980,8 +1062,11 @@ type UpdateWorkoutSetParams struct {
 	SetNumber         pgtype.Int4
 	Weight            pgtype.Float4
 	Reps              pgtype.Int4
+	SetRpe            bool
 	Rpe               pgtype.Float4
+	SetRir            bool
 	Rir               pgtype.Int4
+	SetNotes          bool
 	Notes             pgtype.Text
 	WorkoutExerciseID pgtype.UUID
 	ID                pgtype.UUID
@@ -992,8 +1077,11 @@ func (q *Queries) UpdateWorkoutSet(ctx context.Context, arg UpdateWorkoutSetPara
 		arg.SetNumber,
 		arg.Weight,
 		arg.Reps,
+		arg.SetRpe,
 		arg.Rpe,
+		arg.SetRir,
 		arg.Rir,
+		arg.SetNotes,
 		arg.Notes,
 		arg.WorkoutExerciseID,
 		arg.ID,
