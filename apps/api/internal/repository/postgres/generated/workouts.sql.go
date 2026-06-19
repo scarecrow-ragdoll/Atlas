@@ -48,34 +48,36 @@ INSERT INTO workout_exercises (
     working_weight_snapshot,
     notes
 )
-VALUES (
+SELECT
     $1,
     $2,
+    e.id,
     $3,
     $4,
-    $5,
-    $6
-)
+    $5
+FROM exercises e
+WHERE e.id = $6
+  AND e.user_id = $1
 RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at
 `
 
 type CreateWorkoutExerciseParams struct {
 	UserID                pgtype.UUID
 	DailyLogID            pgtype.UUID
-	ExerciseID            pgtype.UUID
 	Position              int32
 	WorkingWeightSnapshot pgtype.Float4
 	Notes                 pgtype.Text
+	ExerciseID            pgtype.UUID
 }
 
 func (q *Queries) CreateWorkoutExercise(ctx context.Context, arg CreateWorkoutExerciseParams) (WorkoutExercise, error) {
 	row := q.db.QueryRow(ctx, createWorkoutExercise,
 		arg.UserID,
 		arg.DailyLogID,
-		arg.ExerciseID,
 		arg.Position,
 		arg.WorkingWeightSnapshot,
 		arg.Notes,
+		arg.ExerciseID,
 	)
 	var i WorkoutExercise
 	err := row.Scan(
@@ -1007,15 +1009,13 @@ func (q *Queries) UpdateDailyLogNotes(ctx context.Context, arg UpdateDailyLogNot
 
 const updateWorkoutExercise = `-- name: UpdateWorkoutExercise :one
 UPDATE workout_exercises
-SET position = COALESCE($1, position),
-    notes = CASE WHEN $2::boolean THEN $3 ELSE notes END,
+SET notes = CASE WHEN $1::boolean THEN $2 ELSE notes END,
     updated_at = now()
-WHERE user_id = $4 AND id = $5
+WHERE user_id = $3 AND id = $4
 RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at
 `
 
 type UpdateWorkoutExerciseParams struct {
-	Position pgtype.Int4
 	SetNotes bool
 	Notes    pgtype.Text
 	UserID   pgtype.UUID
@@ -1024,7 +1024,6 @@ type UpdateWorkoutExerciseParams struct {
 
 func (q *Queries) UpdateWorkoutExercise(ctx context.Context, arg UpdateWorkoutExerciseParams) (WorkoutExercise, error) {
 	row := q.db.QueryRow(ctx, updateWorkoutExercise,
-		arg.Position,
 		arg.SetNotes,
 		arg.Notes,
 		arg.UserID,
@@ -1047,19 +1046,17 @@ func (q *Queries) UpdateWorkoutExercise(ctx context.Context, arg UpdateWorkoutEx
 
 const updateWorkoutSet = `-- name: UpdateWorkoutSet :one
 UPDATE workout_sets
-SET set_number = COALESCE($1, set_number),
-    weight = COALESCE($2, weight),
-    reps = COALESCE($3, reps),
-    rpe = CASE WHEN $4::boolean THEN $5 ELSE rpe END,
-    rir = CASE WHEN $6::boolean THEN $7 ELSE rir END,
-    notes = CASE WHEN $8::boolean THEN $9 ELSE notes END,
+SET weight = COALESCE($1, weight),
+    reps = COALESCE($2, reps),
+    rpe = CASE WHEN $3::boolean THEN $4 ELSE rpe END,
+    rir = CASE WHEN $5::boolean THEN $6 ELSE rir END,
+    notes = CASE WHEN $7::boolean THEN $8 ELSE notes END,
     updated_at = now()
-WHERE workout_exercise_id = $10 AND id = $11
+WHERE workout_exercise_id = $9 AND id = $10
 RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, created_at, updated_at
 `
 
 type UpdateWorkoutSetParams struct {
-	SetNumber         pgtype.Int4
 	Weight            pgtype.Float4
 	Reps              pgtype.Int4
 	SetRpe            bool
@@ -1074,7 +1071,6 @@ type UpdateWorkoutSetParams struct {
 
 func (q *Queries) UpdateWorkoutSet(ctx context.Context, arg UpdateWorkoutSetParams) (WorkoutSet, error) {
 	row := q.db.QueryRow(ctx, updateWorkoutSet,
-		arg.SetNumber,
 		arg.Weight,
 		arg.Reps,
 		arg.SetRpe,

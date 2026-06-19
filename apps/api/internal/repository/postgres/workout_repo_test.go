@@ -13,7 +13,7 @@
 //   workoutRepoTestSetup - Applies migrations, enforces safe test DSN, truncates WAVE-03 tables, and creates an Atlas user.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.2 - Asserted empty DailyLog retention through canonical WorkoutExercises aggregate field.
+//   LAST_CHANGE: 1.0.3 - Added integrity coverage for mutation moves, ownership, and no-op version behavior.
 // END_CHANGE_SUMMARY
 
 package postgres_test
@@ -133,6 +133,34 @@ func TestWorkoutRepo_AddWorkoutExercise_CapturesWorkingWeightSnapshot(t *testing
 	assert.InDelta(t, snapshot, *aggregate.WorkoutExercises[0].WorkingWeightSnapshot, 0.001)
 }
 
+func TestWorkoutRepo_AddWorkoutExercise_RejectsOtherUsersExercise(t *testing.T) {
+	pool, repo, userID := workoutRepoTestSetup(t)
+	otherUserID := ensureWorkoutAtlasUser(t, pool, "other-exercise-owner")
+	dailyLog := mustWorkoutDailyLog(t, repo, userID, "2026-06-29")
+	otherExerciseID := seedWorkoutExerciseRecord(t, pool, otherUserID, "Other User Lift", nil)
+	before := mustWorkoutAggregate(t, repo, userID, dailyLog.ID)
+
+	created, err := repo.AddWorkoutExercise(context.Background(), userID, dailyLog.ID, atlasRepo.AddWorkoutExerciseInput{
+		ExerciseID: otherExerciseID,
+		Position:   1,
+	})
+
+	require.Error(t, err)
+	assert.Nil(t, created)
+
+	var attachedRows int
+	err = pool.QueryRow(context.Background(), `
+		SELECT COUNT(*) FROM workout_exercises
+		WHERE user_id = $1::uuid AND daily_log_id = $2::uuid AND exercise_id = $3::uuid
+	`, userID, dailyLog.ID, otherExerciseID).Scan(&attachedRows)
+	require.NoError(t, err)
+	assert.Equal(t, 0, attachedRows)
+
+	after := mustWorkoutAggregate(t, repo, userID, dailyLog.ID)
+	assert.Equal(t, before.DailyLog.Version, after.DailyLog.Version)
+	assert.Len(t, after.WorkoutExercises, 0)
+}
+
 func TestWorkoutRepo_ReorderWorkoutExercises_ReindexesContiguously(t *testing.T) {
 	pool, repo, userID := workoutRepoTestSetup(t)
 	dailyLog := mustWorkoutDailyLog(t, repo, userID, "2026-06-23")
@@ -149,6 +177,52 @@ func TestWorkoutRepo_ReorderWorkoutExercises_ReindexesContiguously(t *testing.T)
 	require.Len(t, aggregate.WorkoutExercises, 3)
 	assert.Equal(t, []string{third.ID, first.ID, second.ID}, workoutExerciseIDs(aggregate.WorkoutExercises))
 	assert.Equal(t, []int32{1, 2, 3}, workoutExercisePositions(aggregate.WorkoutExercises))
+}
+
+func TestWorkoutRepo_UpdateWorkoutExercise_MoveReindexesContiguously(t *testing.T) {
+	pool, repo, userID := workoutRepoTestSetup(t)
+	dailyLog := mustWorkoutDailyLog(t, repo, userID, "2026-06-30")
+	first := mustAddWorkoutExercise(t, repo, pool, userID, dailyLog.ID, "A", 1)
+	second := mustAddWorkoutExercise(t, repo, pool, userID, dailyLog.ID, "B", 2)
+	third := mustAddWorkoutExercise(t, repo, pool, userID, dailyLog.ID, "C", 3)
+	position := int32(1)
+
+	updated, err := repo.UpdateWorkoutExercise(context.Background(), userID, third.ID, atlasRepo.UpdateWorkoutExerciseInput{
+		Position: &position,
+	})
+
+	require.NoError(t, err)
+	require.NotNil(t, updated)
+	assert.Equal(t, third.ID, updated.ID)
+	assert.Equal(t, int32(1), updated.Position)
+
+	aggregate := mustWorkoutAggregate(t, repo, userID, dailyLog.ID)
+	require.Len(t, aggregate.WorkoutExercises, 3)
+	assert.Equal(t, []string{third.ID, first.ID, second.ID}, workoutExerciseIDs(aggregate.WorkoutExercises))
+	assert.Equal(t, []int32{1, 2, 3}, workoutExercisePositions(aggregate.WorkoutExercises))
+}
+
+func TestWorkoutRepo_UpdateWorkoutExercise_RejectsOutOfRangeMoveWithoutVersion(t *testing.T) {
+	pool, repo, userID := workoutRepoTestSetup(t)
+	dailyLog := mustWorkoutDailyLog(t, repo, userID, "2026-07-01")
+	first := mustAddWorkoutExercise(t, repo, pool, userID, dailyLog.ID, "A", 1)
+	second := mustAddWorkoutExercise(t, repo, pool, userID, dailyLog.ID, "B", 2)
+	third := mustAddWorkoutExercise(t, repo, pool, userID, dailyLog.ID, "C", 3)
+	before := mustWorkoutAggregate(t, repo, userID, dailyLog.ID)
+	position := int32(5)
+
+	updated, err := repo.UpdateWorkoutExercise(context.Background(), userID, first.ID, atlasRepo.UpdateWorkoutExerciseInput{
+		Position: &position,
+	})
+
+	require.NoError(t, err)
+	assert.Nil(t, updated)
+
+	after := mustWorkoutAggregate(t, repo, userID, dailyLog.ID)
+	assert.Equal(t, before.DailyLog.Version, after.DailyLog.Version)
+	require.Len(t, after.WorkoutExercises, 3)
+	assert.Equal(t, []string{first.ID, second.ID, third.ID}, workoutExerciseIDs(after.WorkoutExercises))
+	assert.Equal(t, []int32{1, 2, 3}, workoutExercisePositions(after.WorkoutExercises))
 }
 
 func TestWorkoutRepo_DeleteWorkoutExercise_CascadesSetsAndKeepsDailyLog(t *testing.T) {
@@ -241,6 +315,100 @@ func TestWorkoutRepo_ReorderWorkoutSets_ReindexesContiguously(t *testing.T) {
 	assert.Equal(t, []int32{1, 2, 3}, workoutSetNumbers(aggregate.WorkoutExercises[0].Sets))
 }
 
+func TestWorkoutRepo_UpdateWorkoutSet_MoveReindexesContiguously(t *testing.T) {
+	pool, repo, userID := workoutRepoTestSetup(t)
+	dailyLog := mustWorkoutDailyLog(t, repo, userID, "2026-07-02")
+	exercise := mustAddWorkoutExercise(t, repo, pool, userID, dailyLog.ID, "Rows", 1)
+	first := mustAddWorkoutSet(t, repo, userID, exercise.ID, 1, 100, 5)
+	second := mustAddWorkoutSet(t, repo, userID, exercise.ID, 2, 105, 4)
+	third := mustAddWorkoutSet(t, repo, userID, exercise.ID, 3, 110, 3)
+	setNumber := int32(1)
+
+	updated, err := repo.UpdateWorkoutSet(context.Background(), userID, exercise.ID, third.ID, atlasRepo.UpdateWorkoutSetInput{
+		SetNumber: &setNumber,
+	})
+
+	require.NoError(t, err)
+	require.NotNil(t, updated)
+	assert.Equal(t, third.ID, updated.ID)
+	assert.Equal(t, int32(1), updated.SetNumber)
+
+	aggregate := mustWorkoutAggregate(t, repo, userID, dailyLog.ID)
+	foundExercise := requireWorkoutExerciseInAggregate(t, aggregate, exercise.ID)
+	require.Len(t, foundExercise.Sets, 3)
+	assert.Equal(t, []string{third.ID, first.ID, second.ID}, workoutSetIDs(foundExercise.Sets))
+	assert.Equal(t, []int32{1, 2, 3}, workoutSetNumbers(foundExercise.Sets))
+}
+
+func TestWorkoutRepo_UpdateWorkoutSet_RejectsOutOfRangeMoveWithoutVersion(t *testing.T) {
+	pool, repo, userID := workoutRepoTestSetup(t)
+	dailyLog := mustWorkoutDailyLog(t, repo, userID, "2026-07-03")
+	exercise := mustAddWorkoutExercise(t, repo, pool, userID, dailyLog.ID, "Rows", 1)
+	first := mustAddWorkoutSet(t, repo, userID, exercise.ID, 1, 100, 5)
+	second := mustAddWorkoutSet(t, repo, userID, exercise.ID, 2, 105, 4)
+	third := mustAddWorkoutSet(t, repo, userID, exercise.ID, 3, 110, 3)
+	before := mustWorkoutAggregate(t, repo, userID, dailyLog.ID)
+	setNumber := int32(5)
+
+	updated, err := repo.UpdateWorkoutSet(context.Background(), userID, exercise.ID, first.ID, atlasRepo.UpdateWorkoutSetInput{
+		SetNumber: &setNumber,
+	})
+
+	require.NoError(t, err)
+	assert.Nil(t, updated)
+
+	after := mustWorkoutAggregate(t, repo, userID, dailyLog.ID)
+	assert.Equal(t, before.DailyLog.Version, after.DailyLog.Version)
+	foundExercise := requireWorkoutExerciseInAggregate(t, after, exercise.ID)
+	require.Len(t, foundExercise.Sets, 3)
+	assert.Equal(t, []string{first.ID, second.ID, third.ID}, workoutSetIDs(foundExercise.Sets))
+	assert.Equal(t, []int32{1, 2, 3}, workoutSetNumbers(foundExercise.Sets))
+}
+
+func TestWorkoutRepo_UpdateWorkoutSet_WrongParentDoesNotChangeSetOrVersion(t *testing.T) {
+	pool, repo, userID := workoutRepoTestSetup(t)
+	dailyLog := mustWorkoutDailyLog(t, repo, userID, "2026-07-04")
+	exerciseA := mustAddWorkoutExercise(t, repo, pool, userID, dailyLog.ID, "A", 1)
+	exerciseB := mustAddWorkoutExercise(t, repo, pool, userID, dailyLog.ID, "B", 2)
+	setA := mustAddWorkoutSet(t, repo, userID, exerciseA.ID, 1, 100, 5)
+	before := mustWorkoutAggregate(t, repo, userID, dailyLog.ID)
+	weight := 140.0
+
+	updated, err := repo.UpdateWorkoutSet(context.Background(), userID, exerciseB.ID, setA.ID, atlasRepo.UpdateWorkoutSetInput{
+		Weight: &weight,
+	})
+
+	require.NoError(t, err)
+	assert.Nil(t, updated)
+
+	after := mustWorkoutAggregate(t, repo, userID, dailyLog.ID)
+	assert.Equal(t, before.DailyLog.Version, after.DailyLog.Version)
+	foundExercise := requireWorkoutExerciseInAggregate(t, after, exerciseA.ID)
+	require.Len(t, foundExercise.Sets, 1)
+	assert.Equal(t, setA.ID, foundExercise.Sets[0].ID)
+	assert.InDelta(t, 100, foundExercise.Sets[0].Weight, 0.001)
+}
+
+func TestWorkoutRepo_DeleteWorkoutSet_WrongParentDoesNotDeleteOrVersion(t *testing.T) {
+	pool, repo, userID := workoutRepoTestSetup(t)
+	dailyLog := mustWorkoutDailyLog(t, repo, userID, "2026-07-05")
+	exerciseA := mustAddWorkoutExercise(t, repo, pool, userID, dailyLog.ID, "A", 1)
+	exerciseB := mustAddWorkoutExercise(t, repo, pool, userID, dailyLog.ID, "B", 2)
+	setA := mustAddWorkoutSet(t, repo, userID, exerciseA.ID, 1, 100, 5)
+	before := mustWorkoutAggregate(t, repo, userID, dailyLog.ID)
+
+	deleted, err := repo.DeleteWorkoutSet(context.Background(), userID, exerciseB.ID, setA.ID)
+
+	require.NoError(t, err)
+	assert.Nil(t, deleted)
+
+	after := mustWorkoutAggregate(t, repo, userID, dailyLog.ID)
+	assert.Equal(t, before.DailyLog.Version, after.DailyLog.Version)
+	foundExercise := requireWorkoutExerciseInAggregate(t, after, exerciseA.ID)
+	require.Len(t, foundExercise.Sets, 1)
+	assert.Equal(t, setA.ID, foundExercise.Sets[0].ID)
+}
+
 func TestWorkoutRepo_IncrementDailyLogVersion(t *testing.T) {
 	pool, repo, userID := workoutRepoTestSetup(t)
 	dailyLog := mustWorkoutDailyLog(t, repo, userID, "2026-06-27")
@@ -320,6 +488,14 @@ func mustWorkoutDailyLog(t *testing.T, repo atlasRepo.WorkoutRepository, userID 
 	return dailyLog
 }
 
+func mustWorkoutAggregate(t *testing.T, repo atlasRepo.WorkoutRepository, userID string, dailyLogID string) *atlasRepo.DailyLogAggregate {
+	t.Helper()
+	aggregate, err := repo.GetDailyLogAggregate(context.Background(), userID, dailyLogID)
+	require.NoError(t, err)
+	require.NotNil(t, aggregate)
+	return aggregate
+}
+
 func mustAddWorkoutExercise(t *testing.T, repo atlasRepo.WorkoutRepository, pool *pgxpool.Pool, userID string, dailyLogID string, name string, position int32) *atlasRepo.WorkoutExerciseRecord {
 	t.Helper()
 	exerciseID := seedWorkoutExerciseRecord(t, pool, userID, name, nil)
@@ -378,6 +554,17 @@ func workoutSetNumbers(rows []atlasRepo.WorkoutSetRecord) []int32 {
 		out[i] = row.SetNumber
 	}
 	return out
+}
+
+func requireWorkoutExerciseInAggregate(t *testing.T, aggregate *atlasRepo.DailyLogAggregate, workoutExerciseID string) atlasRepo.WorkoutExerciseRecord {
+	t.Helper()
+	for _, exercise := range aggregate.WorkoutExercises {
+		if exercise.ID == workoutExerciseID {
+			return exercise
+		}
+	}
+	require.Failf(t, "workout exercise not found", "workout exercise %s not found in aggregate", workoutExerciseID)
+	return atlasRepo.WorkoutExerciseRecord{}
 }
 
 func requireWorkoutCheckViolation(t *testing.T, err error, constraintName string) {

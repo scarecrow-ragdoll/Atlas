@@ -88,20 +88,21 @@ INSERT INTO workout_exercises (
     working_weight_snapshot,
     notes
 )
-VALUES (
+SELECT
     sqlc.arg('user_id'),
     sqlc.arg('daily_log_id'),
-    sqlc.arg('exercise_id'),
+    e.id,
     sqlc.arg('position'),
     sqlc.narg('working_weight_snapshot'),
     sqlc.narg('notes')
-)
+FROM exercises e
+WHERE e.id = sqlc.arg('exercise_id')
+  AND e.user_id = sqlc.arg('user_id')
 RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at;
 
 -- name: UpdateWorkoutExercise :one
 UPDATE workout_exercises
-SET position = COALESCE(sqlc.narg('position'), position),
-    notes = CASE WHEN sqlc.arg('set_notes')::boolean THEN sqlc.narg('notes') ELSE notes END,
+SET notes = CASE WHEN sqlc.arg('set_notes')::boolean THEN sqlc.narg('notes') ELSE notes END,
     updated_at = now()
 WHERE user_id = sqlc.arg('user_id') AND id = sqlc.arg('id')
 RETURNING id, user_id, daily_log_id, exercise_id, position, working_weight_snapshot, notes, created_at, updated_at;
@@ -185,8 +186,7 @@ RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, cr
 
 -- name: UpdateWorkoutSet :one
 UPDATE workout_sets
-SET set_number = COALESCE(sqlc.narg('set_number'), set_number),
-    weight = COALESCE(sqlc.narg('weight'), weight),
+SET weight = COALESCE(sqlc.narg('weight'), weight),
     reps = COALESCE(sqlc.narg('reps'), reps),
     rpe = CASE WHEN sqlc.arg('set_rpe')::boolean THEN sqlc.narg('rpe') ELSE rpe END,
     rir = CASE WHEN sqlc.arg('set_rir')::boolean THEN sqlc.narg('rir') ELSE rir END,
@@ -262,7 +262,7 @@ RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, cr
 --   ListDailyLogSummaries - Lists date-range DailyLog summary metrics.
 --   ListWorkoutExercisesByDailyLog - Lists workout exercises for one DailyLog in position order.
 --   CreateWorkoutExercise - Inserts a workout exercise and returns the persisted row.
---   UpdateWorkoutExercise - Updates workout exercise notes or position and returns the persisted row.
+--   UpdateWorkoutExercise - Updates workout exercise notes and returns the persisted row.
 --   DeleteWorkoutExercise - Deletes a workout exercise and returns the deleted row.
 --   TempShiftWorkoutExercisePositionsForInsert - Moves insert-affected exercise positions to a temporary range.
 --   NormalizeWorkoutExercisePositionsForInsert - Maps temporary insert positions back to final position + 1 values.
@@ -280,5 +280,5 @@ RETURNING id, workout_exercise_id, set_number, weight, reps, rpe, rir, notes, cr
 --   SetWorkoutSetNumber - Assigns a final set number during reorder.
 -- END_MODULE_MAP
 -- START_CHANGE_SUMMARY
---   LAST_CHANGE: 1.0.1 - Split reordering helpers into sequential temp and normalize queries, and made nullable update fields explicit.
+--   LAST_CHANGE: 1.0.2 - Scoped exercise inserts to owner and removed raw move updates.
 -- END_CHANGE_SUMMARY

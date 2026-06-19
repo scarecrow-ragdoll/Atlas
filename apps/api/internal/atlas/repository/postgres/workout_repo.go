@@ -13,7 +13,7 @@
 //   NewWorkoutRepository - Creates the sqlc-backed repository.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.2 - Kept DailyLog aggregate surface canonical while preserving empty-log reads.
+//   LAST_CHANGE: 1.0.3 - Routed update moves through transactional reorder helpers and guarded no-op version increments.
 // END_CHANGE_SUMMARY
 
 package postgres
@@ -367,9 +367,13 @@ func (r *workoutRepository) UpdateWorkoutExercise(ctx context.Context, userID st
 		if err != nil || locked == nil {
 			return err
 		}
-		out, err = updateWorkoutExerciseInTx(ctx, q, userID, workoutExerciseID, input)
+		var changed bool
+		out, changed, err = updateWorkoutExerciseInTx(ctx, q, userID, locked.ID, workoutExerciseID, input)
 		if err != nil {
 			return err
+		}
+		if !changed || out == nil {
+			return nil
 		}
 		_, err = incrementDailyLogVersionInTx(ctx, q, userID, locked.ID)
 		return err
@@ -461,9 +465,13 @@ func (r *workoutRepository) UpdateWorkoutSet(ctx context.Context, userID string,
 		if err != nil || locked == nil {
 			return err
 		}
-		out, err = updateWorkoutSetInTx(ctx, q, workoutExerciseID, workoutSetID, input)
+		var changed bool
+		out, changed, err = updateWorkoutSetInTx(ctx, q, workoutExerciseID, workoutSetID, input)
 		if err != nil {
 			return err
+		}
+		if !changed || out == nil {
+			return nil
 		}
 		_, err = incrementDailyLogVersionInTx(ctx, q, userID, locked.ID)
 		return err
@@ -570,7 +578,12 @@ func (tx *workoutTx) AddWorkoutExercise(ctx context.Context, userID string, dail
 }
 
 func (tx *workoutTx) UpdateWorkoutExercise(ctx context.Context, userID string, workoutExerciseID string, input UpdateWorkoutExerciseInput) (*WorkoutExerciseRecord, error) {
-	return updateWorkoutExerciseInTx(ctx, tx.q, userID, workoutExerciseID, input)
+	locked, err := lockDailyLogByWorkoutExerciseID(ctx, tx.q, userID, workoutExerciseID)
+	if err != nil || locked == nil {
+		return nil, err
+	}
+	out, _, err := updateWorkoutExerciseInTx(ctx, tx.q, userID, locked.ID, workoutExerciseID, input)
+	return out, err
 }
 
 func (tx *workoutTx) DeleteWorkoutExercise(ctx context.Context, userID string, workoutExerciseID string) (*WorkoutExerciseRecord, error) {
@@ -586,7 +599,8 @@ func (tx *workoutTx) AddWorkoutSet(ctx context.Context, userID string, workoutEx
 }
 
 func (tx *workoutTx) UpdateWorkoutSet(ctx context.Context, userID string, workoutExerciseID string, workoutSetID string, input UpdateWorkoutSetInput) (*WorkoutSetRecord, error) {
-	return updateWorkoutSetInTx(ctx, tx.q, workoutExerciseID, workoutSetID, input)
+	out, _, err := updateWorkoutSetInTx(ctx, tx.q, workoutExerciseID, workoutSetID, input)
+	return out, err
 }
 
 func (tx *workoutTx) DeleteWorkoutSet(ctx context.Context, userID string, workoutExerciseID string, workoutSetID string) (*WorkoutSetRecord, error) {
@@ -733,25 +747,71 @@ func addWorkoutExerciseInTx(ctx context.Context, q *generated.Queries, userID st
 	return workoutExerciseRecordFromRow(row), nil
 }
 
-func updateWorkoutExerciseInTx(ctx context.Context, q *generated.Queries, userID string, workoutExerciseID string, input UpdateWorkoutExerciseInput) (*WorkoutExerciseRecord, error) {
-	uid, weid, err := parseTwoUUIDs(userID, workoutExerciseID)
+func updateWorkoutExerciseInTx(ctx context.Context, q *generated.Queries, userID string, dailyLogID string, workoutExerciseID string, input UpdateWorkoutExerciseInput) (*WorkoutExerciseRecord, bool, error) {
+	uid, dlid, err := parseTwoUUIDs(userID, dailyLogID)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
-	row, err := q.UpdateWorkoutExercise(ctx, generated.UpdateWorkoutExerciseParams{
-		Position: nullableInt4(input.Position),
-		SetNotes: input.SetNotes,
-		Notes:    nullableText(input.Notes),
-		UserID:   uid,
-		ID:       weid,
+	weid, err := uuidFromString(workoutExerciseID)
+	if err != nil {
+		return nil, false, err
+	}
+
+	current, err := q.ListWorkoutExercisesByDailyLog(ctx, generated.ListWorkoutExercisesByDailyLogParams{
+		UserID:     uid,
+		DailyLogID: dlid,
 	})
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, err
+		return nil, false, err
 	}
-	return workoutExerciseRecordFromRow(row), nil
+	currentRow := workoutExerciseRowByID(current, workoutExerciseID)
+	if currentRow == nil {
+		return nil, false, nil
+	}
+
+	var out *WorkoutExerciseRecord
+	changed := false
+	if input.Position != nil {
+		orderedIDs, moved, ok := movedIDOrder(currentWorkoutExerciseIDs(current), workoutExerciseID, *input.Position)
+		if !ok {
+			return nil, false, nil
+		}
+		if moved {
+			if err := reorderWorkoutExercisesInTx(ctx, q, userID, dailyLogID, orderedIDs); err != nil {
+				return nil, false, err
+			}
+			changed = true
+		}
+	}
+
+	if input.SetNotes {
+		row, err := q.UpdateWorkoutExercise(ctx, generated.UpdateWorkoutExerciseParams{
+			SetNotes: input.SetNotes,
+			Notes:    nullableText(input.Notes),
+			UserID:   uid,
+			ID:       weid,
+		})
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return nil, false, nil
+			}
+			return nil, false, err
+		}
+		out = workoutExerciseRecordFromRow(row)
+		changed = true
+	}
+
+	if out == nil {
+		if changed {
+			out, err = getWorkoutExerciseRecordByID(ctx, q, uid, dlid, workoutExerciseID)
+			if err != nil {
+				return nil, false, err
+			}
+		} else {
+			out = workoutExerciseRecordFromRow(*currentRow)
+		}
+	}
+	return out, changed, nil
 }
 
 func deleteWorkoutExerciseInTx(ctx context.Context, q *generated.Queries, userID string, workoutExerciseID string) (*WorkoutExerciseRecord, error) {
@@ -841,31 +901,73 @@ func addWorkoutSetInTx(ctx context.Context, q *generated.Queries, workoutExercis
 	return workoutSetRecordFromRow(row), nil
 }
 
-func updateWorkoutSetInTx(ctx context.Context, q *generated.Queries, workoutExerciseID string, workoutSetID string, input UpdateWorkoutSetInput) (*WorkoutSetRecord, error) {
+func updateWorkoutSetInTx(ctx context.Context, q *generated.Queries, workoutExerciseID string, workoutSetID string, input UpdateWorkoutSetInput) (*WorkoutSetRecord, bool, error) {
 	weid, wsid, err := parseTwoUUIDs(workoutExerciseID, workoutSetID)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
-	row, err := q.UpdateWorkoutSet(ctx, generated.UpdateWorkoutSetParams{
-		SetNumber:         nullableInt4(input.SetNumber),
-		Weight:            nullableFloat4(input.Weight),
-		Reps:              nullableInt4(input.Reps),
-		SetRpe:            input.SetRPE,
-		Rpe:               nullableFloat4(input.RPE),
-		SetRir:            input.SetRIR,
-		Rir:               nullableInt4(input.RIR),
-		SetNotes:          input.SetNotes,
-		Notes:             nullableText(input.Notes),
-		WorkoutExerciseID: weid,
-		ID:                wsid,
-	})
-	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, nil
+
+	var current []generated.WorkoutSet
+	var currentRow *generated.WorkoutSet
+	if input.SetNumber != nil {
+		current, err = q.ListWorkoutSetsByExerciseIDs(ctx, []pgtype.UUID{weid})
+		if err != nil {
+			return nil, false, err
 		}
-		return nil, err
+		currentRow = workoutSetRowByID(current, workoutSetID)
+		if currentRow == nil {
+			return nil, false, nil
+		}
+		orderedIDs, moved, ok := movedIDOrder(currentWorkoutSetIDs(current), workoutSetID, *input.SetNumber)
+		if !ok {
+			return nil, false, nil
+		}
+		if moved {
+			if err := reorderWorkoutSetsInTx(ctx, q, workoutExerciseID, orderedIDs); err != nil {
+				return nil, false, err
+			}
+		}
+		if !moved && !hasWorkoutSetFieldUpdate(input) {
+			return workoutSetRecordFromRow(*currentRow), false, nil
+		}
 	}
-	return workoutSetRecordFromRow(row), nil
+
+	changed := input.SetNumber != nil
+	var out *WorkoutSetRecord
+	if hasWorkoutSetFieldUpdate(input) {
+		row, err := q.UpdateWorkoutSet(ctx, generated.UpdateWorkoutSetParams{
+			Weight:            nullableFloat4(input.Weight),
+			Reps:              nullableInt4(input.Reps),
+			SetRpe:            input.SetRPE,
+			Rpe:               nullableFloat4(input.RPE),
+			SetRir:            input.SetRIR,
+			Rir:               nullableInt4(input.RIR),
+			SetNotes:          input.SetNotes,
+			Notes:             nullableText(input.Notes),
+			WorkoutExerciseID: weid,
+			ID:                wsid,
+		})
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return nil, false, nil
+			}
+			return nil, false, err
+		}
+		out = workoutSetRecordFromRow(row)
+		changed = true
+	}
+
+	if !changed {
+		return nil, false, nil
+	}
+	if out != nil {
+		return out, true, nil
+	}
+	out, err = getWorkoutSetRecordByID(ctx, q, weid, workoutSetID)
+	if err != nil {
+		return nil, false, err
+	}
+	return out, out != nil, nil
 }
 
 func deleteWorkoutSetInTx(ctx context.Context, q *generated.Queries, workoutExerciseID string, workoutSetID string) (*WorkoutSetRecord, error) {
@@ -949,6 +1051,87 @@ func currentWorkoutSetIDs(rows []generated.WorkoutSet) []string {
 		out[i] = row.ID.String()
 	}
 	return out
+}
+
+func movedIDOrder(current []string, targetID string, position int32) ([]string, bool, bool) {
+	if position < 1 || int(position) > len(current) {
+		return nil, false, false
+	}
+
+	from := -1
+	for i, id := range current {
+		if id == targetID {
+			from = i
+			break
+		}
+	}
+	if from == -1 {
+		return nil, false, false
+	}
+
+	to := int(position) - 1
+	ordered := append([]string(nil), current...)
+	if from == to {
+		return ordered, false, true
+	}
+
+	movedID := ordered[from]
+	ordered = append(ordered[:from], ordered[from+1:]...)
+	if to >= len(ordered) {
+		ordered = append(ordered, movedID)
+	} else {
+		ordered = append(ordered[:to], append([]string{movedID}, ordered[to:]...)...)
+	}
+	return ordered, true, true
+}
+
+func workoutExerciseRowByID(rows []generated.WorkoutExercise, id string) *generated.WorkoutExercise {
+	for i := range rows {
+		if rows[i].ID.String() == id {
+			return &rows[i]
+		}
+	}
+	return nil
+}
+
+func workoutSetRowByID(rows []generated.WorkoutSet, id string) *generated.WorkoutSet {
+	for i := range rows {
+		if rows[i].ID.String() == id {
+			return &rows[i]
+		}
+	}
+	return nil
+}
+
+func getWorkoutExerciseRecordByID(ctx context.Context, q *generated.Queries, userID pgtype.UUID, dailyLogID pgtype.UUID, workoutExerciseID string) (*WorkoutExerciseRecord, error) {
+	rows, err := q.ListWorkoutExercisesByDailyLog(ctx, generated.ListWorkoutExercisesByDailyLogParams{
+		UserID:     userID,
+		DailyLogID: dailyLogID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	row := workoutExerciseRowByID(rows, workoutExerciseID)
+	if row == nil {
+		return nil, nil
+	}
+	return workoutExerciseRecordFromRow(*row), nil
+}
+
+func getWorkoutSetRecordByID(ctx context.Context, q *generated.Queries, workoutExerciseID pgtype.UUID, workoutSetID string) (*WorkoutSetRecord, error) {
+	rows, err := q.ListWorkoutSetsByExerciseIDs(ctx, []pgtype.UUID{workoutExerciseID})
+	if err != nil {
+		return nil, err
+	}
+	row := workoutSetRowByID(rows, workoutSetID)
+	if row == nil {
+		return nil, nil
+	}
+	return workoutSetRecordFromRow(*row), nil
+}
+
+func hasWorkoutSetFieldUpdate(input UpdateWorkoutSetInput) bool {
+	return input.Weight != nil || input.Reps != nil || input.SetRPE || input.SetRIR || input.SetNotes
 }
 
 func requireSameIDs(current []string, ordered []string) error {
