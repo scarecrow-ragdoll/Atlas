@@ -3,7 +3,7 @@
 // START_MODULE_CONTRACT
 //   PURPOSE: Define strict calendar-date handling for Atlas GraphQL Date scalar values.
 //   SCOPE: Parse, format, marshal, and unmarshal YYYY-MM-DD dates without timezone conversion; excludes timestamp handling.
-//   DEPENDS: github.com/99designs/gqlgen/graphql.
+//   DEPENDS: standard library fmt, io, time.
 //   LINKS: M-API / V-M-API / WAVE-03.
 //   ROLE: TYPES
 //   MAP_MODE: EXPORTS
@@ -12,9 +12,13 @@
 //   Date - Calendar date wrapper for GraphQL and service input.
 //   MustDate - Test/helper constructor that panics on invalid date strings.
 //   ParseDate - Strict YYYY-MM-DD parser for Date values.
+//   String - Formats Date as YYYY-MM-DD or empty string for zero values.
+//   Time - Returns the wrapped time.Time value.
+//   MarshalGQL - Writes a quoted GraphQL date string or null for zero values.
+//   UnmarshalGQL - Parses GraphQL string input into a strict Date.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.0 - Added Date scalar model for WAVE-03.
+//   LAST_CHANGE: 1.0.1 - Aligned Date scalar marshaling with gqlgen writer-based scalar contract.
 // END_CHANGE_SUMMARY
 
 package models
@@ -23,8 +27,6 @@ import (
 	"fmt"
 	"io"
 	"time"
-
-	"github.com/99designs/gqlgen/graphql"
 )
 
 const dateLayout = "2006-01-02"
@@ -60,10 +62,12 @@ func (d Date) Time() time.Time {
 	return d.value
 }
 
-func (d Date) MarshalGQL() graphql.Marshaler {
-	return graphql.WriterFunc(func(w io.Writer) {
-		_, _ = io.WriteString(w, `"`+d.String()+`"`)
-	})
+func (d Date) MarshalGQL(w io.Writer) {
+	if d.value.IsZero() {
+		_, _ = io.WriteString(w, "null")
+		return
+	}
+	_, _ = io.WriteString(w, `"`+d.String()+`"`)
 }
 
 func (d *Date) UnmarshalGQL(v any) error {
