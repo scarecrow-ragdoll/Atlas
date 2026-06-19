@@ -78,5 +78,35 @@ models:
     model: monorepo-template/apps/api/internal/atlas/models.AuthErr
   ExerciseErrorCode:
     model: monorepo-template/apps/api/internal/atlas/models.ExerciseErrorCode
+  Date:
+    model: monorepo-template/apps/api/internal/atlas/models.Date
+  DailyLog:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyLog
+  DailyLogSummary:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyLogSummary
+  WorkoutExercise:
+    model: monorepo-template/apps/api/internal/atlas/models.WorkoutExercise
+  WorkoutSet:
+    model: monorepo-template/apps/api/internal/atlas/models.WorkoutSet
+  AddWorkoutExerciseInput:
+    model: monorepo-template/apps/api/internal/atlas/models.AddWorkoutExerciseInput
+  UpdateWorkoutExerciseInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateWorkoutExerciseGraphQLInput
+  AddWorkoutSetInput:
+    model: monorepo-template/apps/api/internal/atlas/models.AddWorkoutSetInput
+  UpdateWorkoutSetInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateWorkoutSetGraphQLInput
+  DailyLogResult:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyLogResult
+  DailyLogValidationError:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyLogValidationErr
+  DailyLogNotFoundError:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyLogNotFoundErr
+  DailyLogConflictError:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyLogConflictErr
+  DailyLogAuthError:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyLogAuthErr
+  DailyLogErrorCode:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyLogErrorCode
   Time:
     model: github.com/99designs/gqlgen/graphql.Time

@@ -1,0 +1,160 @@
+# FILE: apps/api/internal/atlas/graph/schema/workouts.graphql
+# VERSION: 1.0.0
+# START_MODULE_CONTRACT
+#   PURPOSE: Define Atlas GraphQL DailyLog and strength workout diary operations for WAVE-03.
+#   SCOPE: DailyLog notes, workout exercises, workout sets, summaries, typed result envelopes, and Date scalar for the WAVE-03 strength diary only.
+#   DEPENDS: apps/api/internal/atlas/models/workout.go, apps/api/internal/atlas/models/date.go, apps/api/internal/atlas/graph/schema/schema.graphql, apps/api/internal/atlas/graph/schema/exercises.graphql.
+#   LINKS: M-API / V-M-API / WAVE-03.
+#   ROLE: DOC
+#   MAP_MODE: SUMMARY
+# END_MODULE_CONTRACT
+# START_MODULE_MAP
+#   Date - Strict YYYY-MM-DD calendar date scalar.
+#   DailyLog - Versioned daily strength workout aggregate.
+#   WorkoutExercise - Ordered strength exercise instance inside a daily log.
+#   WorkoutSet - Ordered set inside a workout exercise.
+#   DailyLogResult - Typed result envelope for DailyLog operations.
+# END_MODULE_MAP
+# START_CHANGE_SUMMARY
+#   LAST_CHANGE: 1.0.0 - Added WAVE-03 DailyLog and strength workout GraphQL schema.
+# END_CHANGE_SUMMARY
+
+directive @goField(
+  forceResolver: Boolean
+  name: String
+  omittable: Boolean
+) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+
+scalar Date
+
+extend type Query {
+  dailyLog(date: Date!): DailyLogResult!
+  dailyLogs(from: Date!, to: Date!): [DailyLogSummary!]!
+}
+
+extend type Mutation {
+  updateDailyLogNotes(date: Date!, expectedVersion: Int!, notes: String): DailyLogResult!
+  addWorkoutExercise(date: Date!, expectedVersion: Int!, input: AddWorkoutExerciseInput!): DailyLogResult!
+  updateWorkoutExercise(id: ID!, expectedVersion: Int!, input: UpdateWorkoutExerciseInput!): DailyLogResult!
+  removeWorkoutExercise(id: ID!, expectedVersion: Int!): DailyLogResult!
+  reorderWorkoutExercises(date: Date!, expectedVersion: Int!, orderedIds: [ID!]!): DailyLogResult!
+  addWorkoutSet(workoutExerciseId: ID!, expectedVersion: Int!, input: AddWorkoutSetInput!): DailyLogResult!
+  updateWorkoutSet(id: ID!, expectedVersion: Int!, input: UpdateWorkoutSetInput!): DailyLogResult!
+  removeWorkoutSet(id: ID!, expectedVersion: Int!): DailyLogResult!
+  reorderWorkoutSets(workoutExerciseId: ID!, expectedVersion: Int!, orderedIds: [ID!]!): DailyLogResult!
+}
+
+type DailyLog {
+  id: ID!
+  userId: ID!
+  date: Date!
+  notes: String
+  version: Int!
+  workoutExercises: [WorkoutExercise!]!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type WorkoutExercise {
+  id: ID!
+  userId: ID!
+  dailyLogId: ID!
+  exerciseId: ID!
+  exercise: Exercise!
+  position: Int!
+  workingWeightSnapshot: Float
+  notes: String
+  sets: [WorkoutSet!]!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type WorkoutSet {
+  id: ID!
+  workoutExerciseId: ID!
+  setNumber: Int!
+  weight: Float!
+  reps: Int!
+  rpe: Float
+  rir: Int
+  notes: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type DailyLogSummary {
+  id: ID!
+  date: Date!
+  version: Int!
+  workoutExerciseCount: Int!
+  workoutSetCount: Int!
+  totalVolume: Float!
+  updatedAt: Time!
+}
+
+input AddWorkoutExerciseInput {
+  exerciseId: ID!
+  position: Int
+  notes: String
+}
+
+input UpdateWorkoutExerciseInput {
+  position: Int @goField(omittable: true)
+  notes: String @goField(omittable: true)
+}
+
+input AddWorkoutSetInput {
+  setNumber: Int
+  weight: Float!
+  reps: Int!
+  rpe: Float
+  rir: Int
+  notes: String
+}
+
+input UpdateWorkoutSetInput {
+  setNumber: Int @goField(omittable: true)
+  weight: Float @goField(omittable: true)
+  reps: Int @goField(omittable: true)
+  rpe: Float @goField(omittable: true)
+  rir: Int @goField(omittable: true)
+  notes: String @goField(omittable: true)
+}
+
+type DailyLogResult {
+  dailyLog: DailyLog
+  validationError: DailyLogValidationError
+  notFoundError: DailyLogNotFoundError
+  conflictError: DailyLogConflictError
+  authError: DailyLogAuthError
+}
+
+type DailyLogValidationError {
+  message: String!
+  code: DailyLogErrorCode!
+}
+
+type DailyLogNotFoundError {
+  message: String!
+  code: DailyLogErrorCode!
+}
+
+type DailyLogConflictError {
+  message: String!
+  code: DailyLogErrorCode!
+  currentVersion: Int!
+  currentDailyLog: DailyLog
+}
+
+type DailyLogAuthError {
+  message: String!
+  code: DailyLogErrorCode!
+}
+
+enum DailyLogErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  CONFLICT
+  AUTH_ERROR
+  INTERNAL_ERROR
+}
