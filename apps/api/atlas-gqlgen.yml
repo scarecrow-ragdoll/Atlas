@@ -16,7 +16,7 @@
 #   models - Custom model type bindings.
 # END_MODULE_MAP
 # START_CHANGE_SUMMARY
-#   LAST_CHANGE: 1.0.0 - Added Atlas gqlgen config for WAVE-01.
+#   LAST_CHANGE: 1.0.1 - Added WAVE-03 DailyLog/workout schema bindings and Date scalar mapping.
 # END_CHANGE_SUMMARY
 
 schema:
