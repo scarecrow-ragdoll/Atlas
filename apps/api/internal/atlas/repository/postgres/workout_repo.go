@@ -13,7 +13,7 @@
 //   NewWorkoutRepository - Creates the sqlc-backed repository.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.0 - Added workout repository for WAVE-03.
+//   LAST_CHANGE: 1.0.1 - Exposed aggregate Exercises alias for empty DailyLog retention checks.
 // END_CHANGE_SUMMARY
 
 package postgres
@@ -90,6 +90,7 @@ type DailyLogSummaryRecord struct {
 type DailyLogAggregate struct {
 	DailyLog         DailyLogRecord
 	WorkoutExercises []WorkoutExerciseRecord
+	Exercises        []WorkoutExerciseRecord
 }
 
 type WorkoutExerciseRecord struct {
@@ -642,6 +643,7 @@ func getDailyLogAggregate(ctx context.Context, q *generated.Queries, userID stri
 	return &DailyLogAggregate{
 		DailyLog:         *dailyLogRecordFromRow(dailyLog),
 		WorkoutExercises: exercises,
+		Exercises:        exercises,
 	}, nil
 }
 

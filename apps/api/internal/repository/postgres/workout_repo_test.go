@@ -13,7 +13,7 @@
 //   workoutRepoTestSetup - Applies migrations, enforces safe test DSN, truncates WAVE-03 tables, and creates an Atlas user.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.0 - Added WAVE-03 workout repository integration coverage.
+//   LAST_CHANGE: 1.0.1 - Added empty DailyLog retention coverage after deleting the last workout exercise.
 // END_CHANGE_SUMMARY
 
 package postgres_test
@@ -177,6 +177,26 @@ func TestWorkoutRepo_DeleteWorkoutExercise_CascadesSetsAndKeepsDailyLog(t *testi
 	require.Len(t, aggregate.WorkoutExercises, 1)
 	assert.Equal(t, remainingExercise.ID, aggregate.WorkoutExercises[0].ID)
 	assert.Equal(t, int32(1), aggregate.WorkoutExercises[0].Position)
+}
+
+func TestWorkoutRepo_DeleteLastWorkoutExercise_KeepsEmptyDailyLog(t *testing.T) {
+	pool, repo, userID := workoutRepoTestSetup(t)
+	dailyLog := mustWorkoutDailyLog(t, repo, userID, "2026-06-28")
+	exercise := mustAddWorkoutExercise(t, repo, pool, userID, dailyLog.ID, "Only Exercise", 1)
+	_ = mustAddWorkoutSet(t, repo, userID, exercise.ID, 1, 100, 5)
+
+	deleted, err := repo.DeleteWorkoutExercise(context.Background(), userID, exercise.ID)
+	require.NoError(t, err)
+	require.NotNil(t, deleted)
+
+	aggregate, err := repo.GetDailyLogAggregate(context.Background(), userID, dailyLog.ID)
+	require.NoError(t, err)
+	require.NotNil(t, aggregate)
+	assert.Equal(t, dailyLog.ID, aggregate.DailyLog.ID)
+	assert.Equal(t, userID, aggregate.DailyLog.UserID)
+	assert.Equal(t, "2026-06-28", aggregate.DailyLog.Date.String())
+	assert.Greater(t, aggregate.DailyLog.Version, dailyLog.Version)
+	assert.Len(t, aggregate.Exercises, 0)
 }
 
 func TestWorkoutRepo_AddWorkoutSet_ValidatesDBConstraints(t *testing.T) {
