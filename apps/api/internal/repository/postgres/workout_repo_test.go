@@ -13,7 +13,7 @@
 //   workoutRepoTestSetup - Applies migrations, enforces safe test DSN, truncates WAVE-03 tables, and creates an Atlas user.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.1 - Added empty DailyLog retention coverage after deleting the last workout exercise.
+//   LAST_CHANGE: 1.0.2 - Asserted empty DailyLog retention through canonical WorkoutExercises aggregate field.
 // END_CHANGE_SUMMARY
 
 package postgres_test
@@ -196,7 +196,7 @@ func TestWorkoutRepo_DeleteLastWorkoutExercise_KeepsEmptyDailyLog(t *testing.T) 
 	assert.Equal(t, userID, aggregate.DailyLog.UserID)
 	assert.Equal(t, "2026-06-28", aggregate.DailyLog.Date.String())
 	assert.Greater(t, aggregate.DailyLog.Version, dailyLog.Version)
-	assert.Len(t, aggregate.Exercises, 0)
+	assert.Len(t, aggregate.WorkoutExercises, 0)
 }
 
 func TestWorkoutRepo_AddWorkoutSet_ValidatesDBConstraints(t *testing.T) {
