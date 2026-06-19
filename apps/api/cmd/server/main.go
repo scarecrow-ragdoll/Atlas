@@ -13,7 +13,7 @@
 //   optionalEnvFile - Returns a local .env path only when present.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.1 - Added Atlas module wiring: Atlas repos, services, bootstrap, GraphQL handler, PIN auth REST, media scaffold, and explicit route groups.
+//   LAST_CHANGE: 1.0.2 - Wired WAVE-03 Atlas workout repository/service into API startup and Atlas resolver construction.
 // END_CHANGE_SUMMARY
 
 package main
@@ -149,6 +149,8 @@ func main() {
 	)
 	atlasExerciseRepo := atlasPostgres.NewExerciseRepository(db.Pool)
 	atlasExerciseService := atlasService.NewExerciseService(atlasExerciseRepo)
+	atlasWorkoutRepo := atlasPostgres.NewWorkoutRepository(db.Pool)
+	atlasWorkoutService := atlasService.NewWorkoutService(atlasWorkoutRepo, atlasExerciseService)
 	atlasMediaHandler := healthHandler.NewAtlasMediaHandler(atlasExerciseService, cfg.Media.BasePath)
 
 	l.Info("[Atlas][bootstrap] ensuring default user and settings")
@@ -165,6 +167,7 @@ func main() {
 		SettingsService: atlasSettingsService,
 		PinService:      atlasPinService,
 		ExerciseService: atlasExerciseService,
+		WorkoutService:  atlasWorkoutService,
 	}
 	atlasSrv := handler.NewDefaultServer(atlasGenerated.NewExecutableSchema(atlasGenerated.Config{Resolvers: atlasRes}))
 
