@@ -1,0 +1,30 @@
+server:
+  port: 8080
+  read_timeout: 10s
+  write_timeout: 30s
+  shutdown_timeout: 5s
+  env: development
+  cors_origins:
+    - 'http://localhost:3000'
+
+log:
+  level: info
+  format: json
+
+postgres:
+  host: localhost
+  port: 5432
+  user: testuser
+  password: testpass
+  db: testdb
+  sslmode: disable
+  max_conns: 10
+  min_conns: 2
+  max_conn_idle_time: 30m
+
+redis:
+  host: localhost
+  port: 6379
+
+auth:
+  jwt_secret: test-secret

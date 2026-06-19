@@ -1,0 +1,76 @@
+<!-- FILE: .tasks/web-admin-login-route-guard/verification.md -->
+<!-- VERSION: 1.0.0 -->
+<!-- START_MODULE_CONTRACT -->
+<!--   PURPOSE: Record coverage and verification evidence for the web-admin login route guard milestone. -->
+<!--   SCOPE: Captures source-plan coverage mapping, deterministic e2e environment, focused auth tests, coverage gates, generated/GRACE drift checks, and final status; excludes implementation details already represented in source and tests. -->
+<!--   DEPENDS: docs/superpowers/plans/2026-06-07-web-admin-login-route-guard.md, docs/requirements.xml, docs/development-plan.xml, docs/knowledge-graph.xml, docs/verification-plan.xml, apps/web-admin, apps/api, tools/coverage. -->
+<!--   LINKS: M-WEB-ADMIN / V-M-WEB-ADMIN / M-API / M-COVERAGE-GATE / V-M-COVERAGE-GATE. -->
+<!--   ROLE: DOC -->
+<!--   MAP_MODE: SUMMARY -->
+<!-- END_MODULE_CONTRACT -->
+<!-- START_MODULE_MAP -->
+<!--   Coverage Matrix - Maps source-plan obligations to committed tests and commands. -->
+<!--   Command Evidence - Lists focused, coverage, e2e, generated, XML, and GRACE command outcomes. -->
+<!--   Environment Notes - Records isolated Docker/Playwright resources and cleanup. -->
+<!--   Final Status - States coverage-readiness status for the milestone. -->
+<!-- END_MODULE_MAP -->
+<!-- START_CHANGE_SUMMARY -->
+<!--   LAST_CHANGE: 1.0.0 - Added full coverage evidence for web-admin login route guard. -->
+<!-- END_CHANGE_SUMMARY -->
+
+# Web-admin Login Route Guard Verification
+
+## Coverage Matrix
+
+| Source-plan obligation                                                                                                      | Evidence                                                                                                                     |
+| --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Split aggregate admin auth operation document into single-operation files                                                   | `bunx nx run web-admin:codegen`; `rg -n "^(query\\                                                                           | mutation) " apps/web-admin/src/entities/admin-auth/api`; no stale `adminAuth.graphql` docs refs. |
+| Auth model maps current admin and derives fallback initials                                                                 | `apps/web-admin/src/entities/admin-auth/model.test.ts`; covers name initials, email initials, and final `A` fallback.        |
+| Safe return-to accepts same-app path/search/hash                                                                            | `model.test.ts` and `login-page.test.tsx`; covers `/users?status=active#directory`.                                          |
+| Safe return-to rejects external, protocol-relative, backslash, malformed, relative, and login-loop values                   | `model.test.ts`; includes thrown URL parser fallback and empty parsed candidate fallback.                                    |
+| GraphQL auth client uses split documents and variables                                                                      | `client.test.ts`; covers `CurrentAdmin`, `LoginAdmin`, auth/validation unions, and `LogoutAdmin`.                            |
+| Login success forces a fresh `CurrentAdmin` check despite fresh anonymous cache                                             | `provider.test.tsx`; `staleTime: 60_000` login refetch coverage.                                                             |
+| Login errors and network failures stay visible without corrupting auth state                                                | `provider.test.tsx`, `login-page.test.tsx`; covers normalized auth/validation errors and stable network fallback.            |
+| Protected routes do not flash protected content when unauthenticated or when auth check fails                               | `App.test.tsx`; covers redirect and failed `CurrentAdmin` behavior without protected user content.                           |
+| `/login` renders outside the sidebar shell and redirects already-authenticated admins                                       | `login-page.test.tsx`; `App.test.tsx` proves protected shell is absent on unauthenticated redirects.                         |
+| `from` preserves pathname/search/hash and unsafe values fall back to `/`                                                    | `model.test.ts`, `login-page.test.tsx`, `App.test.tsx`.                                                                      |
+| Sidebar shows the real admin identity                                                                                       | `admin-shell.test.tsx`, `App.test.tsx`.                                                                                      |
+| Sidebar logout calls backend logout, disables/relabels while pending, clears auth/protected caches, and returns to `/login` | `admin-shell.test.tsx`, `provider.test.tsx`, `App.test.tsx`, `users-flow.spec.ts`.                                           |
+| Fresh page after logout cannot access protected routes                                                                      | `apps/web-admin/e2e/users-flow.spec.ts`; Playwright test `protected routes require login and logout revokes browser access`. |
+| Existing create/list/detail, duplicate-email, desktop sidebar, and mobile sheet flows still work after real UI login        | `apps/web-admin/e2e/users-flow.spec.ts`; full `web-admin:e2e` passed with 7 tests.                                           |
+| No auth shortcut replaces browser login proof                                                                               | `users-flow.spec.ts` uses `loginThroughUi`; the old browser cookie-install helper was removed from `helpers.ts`.             |
+| No `apps/web` or `apps/api` behavior was widened by the frontend guard                                                      | Root `bun run verify:coverage` passed public web e2e, API build/lint/coverage, and generated drift checks.                   |
+| GRACE docs and generated artifacts do not drift                                                                             | `xmllint`, `grace lint --path .`, `bunx nx run codegen:validate`, and stale-ref grep all passed.                             |
+
+## Command Evidence
+
+| Command                                                                                                                                                                | Status          | Notes                                                                                                                                                                                                      |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bun run --cwd apps/web-admin test -- src/entities/admin-auth/model.test.ts src/entities/admin-auth/provider.test.tsx src/App.test.tsx`                                | PASS            | 3 files, 18 tests after coverage branch probes.                                                                                                                                                            |
+| `bunx nx run web-admin:test-coverage`                                                                                                                                  | PASS            | 18 files, 78 tests; 100 percent statements, branches, functions, and lines.                                                                                                                                |
+| `bunx nx run web-admin:typecheck`                                                                                                                                      | PASS            | Passed after test coverage additions.                                                                                                                                                                      |
+| `bunx nx lint web-admin`                                                                                                                                               | PASS            | Passed after test coverage additions.                                                                                                                                                                      |
+| `bunx nx run web-admin:codegen`                                                                                                                                        | PASS            | Generated admin auth operation types remained current.                                                                                                                                                     |
+| `bunx nx test web-admin`                                                                                                                                               | PASS            | 18 files, 74 tests before coverage branch probes; coverage target later ran 78 tests.                                                                                                                      |
+| `bunx nx build web-admin`                                                                                                                                              | PASS            | Vite build passed with existing large-chunk warning only.                                                                                                                                                  |
+| `env TEST_RESOURCE_PREFIX=mt-login-guard ... bunx nx run web-admin:e2e`                                                                                                | PASS            | 7 Playwright tests; isolated ports Postgres `20101`, Redis `20102`, API `20180`, web `20130`.                                                                                                              |
+| `env TEST_RESOURCE_PREFIX=mt-login-coverage ... bun run test:coverage`                                                                                                 | PASS            | Root coverage gate reported `[Coverage][gate] all thresholds passed`; isolated ports Postgres `20201`, Redis `20202`.                                                                                      |
+| `env TEST_RESOURCE_PREFIX=mt-login-verify ... bun run verify:coverage`                                                                                                 | FAIL, then PASS | First run failed before tests because Docker could not allocate a new compose network; after removing milestone compose scopes, rerun passed on Postgres `20301`, Redis `20302`, API `20380`, web `20330`. |
+| `env TEST_RESOURCE_PREFIX=mt-login-verify ... bunx nx run web-admin:e2e`                                                                                               | PASS            | Post-review e2e helper cleanup verification; 7 Playwright tests passed on Postgres `20301`, Redis `20302`, API `20380`, web `20330`.                                                                       |
+| `bunx nx lint web-admin`                                                                                                                                               | PASS            | Post-review e2e helper cleanup lint.                                                                                                                                                                       |
+| `bunx nx run web-admin:typecheck`                                                                                                                                      | PASS            | Post-review e2e helper cleanup typecheck.                                                                                                                                                                  |
+| `rg -n "adminAuth\\.graphql" docs/development-plan.xml docs/knowledge-graph.xml docs/verification-plan.xml`                                                            | PASS            | No matches.                                                                                                                                                                                                |
+| `xmllint --noout docs/requirements.xml docs/technology.xml docs/development-plan.xml docs/verification-plan.xml docs/knowledge-graph.xml docs/operational-packets.xml` | PASS            | Included in `verify:coverage`; also run directly during implementation closeout.                                                                                                                           |
+| `grace lint --path .`                                                                                                                                                  | PASS            | Exit 0 with 16 existing heuristic-export warnings in project skill scripts and the historical `.worktrees/mt-0xn-sqlc` copy.                                                                               |
+| `git diff --check`                                                                                                                                                     | PASS            | No whitespace errors after coverage commits and generated checks.                                                                                                                                          |
+
+## Environment Notes
+
+- Browser e2e and coverage gates used isolated Docker/Playwright resources to avoid the stale default `mt-test-93e26159` volume observed during Task 5.
+- `mt-login-coverage`, `mt-login-guard`, and the failed `mt-login-verify` compose scopes were removed with `docker compose -f docker/docker-compose.test.yml down -v --remove-orphans` before rerunning the full gate.
+- After post-review e2e verification, the final successful `mt-login-verify` compose scope was removed with `docker compose -f docker/docker-compose.test.yml down -v --remove-orphans`.
+- No production secrets, raw cookies, password hashes, or session ids were added to browser storage or logs. Playwright keeps test-only admin credentials in environment-backed e2e config/defaults so browser tests can exercise real login without storing session material client-side.
+
+## Final Status
+
+READY for coverage epic closeout. The target web-admin auth/route/logout behavior is covered by focused unit/component tests, `web-admin:test-coverage` is at 100 percent for all metrics, root `test:coverage` passed, root `verify:coverage` passed after scoped Docker cleanup, and no generated or GRACE drift remains.

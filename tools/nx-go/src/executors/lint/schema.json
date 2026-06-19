@@ -1,0 +1,7 @@
+{
+  "type": "object",
+  "properties": {
+    "fix": { "type": "boolean", "description": "Auto-fix issues", "default": false },
+    "config": { "type": "string", "description": "Path to golangci-lint config" }
+  }
+}

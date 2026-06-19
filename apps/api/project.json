@@ -1,0 +1,46 @@
+{
+  "name": "api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api",
+  "projectType": "application",
+  "tags": ["scope:api"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && go build -o ../../dist/apps/api ./cmd/server"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && ADMIN_INITIAL_EMAIL=\"${ADMIN_INITIAL_EMAIL:-admin@example.com}\" ADMIN_INITIAL_PASSWORD=\"${ADMIN_INITIAL_PASSWORD:-ChangeMeAdmin123!}\" ADMIN_INITIAL_NAME=\"${ADMIN_INITIAL_NAME:-Template Admin}\" ADMIN_SESSION_KEY_SECRET=\"${ADMIN_SESSION_KEY_SECRET:-dev-session-key-secret}\" air -c air.toml"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && mkdir -p ../../dist/coverage/go/api && go test -coverprofile=../../dist/coverage/go/api/coverage.out ./..."
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && golangci-lint run"
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && go run github.com/sqlc-dev/sqlc/cmd/sqlc@v1.30.0 generate && go run github.com/99designs/gqlgen generate"
+      },
+      "dependsOn": ["^validate"]
+    },
+    "codegen:atlas": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && go run github.com/99designs/gqlgen generate --config atlas-gqlgen.yml"
+      }
+    }
+  }
+}

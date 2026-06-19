@@ -1,0 +1,14 @@
+{
+  "name": "nx-go",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/nx-go/src",
+  "projectType": "library",
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx vitest run --config tools/vitest.config.ts --coverage"
+      }
+    }
+  }
+}

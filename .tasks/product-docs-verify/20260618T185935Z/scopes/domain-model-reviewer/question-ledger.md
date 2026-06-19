@@ -1,0 +1,14 @@
+# Domain-Model-Reviewer Question Ledger
+
+| ID | Scope | Severity | Question | Why It Matters | Source Or Report | Status | Resolution |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Q-DOMAIN-001 | domain-model-reviewer | non-blocking | What are the valid values for BodyWeightEntry.source? | Field exists in model (sec 25.9) but no enum defined. Affects validation, AI export, and data integrity. | prd.md sec 25.9 | open | TBD |
+| Q-DOMAIN-002 | domain-model-reviewer | non-blocking | What enum values define heartRateZone in CardioEntry? | PRD (sec 12.4) lists Zone 1-5 + unknown in text but field absent from data model (sec 25.8). Affects model completeness. | prd.md sec 12.4, 25.8 | open | TBD |
+| Q-DOMAIN-003 | domain-model-reviewer | non-blocking | What enum values define cardioType in CardioEntry? | PRD (sec 12.3) lists walk/run/bike/elliptical/treadmill/other in text but no enum in model. Affects validation and forms. | prd.md sec 12.3, 25.8 | open | TBD |
+| Q-DOMAIN-004 | domain-model-reviewer | non-blocking | What enum values define measurementType in BodyMeasurement? | PRD (sec 13.3) lists 10 measurements in text but field absent from data model (sec 25.11). Affects data integrity and charts. | prd.md sec 13.3, 25.11 | open | TBD |
+| Q-DOMAIN-005 | domain-model-reviewer | non-blocking | What enum values define side in BodyMeasurement? | PRD (sec 13.4) implies left/right/null but not formalized. Affects validation. | prd.md sec 13.4, 25.11 | open | TBD |
+| Q-DOMAIN-006 | domain-model-reviewer | non-blocking | What enum values define flagType in WeekFlag? | PRD (sec 18.4) lists 10 flag types in text but no enum in model (sec 25.18). Affects data integrity and AI export. | prd.md sec 18.4, 25.18 | open | TBD |
+| Q-DOMAIN-007 | domain-model-reviewer | non-blocking | What enum values define mediaType in ExerciseMedia? | PRD (sec 11.3) mentions images and video but no enum in model (sec 25.4). Affects storage and export logic. | prd.md sec 11.3, 25.4 | open | TBD |
+| Q-DOMAIN-008 | domain-model-reviewer | non-blocking | What enum values define mealLabel in NutritionTemplateItem and DailyNutritionOverrideItem? | PRD (sec 15.3) mentions "optional meal label" but never defines valid meal types. | prd.md sec 15.3, 25.15, 25.17 | open | TBD |
+| Q-DOMAIN-009 | domain-model-reviewer | non-blocking | What values define Settings.units? | Field exists (sec 25.1) with no definition. Likely metric/imperial but unconfirmed. | prd.md sec 25.1 | open | TBD |
+| Q-DOMAIN-010 | domain-model-reviewer | non-blocking | What is the AiExport.includePhotos boolean's relationship to includeWorkouts/includeCardio/includeNutrition? | Sec 25.19 includes includePhotos but model lacks other include flags from sec 17.3. Model appears incomplete vs feature description. | prd.md sec 17.3, 25.19 | open | TBD |

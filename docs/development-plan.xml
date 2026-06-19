@@ -1,0 +1,883 @@
+<DevelopmentPlan VERSION="0.2.9">
+  <ArchitectureNotes>
+    <objective>Keep the template usable as a production-grade starting point while making GRACE the primary agent workflow contract.</objective>
+    <non-goal>Do not mirror every private helper in shared XML artifacts; use shared docs for public module boundaries and verification references.</non-goal>
+    <risk-1>Admin GraphQL schema and generated artifacts must be changed together.</risk-1>
+    <risk-2>Root Nx targets span Go, TypeScript, Docker-backed services, and generated code, so verification must be scoped explicitly.</risk-2>
+    <risk-3>Legacy agent-docs commands must not be reintroduced into active agent guidance.</risk-3>
+    <risk-4>Coverage gates must distinguish generated or bootstrap code from handwritten behavior using an explicit allowlist and replacement verification.</risk-4>
+  </ArchitectureNotes>
+
+  <Modules>
+    <M-GRACE-WORKFLOW NAME="GraceAgentWorkflow" TYPE="UTILITY" LAYER="0" ORDER="0.5" STATUS="implemented">
+      <contract>
+        <purpose>Govern agent operating rules, shared GRACE artifacts, and file-local semantic markup for meaningful repository changes.</purpose>
+        <inputs>
+          <param name="agent-guide" type="AGENTS.md" />
+          <param name="shared-artifacts" type="docs/requirements.xml, docs/technology.xml, docs/development-plan.xml, docs/knowledge-graph.xml, docs/verification-plan.xml, docs/operational-packets.xml" />
+          <param name="governed-files" type="New or meaningfully edited source, test, tooling, config, script, CI, Docker, and durable documentation files outside docs/*.xml" />
+        </inputs>
+        <outputs>
+          <param name="file-local-contracts" type="MODULE_CONTRACT, MODULE_MAP, function/block anchors, and CHANGE_SUMMARY markup where applicable" />
+          <param name="shared-contract-sync" type="Updated module, graph, verification, and packet contracts" />
+        </outputs>
+        <errors>
+          <error code="MISSING_FILE_CONTRACT" />
+          <error code="MARKUP_DRIFT" />
+          <error code="SHARED_ARTIFACT_DRIFT" />
+        </errors>
+      </contract>
+      <interface>
+        <export-agent-guide PURPOSE="Route agents through GRACE skills, docs-first workflow, focused verification, and file-local markup rules." />
+        <export-file-local-contract PURPOSE="Require MODULE_CONTRACT, MODULE_MAP, semantic anchors, and CHANGE_SUMMARY for new or meaningfully edited governed files without requiring repo-wide historical backfill." />
+        <export-grace-change-flow PURPOSE="Define the read-contracts, patch-scope, implement, verify, refresh, and lint workflow." />
+        <export-operational-packets PURPOSE="Provide worker packet, graph delta, verification delta, and failure handoff expectations." />
+      </interface>
+      <depends>none</depends>
+      <target>
+        <source>AGENTS.md</source>
+        <source>docs/requirements.xml</source>
+        <source>docs/technology.xml</source>
+        <source>docs/development-plan.xml</source>
+        <source>docs/knowledge-graph.xml</source>
+        <source>docs/verification-plan.xml</source>
+        <source>docs/operational-packets.xml</source>
+        <tests>xmllint, grace lint, and focused diff checks for agent-governance changes</tests>
+      </target>
+      <observability>
+        <log-prefix>[GRACE]</log-prefix>
+        <critical-block>BLOCK_VALIDATE_ARTIFACTS</critical-block>
+      </observability>
+      <verification-ref>V-M-GRACE-WORKFLOW</verification-ref>
+      <notes>
+        <note-1>Historical unmarked files may remain unmarked until touched by a meaningful change.</note-1>
+      </notes>
+    </M-GRACE-WORKFLOW>
+
+    <M-WORKSPACE NAME="WorkspaceOrchestration" TYPE="UTILITY" LAYER="0" ORDER="1" STATUS="implemented">
+      <contract>
+        <purpose>Provide root package scripts, Nx project graph, and shared target defaults for all apps and libraries.</purpose>
+        <inputs>
+          <param name="workspace-config" type="package.json, nx.json, project.json files" />
+        </inputs>
+        <outputs>
+          <param name="commands" type="Nx and Bun command surface" />
+        </outputs>
+        <errors>
+          <error code="TARGET_DRIFT" />
+          <error code="MISSING_TOOLCHAIN" />
+        </errors>
+      </contract>
+      <interface>
+        <export-bun-scripts PURPOSE="Expose local web-stack dev, build, test, lint, SQL/API/web codegen, and coverage scripts." />
+        <export-nx-targets PURPOSE="Expose per-project build, serve, test, lint, codegen, and e2e targets." />
+        <export-coverage-scripts PURPOSE="Expose test:coverage, test:e2e, and verify:coverage root scripts." />
+      </interface>
+      <depends>none</depends>
+      <target>
+        <source>package.json</source>
+        <source>nx.json</source>
+        <tests>Root target execution through Nx commands</tests>
+      </target>
+      <observability>
+        <log-prefix>[Workspace]</log-prefix>
+        <critical-block>NX_TARGET_EXECUTION</critical-block>
+      </observability>
+      <verification-ref>V-M-WORKSPACE</verification-ref>
+      <notes>
+        <note-1>Keep root scripts thin wrappers over Nx target execution.</note-1>
+      </notes>
+    </M-WORKSPACE>
+
+    <M-COVERAGE-GATE NAME="CoverageGate" TYPE="UTILITY" LAYER="0" ORDER="1.5" STATUS="implemented">
+      <contract>
+        <purpose>Enforce the 100 percent coverage and full-stack e2e contract during explicit coverage, release, and template handoff phases.</purpose>
+        <inputs>
+          <param name="coverage-config" type="tools/coverage/coverage.config.json" />
+          <param name="generated-allowlist" type="gqlgen output, sqlc users/admin query output, web-admin GraphQL output, and bootstrap entrypoints listed in tools/coverage/coverage.config.json" />
+          <param name="go-profiles" type="dist/coverage/go/*/coverage.out" />
+          <param name="typescript-summaries" type="dist/coverage/web-admin/coverage-summary.json, dist/coverage/web/coverage-summary.json, and dist/coverage/tools/coverage-summary.json" />
+          <param name="e2e-services" type="Docker Compose PostgreSQL and Redis plus local API and web servers" />
+          <param name="test-infrastructure" type="docker/docker-compose.test.yml PostgreSQL and Redis services" />
+        </inputs>
+        <outputs>
+          <param name="coverage-artifacts" type="dist/coverage" />
+          <param name="playwright-artifacts" type="dist/test-results/web-admin-e2e, dist/test-results/web-e2e, dist/playwright-report/web-admin, and dist/playwright-report/web" />
+        </outputs>
+        <errors>
+          <error code="COVERAGE_THRESHOLD_FAILED" />
+          <error code="ALLOWLIST_DRIFT" />
+          <error code="E2E_SERVICE_UNAVAILABLE" />
+          <error code="UNSAFE_TEST_DATABASE_TARGET" />
+        </errors>
+      </contract>
+      <interface>
+        <export-run PURPOSE="Run Go, web-admin, web, workspace tooling, and codegen coverage checks." />
+        <export-preflight PURPOSE="Validate coverage config and start Docker e2e dependencies." />
+        <export-playwright-config PURPOSE="Run real API and browser checks from apps/web-admin/e2e and apps/web/e2e." />
+        <export-test-infrastructure PURPOSE="Start isolated PostgreSQL and Redis services for coverage and e2e gates." />
+        <export-safe-target-guards PURPOSE="Fail destructive tests before cleanup when the database target is not `monorepo_test`." />
+      </interface>
+      <depends>M-WORKSPACE, M-GRAPHQL-SCHEMA, M-API, M-WEB-ADMIN, M-WEB, M-BOT</depends>
+      <target>
+        <source>tools/coverage</source>
+        <source>tools/vitest.config.ts</source>
+        <source>apps/web-admin/e2e</source>
+        <source>apps/web/e2e</source>
+        <source>docker/docker-compose.test.yml</source>
+        <source>apps/api/internal/testinfra</source>
+        <tests>bun run test:coverage, bunx nx run web-admin:e2e, and bunx nx run web:e2e</tests>
+      </target>
+      <observability>
+        <log-prefix>[Coverage]</log-prefix>
+        <critical-block>BLOCK_ENFORCE_COVERAGE_GATE</critical-block>
+      </observability>
+      <verification-ref>V-M-COVERAGE-GATE</verification-ref>
+    </M-COVERAGE-GATE>
+
+    <M-CI-CD NAME="GitLabDokployCICD" TYPE="UTILITY" LAYER="0" ORDER="1.6" STATUS="implemented">
+      <contract>
+        <purpose>Validate merge requests, route jobs to the department runner pool, run release gates, build service images including the public Next `web` image, create GitLab releases, and trigger Dokploy Docker Compose deployments.</purpose>
+        <inputs>
+          <param name="git-refs" type="merge requests, develop, main, and SemVer tags" />
+          <param name="ci-variables" type="GitLab registry and Dokploy environment variables" />
+          <param name="runner-pool" type="department GitLab group runners with fast, full, image-build, and deploy tags" />
+          <param name="dockerfiles" type="docker/api.Dockerfile, docker/web.Dockerfile, docker/bot.Dockerfile" />
+        </inputs>
+        <outputs>
+          <param name="pipeline-evidence" type="coverage, e2e, image metadata, release, and deployment artifacts" />
+          <param name="dokploy-deployments" type="dev and production Dokploy compose deployments with WEB_API_BASE_URL for the public Next web service" />
+        </outputs>
+        <errors>
+          <error code="CI_TOOLCHAIN_UNAVAILABLE" />
+          <error code="RELEASE_TAG_NOT_ON_MAIN" />
+          <error code="IMAGE_BUILD_FAILED" />
+          <error code="DOKPLOY_UPDATE_FAILED" />
+          <error code="DOKPLOY_DEPLOY_FAILED" />
+        </errors>
+      </contract>
+      <interface>
+        <export-gitlab-pipeline PURPOSE="Expose GitLab CI stages and jobs." />
+        <export-ci-helpers PURPOSE="Expose tested helper commands for affected base, release tag validation, image metadata, and Dokploy deployment." />
+        <export-dokploy-template PURPOSE="Expose environment-driven Dokploy compose stack template." />
+        <export-runner-pool PURPOSE="Expose department GitLab runner classes, tags, concurrency, and Docker-in-Docker guardrails." />
+      </interface>
+      <depends>M-WORKSPACE, M-COVERAGE-GATE, M-API, M-WEB-ADMIN, M-WEB, M-BOT</depends>
+      <target>
+        <source>.gitlab-ci.yml</source>
+        <source>tools/ci</source>
+        <source>deploy/dokploy</source>
+        <source>docs/infrastructure/ci-cd.md</source>
+        <source>docs/infrastructure/gitlab-runners.md</source>
+        <tests>bunx nx run ci-tools:test and CI helper command smoke tests</tests>
+      </target>
+      <observability>
+        <log-prefix>[CI-CD]</log-prefix>
+        <critical-block>BLOCK_RELEASE_AND_DEPLOY</critical-block>
+      </observability>
+      <verification-ref>V-M-CI-CD</verification-ref>
+    </M-CI-CD>
+
+    <M-GO-CONFIG NAME="GoConfig" TYPE="UTILITY" LAYER="0" ORDER="2" STATUS="implemented">
+      <contract>
+        <purpose>Load, merge, and validate Go application configuration from files and environment variables.</purpose>
+        <inputs>
+          <param name="config-files" type="YAML and env files" />
+          <param name="environment" type="process environment" />
+        </inputs>
+        <outputs>
+          <param name="config" type="validated Go config structs" />
+        </outputs>
+        <errors>
+          <error code="CONFIG_LOAD_FAILED" />
+          <error code="CONFIG_VALIDATION_FAILED" />
+        </errors>
+      </contract>
+      <interface>
+        <export-Load PURPOSE="Load config from approved sources." />
+        <export-Validate PURPOSE="Validate required fields and formats." />
+      </interface>
+      <depends>none</depends>
+      <target>
+        <source>libs/go/config</source>
+        <tests>libs/go/config/*_test.go</tests>
+      </target>
+      <observability>
+        <log-prefix>[GoConfig]</log-prefix>
+        <critical-block>BLOCK_VALIDATE_CONFIG</critical-block>
+      </observability>
+      <verification-ref>V-M-GO-CONFIG</verification-ref>
+    </M-GO-CONFIG>
+
+    <M-GO-LOGGER NAME="GoLogger" TYPE="UTILITY" LAYER="0" ORDER="3" STATUS="implemented">
+      <contract>
+        <purpose>Provide shared zap logger construction, request context propagation, and HTTP middleware logging.</purpose>
+        <inputs>
+          <param name="request-context" type="context.Context and HTTP request metadata" />
+        </inputs>
+        <outputs>
+          <param name="logger" type="zap logger and request-scoped fields" />
+        </outputs>
+        <errors>
+          <error code="LOGGER_CONTEXT_MISSING" />
+        </errors>
+      </contract>
+      <interface>
+        <export-New PURPOSE="Construct configured zap loggers." />
+        <export-Middleware PURPOSE="Attach request logging and request IDs." />
+        <export-FromContext PURPOSE="Retrieve request-scoped logger values." />
+      </interface>
+      <depends>none</depends>
+      <target>
+        <source>libs/go/logger</source>
+        <tests>libs/go/logger/*_test.go</tests>
+      </target>
+      <observability>
+        <log-prefix>[GoLogger]</log-prefix>
+        <critical-block>BLOCK_ATTACH_REQUEST_CONTEXT</critical-block>
+      </observability>
+      <verification-ref>V-M-GO-LOGGER</verification-ref>
+    </M-GO-LOGGER>
+
+    <M-GRAPHQL-SCHEMA NAME="GraphQLSchema" TYPE="CORE_LOGIC" LAYER="0" ORDER="4" STATUS="implemented">
+      <contract>
+        <purpose>Define the admin GraphQL schema used by API gqlgen generation and web-admin client generation, including admin auth operations.</purpose>
+        <inputs>
+          <param name="schema-files" type="libs/graphql/schema/*.graphql" />
+        </inputs>
+        <outputs>
+          <param name="schema" type="validated GraphQL schema" />
+          <param name="generated-artifacts" type="API resolvers and web-admin client types" />
+        </outputs>
+        <errors>
+          <error code="GRAPHQL_SCHEMA_INVALID" />
+          <error code="CODEGEN_DRIFT" />
+        </errors>
+      </contract>
+      <interface>
+        <export-Query PURPOSE="Reference user queries and current-admin `me` operation." />
+        <export-Mutation PURPOSE="Reference user mutations plus `loginAdmin`, `logoutAdmin`, and `createAdmin` operations." />
+        <export-UserTypes PURPOSE="Reference user domain types and result unions." />
+        <export-AdminAuthTypes PURPOSE="Admin identity, login/logout/create result unions, and auth error contracts." />
+      </interface>
+      <depends>none</depends>
+      <target>
+        <source>libs/graphql/schema</source>
+        <tests>bunx nx run graphql:validate</tests>
+      </target>
+      <observability>
+        <log-prefix>[GraphQLSchema]</log-prefix>
+        <critical-block>BLOCK_VALIDATE_SCHEMA</critical-block>
+      </observability>
+      <verification-ref>V-M-GRAPHQL-SCHEMA</verification-ref>
+    </M-GRAPHQL-SCHEMA>
+
+    <M-API NAME="GoSharedHTTPAPI" TYPE="ENTRY_POINT" LAYER="1" ORDER="1" STATUS="implemented">
+      <contract>
+        <purpose>Serve HTTP health, protected admin GraphQL, and public REST endpoints with PostgreSQL, Redis admin sessions, credentialed CORS/origin guards, goose migrations, sqlc-generated user/admin queries, and shared service logic.</purpose>
+        <inputs>
+          <param name="http-requests" type="health, credentialed admin GraphQL, and public REST HTTP requests" />
+          <param name="config" type="validated API config" />
+        </inputs>
+        <outputs>
+          <param name="responses" type="HTTP, GraphQL, and REST JSON responses" />
+        </outputs>
+        <errors>
+          <error code="VALIDATION_ERROR" />
+          <error code="AUTH_ERROR" />
+          <error code="NOT_FOUND" />
+        </errors>
+      </contract>
+      <interface>
+        <export-main PURPOSE="Wire config, logger, storage, admin bootstrap, session middleware, REST routes, GraphQL server, and graceful shutdown." />
+        <export-user-service PURPOSE="Expose shared transport-neutral user domain logic." />
+        <export-user-repository PURPOSE="Expose PostgreSQL users repository adapter backed by sqlc-generated pgx/v5 queries." />
+        <export-admin-auth-service PURPOSE="Expose first-admin seed, login, current admin, create-admin, and logout behavior." />
+        <export-admin-repository PURPOSE="Expose PostgreSQL admin_users repository adapter backed by sqlc-generated pgx/v5 queries." />
+        <export-admin-session-store PURPOSE="Expose Redis-backed opaque admin session storage using HMAC-derived keys." />
+        <export-admin-auth-middleware PURPOSE="Expose admin principal context, cookie bridge, session lookup, and origin guard middleware." />
+        <export-user-rest-handler PURPOSE="Expose `/api/users` public REST handlers." />
+        <export-user-resolvers PURPOSE="Expose generated admin user query and mutation resolvers protected by admin session context." />
+        <export-admin-auth-resolvers PURPOSE="Expose loginAdmin, logoutAdmin, me, and createAdmin GraphQL resolvers." />
+        <export-health PURPOSE="Expose API health endpoint." />
+      </interface>
+      <depends>M-GO-CONFIG, M-GO-LOGGER, M-GRAPHQL-SCHEMA</depends>
+      <target>
+        <source>apps/api</source>
+        <source>apps/api/sqlc.yaml</source>
+        <source>apps/api/internal/service/admin_auth.go</source>
+        <source>apps/api/internal/repository/postgres/admin_repo.go</source>
+        <source>apps/api/internal/repository/postgres/queries/admin_users.sql</source>
+        <source>apps/api/internal/repository/redis/admin_session_store.go</source>
+        <source>apps/api/internal/middleware/admin_auth.go</source>
+        <source>apps/api/internal/middleware/admin_origin.go</source>
+        <source>apps/api/internal/repository/postgres/queries</source>
+        <source>apps/api/internal/repository/postgres/generated</source>
+        <tests>apps/api/internal/**/*_test.go</tests>
+      </target>
+      <observability>
+        <log-prefix>[API]</log-prefix>
+        <log-prefix>[AdminAuth]</log-prefix>
+        <critical-block>BLOCK_HANDLE_GRAPHQL_REQUEST</critical-block>
+        <critical-block>BLOCK_HANDLE_REST_USERS_REQUEST</critical-block>
+        <critical-block>BLOCK_BOOTSTRAP_ADMIN</critical-block>
+        <critical-block>BLOCK_VALIDATE_SESSION</critical-block>
+      </observability>
+      <verification-ref>V-M-API</verification-ref>
+      <notes>
+        <note-1>TODO(product-auth): Web-admin admin sessions authenticate operators for template admin GraphQL, but downstream products must still define owner/tenant scoping and per-resource authorization where the product requires it.</note-1>
+      </notes>
+    </M-API>
+
+    <M-WEB-ADMIN NAME="ViteWebAdminApp" TYPE="UI_COMPONENT" LAYER="1" ORDER="2" STATUS="implemented">
+      <contract>
+        <purpose>Provide the Vite React Router web-admin SPA, credentialed generated GraphQL client, approved shadcn-based UI-kit surface, and adapted sidebar-07 app shell for the admin user flow.</purpose>
+        <inputs>
+          <param name="browser-events" type="React UI interactions" />
+          <param name="graphql-api" type="credentialed admin API GraphQL endpoint at /graphql" />
+          <param name="config" type="VITE_GRAPHQL_API_URL and VITE_APP_NAME" />
+        </inputs>
+        <outputs>
+          <param name="ui-state" type="Rendered shell, route pages, sidebar state, breadcrumbs, user list, theme state, and mutation results" />
+          <param name="ui-kit" type="@shared/ui primitives, sidebar-07 app shell compositions, admin layout compositions, theme toggle, and /ui-kit reference page" />
+        </outputs>
+        <errors>
+          <error code="WEB_ADMIN_QUERY_FAILED" />
+          <error code="WEB_ADMIN_MUTATION_FAILED" />
+        </errors>
+      </contract>
+      <interface>
+        <export-routes PURPOSE="Expose Vite React Router routes, provider wiring, and app shell." />
+        <export-generated-client PURPOSE="Expose generated GraphQL operation types and cookie credential transport." />
+        <export-admin-auth-operations PURPOSE="Expose loginAdmin, logoutAdmin, CurrentAdmin, and createAdmin operation documents for generated types." />
+        <export-AdminAuthFrontend PURPOSE="Expose CurrentAdmin-backed auth provider, login page, protected route layout, safe return-to handling, and sidebar logout for the web-admin app." />
+        <export-LoginRoute PURPOSE="Render `/login` outside the sidebar shell and authenticate through cookie-backed `loginAdmin`." />
+        <export-ProtectedRoutes PURPOSE="Protect all non-login admin routes through `CurrentAdmin` before rendering the global admin shell." />
+        <export-ui-kit PURPOSE="Expose approved Radix Rhea shadcn primitives, sidebar-07 shell compositions, zinc/sidebar base tokens, indigo theme accents, theme toggle, and admin layout compositions through @shared/ui." />
+        <export-ui-kit-reference PURPOSE="Expose /ui-kit as the visible component reference route for future admin pages." />
+      </interface>
+      <depends>M-GRAPHQL-SCHEMA, M-API</depends>
+      <target>
+        <source>apps/web-admin</source>
+        <source>apps/web-admin/src/shared/api/graphql-client.ts</source>
+        <source>apps/web-admin/src/entities/admin-auth</source>
+        <source>apps/web-admin/src/app/protected-admin-layout.tsx</source>
+        <source>apps/web-admin/src/pages/login-page.tsx</source>
+        <source>apps/web-admin/src/shared/ui</source>
+        <source>apps/web-admin/src/pages/ui-kit-page.tsx</source>
+        <tests>apps/web-admin test, coverage, and e2e targets</tests>
+      </target>
+      <observability>
+        <log-prefix>[WebAdmin]</log-prefix>
+        <critical-block>BLOCK_RENDER_USER_FLOW</critical-block>
+      </observability>
+      <verification-ref>V-M-WEB-ADMIN</verification-ref>
+    </M-WEB-ADMIN>
+
+    <M-WEB NAME="NextPublicWebApp" TYPE="UI_COMPONENT" LAYER="1" ORDER="2.5" STATUS="implemented">
+      <contract>
+        <purpose>Provide the Next.js App Router public web UI, independent local UI-kit primitives, same-origin REST route proxy, and REST users client for the public reference user flow.</purpose>
+        <inputs>
+          <param name="browser-events" type="React UI interactions" />
+          <param name="ui-kit" type="apps/web @shared/ui primitives independent from web-admin" />
+          <param name="rest-api" type="public API REST endpoints under /api/users via Next route handlers" />
+          <param name="config" type="WEB_API_BASE_URL for Next server/runtime route proxy code" />
+        </inputs>
+        <outputs>
+          <param name="ui-state" type="Rendered pages, user list, theme state, and REST mutation results" />
+        </outputs>
+        <errors>
+          <error code="WEB_REST_QUERY_FAILED" />
+          <error code="WEB_REST_MUTATION_FAILED" />
+        </errors>
+      </contract>
+      <interface>
+        <export-next-app PURPOSE="Expose Next App Router layout, page, client component, and route handlers." />
+        <export-rest-client PURPOSE="Expose typed REST users client and config parsing." />
+        <export-ui-kit PURPOSE="Expose independent Radix Rhea shadcn-compatible public web primitives with Tailwind v4 semantic zinc base tokens, indigo theme accents, and theme toggle through apps/web @shared/ui." />
+      </interface>
+      <depends>M-API</depends>
+      <target>
+        <source>apps/web</source>
+        <source>apps/web/src/shared/ui</source>
+        <tests>apps/web test, coverage, typecheck, build, and e2e targets</tests>
+      </target>
+      <observability>
+        <log-prefix>[Web]</log-prefix>
+        <critical-block>BLOCK_RENDER_REST_USER_FLOW</critical-block>
+      </observability>
+      <verification-ref>V-M-WEB</verification-ref>
+    </M-WEB>
+
+    <M-BOT NAME="TelegramBot" TYPE="ENTRY_POINT" LAYER="1" ORDER="3" STATUS="implemented">
+      <contract>
+        <purpose>Run a Telegram bot entry point with config, shared logging, middleware, and command handlers.</purpose>
+        <inputs>
+          <param name="telegram-updates" type="Telegram bot update stream" />
+          <param name="config" type="validated bot config" />
+        </inputs>
+        <outputs>
+          <param name="bot-responses" type="Telegram messages and handler side effects" />
+        </outputs>
+        <errors>
+          <error code="BOT_CONFIG_INVALID" />
+          <error code="BOT_HANDLER_FAILED" />
+        </errors>
+      </contract>
+      <interface>
+        <export-main PURPOSE="Wire bot config, logger, middleware, handlers, and graceful shutdown." />
+        <export-handlers PURPOSE="Expose start, help, and default command handlers." />
+      </interface>
+      <depends>M-GO-CONFIG, M-GO-LOGGER</depends>
+      <target>
+        <source>apps/bot</source>
+        <tests>apps/bot/internal/**/*_test.go</tests>
+      </target>
+      <observability>
+        <log-prefix>[Bot]</log-prefix>
+        <critical-block>BLOCK_HANDLE_TELEGRAM_UPDATE</critical-block>
+      </observability>
+      <verification-ref>V-M-BOT</verification-ref>
+    </M-BOT>
+
+    <M-PRODUCT-DOCS NAME="ProductDocs" TYPE="UTILITY" LAYER="0" ORDER="5" STATUS="partial">
+      <contract>
+        <purpose>Provide product background, glossary, journeys, personas, business rules, and data dictionary context for planning.</purpose>
+        <inputs>
+          <param name="product-docs" type="docs/product/*.md" />
+        </inputs>
+        <outputs>
+          <param name="planning-context" type="Human-readable product context for requirements and GRACE planning" />
+        </outputs>
+        <errors>
+          <error code="PRODUCT_DOCS_DRIFT" />
+        </errors>
+      </contract>
+      <interface>
+        <export-product-index PURPOSE="Navigate product background documents." />
+      </interface>
+      <depends>none</depends>
+      <target>
+        <source>docs/product</source>
+        <tests>Product documentation review</tests>
+      </target>
+      <observability>
+        <log-prefix>[ProductDocs]</log-prefix>
+        <critical-block>BLOCK_CHECK_DOCS</critical-block>
+      </observability>
+      <verification-ref>V-M-PRODUCT-DOCS</verification-ref>
+      <notes>
+        <note-1>Product docs are context; `docs/requirements.xml` remains the executable requirements contract for agents.</note-1>
+      </notes>
+    </M-PRODUCT-DOCS>
+
+    <M-PRODUCT-DOCS-VERIFIER NAME="ProductDocsVerifierSkill" TYPE="UTILITY" LAYER="0" ORDER="5.1" STATUS="implemented">
+      <contract>
+        <purpose>Provide the project-local Codex skill whose main controller launches one scope-orchestrator per product review scope, records source deltas for new docs or answered questions, runs the consistency scope only after primary scope aggregation, stages structure under `.tasks`, and synthesizes source-backed facts plus approved derivations into `docs/product-verified` only after the approval gate.</purpose>
+        <inputs>
+          <param name="source-product-docs" type="docs/product or user-provided product docs folder" />
+          <param name="skill-contracts" type=".agents/skills/verify-product-docs/SKILL.md and references/*.md" />
+          <param name="orchestrator-artifacts" type=".tasks/product-docs-verify/&lt;run-id&gt;/main-orchestration.md, source-delta.md, recovery.md, aggregate scope-status.md, aggregate question-ledger.md, staging/product-verified, scopes/*/orchestrator.md, scope-local question ledgers, and worker/reviewer reports" />
+        </inputs>
+        <outputs>
+          <param name="verified-product-docs" type="docs/product-verified structured Markdown package" />
+          <param name="traceability" type="source, derivation, decision, assumption, question-ledger, and open-question maps" />
+        </outputs>
+        <errors>
+          <error code="PRODUCT_SOURCE_MISSING" />
+          <error code="SUBAGENT_REVIEW_UNAVAILABLE" />
+          <error code="ORCHESTRATION_INTERRUPTED" />
+          <error code="INTERRUPTION_RETRY_EXHAUSTED" />
+          <error code="APPROVAL_GATE_FAILED" />
+          <error code="FINAL_OUTPUT_WRITTEN_BEFORE_APPROVAL" />
+          <error code="UNSUPPORTED_PRODUCT_DERIVATION" />
+          <error code="MISSING_SOURCE_ARTIFACT_BLOCKER" />
+          <error code="VERIFIED_DOCS_INVALID" />
+        </errors>
+      </contract>
+      <interface>
+        <export-skill-instructions PURPOSE="Define the multi-agent review and synthesis workflow." />
+        <export-output-contract PURPOSE="Define the required `docs/product-verified` file structure and headings." />
+        <export-scope-orchestrator-contract PURPOSE="Define the main controller, per-scope orchestrators, dispatch phases, write ownership, nested worker/reviewer loops, approval budget, interruption retry budget, source-delta handling, consistency relaunch behavior, and question-ledger workflow." />
+        <export-scaffold-script PURPOSE="Create the managed staging verified-docs structure from a complete source inventory." />
+        <export-validate-script PURPOSE="Validate required files, headings, placeholders, feature docs, traceability ids, evidence links, derivation confidence, and open-question sync." />
+      </interface>
+      <depends>M-PRODUCT-DOCS</depends>
+      <target>
+        <source>.agents/skills/verify-product-docs</source>
+        <source>docs/product-verified</source>
+        <source>.tasks/product-docs-verify</source>
+        <tests>Skill quick validation, Python syntax checks, scaffold smoke test, and product-verified structure validation</tests>
+      </target>
+      <observability>
+        <log-prefix>[ProductDocsVerifier]</log-prefix>
+        <critical-block>BLOCK_VERIFY_PRODUCT_DOCS</critical-block>
+      </observability>
+      <verification-ref>V-M-PRODUCT-DOCS-VERIFIER</verification-ref>
+      <notes>
+        <note-1>`docs/product` remains raw source material. `docs/product-verified` is the curated handoff package only after per-scope orchestrators record review approvals, open questions, approved derivations, source deltas, and validation evidence; staging skeletons live under `.tasks/product-docs-verify/&lt;run-id&gt;/staging/product-verified`; interrupted or stalled scope-orchestrators, including consistency, are relaunched with the same RUN_ID while retry budget remains instead of direct controller synthesis, and absent artifact families such as API contracts become consolidated blockers rather than invented detail.</note-1>
+      </notes>
+    </M-PRODUCT-DOCS-VERIFIER>
+
+    <M-TECHNICAL-DOCS-VERIFIER NAME="TechnicalDocsVerifierSkill" TYPE="UTILITY" LAYER="0" ORDER="5.15" STATUS="implemented">
+      <contract>
+        <purpose>Provide the project-local Codex skill that consumes `docs/product-verified`, runs technical scope-orchestrator review loops, records answered-question source deltas, and writes `docs/technical-verified` with status `approved-to-dev` only when no blocking technical questions or answer-spawned blockers remain.</purpose>
+        <inputs>
+          <param name="verified-product-docs" type="docs/product-verified or user-provided verified PRD package" />
+          <param name="skill-contracts" type=".agents/skills/verify-technical-docs/SKILL.md, references/*.md, scripts/*.py, and agents/openai.yaml" />
+          <param name="question-loop-artifacts" type=".tasks/technical-docs-verify/&lt;run-id&gt;/main-orchestration.md, source-delta.md, recovery.md, aggregate scope-status.md, aggregate question-ledger.md, staging/technical-verified, scopes/*/orchestrator.md, scope-local question ledgers, and worker/reviewer reports" />
+        </inputs>
+        <outputs>
+          <param name="verified-technical-docs" type="docs/technical-verified structured Markdown package with status questions-open, blocked, or approved-to-dev" />
+          <param name="technical-question-ledger" type="Traceable technical questions, answer effects, parent follow-up links, decisions, deferrals, and validation evidence" />
+        </outputs>
+        <errors>
+          <error code="PRODUCT_VERIFIED_SOURCE_MISSING" />
+          <error code="TECHNICAL_SCOPE_REVIEW_UNAVAILABLE" />
+          <error code="TECHNICAL_ORCHESTRATION_INTERRUPTED" />
+          <error code="TECHNICAL_APPROVAL_GATE_FAILED" />
+          <error code="ANSWER_SPAWNED_BLOCKER" />
+          <error code="TECHNICAL_DOCS_INVALID" />
+          <error code="UNSUPPORTED_TECHNICAL_INVENTION" />
+        </errors>
+      </contract>
+      <interface>
+        <export-skill-instructions PURPOSE="Define the technical controller workflow, question-loop rules, and final response shape." />
+        <export-output-contract PURPOSE="Define the required `docs/technical-verified` file structure, status model, stable ids, question ledger, and approval gate." />
+        <export-scope-orchestrator-contract PURPOSE="Define technical review scopes, nested worker/reviewer loops, answer-effect checks, write ownership, retry policy, and prompt templates." />
+        <export-scaffold-script PURPOSE="Create the managed staging technical-verified structure from a verified product source inventory." />
+        <export-validate-script PURPOSE="Validate required files, headings, placeholders, status values, and approved-to-dev question invariants." />
+        <export-openai-metadata PURPOSE="Expose display name, short description, and default prompt for Codex skill surfaces." />
+      </interface>
+      <depends>M-PRODUCT-DOCS-VERIFIER, M-GRACE-WORKFLOW</depends>
+      <target>
+        <source>.agents/skills/verify-technical-docs</source>
+        <source>docs/technical-verified</source>
+        <source>.tasks/technical-docs-verify</source>
+        <tests>Skill quick validation, Python syntax checks, scaffold smoke test, technical-verified structure validation, XML validation, and GRACE lint</tests>
+      </target>
+      <observability>
+        <log-prefix>[TechnicalDocsVerifier]</log-prefix>
+        <critical-block>BLOCK_VERIFY_TECHNICAL_DOCS</critical-block>
+      </observability>
+      <verification-ref>V-M-TECHNICAL-DOCS-VERIFIER</verification-ref>
+      <notes>
+        <note-1>The skill intentionally writes a `questions-open` package when blockers remain so the questions can be answered in the next loop; it may write `approved-to-dev` only after every answer delta is reviewed and consistency confirms no new blocking follow-up question exists.</note-1>
+      </notes>
+    </M-TECHNICAL-DOCS-VERIFIER>
+
+    <M-PRD-WAVE-DECOMPOSER NAME="PrdWaveDecomposerSkill" TYPE="UTILITY" LAYER="0" ORDER="5.17" STATUS="implemented">
+      <contract>
+        <purpose>Provide the project-local Codex skill that consumes raw PRD, verified PRD, and optional technical readiness docs, runs subagent scope-mapper and reviewer loops, and writes a shallow backend-only implementation wave map plus per-page frontend handoff files without detailing individual waves.</purpose>
+        <inputs>
+          <param name="raw-product-docs" type="docs/product or user-provided raw PRD source folder used for frontend page extraction" />
+          <param name="verified-product-docs" type="docs/product-verified or user-provided verified PRD package" />
+          <param name="technical-docs" type="docs/technical-verified when present, including open blockers or approved-to-dev status" />
+          <param name="skill-contracts" type=".agents/skills/decompose-prd-waves/SKILL.md, references/*.md, scripts/*.py, and agents/openai.yaml" />
+          <param name="decomposition-artifacts" type=".tasks/prd-wave-decomposition/&lt;run-id&gt;/main-orchestration.md, source-gate.md, source-delta.md, staging/prd-waves, scopes/*/orchestrator.md, mapper reports, reviewer reports, scope-local ledgers, aggregate ledgers, and recovery.md" />
+        </inputs>
+        <outputs>
+          <param name="prd-waves" type="docs/prd-waves structured Markdown package with shallow backend-only wave map, frontend-pages/index.md, frontend-pages/page-&lt;nnn&gt;.md files, and user approval state" />
+          <param name="wave-map-handoff" type="Backend wave ids, names, outcomes, included/excluded backend scope, dependency order, frontend page file index, recommended next planning surfaces, reviewer verdicts, open questions, and traceability" />
+        </outputs>
+        <errors>
+          <error code="VERIFIED_PRD_SOURCE_MISSING" />
+          <error code="PRD_SCOPE_REVIEW_UNAVAILABLE" />
+          <error code="PRD_WAVE_ORCHESTRATION_INTERRUPTED" />
+          <error code="PRD_SCOPE_NOT_COVERED" />
+          <error code="PRD_WAVE_SCOPE_EXCEEDS_MVP" />
+          <error code="PRD_WAVE_OPEN_QUESTIONS" />
+          <error code="PRD_WAVES_INVALID" />
+          <error code="PRD_WAVE_DETAIL_DRIFT" />
+        </errors>
+      </contract>
+      <interface>
+        <export-skill-instructions PURPOSE="Define source gates, full-PRD shallow decomposition, subagent scope mapping, reviewer approval, user approval pause, and final response shape." />
+        <export-output-contract PURPOSE="Define the required `docs/prd-waves` structure, status model, stable ids, reviewer verdicts, question ledger, backend-only wave gate, per-page frontend gate, raw/verified source traceability gate, shallow gate, and user approval gate." />
+        <export-scope-orchestrator-contract PURPOSE="Define scope-mapper, mapper worker, reviewer, consistency, write ownership, retry policy, and prompt templates." />
+        <export-scaffold-script PURPOSE="Create the managed staging prd-waves structure from raw product, verified product, and technical source inventories." />
+        <export-validate-script PURPOSE="Validate required files, headings, placeholders, status values, reviewer approvals, shallow-only restrictions, stable ids, frontend page files, raw/verified page traceability, and open blocking question invariants." />
+        <export-openai-metadata PURPOSE="Expose display name, short description, and default prompt for Codex skill surfaces." />
+      </interface>
+      <depends>M-PRODUCT-DOCS-VERIFIER, M-TECHNICAL-DOCS-VERIFIER, M-GRACE-WORKFLOW</depends>
+      <target>
+        <source>.agents/skills/decompose-prd-waves</source>
+        <source>docs/prd-waves</source>
+        <source>.tasks/prd-wave-decomposition</source>
+        <tests>Skill quick validation, Python syntax checks, scaffold smoke test, prd-waves structure validation, XML validation, and GRACE lint</tests>
+      </target>
+      <observability>
+        <log-prefix>[PrdWaveDecomposer]</log-prefix>
+        <critical-block>BLOCK_DECOMPOSE_PRD_WAVES</critical-block>
+      </observability>
+      <verification-ref>V-M-PRD-WAVE-DECOMPOSER</verification-ref>
+      <notes>
+        <note-1>The skill intentionally produces only top-level backend waves and one source-backed frontend markdown file per page; downstream detailed planning must use a separate skill after the shallow map is reviewer-approved and, when required, user-approved.</note-1>
+      </notes>
+    </M-PRD-WAVE-DECOMPOSER>
+
+    <M-PRD-WAVE-DETAILER NAME="PrdWaveDetailerSkill" TYPE="UTILITY" LAYER="0" ORDER="5.175" STATUS="implemented">
+      <contract>
+        <purpose>Provide the project-local Codex skill that consumes an approved shallow backend PRD wave, reads verified sources, GRACE contracts, neighboring backend waves, separate frontend-pages dependency context, and relevant code, and details exactly one selected backend wave into a ready-for-dev backend brief with AC, EC, verification obligations, and reviewer-approved fit evidence.</purpose>
+        <inputs>
+          <param name="prd-waves" type="docs/prd-waves or user-provided shallow wave package containing the selected backend WAVE-&lt;nn&gt; and separate frontend-pages/** context" />
+          <param name="verified-product-docs" type="docs/product-verified or source-traceable product package used by the shallow wave map" />
+          <param name="technical-docs" type="docs/technical-verified when present" />
+          <param name="grace-contracts" type="docs/development-plan.xml, docs/knowledge-graph.xml, and docs/verification-plan.xml" />
+          <param name="codebase-context" type="Read-only source files and module contracts relevant to the selected wave" />
+          <param name="skill-contracts" type=".agents/skills/detail-prd-wave/SKILL.md, references/*.md, scripts/*.py, and agents/openai.yaml" />
+          <param name="wave-detail-artifacts" type=".tasks/prd-wave-detail/&lt;run-id&gt;/main-orchestration.md, source-wave-gate.md, context-inventory.md, source-delta.md, staging/prd-wave-details, waves/*/orchestrator.md, planner reports, reviewer reports, final fit reports, wave-local ledgers, aggregate ledgers, and recovery.md" />
+        </inputs>
+        <outputs>
+          <param name="prd-wave-details" type="docs/prd-wave-details structured Markdown package with exactly one selected detailed backend wave per run" />
+          <param name="selected-wave-handoff" type="Detailed backend implementation slices, acceptance criteria, exit criteria, verification obligations, codebase fit, neighboring-backend-wave fit, frontend-pages dependency context, reviewer verdicts, open questions, traceability, and user approval state for the selected backend wave" />
+        </outputs>
+        <errors>
+          <error code="PRD_WAVE_SOURCE_MISSING" />
+          <error code="PRD_WAVE_NOT_APPROVED" />
+          <error code="PRD_WAVE_BOUNDARY_INCOHERENT" />
+          <error code="PRD_WAVE_DETAIL_REVIEW_UNAVAILABLE" />
+          <error code="PRD_WAVE_DETAIL_ORCHESTRATION_INTERRUPTED" />
+          <error code="PRD_WAVE_DETAIL_OPEN_QUESTIONS" />
+          <error code="PRD_WAVE_DETAIL_INVALID" />
+          <error code="PRD_WAVE_CODEBASE_FIT_MISSING" />
+          <error code="PRD_WAVE_SCOPE_COLLISION" />
+        </errors>
+      </contract>
+      <interface>
+        <export-skill-instructions PURPOSE="Define selected backend-wave source gates, one-backend-wave focus, codebase and neighboring-backend-wave context inventory, frontend-pages dependency context, nested subagent orchestration, reviewer approvals, user approval pause, and final response shape." />
+        <export-output-contract PURPOSE="Define the required `docs/prd-wave-details` structure, status model, stable ids, reviewer verdicts, question ledger, ready-for-dev gate, and user approval gate." />
+        <export-wave-orchestrator-contract PURPOSE="Define specialist planner and reviewer roles, final fit review, write ownership, retry policy, and prompt templates." />
+        <export-scaffold-script PURPOSE="Create the managed staging prd-wave-details structure for one selected backend wave from shallow backend wave, product, technical, and frontend-pages context inventories." />
+        <export-validate-script PURPOSE="Validate required files, headings, placeholders, status values, reviewer approvals, AC/EC/test ids, codebase fit, and open blocking question invariants." />
+        <export-openai-metadata PURPOSE="Expose display name, short description, and default prompt for Codex skill surfaces." />
+      </interface>
+      <depends>M-PRD-WAVE-DECOMPOSER, M-PRODUCT-DOCS-VERIFIER, M-TECHNICAL-DOCS-VERIFIER, M-GRACE-WORKFLOW</depends>
+      <target>
+        <source>.agents/skills/detail-prd-wave</source>
+        <source>docs/prd-wave-details</source>
+        <source>.tasks/prd-wave-detail</source>
+        <tests>Skill quick validation, Python syntax checks, scaffold smoke test, prd-wave-details structure validation, XML validation, and GRACE lint</tests>
+      </target>
+      <observability>
+        <log-prefix>[PrdWaveDetailer]</log-prefix>
+        <critical-block>BLOCK_DETAIL_PRD_WAVE</critical-block>
+      </observability>
+      <verification-ref>V-M-PRD-WAVE-DETAILER</verification-ref>
+      <notes>
+        <note-1>The skill intentionally details exactly one selected backend wave, treats frontend-pages/** as read-only dependency context, and treats user approval as separate from reviewer-approved ready-for-dev; downstream execution or task creation must wait for explicit approval.</note-1>
+      </notes>
+    </M-PRD-WAVE-DETAILER>
+
+    <M-BACKEND-WAVE-PLANNER NAME="BackendWavePlannerSkill" TYPE="UTILITY" LAYER="0" ORDER="5.18" STATUS="implemented">
+      <contract>
+        <purpose>Provide the project-local Codex skill that consumes `approved-to-dev` technical readiness docs, builds a shallow full backend wave map, and details exactly one sequential backend wave at a time until reviewer-approved, question-free, ready-for-dev, and explicitly user-approved.</purpose>
+        <inputs>
+          <param name="approved-technical-docs" type="docs/technical-verified or user-provided technical package with status approved-to-dev" />
+          <param name="verified-product-docs" type="docs/product-verified or source-traceable product package used by the technical docs" />
+          <param name="skill-contracts" type=".agents/skills/plan-backend-waves/SKILL.md, references/*.md, scripts/*.py, and agents/openai.yaml" />
+          <param name="wave-orchestration-artifacts" type=".tasks/backend-wave-plan/&lt;run-id&gt;/main-orchestration.md, technical-approval-gate.md, source-delta.md, staging/backend-waves, waves/*/orchestrator.md, planner reports, reviewer reports, wave-local ledgers, aggregate ledgers, and recovery.md" />
+        </inputs>
+        <outputs>
+          <param name="backend-waves" type="docs/backend-waves structured Markdown package with shallow full wave map and current ready-for-dev or blocked wave" />
+          <param name="wave-handoff" type="Detailed backend implementation tasks, acceptance criteria, exit criteria, verification obligations, reviewer verdicts, open questions, and user approval state for the current wave" />
+        </outputs>
+        <errors>
+          <error code="TECHNICAL_APPROVAL_MISSING" />
+          <error code="TECHNICAL_BLOCKERS_OPEN" />
+          <error code="BACKEND_SCOPE_EXCEEDS_MVP" />
+          <error code="WAVE_REVIEW_UNAVAILABLE" />
+          <error code="WAVE_ORCHESTRATION_INTERRUPTED" />
+          <error code="WAVE_OPEN_QUESTIONS" />
+          <error code="USER_APPROVAL_MISSING" />
+          <error code="BACKEND_WAVES_INVALID" />
+          <error code="UNSUPPORTED_BACKEND_INVENTION" />
+        </errors>
+      </contract>
+      <interface>
+        <export-skill-instructions PURPOSE="Define the technical approval gate, strict sequential wave loop, reviewer approvals, user approval pause, and final response shape." />
+        <export-output-contract PURPOSE="Define the required `docs/backend-waves` structure, status model, stable ids, reviewer verdicts, question ledger, ready-for-dev gate, and user approval gate." />
+        <export-wave-orchestrator-contract PURPOSE="Define wave planner/reviewer roles, required reviewer perspectives, write ownership, retry policy, and prompt templates." />
+        <export-scaffold-script PURPOSE="Create the managed staging backend-waves structure from approved technical and product source inventories." />
+        <export-validate-script PURPOSE="Validate required files, headings, placeholders, status values, reviewer approvals, AC/exit/test ids, and open blocking question invariants." />
+        <export-openai-metadata PURPOSE="Expose display name, short description, and default prompt for Codex skill surfaces." />
+      </interface>
+      <depends>M-TECHNICAL-DOCS-VERIFIER, M-GRACE-WORKFLOW</depends>
+      <target>
+        <source>.agents/skills/plan-backend-waves</source>
+        <source>docs/backend-waves</source>
+        <source>.tasks/backend-wave-plan</source>
+        <tests>Skill quick validation, Python syntax checks, scaffold smoke test, backend-waves structure validation, XML validation, and GRACE lint</tests>
+      </target>
+      <observability>
+        <log-prefix>[BackendWavePlanner]</log-prefix>
+        <critical-block>BLOCK_PLAN_BACKEND_WAVES</critical-block>
+      </observability>
+      <verification-ref>V-M-BACKEND-WAVE-PLANNER</verification-ref>
+      <notes>
+        <note-1>The skill intentionally separates `ready-for-dev` from user approval: a wave may be ready only after reviewer approvals and zero open blockers, but the next wave cannot be planned until the user explicitly approves the current wave overview.</note-1>
+      </notes>
+    </M-BACKEND-WAVE-PLANNER>
+
+    <M-PLAN-TO-BEADS-SKILL NAME="PlanToBeadsSkill" TYPE="UTILITY" LAYER="0" ORDER="5.2" STATUS="implemented">
+      <contract>
+        <purpose>Provide the project-local Codex skill that converts implementation, architecture, research, PRD, or verification plans into a non-executable Beads milestone with child epics and tasks while preserving source-plan intent.</purpose>
+        <inputs>
+          <param name="source-plan" type="Implementation plan, architecture document, research plan, PRD, verification plan, or equivalent source path" />
+          <param name="skill-contracts" type=".agents/skills/plan-to-beads/SKILL.md and agents/openai.yaml" />
+          <param name="beads-state" type="Existing project Beads state and conventions when task creation is requested" />
+        </inputs>
+        <outputs>
+          <param name="beads-graph" type="One non-executable milestone with implementation, full test coverage, and pre-MR QA child epics plus source-anchored tasks and acceptance criteria" />
+          <param name="coverage-ledger" type="Requirement-to-task traceability when the source plan is large or risky" />
+        </outputs>
+        <errors>
+          <error code="SOURCE_PLAN_MISSING" />
+          <error code="BEADS_STATE_UNAVAILABLE" />
+          <error code="MILESTONE_UNSUPPORTED" />
+          <error code="REQUIREMENT_MAPPING_GAP" />
+        </errors>
+      </contract>
+      <interface>
+        <export-skill-instructions PURPOSE="Define the semantic-loss, milestone-plus-three-epic, requirement-ledger, task-content, delivery-contour, and blocker-handling rules." />
+        <export-openai-metadata PURPOSE="Expose display name, short description, and default prompt for Codex skill surfaces." />
+      </interface>
+      <depends>M-GRACE-WORKFLOW</depends>
+      <target>
+        <source>.agents/skills/plan-to-beads</source>
+        <tests>Skill quick validation, metadata presence checks, and focused diff whitespace checks</tests>
+      </target>
+      <observability>
+        <log-prefix>[PlanToBeads]</log-prefix>
+        <critical-block>BLOCK_MAP_REQUIREMENTS_TO_BEADS</critical-block>
+      </observability>
+      <verification-ref>V-M-PLAN-TO-BEADS-SKILL</verification-ref>
+      <notes>
+        <note-1>The skill assumes Beads exists in the target project. If no source plan or Beads state is available, it should ask for the missing artifact instead of inventing scope.</note-1>
+        <note-2>The skill assumes the supported Beads baseline includes a milestone type; if milestone creation fails, it should report a local tooling mismatch instead of faking milestone semantics with an epic or task.</note-2>
+      </notes>
+    </M-PLAN-TO-BEADS-SKILL>
+
+    <M-SUBAGENT-REVIEW-LOOP-SKILL NAME="SubagentReviewLoopSkill" TYPE="UTILITY" LAYER="0" ORDER="5.3" STATUS="implemented">
+      <contract>
+        <purpose>Provide the project-local Codex skill that reviews specs, design docs, implementation plans, PRDs, diffs, and other artifacts through independent subagent reviewer loops until approval or an explicit blocker.</purpose>
+        <inputs>
+          <param name="review-target" type="File path, diff, pasted artifact, or latest generated artifact in conversation" />
+          <param name="source-context" type="User goal, requirements, docs, code/test pointers, constraints, and acceptance criteria" />
+          <param name="skill-contracts" type=".agents/skills/subagent-review-loop/SKILL.md and agents/openai.yaml" />
+        </inputs>
+        <outputs>
+          <param name="approved-artifact" type="Revised artifact approved by required subagent reviewer perspectives" />
+          <param name="resolution-log" type="Accepted findings, rejected findings with controller rationale, changed sections/files, and residual blockers" />
+        </outputs>
+        <errors>
+          <error code="REVIEW_TARGET_MISSING" />
+          <error code="SUBAGENT_TOOLS_UNAVAILABLE" />
+          <error code="REVIEWER_CONFLICT_UNRESOLVED" />
+          <error code="EXTERNAL_BLOCKER" />
+        </errors>
+      </contract>
+      <interface>
+        <export-skill-instructions PURPOSE="Define reviewer selection, subagent prompt contract, controller adjudication, artifact editing, and re-review closure rules." />
+        <export-openai-metadata PURPOSE="Expose display name, short description, and default prompt for Codex skill surfaces." />
+      </interface>
+      <depends>M-GRACE-WORKFLOW</depends>
+      <target>
+        <source>.agents/skills/subagent-review-loop</source>
+        <tests>Skill quick validation, metadata presence checks, file-local markup checks, and focused diff whitespace checks</tests>
+      </target>
+      <observability>
+        <log-prefix>[SubagentReviewLoop]</log-prefix>
+        <critical-block>BLOCK_REVIEW_ARTIFACT_UNTIL_APPROVED</critical-block>
+      </observability>
+      <verification-ref>V-M-SUBAGENT-REVIEW-LOOP-SKILL</verification-ref>
+      <notes>
+        <note-1>The skill keeps the main session as controller and artifact editor. Subagents are read-only reviewers; the controller validates each finding, rejects invalid comments with rationale, and re-runs affected reviewers until approval or an explicit unresolved blocker.</note-1>
+      </notes>
+    </M-SUBAGENT-REVIEW-LOOP-SKILL>
+  </Modules>
+
+  <DataFlow>
+    <DF-LOCAL-DEV NAME="LocalDevelopmentStartup" TRIGGER="Developer starts local stack">
+      <step-1>Start PostgreSQL and Redis using `docker compose -f docker/docker-compose.dev.yml up -d`.</step-1>
+      <step-2>Run `bun run dev` to start the Go API on `8090`, Vite admin SPA on `3100`, and Next public web app on `3101`.</step-2>
+      <step-3>Run `nx serve bot` separately only when Telegram bot development is needed and `BOT_TOKEN` is configured.</step-3>
+      <evidence>API health response, web-admin page load at `/users`, public web page load, and no startup errors in terminal output.</evidence>
+    </DF-LOCAL-DEV>
+    <DF-USER-GRAPHQL NAME="AdminUserGraphQLFlow" TRIGGER="Admin user domain UI or GraphQL operation">
+      <step-1>Web-admin client sends typed GraphQL operation generated from the admin schema with browser credentials included.</step-1>
+      <step-2>API GraphQL handler validates admin session context, routes to generated resolver, and calls the user service.</step-2>
+      <step-3>Service validates input, performs persistence work, and returns typed success or error union.</step-3>
+      <evidence>Focused API tests, web-admin tests, schema validation, and generated typecheck pass.</evidence>
+    </DF-USER-GRAPHQL>
+    <DF-WEB-ADMIN-AUTH NAME="WebAdminBackendAuthFlow" TRIGGER="Admin login, session lookup, logout, or createAdmin operation">
+      <step-1>API startup applies admin env overlay/defaults, runs migrations, and seeds exactly one first admin only while `admin_users` is empty.</step-1>
+      <step-2>`loginAdmin` verifies credentials, creates a Redis-backed opaque session, and sets an httpOnly `/graphql` cookie through the GraphQL cookie bridge.</step-2>
+      <step-3>Admin GraphQL requests pass credentialed CORS, origin guard, session middleware, and resolver guards before protected user/admin operations execute.</step-3>
+      <step-4>`logoutAdmin` revokes the Redis session and clears the cookie; `me` returns the current active admin or null.</step-4>
+      <evidence>Admin auth service, repository, Redis, middleware, GraphQL, web-admin transport, startup smoke, and e2e checks pass.</evidence>
+    </DF-WEB-ADMIN-AUTH>
+    <DF-USER-REST NAME="PublicUserRESTFlow" TRIGGER="Public web user domain UI or REST operation">
+      <step-1>Browser code sends same-origin REST requests to the Next `/api/users` route proxy using React Query.</step-1>
+      <step-2>Next route proxy and server code resolve `WEB_API_BASE_URL` and forward requests to the Go API REST handler.</step-2>
+      <step-3>API REST handler maps HTTP request and response envelopes to the shared user service.</step-3>
+      <step-4>Service validates input, performs persistence work, and returns transport-neutral success or domain errors.</step-4>
+      <evidence>Focused API REST handler tests, web REST client tests, web typecheck/build, and web e2e pass.</evidence>
+    </DF-USER-REST>
+    <DF-CODEGEN NAME="ApiAndWebCodegenFlow" TRIGGER="SQL query, migration, or GraphQL schema changes">
+      <step-1>Validate `libs/graphql/schema/*.graphql` and keep `apps/api/sqlc.yaml` aligned with goose migrations plus repository query SQL.</step-1>
+      <step-2>Run API sqlc generation and API gqlgen generation.</step-2>
+      <step-3>Run web-admin GraphQL codegen and typecheck.</step-3>
+      <evidence>`bun run codegen`, `bunx nx run codegen:validate`, and `bunx nx run web-admin:typecheck` complete without drift.</evidence>
+    </DF-CODEGEN>
+    <DF-COVERAGE-GATE NAME="CoverageGateFlow" TRIGGER="Developer or CI enters explicit coverage, release, or template handoff gate">
+      <step-1>Run `tools/coverage/preflight.mjs` to validate thresholds, configured profiles, summaries, and allowlist entries.</step-1>
+      <step-2>Run Go coverage profiles for API, bot, go-config, and go-logger, filtering only the explicit Go allowlist.</step-2>
+      <step-3>Run web-admin, web, and workspace tooling Vitest coverage, then compare coverage summaries to 100 percent thresholds for this explicit coverage phase.</step-3>
+      <step-4>Run Playwright e2e with Docker Compose PostgreSQL and Redis, API on `18080`, web-admin, and web sequentially.</step-4>
+      <evidence>`bun run test:coverage`, `bunx nx run web-admin:e2e`, `bunx nx run web:e2e`, and `bun run verify:coverage` pass with artifacts in `dist/coverage`, `dist/test-results/web-admin-e2e`, `dist/test-results/web-e2e`, `dist/playwright-report/web-admin`, and `dist/playwright-report/web`.</evidence>
+    </DF-COVERAGE-GATE>
+    <DF-CI-CD-RELEASE NAME="GitLabDokployReleaseFlow" TRIGGER="Merge request, develop push, main push, or SemVer tag">
+      <step-1>Merge requests run deterministic affected checks using the merge request diff base SHA.</step-1>
+      <step-2>CI jobs request explicit department runner tags for fast, full, image-build, and deploy workloads.</step-2>
+      <step-3>`develop` and `main` run `bun run verify:coverage` and publish coverage plus Playwright evidence.</step-3>
+      <step-4>`develop` builds and pushes dev images, then updates and deploys the Dokploy dev compose stack.</step-4>
+      <step-5>SemVer tags reachable from `origin/main` build immutable release images and create GitLab Release metadata.</step-5>
+      <step-6>Manual `deploy:prod` updates the Dokploy production compose image variables and triggers compose deploy.</step-6>
+      <evidence>GitLab pipeline status, image metadata artifact, GitLab Release, Dokploy update/deploy response summary, and confirmation that the `web` image is the public Next app while admin Vite deployment is not included unless a separate admin image/service is added.</evidence>
+    </DF-CI-CD-RELEASE>
+    <DF-GRACE-CHANGE NAME="GraceGovernedChange" TRIGGER="Agent performs meaningful repo change">
+      <step-1>Read requirements, technology, development plan, graph, verification plan, operational packet context, and existing file-local contracts where present.</step-1>
+      <step-2>Create or update MODULE_CONTRACT and MODULE_MAP for new or meaningfully edited governed files before changing shared behavior.</step-2>
+      <step-3>Apply scoped code and test changes.</step-3>
+      <step-4>Run focused verification, refresh GRACE artifacts, and run `grace lint --path .`.</step-4>
+      <evidence>Checkpoint report includes assumptions, commands, evidence, file-local contract delta, graph delta, and verification delta.</evidence>
+    </DF-GRACE-CHANGE>
+  </DataFlow>
+
+  <ImplementationOrder>
+    <Phase-1 name="Baseline-GRACE-Migration" status="done">
+      <goal>Replace legacy agent-docs guidance with project-local GRACE skills and shared XML artifacts.</goal>
+      <step-1 module="M-GRACE-WORKFLOW" status="done" verification="V-M-GRACE-WORKFLOW">Route agent workflow through AGENTS.md, GRACE docs, and file-local contract markup rules.</step-1>
+      <step-2 module="M-GRAPHQL-SCHEMA" status="done" verification="V-M-GRAPHQL-SCHEMA">Preserve schema as shared API contract.</step-2>
+    </Phase-1>
+    <Phase-2 name="Feature-Development" status="pending">
+      <goal>Use GRACE plan, verification, execution, refresh, and review loops for future template features.</goal>
+      <step-1 module="M-API" status="pending" verification="V-M-API">Use scoped module contracts for API behavior changes.</step-1>
+      <step-2 module="M-WEB-ADMIN" status="pending" verification="V-M-WEB-ADMIN">Use generated GraphQL client checks for web-admin changes.</step-2>
+      <step-3 module="M-WEB" status="pending" verification="V-M-WEB">Use REST client, Next route-proxy, typecheck, and browser checks for public web changes.</step-3>
+      <step-4 module="M-BOT" status="pending" verification="V-M-BOT">Use bot command tests and config checks for bot changes.</step-4>
+      <step-5 module="M-COVERAGE-GATE" status="done" verification="V-M-COVERAGE-GATE">Use the root coverage gate only for explicit 100 percent coverage work, coverage epic closeout, template handoff, or release.</step-5>
+      <step-6 module="M-CI-CD" status="done" verification="V-M-CI-CD">Use GitLab CI and Dokploy release gates for template delivery.</step-6>
+    </Phase-2>
+  </ImplementationOrder>
+
+  <ExecutionPolicy>
+    <default-profile>balanced</default-profile>
+    <controller-owns>docs/development-plan.xml, docs/knowledge-graph.xml, docs/verification-plan.xml</controller-owns>
+    <worker-owns>Only module source files and module-local tests inside the approved write scope.</worker-owns>
+    <max-fix-attempts-per-step>2</max-fix-attempts-per-step>
+    <replan-trigger>Missing dependency, contradictory contract, generated artifact drift, or unclear third-party surface.</replan-trigger>
+    <checkpoint-requirement>Every step must leave assumptions, commands run, evidence, graph delta, verification delta, and next action.</checkpoint-requirement>
+  </ExecutionPolicy>
+</DevelopmentPlan>

@@ -1,0 +1,111 @@
+{
+  "thresholds": {
+    "goStatements": 100,
+    "typescriptStatements": 100,
+    "typescriptBranches": 100,
+    "typescriptFunctions": 100,
+    "typescriptLines": 100
+  },
+  "goProjects": [
+    {
+      "name": "api",
+      "cwd": "apps/api",
+      "profile": "dist/coverage/go/api/coverage.out",
+      "packages": "./..."
+    },
+    {
+      "name": "bot",
+      "cwd": "apps/bot",
+      "profile": "dist/coverage/go/bot/coverage.out",
+      "packages": "./..."
+    },
+    {
+      "name": "go-config",
+      "cwd": "libs/go/config",
+      "profile": "dist/coverage/go/go-config/coverage.out",
+      "packages": "./..."
+    },
+    {
+      "name": "go-logger",
+      "cwd": "libs/go/logger",
+      "profile": "dist/coverage/go/go-logger/coverage.out",
+      "packages": "./..."
+    }
+  ],
+  "typescriptCoverageSummaries": [
+    {
+      "name": "web-admin",
+      "summary": "dist/coverage/web-admin/coverage-summary.json"
+    },
+    {
+      "name": "web",
+      "summary": "dist/coverage/web/coverage-summary.json"
+    },
+    {
+      "name": "workspace-tools",
+      "summary": "dist/coverage/tools/coverage-summary.json"
+    }
+  ],
+  "allowlist": [
+    {
+      "path": "apps/api/internal/graph/generated.go",
+      "reason": "gqlgen generated transport code",
+      "gate": "bunx nx run api:codegen && bunx nx build api"
+    },
+    {
+      "path": "apps/api/internal/graph/model/models_gen.go",
+      "reason": "gqlgen generated model code",
+      "gate": "bunx nx run api:codegen && bunx nx build api"
+    },
+    {
+      "path": "apps/api/internal/repository/postgres/generated/db.go",
+      "reason": "sqlc generated DBTX and Queries wrapper",
+      "gate": "bunx nx run api:codegen && bunx nx build api && TEST_COMPOSE_PROJECT=mt-sqlc-ref TEST_POSTGRES_CONTAINER_NAME=mt-sqlc-ref-postgres TEST_REDIS_CONTAINER_NAME=mt-sqlc-ref-redis TEST_POSTGRES_VOLUME=mt-sqlc-ref-pg-test-data docker compose -f docker/docker-compose.test.yml up -d --wait postgres redis && cd apps/api && COVERAGE_GATE=1 API_TEST_DATABASE_DSN=postgres://app:secret@localhost:17501/monorepo_test?sslmode=disable go test ./internal/repository/postgres -run TestUserRepo -count=1 -v"
+    },
+    {
+      "path": "apps/api/internal/repository/postgres/generated/models.go",
+      "reason": "sqlc generated table models",
+      "gate": "bunx nx run api:codegen && bunx nx build api && TEST_COMPOSE_PROJECT=mt-sqlc-ref TEST_POSTGRES_CONTAINER_NAME=mt-sqlc-ref-postgres TEST_REDIS_CONTAINER_NAME=mt-sqlc-ref-redis TEST_POSTGRES_VOLUME=mt-sqlc-ref-pg-test-data docker compose -f docker/docker-compose.test.yml up -d --wait postgres redis && cd apps/api && COVERAGE_GATE=1 API_TEST_DATABASE_DSN=postgres://app:secret@localhost:17501/monorepo_test?sslmode=disable go test ./internal/repository/postgres -run TestUserRepo -count=1 -v"
+    },
+    {
+      "path": "apps/api/internal/repository/postgres/generated/querier.go",
+      "reason": "sqlc generated query interface",
+      "gate": "bunx nx run api:codegen && bunx nx build api && TEST_COMPOSE_PROJECT=mt-sqlc-ref TEST_POSTGRES_CONTAINER_NAME=mt-sqlc-ref-postgres TEST_REDIS_CONTAINER_NAME=mt-sqlc-ref-redis TEST_POSTGRES_VOLUME=mt-sqlc-ref-pg-test-data docker compose -f docker/docker-compose.test.yml up -d --wait postgres redis && cd apps/api && COVERAGE_GATE=1 API_TEST_DATABASE_DSN=postgres://app:secret@localhost:17501/monorepo_test?sslmode=disable go test ./internal/repository/postgres -run TestUserRepo -count=1 -v"
+    },
+    {
+      "path": "apps/api/internal/repository/postgres/generated/users.sql.go",
+      "reason": "sqlc generated users query methods",
+      "gate": "bunx nx run api:codegen && bunx nx build api && TEST_COMPOSE_PROJECT=mt-sqlc-ref TEST_POSTGRES_CONTAINER_NAME=mt-sqlc-ref-postgres TEST_REDIS_CONTAINER_NAME=mt-sqlc-ref-redis TEST_POSTGRES_VOLUME=mt-sqlc-ref-pg-test-data docker compose -f docker/docker-compose.test.yml up -d --wait postgres redis && cd apps/api && COVERAGE_GATE=1 API_TEST_DATABASE_DSN=postgres://app:secret@localhost:17501/monorepo_test?sslmode=disable go test ./internal/repository/postgres -run TestUserRepo -count=1 -v"
+    },
+    {
+      "path": "apps/api/internal/repository/postgres/generated/admin_users.sql.go",
+      "reason": "sqlc generated admin users query methods",
+      "gate": "bunx nx run api:codegen && bunx nx build api && TEST_COMPOSE_PROJECT=mt-admin-sqlc-ref TEST_POSTGRES_CONTAINER_NAME=mt-admin-sqlc-ref-postgres TEST_REDIS_CONTAINER_NAME=mt-admin-sqlc-ref-redis TEST_POSTGRES_VOLUME=mt-admin-sqlc-ref-pg-test-data docker compose -f docker/docker-compose.test.yml up -d --wait postgres redis && cd apps/api && COVERAGE_GATE=1 API_TEST_DATABASE_DSN=postgres://app:secret@localhost:17501/monorepo_test?sslmode=disable go test ./internal/repository/postgres -run TestAdminRepo -count=1 -v"
+    },
+    {
+      "path": "apps/web-admin/src/shared/api/generated/**",
+      "reason": "GraphQL codegen output",
+      "gate": "bunx nx run web-admin:codegen && bunx nx run web-admin:typecheck"
+    },
+    {
+      "path": "apps/web-admin/src/main.tsx",
+      "reason": "Vite admin bootstrap entrypoint",
+      "gate": "bunx nx build web-admin && bunx nx run web-admin:e2e"
+    },
+    {
+      "path": "apps/web/next-env.d.ts",
+      "reason": "Next generated type shim",
+      "gate": "bunx nx run web:typecheck && bunx nx build web"
+    },
+    {
+      "path": "apps/api/cmd/server/main.go",
+      "reason": "API bootstrap entrypoint",
+      "gate": "Playwright health/readiness startup scenarios"
+    },
+    {
+      "path": "apps/bot/cmd/bot/main.go",
+      "reason": "Bot bootstrap entrypoint",
+      "gate": "bunx nx build bot"
+    }
+  ]
+}

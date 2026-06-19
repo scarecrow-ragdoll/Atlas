@@ -1,0 +1,24 @@
+{
+  "executors": {
+    "build": {
+      "implementation": "./src/executors/build/executor",
+      "schema": "./src/executors/build/schema.json",
+      "description": "Build a Go application"
+    },
+    "serve": {
+      "implementation": "./src/executors/serve/executor",
+      "schema": "./src/executors/serve/schema.json",
+      "description": "Serve a Go application with hot reload"
+    },
+    "test": {
+      "implementation": "./src/executors/test/executor",
+      "schema": "./src/executors/test/schema.json",
+      "description": "Run Go tests"
+    },
+    "lint": {
+      "implementation": "./src/executors/lint/executor",
+      "schema": "./src/executors/lint/schema.json",
+      "description": "Run golangci-lint"
+    }
+  }
+}

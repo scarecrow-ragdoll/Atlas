@@ -1,0 +1,21 @@
+# FILE: .agents/skills/detail-prd-wave/agents/openai.yaml
+# VERSION: 1.0.0
+# START_MODULE_CONTRACT
+#   PURPOSE: Expose UI metadata for the detail-prd-wave project skill.
+#   SCOPE: Defines display name, short description, and default invocation prompt; excludes skill workflow behavior.
+#   DEPENDS: .agents/skills/detail-prd-wave/SKILL.md.
+#   LINKS: M-PRD-WAVE-DETAILER / V-M-PRD-WAVE-DETAILER.
+#   ROLE: CONFIG
+#   MAP_MODE: SUMMARY
+# END_MODULE_CONTRACT
+# START_MODULE_MAP
+#   interface - UI-facing skill labels and default prompt.
+# END_MODULE_MAP
+# START_CHANGE_SUMMARY
+#   LAST_CHANGE: 1.0.1 - Clarified UI metadata for selected backend PRD wave detail skill.
+# END_CHANGE_SUMMARY
+
+interface:
+  display_name: 'Detail Backend PRD Wave'
+  short_description: 'Detail one approved backend PRD wave'
+  default_prompt: 'Use $detail-prd-wave to turn backend WAVE-01 from docs/prd-waves into a reviewer-approved backend wave brief while treating frontend-pages/** as dependency context only.'

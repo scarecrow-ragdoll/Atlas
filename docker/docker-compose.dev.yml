@@ -1,0 +1,48 @@
+name: mt
+
+services:
+  postgres:
+    container_name: mt-postgres
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+      POSTGRES_DB: ${POSTGRES_DB:-monorepo_dev}
+    ports:
+      - '${POSTGRES_PORT:-7501}:5432'
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-app}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    container_name: mt-redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '${REDIS_PORT:-7502}:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  bot:
+    container_name: mt-bot
+    build:
+      context: ..
+      dockerfile: docker/bot.Dockerfile
+      target: dev
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN:-}
+      - LOG_LEVEL=debug
+    volumes:
+      - ../apps/bot:/app/apps/bot
+    restart: unless-stopped
+
+volumes:
+  pg-data:

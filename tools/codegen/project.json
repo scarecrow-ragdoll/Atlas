@@ -1,0 +1,14 @@
+{
+  "name": "codegen",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/codegen",
+  "projectType": "library",
+  "targets": {
+    "validate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx vitest run --config tools/vitest.config.ts --coverage && bun run codegen && git diff --exit-code -- apps/api/internal/repository/postgres/generated apps/api/internal/graph apps/web-admin/src/shared/api/generated"
+      }
+    }
+  }
+}

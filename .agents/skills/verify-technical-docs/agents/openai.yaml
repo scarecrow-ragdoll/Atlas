@@ -1,0 +1,21 @@
+# FILE: .agents/skills/verify-technical-docs/agents/openai.yaml
+# VERSION: 1.0.0
+# START_MODULE_CONTRACT
+#   PURPOSE: Expose UI metadata for the verify-technical-docs project skill.
+#   SCOPE: Defines display name, short description, and default invocation prompt; excludes skill workflow behavior.
+#   DEPENDS: .agents/skills/verify-technical-docs/SKILL.md.
+#   LINKS: M-TECHNICAL-DOCS-VERIFIER / V-M-TECHNICAL-DOCS-VERIFIER.
+#   ROLE: CONFIG
+#   MAP_MODE: SUMMARY
+# END_MODULE_CONTRACT
+# START_MODULE_MAP
+#   interface - UI-facing skill labels and default prompt.
+# END_MODULE_MAP
+# START_CHANGE_SUMMARY
+#   LAST_CHANGE: 1.0.0 - Added UI metadata for technical docs verification skill.
+# END_CHANGE_SUMMARY
+
+interface:
+  display_name: 'Verify Technical Docs'
+  short_description: 'Find technical gaps before dev handoff'
+  default_prompt: 'Use $verify-technical-docs after $verify-product-docs to review ./docs/product-verified and write ./docs/technical-verified.'

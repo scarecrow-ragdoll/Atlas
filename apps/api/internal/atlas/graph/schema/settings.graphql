@@ -1,0 +1,26 @@
+type Settings {
+  pinEnabled: Boolean!
+  units: String!
+  defaultAiExportWeeks: Int!
+}
+
+type SettingsResult {
+  settings: Settings
+  error: SettingsError
+}
+
+type SettingsError {
+  message: String!
+  code: SettingsErrorCode!
+}
+
+enum SettingsErrorCode {
+  VALIDATION_ERROR
+  UNAUTHORIZED
+  INTERNAL_ERROR
+}
+
+input SettingsInput {
+  units: String
+  defaultAiExportWeeks: Int
+}

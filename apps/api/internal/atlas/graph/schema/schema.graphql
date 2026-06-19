@@ -1,0 +1,12 @@
+scalar Time
+
+type Query {
+  settings: SettingsResult!
+}
+
+type Mutation {
+  updateSettings(input: SettingsInput!): SettingsResult!
+  enablePin(input: PinEnableInput!): PinOperationResult!
+  disablePin(input: PinDisableInput!): PinOperationResult!
+  changePin(input: PinChangeInput!): PinOperationResult!
+}

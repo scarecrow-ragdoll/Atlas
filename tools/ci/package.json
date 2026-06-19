@@ -1,0 +1,5 @@
+{
+  "name": "@monorepo-template/ci-tools",
+  "private": true,
+  "type": "module"
+}

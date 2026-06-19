@@ -1,0 +1,21 @@
+{
+  "name": "go-logger",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/go/logger",
+  "projectType": "library",
+  "tags": ["scope:shared", "lang:go"],
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd libs/go/logger && mkdir -p ../../../dist/coverage/go/go-logger && go test -v -coverprofile=../../../dist/coverage/go/go-logger/coverage.out ./..."
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd libs/go/logger && golangci-lint run"
+      }
+    }
+  }
+}

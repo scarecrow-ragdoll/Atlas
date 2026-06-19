@@ -1,0 +1,15 @@
+{
+  "name": "graphql",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/graphql/schema",
+  "projectType": "library",
+  "tags": ["scope:shared"],
+  "targets": {
+    "validate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node -e \"const {buildSchema}=require('graphql'),fs=require('fs'),path=require('path');const d='libs/graphql/schema';const src=fs.readdirSync(d).filter(f=>f.endsWith('.graphql')).map(f=>fs.readFileSync(path.join(d,f),'utf8')).join('\\n');buildSchema(src);console.log('GraphQL schema is valid');\""
+      }
+    }
+  }
+}

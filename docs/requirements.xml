@@ -1,0 +1,192 @@
+<RequirementsAnalysis VERSION="0.2.9">
+  <Project>
+    <name>monorepo-template</name>
+    <annotation>Full-stack Nx monorepo template for a Go HTTP API, admin-only GraphQL, public REST users API, Vite admin GraphQL app, Next.js public REST web app, Telegram bot, PostgreSQL, Redis, shared Go libraries, and generated admin GraphQL clients.</annotation>
+    <keywords>monorepo-template, nx, bun, go, nextjs, vite, rest, graphql, gqlgen, postgresql, redis, telegram-bot, grace, product-verified, technical-verified, prd-waves, prd-wave-details, backend-waves</keywords>
+  </Project>
+
+  <Actors>
+    <actor-Developer>Engineer using the template to build a product monorepo.</actor-Developer>
+    <actor-Agent>AI coding agent operating under GRACE contracts and verification gates.</actor-Agent>
+    <actor-AdminUser>Admin user interacting with the generated web-admin app and GraphQL user domain.</actor-AdminUser>
+    <actor-EndUser>Public user interacting with the generated Next.js public web app and REST user domain.</actor-EndUser>
+    <actor-Operator>Developer or maintainer running local services, CI, Docker, and release gates.</actor-Operator>
+  </Actors>
+
+  <UseCases>
+    <UC-001>
+      <Actor>Developer</Actor>
+      <Action>Bootstraps local infrastructure and runs the API, web-admin app, and public web app.</Action>
+      <Goal>Verify the template works as a full-stack baseline before feature work starts.</Goal>
+      <Preconditions>Bun, Go, Docker, and Nx-compatible dependencies are installed.</Preconditions>
+      <AcceptanceCriteria>`docker compose -f docker/docker-compose.dev.yml up -d` and `bun run dev` expose the API on `8090`, web-admin on `3100`, and public web on `3101` without requiring the Telegram bot service.</AcceptanceCriteria>
+      <Priority>high</Priority>
+      <RelatedFlows>DF-LOCAL-DEV</RelatedFlows>
+    </UC-001>
+    <UC-002>
+      <Actor>AdminUser</Actor>
+      <Action>Creates, reads, updates, or deletes users through the web-admin app and admin GraphQL API.</Action>
+      <Goal>Exercise the admin reference vertical slice from Vite web-admin UI to GraphQL resolver to shared user service and persistence.</Goal>
+      <Preconditions>PostgreSQL is reachable and API migrations have run.</Preconditions>
+      <AcceptanceCriteria>GraphQL user operations at `/graphql` return typed success or stable error unions and the web-admin client renders the current user list with generated GraphQL types.</AcceptanceCriteria>
+      <Priority>high</Priority>
+      <RelatedFlows>DF-USER-GRAPHQL</RelatedFlows>
+    </UC-002>
+    <UC-003>
+      <Actor>EndUser</Actor>
+      <Action>Creates, reads, updates, or deletes users through the public web app and REST API.</Action>
+      <Goal>Exercise the public reference vertical slice from Next.js UI to REST handler to shared user service and persistence.</Goal>
+      <Preconditions>PostgreSQL is reachable and API migrations have run.</Preconditions>
+      <AcceptanceCriteria>REST user operations under `/api/users` return stable JSON envelopes and the public web client renders the current user list through React Query without GraphQL codegen.</AcceptanceCriteria>
+      <Priority>high</Priority>
+      <RelatedFlows>DF-USER-REST</RelatedFlows>
+    </UC-003>
+    <UC-004>
+      <Actor>Developer</Actor>
+      <Action>Regenerates API SQL, API GraphQL, and web-admin GraphQL artifacts after schema or query changes.</Action>
+      <Goal>Keep sqlc query output, gqlgen output, and web-admin client types aligned with the migrations, query SQL, and admin GraphQL schema.</Goal>
+      <Preconditions>`apps/api/sqlc.yaml`, `apps/api/internal/repository/postgres/migrations/*.sql`, `apps/api/internal/repository/postgres/queries/*.sql`, `libs/graphql/schema/*.graphql`, `apps/api/gqlgen.yml`, and `tools/codegen/codegen.ts` are consistent.</Preconditions>
+      <AcceptanceCriteria>`bun run codegen` completes, `bunx nx run codegen:validate` fails on generated drift, and generated files match the schema/query sources used by API and web-admin projects.</AcceptanceCriteria>
+      <Priority>high</Priority>
+      <RelatedFlows>DF-CODEGEN</RelatedFlows>
+    </UC-004>
+    <UC-005>
+      <Actor>Agent</Actor>
+      <Action>Plans, implements, verifies, and refreshes changes through GRACE artifacts.</Action>
+      <Goal>Prevent drift between requirements, module contracts, code, tests, and generated artifacts.</Goal>
+      <Preconditions>`docs/*.xml` is readable and `grace lint --path .` passes or the current failure is understood.</Preconditions>
+      <AcceptanceCriteria>Meaningful changes update `docs/development-plan.xml`, `docs/knowledge-graph.xml`, `docs/verification-plan.xml`, and file-local GRACE markup for new or meaningfully edited governed files as needed before final verification.</AcceptanceCriteria>
+      <Priority>high</Priority>
+      <RelatedFlows>DF-GRACE-CHANGE</RelatedFlows>
+    </UC-005>
+    <UC-006>
+      <Actor>Developer</Actor>
+      <Action>Runs the full coverage and e2e gate during an explicit coverage, release, or template handoff phase.</Action>
+      <Goal>Provide a strict 100 percent coverage gate for non-allowlisted handwritten Go and TypeScript behavior when that gate is explicitly requested or required for handoff, while ordinary active development stays focused on minimal behavior tests.</Goal>
+      <Preconditions>Bun, Node, Go, Docker Compose, Playwright browsers, PostgreSQL, and Redis are available locally or in CI, and the work has entered an explicit coverage phase, coverage epic closeout, release validation, or template handoff.</Preconditions>
+      <AcceptanceCriteria>`bun run verify:coverage` passes, coverage artifacts are written under `dist/coverage`, Playwright artifacts are written under `dist/test-results/web-admin-e2e`, `dist/test-results/web-e2e`, `dist/playwright-report/web-admin`, and `dist/playwright-report/web`, and generated or bootstrap exclusions are documented in `tools/coverage/coverage.config.json`.</AcceptanceCriteria>
+      <Priority>high</Priority>
+      <RelatedFlows>DF-COVERAGE-GATE</RelatedFlows>
+    </UC-006>
+    <UC-007>
+      <Actor>Operator</Actor>
+      <Action>Runs GitLab CI/CD to validate, release, and deploy template services through Dokploy.</Action>
+      <Goal>Provide a reusable deployment baseline for downstream repositories with dev auto deploys and tag-gated production releases.</Goal>
+      <Preconditions>GitLab CI variables for registry and Dokploy are configured, department group runners provide the required fast, full, image-build, and deploy tags, Docker-in-Docker is available only on protected runner classes, and the release tag is reachable from `origin/main`.</Preconditions>
+      <AcceptanceCriteria>Merge requests run affected checks on an unprivileged runner, `develop` deploys to Dokploy dev after `bun run verify:coverage`, `main` performs release-candidate validation without production deploy, SemVer tags expose manual `deploy:prod` after release images are pushed, the `web` image is the public Next app, and Vite admin deployment remains out of scope until explicitly designed.</AcceptanceCriteria>
+      <Priority>high</Priority>
+      <RelatedFlows>DF-CI-CD-RELEASE</RelatedFlows>
+    </UC-007>
+    <UC-008>
+      <Actor>Agent</Actor>
+      <Action>Runs a technical readiness loop after product documentation has been verified.</Action>
+      <Goal>Expose implementation-blocking API, data, auth, integration, operations, client-state, and testing questions before GRACE planning, Beads decomposition, or developer handoff starts.</Goal>
+      <Preconditions>`docs/product-verified` or an equivalent verified PRD package exists, and prior technical question ledgers or owner answers are available when this is a rerun.</Preconditions>
+      <AcceptanceCriteria>`$verify-technical-docs` writes `docs/technical-verified` and `.tasks/technical-docs-verify/&lt;run-id&gt;/` with traceable technical questions, answer effects, scope reviewer approvals, validation evidence, and status `approved-to-dev` only when answered questions did not create new blocking questions.</AcceptanceCriteria>
+      <Priority>medium</Priority>
+      <RelatedFlows>DF-GRACE-CHANGE</RelatedFlows>
+    </UC-008>
+    <UC-009>
+      <Actor>Agent</Actor>
+      <Action>Plans backend implementation waves after technical readiness is approved.</Action>
+      <Goal>Turn approved technical docs into strict sequential backend waves that are detailed enough for development, reviewer-approved, question-free, and explicitly user-approved before the next wave is planned.</Goal>
+      <Preconditions>`docs/technical-verified` or an equivalent technical readiness package has status `approved-to-dev`, and no open dev-blocking or owner-decision technical questions remain.</Preconditions>
+      <AcceptanceCriteria>`$plan-backend-waves` writes `docs/backend-waves` and `.tasks/backend-wave-plan/&lt;run-id&gt;/` with a shallow full backend wave map, exactly one current detailed wave, reviewer verdicts, acceptance criteria, exit criteria, verification obligations, open-question ledgers, and no next-wave detail until the current wave is ready-for-dev and explicitly user-approved.</AcceptanceCriteria>
+      <Priority>medium</Priority>
+      <RelatedFlows>DF-GRACE-CHANGE</RelatedFlows>
+    </UC-009>
+    <UC-010>
+      <Actor>Agent</Actor>
+      <Action>Splits raw and verified PRD sources plus optional technical readiness package context into top-level backend implementation waves plus per-page frontend handoff files.</Action>
+      <Goal>Give teams a reviewer-approved shallow backend wave map and one source-backed markdown handoff per frontend page before detailed wave planning, GRACE planning, Beads, Jira, or developer handoff starts.</Goal>
+      <Preconditions>`docs/product` or an equivalent raw PRD folder exists, `docs/product-verified` or an equivalent verified PRD package exists, `docs/technical-verified` is used when present, and any open technical blockers are recorded instead of hidden.</Preconditions>
+      <AcceptanceCriteria>`$decompose-prd-waves` writes `docs/prd-waves` and `.tasks/prd-wave-decomposition/&lt;run-id&gt;/` with full PRD scope coverage, backend-only shallow wave files, `frontend-pages/index.md`, one `frontend-pages/page-&lt;nnn&gt;.md` file per frontend page, raw PRD and verified PRD traceability for every page file, dependency order, reviewer verdicts, question ledgers, no implementation-level detail, and explicit user approval state before downstream detailed planning.</AcceptanceCriteria>
+      <Priority>medium</Priority>
+      <RelatedFlows>DF-GRACE-CHANGE</RelatedFlows>
+    </UC-010>
+    <UC-011>
+      <Actor>Agent</Actor>
+      <Action>Details exactly one approved backend wave.</Action>
+      <Goal>Turn a selected shallow backend wave into a code-aware, reviewer-approved ready-for-dev backend wave brief with acceptance criteria, exit criteria, verification obligations, backend implementation slices, and fit checks against neighboring backend waves.</Goal>
+      <Preconditions>`docs/prd-waves` or an equivalent shallow wave package exists, the selected backend wave is `top-level-ready` or `user-approved`, no open decomposition-blocking or owner-decision questions affect that wave, and frontend scope remains under `frontend-pages/`.</Preconditions>
+      <AcceptanceCriteria>`$detail-prd-wave` writes `docs/prd-wave-details` and `.tasks/prd-wave-detail/&lt;run-id&gt;/` for exactly one backend `WAVE-&lt;nn&gt;` with source-wave gate evidence, codebase and other-backend-wave fit evidence, read-only `frontend-pages/**` dependency context, multi-perspective reviewer verdicts, AC and EC ids, verification obligation ids, question ledgers, traceability, no frontend page/UX/route/screen implementation planning, and no detailed output for later waves.</AcceptanceCriteria>
+      <Priority>medium</Priority>
+      <RelatedFlows>DF-GRACE-CHANGE</RelatedFlows>
+    </UC-011>
+    <UC-012>
+      <Actor>AdminUser</Actor>
+      <Action>Logs in to the web-admin backend, keeps an httpOnly session, reads the current admin, logs out, and creates another admin through protected GraphQL.</Action>
+      <Goal>Provide a real backend auth foundation and frontend login guard for the web-admin app.</Goal>
+      <Preconditions>PostgreSQL and Redis are reachable, API migrations have run, and first-admin env config is present only while the admin table is empty.</Preconditions>
+      <AcceptanceCriteria>`loginAdmin` sets an httpOnly cookie, `me` identifies the current admin or returns null without a session, `logoutAdmin` revokes the session, `createAdmin` requires an authenticated admin, protected user GraphQL operations reject unauthenticated callers, public REST `/api/users` remains public, web-admin GraphQL transport sends credentialed cookie requests, `/login` renders the admin login form without the sidebar shell, every other web-admin route redirects unauthenticated users to `/login?from=...`, successful login returns to the safe same-app requested route, sidebar logout disables while pending, clears protected frontend query caches, and returns the browser to `/login`.</AcceptanceCriteria>
+      <Priority>high</Priority>
+      <RelatedFlows>DF-WEB-ADMIN-AUTH</RelatedFlows>
+    </UC-012>
+  </UseCases>
+
+  <NonGoals>
+    <item-1>This template does not define product-specific business workflows beyond the reference user domain.</item-1>
+    <item-2>This template does not keep the old agent-docs workflow side by side with GRACE.</item-2>
+    <item-3>This template does not require a repo-wide backfill of GRACE semantic markup in every historical source file before normal development can continue; new or meaningfully edited governed files do require file-local markup.</item-3>
+    <item-4>TODO(product-auth): This template defines only the web-admin backend auth foundation; downstream applications must still design product-specific ownership, tenant scoping, and per-resource authorization before exposing user-owned data.</item-4>
+    <item-5>The technical readiness loop does not replace architecture design, GRACE planning, or implementation planning; it only decides whether enough technical questions are closed to start them safely.</item-5>
+    <item-6>The backend wave planner does not implement backend code and does not create or mutate Jira issues unless the user explicitly requests a separate Jira action.</item-6>
+    <item-7>The PRD wave decomposer does not detail each wave, does not turn frontend pages into waves, and does not create Beads, Jira issues, module designs, acceptance criteria, test plans, migrations, API payloads, or code.</item-7>
+    <item-8>The detailed backend PRD wave planner does not implement code, mutate Beads/Jira, plan frontend scope, or detail multiple waves in one run; it produces one selected backend-wave handoff package.</item-8>
+    <item-9>The web framework swap does not add a production deployment path for the Vite web-admin app; admin deployment remains an explicit follow-up design unless a separate wave adds a static-serving service.</item-9>
+  </NonGoals>
+
+  <Constraints>
+    <constraint-1>Use Bun workspaces and Nx targets as the primary project command surface.</constraint-1>
+    <constraint-2>Use Go modules per Go app or shared Go library; keep local replace directives aligned.</constraint-2>
+    <constraint-3>GraphQL schema in `libs/graphql/schema` is admin-only after the web split; it drives API gqlgen and web-admin client generation, not the public web app.</constraint-3>
+    <constraint-4>Never log secrets, credentials, raw tokens, passwords, or high-risk payloads.</constraint-4>
+    <constraint-5>GRACE artifacts under `docs/*.xml` are the durable agent workflow contract.</constraint-5>
+    <constraint-6>The coverage gate enforces 100 percent Go statement coverage and 100 percent TypeScript statement, branch, function, and line coverage for non-allowlisted handwritten code when the gate is invoked.</constraint-6>
+    <constraint-6a>During active development, agents must write the minimal useful tests needed to prove the changed behavior and must not chase 100 percent coverage unless the user explicitly asks for it or the task is a coverage-policy, coverage epic, release, or template handoff phase.</constraint-6a>
+    <constraint-7>Playwright e2e and coverage-gate integration checks use dedicated test infrastructure from `docker/docker-compose.test.yml`, `monorepo_test`, PostgreSQL port `17501`, Redis port `17502`, and isolated API/web ports `18080` and `13000`.</constraint-7>
+    <constraint-8>Production deployment is allowed only from SemVer tags reachable from `origin/main`.</constraint-8>
+    <constraint-9>Dokploy deployment must use GitLab-built images and must update the target compose image variables before deploy.</constraint-9>
+    <constraint-9a>Template CI jobs must request explicit department runner tags; Docker-in-Docker workloads must be isolated to protected runner classes.</constraint-9a>
+    <constraint-10>Public web user flows must use REST under `/api/users`; do not add GraphQL codegen or GraphQL transport dependencies to `apps/web`.</constraint-10>
+    <constraint-10a>Public web browser code must call same-origin Next route handlers under `/api/users`; Next server and route-proxy code must read runtime `WEB_API_BASE_URL` instead of production `NEXT_PUBLIC_*` API bundle configuration.</constraint-10a>
+    <constraint-10b>Public web UI primitives must live under `apps/web/src/shared/ui/**` and remain independent from `apps/web-admin/src/shared/ui/**`; do not import web-admin UI files into `apps/web`.</constraint-10b>
+    <constraint-11>GraphQL and REST adapters must share the same user domain service so transport mappings do not fork business behavior.</constraint-11>
+    <constraint-12>Web-admin GraphQL uses Redis-backed httpOnly admin sessions; downstream products must add product-specific owner, tenant, and resource authorization checks where required.</constraint-12>
+    <constraint-13>Agents must maintain file-local `MODULE_CONTRACT`, `MODULE_MAP`, function or block anchors where useful, and `CHANGE_SUMMARY` entries for new or meaningfully edited governed source, test, tooling, config, script, CI, Docker, and durable documentation files outside `docs/*.xml`; shared GRACE XML artifacts are governed by their XML structure directly.</constraint-13>
+    <constraint-14>`$verify-technical-docs` must not mark a package `approved-to-dev` while open implementation-blocking technical questions remain or while answers to previous questions create new blocking follow-up questions.</constraint-14>
+    <constraint-15>`$plan-backend-waves` must not start without technical status `approved-to-dev`, must not plan wave N+1 before wave N is ready-for-dev and explicitly user-approved, and must stop for re-scope when the backend requires more than 8 tentative waves unless the user confirms a non-MVP release scope.</constraint-15>
+    <constraint-16>`$decompose-prd-waves` must use subagent scope-mappers and reviewer approval, must keep every backend wave shallow and backend-only, must capture frontend scope under `frontend-pages/` with one markdown file per page sourced from raw and verified PRDs, must cover the full verified PRD scope or record explicit deferrals, and must stop for re-scope when an MVP-sized product needs more than 8 top-level backend waves unless the user confirms a broader release scope.</constraint-16>
+    <constraint-17>`$detail-prd-wave` must focus on exactly one selected backend wave, must use nested specialist planner and reviewer subagents, must read relevant code and neighboring backend waves for fit, may read `frontend-pages/**` only as dependency context, must block ready-for-dev while open wave-blocking or owner-decision questions remain, must not detail future waves, and must not plan frontend pages, UX states, screens, routes, navigation, or frontend implementation.</constraint-17>
+    <constraint-18>web-admin admin pages under `apps/web-admin/src/pages/**` must use the approved bare `@shared/ui` UI-kit surface for UI primitives and admin page compositions; direct page imports from `@shared/ui/*`, `@/shared/ui`, `@/shared/ui/*`, relative `shared/ui` paths, Radix packages, shadcn implementation subpaths, class composition helpers, and icon libraries are disallowed by ESLint.</constraint-18>
+  </Constraints>
+
+  <Risks>
+    <risk-1>Schema, generated API code, and generated web-admin client types can drift if codegen is skipped after GraphQL changes.</risk-1>
+    <risk-2>Nx target health depends on multiple runtimes: Bun, Node, Go, Docker, and external CLIs such as golangci-lint and air.</risk-2>
+    <risk-3>Agent workflow drift can return if stale legacy commands or old durable-docs references are reintroduced.</risk-3>
+    <risk-4>Generated files can create noisy diffs if they are regenerated with a different toolchain version.</risk-4>
+    <risk-5>The full gate can fail for environment reasons if Docker, Playwright browser binaries, or the Go coverage toolchain are unavailable.</risk-5>
+    <risk-6>Destructive repository tests can damage local development data if test gates ever fall back to `monorepo_dev`; gate runners and repository cleanup helpers must fail before cleanup when a DSN is unsafe.</risk-6>
+    <risk-7>CI runner images can drift from the required Bun, Go, Docker, Playwright, xmllint, and GRACE toolchain if bootstrap checks are weakened.</risk-7>
+    <risk-8>Dokploy can redeploy stale images if CI triggers compose deploy without first updating the target compose image variables.</risk-8>
+    <risk-8a>Privileged Docker-in-Docker runners can expose the runner host if they accept untrusted jobs; keep them protected, limited to one concurrent job each, and separate from merge request runners.</risk-8a>
+    <risk-9>Admin GraphQL and public REST mappings can drift if both adapters stop calling the shared `UserService` contract.</risk-9>
+    <risk-10>TODO(product-auth): Treating web-admin admin-session authentication as full product authorization can expose cross-user or cross-tenant data; product repositories and services must enforce owner/tenant scope where the product requires it.</risk-10>
+    <risk-11>File-local GRACE markup can drift from shared XML contracts if agents update one surface without refreshing the other.</risk-11>
+    <risk-12>Developer handoff can start with hidden rework if product-verified docs are not followed by a technical question loop that records source gaps, owner answers, and second-order blockers.</risk-12>
+    <risk-13>Backend decomposition can hide scope creep if future waves are detailed before prior waves are approved, or if more than 8 waves are accepted as an MVP without an explicit re-scope decision.</risk-13>
+    <risk-14>PRD wave decomposition can become a false implementation plan if agents add per-wave tasks, put frontend pages into waves, acceptance criteria, API payloads, migrations, Beads, Jira issues, or code instead of preserving backend-only waves plus separate raw-and-verified-sourced frontend page files.</risk-14>
+    <risk-15>Detailed backend wave planning can create rework if AC, EC, tests, or implementation slices ignore the existing codebase, duplicate neighboring backend waves, proceed from an unapproved shallow wave boundary, or pull frontend page planning out of `frontend-pages/**`.</risk-15>
+    <risk-16>Admin UI consistency can drift if future pages bypass `@shared/ui`; web-admin lint must enforce the page import boundary.</risk-16>
+    <risk-17>Public web UI consistency can drift if `apps/web` imports web-admin primitives or bypasses its local UI-kit barrel; focused web tests must cover the independent public UI surface.</risk-17>
+    <risk-18>Credentialed web-admin GraphQL can become vulnerable to CSRF or CORS leakage if `ADMIN_ORIGINS`, credentialed CORS, and the admin origin guard drift apart.</risk-18>
+    <risk-19>Redis admin sessions can remain valid after rollback or admin deactivation if revocation paths and `admin_session:*` cleanup are skipped.</risk-19>
+    <risk-20>Generated admin sqlc output can drift from `admin_users` migrations and query SQL if `bunx nx run api:codegen` and the admin repository replacement gate are skipped.</risk-20>
+  </Risks>
+
+  <OpenQuestions>
+    <question-1>Should CI publish `dist/coverage` and Playwright reports as retained artifacts for every release candidate?</question-1>
+    <question-2>Resolved 2026-06-05: API sqlc output, API gqlgen output, and web-admin client output stay committed; CI and local validation regenerate and compare generated artifacts to catch drift.</question-2>
+  </OpenQuestions>
+</RequirementsAnalysis>

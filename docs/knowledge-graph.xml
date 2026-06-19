@@ -1,0 +1,367 @@
+<KnowledgeGraph>
+  <Project NAME="monorepo-template" VERSION="0.2.9">
+    <keywords>monorepo-template, nx, bun, go, nextjs, vite, rest, graphql, gqlgen, postgresql, redis, telegram-bot, grace, product-verified, technical-verified, prd-waves, prd-wave-details, backend-waves</keywords>
+    <annotation>Full-stack Nx monorepo template governed by GRACE artifacts and verification gates.</annotation>
+
+    <M-GRACE-WORKFLOW NAME="GraceAgentWorkflow" TYPE="UTILITY" STATUS="implemented">
+      <purpose>Agent operating guide, shared GRACE artifacts, operational packet templates, and file-local semantic markup rules for meaningful repo changes.</purpose>
+      <path>AGENTS.md</path>
+      <path>docs/requirements.xml</path>
+      <path>docs/technology.xml</path>
+      <path>docs/development-plan.xml</path>
+      <path>docs/knowledge-graph.xml</path>
+      <path>docs/verification-plan.xml</path>
+      <path>docs/operational-packets.xml</path>
+      <depends>none</depends>
+      <verification-ref>V-M-GRACE-WORKFLOW</verification-ref>
+      <annotations>
+        <export-agentGuide PURPOSE="Route agents through GRACE skills, docs-first workflow, focused verification, and file-local markup rules." />
+        <export-fileLocalContracts PURPOSE="Require MODULE_CONTRACT, MODULE_MAP, semantic anchors, and CHANGE_SUMMARY for new or meaningfully edited governed files." />
+        <export-changeFlow PURPOSE="Define the read, contract, implement, verify, refresh, and lint sequence." />
+        <export-operationalPackets PURPOSE="Define worker packet, graph delta, verification delta, and failure handoff shapes." />
+      </annotations>
+    </M-GRACE-WORKFLOW>
+
+    <M-WORKSPACE NAME="WorkspaceOrchestration" TYPE="UTILITY" STATUS="implemented">
+      <purpose>Root package scripts, Nx configuration, project target graph, and shared development commands.</purpose>
+      <path>package.json</path>
+      <path>nx.json</path>
+      <depends>none</depends>
+      <verification-ref>V-M-WORKSPACE</verification-ref>
+      <annotations>
+        <export-dev PURPOSE="Run local API, web-admin, and public web serve targets through Nx without requiring bot credentials." />
+        <export-build PURPOSE="Run all build targets through Nx." />
+        <export-test PURPOSE="Run all test targets through Nx." />
+        <export-lint PURPOSE="Run all lint targets through Nx." />
+        <export-codegen PURPOSE="Run API sqlc, API gqlgen, and web-admin GraphQL codegen targets with generated-drift validation." />
+        <export-verifyCoverage PURPOSE="Run the full coverage, e2e, XML, and GRACE handoff gate during explicit coverage, release, or template handoff phases." />
+      </annotations>
+    </M-WORKSPACE>
+
+    <M-COVERAGE-GATE NAME="CoverageGate" TYPE="UTILITY" STATUS="implemented">
+      <purpose>Repo-local coverage and e2e gate enforcing 100 percent thresholds for non-allowlisted code only when an explicit coverage, release, or template handoff phase invokes it.</purpose>
+      <path>tools/coverage</path>
+      <path>tools/vitest.config.ts</path>
+      <path>apps/web-admin/e2e</path>
+      <path>apps/web/e2e</path>
+      <path>docker/docker-compose.test.yml</path>
+      <path>apps/api/internal/testinfra</path>
+      <depends>M-WORKSPACE, M-GRAPHQL-SCHEMA, M-API, M-WEB-ADMIN, M-WEB, M-BOT</depends>
+      <verification-ref>V-M-COVERAGE-GATE</verification-ref>
+      <annotations>
+        <export-run PURPOSE="Run the root coverage gate." />
+        <export-config PURPOSE="Define thresholds, Go profiles, TypeScript summaries, and allowlist." />
+        <export-e2ePreflight PURPOSE="Start Docker Compose PostgreSQL and Redis for Playwright." />
+        <export-playwrightMatrix PURPOSE="Verify API health/readiness, admin GraphQL CRUD, and public REST browser users flows in Chromium." />
+        <export-testCompose PURPOSE="Start isolated PostgreSQL and Redis for coverage and e2e gates." />
+        <export-safeDatabaseTarget PURPOSE="Reject `monorepo_dev`, dev port `7501`, empty DSNs, and malformed DSNs before destructive cleanup." />
+      </annotations>
+    </M-COVERAGE-GATE>
+
+    <M-CI-CD NAME="GitLabDokployCICD" TYPE="UTILITY" STATUS="implemented">
+      <purpose>GitLab CI/CD pipeline, department runner pool contract, tested CI helpers, image publishing, release metadata, public Next web image deployment, and Dokploy compose deployment contract.</purpose>
+      <path>.gitlab-ci.yml</path>
+      <path>tools/ci</path>
+      <path>deploy/dokploy</path>
+      <path>docs/infrastructure/ci-cd.md</path>
+      <path>docs/infrastructure/gitlab-runners.md</path>
+      <depends>M-WORKSPACE, M-COVERAGE-GATE, M-API, M-WEB-ADMIN, M-WEB, M-BOT</depends>
+      <verification-ref>V-M-CI-CD</verification-ref>
+      <annotations>
+        <export-pipeline PURPOSE="Run GitLab CI workflow for MR, develop, main, and release tags." />
+        <export-releaseGate PURPOSE="Assert production tags are SemVer and reachable from origin/main." />
+        <export-imageMetadata PURPOSE="Record service image refs, digests, commit SHA, and pipeline ID." />
+        <export-dokployDeploy PURPOSE="Update Dokploy compose image variables plus WEB_API_BASE_URL and trigger compose deployment." />
+        <export-runnerPool PURPOSE="Define department group runner tags, concurrency, protected-runner boundaries, and Docker-in-Docker guardrails." />
+      </annotations>
+    </M-CI-CD>
+
+    <M-GO-CONFIG NAME="GoConfig" TYPE="UTILITY" STATUS="implemented">
+      <purpose>Shared Go config loading and validation package for API and bot apps.</purpose>
+      <path>libs/go/config</path>
+      <depends>none</depends>
+      <verification-ref>V-M-GO-CONFIG</verification-ref>
+      <annotations>
+        <export-Load PURPOSE="Load configuration from files and environment." />
+        <export-Validate PURPOSE="Validate configuration structs." />
+        <type-Config PURPOSE="Application config type surface." />
+      </annotations>
+    </M-GO-CONFIG>
+
+    <M-GO-LOGGER NAME="GoLogger" TYPE="UTILITY" STATUS="implemented">
+      <purpose>Shared zap logger package, request ID helpers, context helpers, and HTTP middleware.</purpose>
+      <path>libs/go/logger</path>
+      <depends>none</depends>
+      <verification-ref>V-M-GO-LOGGER</verification-ref>
+      <annotations>
+        <export-New PURPOSE="Create configured logger instances." />
+        <export-FromContext PURPOSE="Read request-scoped logger values from context." />
+        <export-Middleware PURPOSE="Attach logging and request ID behavior to HTTP handlers." />
+      </annotations>
+    </M-GO-LOGGER>
+
+    <M-GRAPHQL-SCHEMA NAME="GraphQLSchema" TYPE="CORE_LOGIC" STATUS="implemented">
+      <purpose>Admin GraphQL SDL for user, pagination, error, and web-admin backend auth contracts.</purpose>
+      <path>libs/graphql/schema</path>
+      <path>libs/graphql/schema/admin_auth.graphql</path>
+      <depends>none</depends>
+      <verification-ref>V-M-GRAPHQL-SCHEMA</verification-ref>
+      <annotations>
+        <type-Query PURPOSE="Read user and users connection operations." />
+        <type-Mutation PURPOSE="Create, update, and delete user operations." />
+        <type-User PURPOSE="Reference user domain object." />
+        <type-CreateUserResult PURPOSE="Typed create-user success and error union." />
+        <type-UpdateUserResult PURPOSE="Typed update-user success and error union." />
+        <type-AdminUser PURPOSE="Current admin identity returned by session-backed auth operations." />
+        <type-AdminAuthResult PURPOSE="Typed login, logout, and create-admin success/error unions." />
+      </annotations>
+    </M-GRAPHQL-SCHEMA>
+
+    <M-API NAME="GoSharedHTTPAPI" TYPE="ENTRY_POINT" STATUS="implemented">
+      <purpose>Go HTTP API serving health, protected admin GraphQL, and public REST endpoints with goose migrations, sqlc-generated user/admin queries, and Redis-backed admin sessions.</purpose>
+      <path>apps/api</path>
+      <path>apps/api/sqlc.yaml</path>
+      <path>apps/api/internal/service/admin_auth.go</path>
+      <path>apps/api/internal/repository/postgres/admin_repo.go</path>
+      <path>apps/api/internal/repository/postgres/queries/admin_users.sql</path>
+      <path>apps/api/internal/repository/redis/admin_session_store.go</path>
+      <path>apps/api/internal/middleware/admin_auth.go</path>
+      <path>apps/api/internal/middleware/admin_origin.go</path>
+      <path>apps/api/internal/repository/postgres/queries</path>
+      <path>apps/api/internal/repository/postgres/generated</path>
+      <depends>M-GO-CONFIG, M-GO-LOGGER, M-GRAPHQL-SCHEMA</depends>
+      <verification-ref>V-M-API</verification-ref>
+      <annotations>
+        <export-main PURPOSE="API startup, config, middleware, REST routes, GraphQL server, and graceful shutdown." />
+        <fn-health PURPOSE="Health endpoint handler." />
+        <fn-userRepository PURPOSE="PostgreSQL users repository adapter backed by sqlc-generated pgx/v5 queries." />
+        <fn-userHandlers PURPOSE="REST `/api/users` handler entry points for public user operations." />
+        <fn-userResolvers PURPOSE="Generated admin GraphQL resolver entry points for user operations." />
+        <class-UserService PURPOSE="Reference user domain service." />
+        <class-AdminAuthService PURPOSE="First-admin bootstrap, login, current admin, create admin, and logout service." />
+        <fn-adminSessionStore PURPOSE="Redis-backed opaque session store using HMAC-derived keys." />
+        <fn-adminAuthMiddleware PURPOSE="Session-cookie principal hydration, GraphQL cookie bridge, and admin origin guard." />
+      </annotations>
+    </M-API>
+
+    <M-WEB-ADMIN NAME="ViteWebAdminApp" TYPE="UI_COMPONENT" STATUS="implemented">
+      <purpose>Vite web-admin SPA using cookie-credentialed GraphQL transport, generated GraphQL client types, React Router, and React Query.</purpose>
+      <path>apps/web-admin</path>
+      <path>apps/web-admin/src/shared/api/graphql-client.ts</path>
+      <path>apps/web-admin/src/entities/admin-auth</path>
+      <path>apps/web-admin/src/app/protected-admin-layout.tsx</path>
+      <path>apps/web-admin/src/app/admin-navigation.ts</path>
+      <path>apps/web-admin/src/pages/login-page.tsx</path>
+      <path>apps/web-admin/src/shared/ui</path>
+      <path>apps/web-admin/src/shared/ui/layout/admin-app-shell.tsx</path>
+      <path>apps/web-admin/src/shared/ui/primitives/sidebar.tsx</path>
+      <path>apps/web-admin/src/pages/ui-kit-page.tsx</path>
+      <depends>M-GRAPHQL-SCHEMA, M-API</depends>
+      <verification-ref>V-M-WEB-ADMIN</verification-ref>
+      <annotations>
+        <export-ViteRouter PURPOSE="Vite React Router pages for admin home, users list, create, and detail routes." />
+        <export-Providers PURPOSE="Web provider wiring." />
+        <export-GeneratedGraphQLClient PURPOSE="Generated GraphQL operations and types." />
+        <export-AdminAuthOperations PURPOSE="Generated-visible loginAdmin, logoutAdmin, CurrentAdmin, and createAdmin operation documents." />
+        <export-AdminAuthFrontend PURPOSE="CurrentAdmin-backed auth provider, auth GraphQL helpers, safe return-to parsing, and shell user mapping." />
+        <export-ProtectedAdminLayout PURPOSE="Protects every non-login web-admin route before rendering the sidebar shell." />
+        <export-LoginPage PURPOSE="Public login form for backend cookie-backed admin sessions." />
+        <export-SidebarLogout PURPOSE="Sidebar user-menu logout action that revokes the backend session, disables while pending, clears protected frontend query caches, and returns to login." />
+        <export-UiKit PURPOSE="Approved Radix Rhea @shared/ui primitive, sidebar-07 shell, theme toggle, and layout surface for admin pages with zinc/sidebar base tokens and indigo theme accents." />
+        <export-UiKitReferenceRoute PURPOSE="Visible /ui-kit route demonstrating approved admin components." />
+        <export-SidebarShell PURPOSE="Adapt shadcn sidebar-07 into the global web-admin shell with app-owned route metadata and shared UI rendering." />
+        <constraint-PageUiImports PURPOSE="Admin pages import UI from @shared/ui only, enforced by web-admin ESLint." />
+      </annotations>
+    </M-WEB-ADMIN>
+
+    <M-WEB NAME="NextPublicWebApp" TYPE="UI_COMPONENT" STATUS="implemented">
+      <purpose>Next.js public web app using REST users client, React Query client components, and an independent public UI-kit surface.</purpose>
+      <path>apps/web</path>
+      <path>apps/web/src/shared/ui</path>
+      <depends>M-API</depends>
+      <verification-ref>V-M-WEB</verification-ref>
+      <annotations>
+        <export-AppRouter PURPOSE="Next.js App Router public page and layout." />
+        <export-RestUsersClient PURPOSE="REST users client for `/api/users` JSON envelopes." />
+        <export-Config PURPOSE="Same-origin browser REST base plus server/runtime WEB_API_BASE_URL parsing and defaults." />
+        <export-UiKit PURPOSE="Independent Radix Rhea apps/web @shared/ui primitive and theme toggle surface for public pages with Tailwind v4 semantic zinc base tokens and indigo theme accents." />
+        <constraint-IndependentUiKit PURPOSE="Public web UI primitives remain separate from web-admin UI primitives." />
+      </annotations>
+    </M-WEB>
+
+    <M-BOT NAME="TelegramBot" TYPE="ENTRY_POINT" STATUS="implemented">
+      <purpose>Telegram bot app with config, logging middleware, recovery middleware, and command handlers.</purpose>
+      <path>apps/bot</path>
+      <depends>M-GO-CONFIG, M-GO-LOGGER</depends>
+      <verification-ref>V-M-BOT</verification-ref>
+      <annotations>
+        <export-main PURPOSE="Bot startup, middleware, handlers, and graceful shutdown." />
+        <fn-startHandler PURPOSE="Handle start command." />
+        <fn-helpHandler PURPOSE="Handle help command." />
+        <fn-defaultHandler PURPOSE="Handle fallback messages." />
+      </annotations>
+    </M-BOT>
+
+    <M-PRODUCT-DOCS NAME="ProductDocs" TYPE="UTILITY" STATUS="partial">
+      <purpose>Product background, glossary, journeys, personas, business rules, and data dictionary used as planning context.</purpose>
+      <path>docs/product</path>
+      <depends>none</depends>
+      <verification-ref>V-M-PRODUCT-DOCS</verification-ref>
+      <annotations>
+        <export-product-index PURPOSE="Navigate product background documents." />
+      </annotations>
+    </M-PRODUCT-DOCS>
+
+    <M-PRODUCT-DOCS-VERIFIER NAME="ProductDocsVerifierSkill" TYPE="UTILITY" STATUS="implemented">
+      <purpose>Project-local Codex skill whose main controller launches primary scope-orchestrators, records source deltas for new docs or answered questions, aggregates outputs, stages structure under `.tasks`, runs the consistency scope, then synthesizes source-backed facts and approved derivations into `docs/product-verified` after approval.</purpose>
+      <path>.agents/skills/verify-product-docs</path>
+      <path>docs/product-verified</path>
+      <path>.tasks/product-docs-verify</path>
+      <depends>M-PRODUCT-DOCS</depends>
+      <verification-ref>V-M-PRODUCT-DOCS-VERIFIER</verification-ref>
+      <annotations>
+        <export-skill-instructions PURPOSE="Guide review, synthesis, traceability, and validation." />
+        <export-output-contract PURPOSE="Define required verified product docs structure, including traceability and derivation logs." />
+        <export-scope-orchestrator-contract PURPOSE="Define the main controller, per-scope orchestrator role, dispatch phases, write ownership, worker/reviewer prompts, approval loop, source-delta handling, interruption retry policy, consistency relaunch behavior, and question ledger." />
+        <export-scaffold-script PURPOSE="Scaffold staging verified docs from complete source inventory." />
+        <export-validate-script PURPOSE="Validate final verified docs, traceability, derivations, and question sync before handoff." />
+      </annotations>
+    </M-PRODUCT-DOCS-VERIFIER>
+
+    <M-TECHNICAL-DOCS-VERIFIER NAME="TechnicalDocsVerifierSkill" TYPE="UTILITY" STATUS="implemented">
+      <purpose>Project-local Codex skill for consuming `docs/product-verified`, running technical scope-orchestrator loops, preserving question-answer deltas, and producing `docs/technical-verified` with `approved-to-dev` only when no blocking technical questions or answer-spawned blockers remain.</purpose>
+      <path>.agents/skills/verify-technical-docs</path>
+      <path>docs/technical-verified</path>
+      <path>.tasks/technical-docs-verify</path>
+      <depends>M-PRODUCT-DOCS-VERIFIER, M-GRACE-WORKFLOW</depends>
+      <verification-ref>V-M-TECHNICAL-DOCS-VERIFIER</verification-ref>
+      <annotations>
+        <export-skill-instructions PURPOSE="Guide technical readiness review, question-loop reruns, approval gating, and validation." />
+        <export-output-contract PURPOSE="Define required technical-verified docs structure, statuses, stable ids, and question ledger format." />
+        <export-scope-orchestrator-contract PURPOSE="Define technical review scopes, nested worker/reviewer loops, answer-effect checks, write ownership, and prompt templates." />
+        <export-scaffold-script PURPOSE="Scaffold staging technical docs from a verified product source inventory." />
+        <export-validate-script PURPOSE="Validate final technical docs, placeholder policy, status values, and open blocking question invariants." />
+        <export-openai-metadata PURPOSE="Expose Codex UI metadata for the skill." />
+      </annotations>
+    </M-TECHNICAL-DOCS-VERIFIER>
+
+    <M-PRD-WAVE-DECOMPOSER NAME="PrdWaveDecomposerSkill" TYPE="UTILITY" STATUS="implemented">
+      <purpose>Project-local Codex skill for consuming raw PRD, verified PRD, and optional technical readiness docs, running subagent scope-mapper and reviewer loops, and producing `docs/prd-waves` as a shallow backend-only implementation wave map plus per-page frontend handoff files.</purpose>
+      <path>.agents/skills/decompose-prd-waves</path>
+      <path>docs/prd-waves</path>
+      <path>.tasks/prd-wave-decomposition</path>
+      <depends>M-PRODUCT-DOCS-VERIFIER, M-TECHNICAL-DOCS-VERIFIER, M-GRACE-WORKFLOW</depends>
+      <verification-ref>V-M-PRD-WAVE-DECOMPOSER</verification-ref>
+      <annotations>
+        <export-skill-instructions PURPOSE="Guide raw and verified source gating, shallow backend wave mapping, per-page frontend files, subagent orchestration, reviewer approval, and validation." />
+        <export-output-contract PURPOSE="Define prd-waves docs structure, statuses, stable ids, reviewer verdicts, backend-only wave restrictions, per-page frontend restrictions, raw/verified PRD traceability, question ledgers, and approval gates." />
+        <export-scope-orchestrator-contract PURPOSE="Define scope-mapper, mapper worker, reviewer, final consistency, write ownership, retry policy, and prompt templates." />
+        <export-scaffold-script PURPOSE="Scaffold staging PRD wave docs from raw product, verified product, and technical source inventories." />
+        <export-validate-script PURPOSE="Validate PRD wave docs, reviewer approvals, stable ids, frontend page files, raw/verified page traceability, shallow-only restrictions, and open blocker sync." />
+        <export-openai-metadata PURPOSE="Expose Codex UI metadata for the skill." />
+      </annotations>
+    </M-PRD-WAVE-DECOMPOSER>
+
+    <M-PRD-WAVE-DETAILER NAME="PrdWaveDetailerSkill" TYPE="UTILITY" STATUS="implemented">
+      <purpose>Project-local Codex skill for consuming one approved shallow backend PRD wave, checking codebase and neighboring-backend-wave fit, reading frontend-pages dependency context, running nested specialist planner and reviewer loops, and producing `docs/prd-wave-details` with one ready-for-dev selected backend wave brief.</purpose>
+      <path>.agents/skills/detail-prd-wave</path>
+      <path>docs/prd-wave-details</path>
+      <path>.tasks/prd-wave-detail</path>
+      <depends>M-PRD-WAVE-DECOMPOSER, M-PRODUCT-DOCS-VERIFIER, M-TECHNICAL-DOCS-VERIFIER, M-GRACE-WORKFLOW</depends>
+      <verification-ref>V-M-PRD-WAVE-DETAILER</verification-ref>
+      <annotations>
+        <export-skill-instructions PURPOSE="Guide selected backend-wave source gating, codebase and neighboring-backend-wave context inventory, frontend-pages dependency context, one-wave subagent orchestration, reviewer approval, question capture, and user approval pause points." />
+        <export-output-contract PURPOSE="Define prd-wave-details docs structure, statuses, stable ids, reviewer verdicts, AC/EC/test ids, question ledgers, and ready-for-dev gates." />
+        <export-wave-orchestrator-contract PURPOSE="Define specialist planner, reviewer, final fit review, write ownership, retry policy, and prompt templates." />
+        <export-scaffold-script PURPOSE="Scaffold staging detailed backend PRD wave docs for one selected backend wave from shallow backend wave, product, technical, and frontend-pages context inventories." />
+        <export-validate-script PURPOSE="Validate detailed backend PRD wave docs, backend-only ready-for-dev invariants, reviewer approvals, criteria ids, codebase fit, and open blocker sync." />
+        <export-openai-metadata PURPOSE="Expose Codex UI metadata for the skill." />
+      </annotations>
+    </M-PRD-WAVE-DETAILER>
+
+    <M-BACKEND-WAVE-PLANNER NAME="BackendWavePlannerSkill" TYPE="UTILITY" STATUS="implemented">
+      <purpose>Project-local Codex skill for consuming approved technical readiness docs, building a shallow full backend wave map, and producing exactly one current reviewer-approved ready-for-dev backend wave before asking for explicit user approval to continue.</purpose>
+      <path>.agents/skills/plan-backend-waves</path>
+      <path>docs/backend-waves</path>
+      <path>.tasks/backend-wave-plan</path>
+      <depends>M-TECHNICAL-DOCS-VERIFIER, M-GRACE-WORKFLOW</depends>
+      <verification-ref>V-M-BACKEND-WAVE-PLANNER</verification-ref>
+      <annotations>
+        <export-skill-instructions PURPOSE="Guide technical approval gating, sequential wave planning, reviewer approval, question capture, and user approval pause points." />
+        <export-output-contract PURPOSE="Define backend-waves docs structure, statuses, stable ids, reviewer verdicts, question ledgers, and approval gates." />
+        <export-wave-orchestrator-contract PURPOSE="Define wave planner/reviewer roles, required reviewer perspectives, write ownership, retry policy, and prompt templates." />
+        <export-scaffold-script PURPOSE="Scaffold staging backend wave docs from approved technical and product source inventories." />
+        <export-validate-script PURPOSE="Validate backend wave docs, ready-for-dev invariants, reviewer approvals, criteria ids, and open blocker sync." />
+        <export-openai-metadata PURPOSE="Expose Codex UI metadata for the skill." />
+      </annotations>
+    </M-BACKEND-WAVE-PLANNER>
+
+    <M-PLAN-TO-BEADS-SKILL NAME="PlanToBeadsSkill" TYPE="UTILITY" STATUS="implemented">
+      <purpose>Project-local Codex skill for converting source plans into source-anchored Beads milestone, implementation, full-test-coverage, pre-MR-QA epic, and task graphs.</purpose>
+      <path>.agents/skills/plan-to-beads</path>
+      <depends>M-GRACE-WORKFLOW</depends>
+      <verification-ref>V-M-PLAN-TO-BEADS-SKILL</verification-ref>
+      <annotations>
+        <export-skill-instructions PURPOSE="Guide semantic-loss control, requirement mapping, milestone-plus-three-epic structure, acceptance criteria, delivery contours, and QA closure." />
+        <export-openai-metadata PURPOSE="Expose Codex UI metadata for the skill." />
+      </annotations>
+    </M-PLAN-TO-BEADS-SKILL>
+
+    <M-SUBAGENT-REVIEW-LOOP-SKILL NAME="SubagentReviewLoopSkill" TYPE="UTILITY" STATUS="implemented">
+      <purpose>Project-local Codex skill for running independent subagent review loops over specs, plans, diffs, and other artifacts until approval or an explicit blocker.</purpose>
+      <path>.agents/skills/subagent-review-loop</path>
+      <depends>M-GRACE-WORKFLOW</depends>
+      <verification-ref>V-M-SUBAGENT-REVIEW-LOOP-SKILL</verification-ref>
+      <annotations>
+        <export-skill-instructions PURPOSE="Guide reviewer selection, subagent prompt format, controller adjudication, revision, and targeted re-review." />
+        <export-openai-metadata PURPOSE="Expose Codex UI metadata for the skill." />
+      </annotations>
+    </M-SUBAGENT-REVIEW-LOOP-SKILL>
+
+    <CrossLink from="M-API" to="M-GO-CONFIG" relation="uses shared config package" />
+    <CrossLink from="M-API" to="M-GO-LOGGER" relation="uses shared logger package" />
+    <CrossLink from="M-API" to="M-GRAPHQL-SCHEMA" relation="implements admin GraphQL contract" />
+    <CrossLink from="M-WEB-ADMIN" to="M-GRAPHQL-SCHEMA" relation="generates client types from admin GraphQL contract" />
+    <CrossLink from="M-WEB-ADMIN" to="M-API" relation="sends credentialed admin GraphQL requests with session cookies" />
+    <CrossLink from="M-WEB-ADMIN" to="M-API" relation="authenticates through cookie-backed loginAdmin, reads me through CurrentAdmin, and revokes sessions through logoutAdmin" />
+    <CrossLink from="M-WEB" to="M-API" relation="uses public REST users API" />
+    <CrossLink from="M-BOT" to="M-GO-CONFIG" relation="uses shared config package" />
+    <CrossLink from="M-BOT" to="M-GO-LOGGER" relation="uses shared logger package" />
+    <CrossLink from="M-GRACE-WORKFLOW" to="M-WORKSPACE" relation="governs agent changes to root command and target surfaces" />
+    <CrossLink from="M-GRACE-WORKFLOW" to="M-COVERAGE-GATE" relation="requires verification evidence before shared-surface closeout" />
+    <CrossLink from="M-WORKSPACE" to="M-API" relation="orchestrates Nx targets" />
+    <CrossLink from="M-WORKSPACE" to="M-WEB-ADMIN" relation="orchestrates Nx targets" />
+    <CrossLink from="M-WORKSPACE" to="M-WEB" relation="orchestrates Nx targets" />
+    <CrossLink from="M-WORKSPACE" to="M-BOT" relation="orchestrates Nx targets" />
+    <CrossLink from="M-COVERAGE-GATE" to="M-WORKSPACE" relation="uses root Bun and Nx scripts" />
+    <CrossLink from="M-COVERAGE-GATE" to="M-GRAPHQL-SCHEMA" relation="uses codegen drift gates for generated allowlist entries" />
+    <CrossLink from="M-COVERAGE-GATE" to="M-API" relation="runs Go coverage and Playwright API contract checks" />
+    <CrossLink from="M-COVERAGE-GATE" to="M-API" relation="allowlists sqlc generated users query output with API codegen, build, and repository integration replacement gates" />
+    <CrossLink from="M-COVERAGE-GATE" to="M-API" relation="allowlists sqlc generated admin users query output with API codegen, build, and admin repository integration replacement gates" />
+    <CrossLink from="M-COVERAGE-GATE" to="M-WEB-ADMIN" relation="runs web-admin coverage and admin GraphQL browser e2e checks" />
+    <CrossLink from="M-COVERAGE-GATE" to="M-WEB" relation="runs public web coverage and REST browser e2e checks" />
+    <CrossLink from="M-COVERAGE-GATE" to="M-BOT" relation="runs Go coverage and build replacement gate for bot bootstrap" />
+    <CrossLink from="M-CI-CD" to="M-WORKSPACE" relation="runs Bun and Nx scripts" />
+    <CrossLink from="M-CI-CD" to="M-COVERAGE-GATE" relation="requires full coverage and e2e gate before deploy-capable branches and release tags" />
+    <CrossLink from="M-CI-CD" to="M-GRACE-WORKFLOW" relation="documents runner pool changes as governed infrastructure docs with XML contract alignment" />
+    <CrossLink from="M-CI-CD" to="M-API" relation="builds and deploys API image" />
+    <CrossLink from="M-CI-CD" to="M-WEB-ADMIN" relation="runs admin web checks before release gates" />
+    <CrossLink from="M-CI-CD" to="M-WEB" relation="runs public web checks and deploys the public Next web image through Dokploy" />
+    <CrossLink from="M-CI-CD" to="M-BOT" relation="builds and deploys bot image" />
+    <CrossLink from="M-PRODUCT-DOCS-VERIFIER" to="M-PRODUCT-DOCS" relation="launches per-scope orchestrated review of raw product docs and produces verified handoff docs" />
+    <CrossLink from="M-TECHNICAL-DOCS-VERIFIER" to="M-PRODUCT-DOCS-VERIFIER" relation="consumes verified product docs and turns unresolved implementation gaps into a technical question loop" />
+    <CrossLink from="M-TECHNICAL-DOCS-VERIFIER" to="M-GRACE-WORKFLOW" relation="uses GRACE-governed skill, traceability, and validation expectations before dev handoff" />
+    <CrossLink from="M-PRD-WAVE-DECOMPOSER" to="M-PRODUCT-DOCS-VERIFIER" relation="consumes verified PRD scope as the source for shallow backend implementation waves and checks raw PRD scope for frontend page files" />
+    <CrossLink from="M-PRD-WAVE-DECOMPOSER" to="M-TECHNICAL-DOCS-VERIFIER" relation="uses technical readiness docs when present to expose blockers and boundary risks without detailing implementation" />
+    <CrossLink from="M-PRD-WAVE-DECOMPOSER" to="M-GRACE-WORKFLOW" relation="uses GRACE-governed skill artifacts, traceability, validation, and subagent review gates before downstream detailed planning" />
+    <CrossLink from="M-PRD-WAVE-DETAILER" to="M-PRD-WAVE-DECOMPOSER" relation="requires one approved shallow backend source wave and treats frontend-pages/** as read-only dependency context before producing selected-wave ready-for-dev detail" />
+    <CrossLink from="M-PRD-WAVE-DETAILER" to="M-PRODUCT-DOCS-VERIFIER" relation="preserves verified product traceability for selected-wave AC, EC, slices, questions, and decisions" />
+    <CrossLink from="M-PRD-WAVE-DETAILER" to="M-TECHNICAL-DOCS-VERIFIER" relation="uses technical readiness docs when present to ground codebase, data, integration, operations, security, and verification details" />
+    <CrossLink from="M-PRD-WAVE-DETAILER" to="M-GRACE-WORKFLOW" relation="uses GRACE contracts, codebase context, validation scripts, and reviewer evidence before implementation handoff" />
+    <CrossLink from="M-BACKEND-WAVE-PLANNER" to="M-TECHNICAL-DOCS-VERIFIER" relation="requires approved-to-dev technical docs before decomposing backend work into sequential ready-for-dev waves" />
+    <CrossLink from="M-BACKEND-WAVE-PLANNER" to="M-PRD-WAVE-DECOMPOSER" relation="may consume an approved shallow PRD wave map before detailing a backend-specific current wave" />
+    <CrossLink from="M-BACKEND-WAVE-PLANNER" to="M-GRACE-WORKFLOW" relation="uses GRACE-governed skill artifacts, traceability, validation, and user approval gates before implementation handoff" />
+    <CrossLink from="M-PLAN-TO-BEADS-SKILL" to="M-GRACE-WORKFLOW" relation="converts approved plans into Beads milestone, epic, and task graphs while preserving GRACE source-plan intent" />
+    <CrossLink from="M-SUBAGENT-REVIEW-LOOP-SKILL" to="M-GRACE-WORKFLOW" relation="reviews and revises agent-generated artifacts through independent subagent approval loops under controller adjudication" />
+  </Project>
+</KnowledgeGraph>

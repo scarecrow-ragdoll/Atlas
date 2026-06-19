@@ -1,0 +1,14 @@
+{
+  "name": "ci-tools",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/ci/src",
+  "projectType": "library",
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx vitest run --config tools/vitest.config.ts --coverage --coverage.include='tools/ci/src/**/*.ts' tools/ci/src"
+      }
+    }
+  }
+}

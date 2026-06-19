@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "properties": {
+    "coverage": { "type": "boolean", "description": "Enable coverage", "default": false },
+    "short": { "type": "boolean", "description": "Run short tests only", "default": false },
+    "packages": { "type": "array", "items": { "type": "string" }, "description": "Specific packages to test" }
+  }
+}

@@ -1,0 +1,10 @@
+type Query {
+  user(id: UUID!): User
+  users(pagination: PaginationInput): UserConnection!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): CreateUserResult!
+  updateUser(id: UUID!, input: UpdateUserInput!): UpdateUserResult!
+  deleteUser(id: UUID!): DeleteUserResult!
+}

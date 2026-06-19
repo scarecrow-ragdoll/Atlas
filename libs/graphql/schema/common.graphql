@@ -1,0 +1,31 @@
+scalar DateTime
+scalar UUID
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+input PaginationInput {
+  first: Int
+  after: String
+  last: Int
+  before: String
+}
+
+type ValidationError {
+  field: String!
+  message: String!
+}
+
+type AuthError {
+  message: String!
+}
+
+type NotFoundError {
+  message: String!
+  entityType: String!
+  id: String!
+}

@@ -1,0 +1,58 @@
+# FILE: apps/api/atlas-gqlgen.yml
+# VERSION: 1.0.0
+# START_MODULE_CONTRACT
+#   PURPOSE: Configure gqlgen generation for the Atlas fitness tracker GraphQL schema (separate from admin GraphQL).
+#   SCOPE: Reads Atlas schema files from internal/atlas/graph/schema and generates executable schema, models, and resolver stubs into internal/atlas/graph/generated and internal/atlas/graph/resolver.
+#   DEPENDS: internal/atlas/graph/schema/*.graphql, github.com/99designs/gqlgen.
+#   LINKS: M-API / V-M-API.
+#   ROLE: CONFIG
+#   MAP_MODE: SUMMARY
+# END_MODULE_CONTRACT
+# START_MODULE_MAP
+#   schema - Atlas GraphQL schema files.
+#   exec - Generated executable schema output.
+#   model - Generated model types.
+#   resolver - Generated resolver stubs.
+#   models - Custom model type bindings.
+# END_MODULE_MAP
+# START_CHANGE_SUMMARY
+#   LAST_CHANGE: 1.0.0 - Added Atlas gqlgen config for WAVE-01.
+# END_CHANGE_SUMMARY
+
+schema:
+  - internal/atlas/graph/schema/*.graphql
+exec:
+  filename: internal/atlas/graph/generated/exec.go
+  package: generated
+model:
+  filename: internal/atlas/graph/generated/models.go
+resolver:
+  layout: follow-schema
+  dir: internal/atlas/graph/resolver
+  package: resolver
+autobind: []
+models:
+  Settings:
+    model: monorepo-template/apps/api/internal/atlas/models.Settings
+  SettingsInput:
+    model: monorepo-template/apps/api/internal/atlas/models.SettingsInput
+  SettingsResult:
+    model: monorepo-template/apps/api/internal/atlas/models.SettingsResult
+  SettingsError:
+    model: monorepo-template/apps/api/internal/atlas/models.SettingsError
+  SettingsErrorCode:
+    model: monorepo-template/apps/api/internal/atlas/models.SettingsErrorCode
+  PinOperationResult:
+    model: monorepo-template/apps/api/internal/atlas/models.PinOperationResult
+  PinEnableInput:
+    model: monorepo-template/apps/api/internal/atlas/models.PinEnableInput
+  PinDisableInput:
+    model: monorepo-template/apps/api/internal/atlas/models.PinDisableInput
+  PinChangeInput:
+    model: monorepo-template/apps/api/internal/atlas/models.PinChangeInput
+  PinError:
+    model: monorepo-template/apps/api/internal/atlas/models.PinError
+  PinErrorCode:
+    model: monorepo-template/apps/api/internal/atlas/models.PinErrorCode
+  Time:
+    model: github.com/99designs/gqlgen/graphql.Time

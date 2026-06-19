@@ -1,0 +1,32 @@
+input PinEnableInput {
+  pin: String!
+}
+
+input PinDisableInput {
+  currentPin: String!
+}
+
+input PinChangeInput {
+  currentPin: String!
+  newPin: String!
+}
+
+type PinOperationResult {
+  success: Boolean!
+  error: PinError
+}
+
+type PinError {
+  message: String!
+  code: PinErrorCode!
+}
+
+enum PinErrorCode {
+  WRONG_PIN
+  PIN_ALREADY_ENABLED
+  PIN_ALREADY_DISABLED
+  PIN_TOO_SHORT
+  PIN_TOO_LONG
+  SESSION_EXPIRED
+  INTERNAL_ERROR
+}

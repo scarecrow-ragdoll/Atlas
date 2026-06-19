@@ -1,0 +1,45 @@
+{
+  "name": "monorepo-template",
+  "version": "0.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.0.0",
+    "bun": ">=1.0.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "libs/*",
+    "tools/*"
+  ],
+  "scripts": {
+    "dev": "bunx nx run-many --target=serve --projects=api,web-admin,web --parallel=3",
+    "build": "bunx nx run-many --target=build --all",
+    "test": "bunx nx run-many --target=test --all",
+    "lint": "bunx nx run-many --target=lint --all --parallel=1",
+    "codegen": "bunx nx run-many --target=codegen --projects=api,web-admin",
+    "test:coverage": "node tools/coverage/run.mjs",
+    "test:e2e": "bunx nx run-many --target=e2e --projects=web-admin,web --parallel=1",
+    "verify:coverage": "bun run lint && bun run codegen && bunx nx run web-admin:typecheck && bunx nx run web:typecheck && bun run build && bun run test:coverage && bun run test:e2e && xmllint --noout docs/requirements.xml docs/technology.xml docs/development-plan.xml docs/verification-plan.xml docs/knowledge-graph.xml docs/operational-packets.xml && grace lint --path .",
+    "postinstall": "lefthook install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
+    "@nx-go/nx-go": "^3.3.1",
+    "@nx/eslint-plugin": "^22.6.1",
+    "@nx/js": "^20.0.0",
+    "@nx/workspace": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "@vitest/coverage-v8": "^2.1.9",
+    "eslint": "^8.57.0",
+    "eslint-plugin-boundaries": "^6.0.1",
+    "graphql": "^16.13.2",
+    "lefthook": "^1.7.0",
+    "lint-staged": "^15.0.0",
+    "nx": "^20.0.0",
+    "prettier": "^3.3.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.1.9"
+  }
+}

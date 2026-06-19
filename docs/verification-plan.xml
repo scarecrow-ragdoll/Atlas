@@ -1,0 +1,848 @@
+<VerificationPlan VERSION="0.2.9">
+  <GlobalPolicy>
+    <log-format>[Module][function][BLOCK_NAME] message</log-format>
+    <deterministic-first>true</deterministic-first>
+    <module-level-focus>Fast deterministic checks close to each module.</module-level-focus>
+    <wave-level-focus>Checks only merged surfaces touched by the current wave.</wave-level-focus>
+    <phase-level-focus>Broader integration and regression confidence before release or template handoff.</phase-level-focus>
+    <active-development-coverage>Active development requires the minimal useful behavior, contract, typecheck, lint, codegen, or e2e checks for the changed surface; 100 percent coverage is not a completion blocker unless explicitly requested or the work is a coverage-policy, coverage epic, release, or template handoff phase.</active-development-coverage>
+    <autonomy-gate>Each shared module needs commands, scenarios, observable evidence, and wave or phase follow-up before long autonomous execution.</autonomy-gate>
+    <redaction>Never log secrets, credentials, raw tokens, passwords, or high-risk payloads.</redaction>
+  </GlobalPolicy>
+
+  <CriticalFlows>
+    <VF-LOCAL-DEV NAME="LocalDevelopmentStartup" USE_CASES="UC-001" DATA_FLOW="DF-LOCAL-DEV" PRIORITY="high">
+      <scenario>Developer starts PostgreSQL, Redis, API, web-admin app, and public web app locally.</scenario>
+      <expected-outcome>API, web-admin app, and public web app start without startup errors and users pages can load.</expected-outcome>
+      <required-signals>
+        <log-marker>[API][startup][BLOCK_START_SERVER]</log-marker>
+        <trace-sequence>docker compose dev up -> nx serve api -> nx serve web-admin -> nx serve web -> browser opens users flows</trace-sequence>
+      </required-signals>
+    </VF-LOCAL-DEV>
+    <VF-USER-GRAPHQL NAME="AdminUserGraphQLFlow" USE_CASES="UC-002" DATA_FLOW="DF-USER-GRAPHQL" PRIORITY="high">
+      <scenario>Admin GraphQL user operations remain aligned across schema, API resolvers, admin-session guards, service tests, and web-admin generated types.</scenario>
+      <expected-outcome>Schema validation, API tests, web-admin tests, web-admin typecheck, e2e cookie setup, and codegen complete without drift.</expected-outcome>
+      <required-signals>
+        <log-marker>[GraphQLSchema][validate][BLOCK_VALIDATE_SCHEMA]</log-marker>
+        <log-marker>[AdminAuth][guard][BLOCK_AUTHORIZE_GRAPHQL]</log-marker>
+        <trace-sequence>schema validate -> api codegen -> api tests -> web-admin codegen -> web-admin typecheck -> web-admin e2e</trace-sequence>
+      </required-signals>
+    </VF-USER-GRAPHQL>
+    <VF-WEB-ADMIN-AUTH NAME="WebAdminBackendAuthFlow" USE_CASES="UC-012" DATA_FLOW="DF-WEB-ADMIN-AUTH" PRIORITY="high">
+      <scenario>Web-admin backend auth seeds a first admin once, authenticates with httpOnly Redis-backed sessions, protects admin GraphQL, and keeps public REST public.</scenario>
+      <expected-outcome>Focused config, repository, Redis, service, middleware, GraphQL, web-admin transport, startup smoke, and e2e checks prove login, me, logout, createAdmin, origin guard, public REST, and generated drift behavior.</expected-outcome>
+      <required-signals>
+        <log-marker>[AdminAuth][seed][BLOCK_BOOTSTRAP_ADMIN]</log-marker>
+        <log-marker>[AdminAuth][login][BLOCK_VERIFY_CREDENTIALS]</log-marker>
+        <log-marker>[AdminAuth][session][BLOCK_VALIDATE_SESSION]</log-marker>
+        <log-marker>[AdminAuth][logout][BLOCK_REVOKE_SESSION]</log-marker>
+        <log-marker>[AdminAuth][csrf][BLOCK_VALIDATE_ORIGIN]</log-marker>
+        <trace-sequence>config/bootstrap -> migrations/sqlc -> Redis session -> GraphQL auth resolvers -> credentialed web-admin transport -> startup smoke -> web-admin e2e</trace-sequence>
+      </required-signals>
+    </VF-WEB-ADMIN-AUTH>
+    <VF-USER-REST NAME="PublicUserRESTFlow" USE_CASES="UC-003" DATA_FLOW="DF-USER-REST" PRIORITY="high">
+      <scenario>Public REST user operations remain aligned across API handlers, shared user service tests, REST client tests, and Next public web UI.</scenario>
+      <expected-outcome>API REST handler tests, API GraphQL compatibility checks, web tests, web typecheck, web build, and web e2e complete without drift.</expected-outcome>
+      <required-signals>
+        <log-marker>[API][users][BLOCK_HANDLE_REST_USERS_REQUEST]</log-marker>
+        <trace-sequence>api REST handler tests -> api GraphQL resolver compatibility -> web REST client tests -> web typecheck -> web build -> web e2e</trace-sequence>
+      </required-signals>
+    </VF-USER-REST>
+    <VF-GRACE-CHANGE NAME="GraceGovernedChange" USE_CASES="UC-005" DATA_FLOW="DF-GRACE-CHANGE" PRIORITY="high">
+      <scenario>Agent changes update GRACE docs, file-local contracts, source, tests, and verification evidence together.</scenario>
+      <expected-outcome>New or meaningfully edited governed files carry current file-local GRACE markup, and `xmllint --noout docs/*.xml` plus `grace lint --path .` pass after the change.</expected-outcome>
+      <required-signals>
+        <log-marker>[GRACE][lint][BLOCK_VALIDATE_ARTIFACTS]</log-marker>
+        <trace-sequence>read shared and file-local contracts -> patch contracts and write scope -> run focused tests -> refresh docs -> grace lint</trace-sequence>
+      </required-signals>
+    </VF-GRACE-CHANGE>
+    <VF-COVERAGE-GATE NAME="CoverageGateFlow" USE_CASES="UC-006" DATA_FLOW="DF-COVERAGE-GATE" PRIORITY="high">
+      <scenario>Developer or CI runs the full 100 percent coverage and e2e gate during an explicit coverage, release, or template handoff phase.</scenario>
+      <expected-outcome>`bun run test:coverage`, `bunx nx run web-admin:e2e`, `bunx nx run web:e2e`, and `bun run verify:coverage` pass with documented artifacts and explicit allowlist replacement gates.</expected-outcome>
+      <required-signals>
+        <log-marker>[Coverage][gate] all thresholds passed</log-marker>
+        <trace-sequence>coverage preflight -> Go coverage profiles -> web-admin coverage -> web coverage -> tools coverage -> codegen validation -> Playwright health/readiness -> admin GraphQL CRUD -> public REST browser users flow</trace-sequence>
+      </required-signals>
+    </VF-COVERAGE-GATE>
+    <VF-CI-CD-RELEASE NAME="GitLabDokployReleaseFlow" USE_CASES="UC-007" DATA_FLOW="DF-CI-CD-RELEASE" PRIORITY="high">
+      <scenario>GitLab CI validates merge requests, deploys dev from `develop`, validates `main`, and exposes manual production deploys only from SemVer tags.</scenario>
+      <expected-outcome>MR jobs use affected checks, deploy-capable refs run `bun run verify:coverage`, release tags are asserted reachable from `origin/main`, and Dokploy compose update happens before deploy.</expected-outcome>
+      <required-signals>
+        <log-marker>[CI-CD][release][BLOCK_RELEASE_AND_DEPLOY]</log-marker>
+        <trace-sequence>affected base -> GRACE validation -> full gate -> image build -> metadata -> GitLab Release -> Dokploy compose.update -> compose.deploy</trace-sequence>
+      </required-signals>
+    </VF-CI-CD-RELEASE>
+  </CriticalFlows>
+
+  <ModuleVerification>
+    <V-M-GRACE-WORKFLOW MODULE="M-GRACE-WORKFLOW" PRIORITY="high">
+      <test-files>
+        <file>AGENTS.md</file>
+        <file>docs/requirements.xml</file>
+        <file>docs/technology.xml</file>
+        <file>docs/development-plan.xml</file>
+        <file>docs/knowledge-graph.xml</file>
+        <file>docs/verification-plan.xml</file>
+        <file>docs/operational-packets.xml</file>
+      </test-files>
+      <module-checks>
+        <check-1>xmllint --noout docs/requirements.xml docs/technology.xml docs/development-plan.xml docs/verification-plan.xml docs/knowledge-graph.xml docs/operational-packets.xml</check-1>
+        <check-2>grace lint --path .</check-2>
+        <check-3>rg -n "START_MODULE_CONTRACT|START_MODULE_MAP|START_CONTRACT|START_BLOCK|START_CHANGE_SUMMARY|MODULE_CONTRACT" AGENTS.md</check-3>
+        <check-4>git diff --check -- AGENTS.md docs/requirements.xml docs/technology.xml docs/development-plan.xml docs/knowledge-graph.xml docs/verification-plan.xml docs/operational-packets.xml</check-4>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Agent guidance requires file-local contracts for new or meaningfully edited governed files while avoiding broad historical backfill.</scenario-1>
+        <scenario-2 kind="success">Shared GRACE XML files parse and describe the same file-local contract and coverage-phase policy as AGENTS.md.</scenario-2>
+        <scenario-3 kind="failure">A governed source, test, tooling, config, script, CI, Docker, or durable doc outside `docs/*.xml` changes without required MODULE_CONTRACT/MODULE_MAP markup is treated as contract drift.</scenario-3>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>Checkpoint reports must include file-local contract deltas when governed files are added or meaningfully edited.</assertion-1>
+        <assertion-2>Existing unmarked historical files are backfilled when touched by meaningful changes, not through unrelated sweep edits.</assertion-2>
+      </required-trace-assertions>
+      <wave-follow-up>Run focused GRACE validation after agent-governance, packet, or file-local markup policy changes.</wave-follow-up>
+      <phase-follow-up>Run autonomous GRACE lint before long multi-agent execution waves.</phase-follow-up>
+    </V-M-GRACE-WORKFLOW>
+
+    <V-M-WORKSPACE MODULE="M-WORKSPACE" PRIORITY="high">
+      <test-files>
+        <file>package.json</file>
+        <file>.env.example</file>
+        <file>nx.json</file>
+        <file>apps/api/project.json</file>
+        <file>apps/api/config/config.yml</file>
+        <file>apps/bot/project.json</file>
+        <file>apps/web-admin/project.json</file>
+        <file>apps/web-admin/package.json</file>
+        <file>apps/web/project.json</file>
+        <file>apps/web/package.json</file>
+        <file>libs/graphql/project.json</file>
+        <file>libs/go/config/project.json</file>
+        <file>libs/go/logger/project.json</file>
+        <file>tools/coverage/coverage.config.json</file>
+        <file>tools/workspace/dev-config.test.ts</file>
+      </test-files>
+      <module-checks>
+        <check-0>bunx vitest run --config tools/vitest.config.ts tools/workspace/dev-config.test.ts</check-0>
+        <check-1>bunx nx show projects</check-1>
+        <check-2>bunx nx run-many --target=lint --all --parallel=1</check-2>
+        <check-3>bunx nx run-many --target=test --all</check-3>
+        <check-4>bunx nx run-many --target=build --all</check-4>
+        <check-5>bun run verify:coverage</check-5>
+        <check-6>bun run test:e2e</check-6>
+        <check-7>bunx nx run codegen:validate</check-7>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Nx can resolve all configured projects and target names.</scenario-1>
+        <scenario-2 kind="failure">Missing local toolchain is reported as environment failure, not code success.</scenario-2>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>Root scripts must call Nx targets rather than duplicate per-project command logic.</assertion-1>
+      </required-trace-assertions>
+      <wave-follow-up>Run affected targets for touched projects.</wave-follow-up>
+      <phase-follow-up>Run root lint, test, and build before release or template handoff.</phase-follow-up>
+    </V-M-WORKSPACE>
+
+    <V-M-COVERAGE-GATE MODULE="M-COVERAGE-GATE" PRIORITY="high">
+      <test-files>
+        <file>tools/coverage/coverage.config.json</file>
+        <file>tools/coverage/preflight.mjs</file>
+        <file>tools/coverage/run.mjs</file>
+        <file>tools/vitest.config.ts</file>
+        <file>docker/docker-compose.test.yml</file>
+        <file>apps/api/internal/testinfra/safe_targets.go</file>
+        <file>apps/api/internal/testinfra/safe_targets_test.go</file>
+        <file>apps/web-admin/e2e/playwright.config.ts</file>
+        <file>apps/web-admin/e2e/preflight.mjs</file>
+        <file>apps/web-admin/e2e/helpers.ts</file>
+        <file>apps/web-admin/e2e/graphql-contract.spec.ts</file>
+        <file>apps/web-admin/e2e/users-flow.spec.ts</file>
+        <file>apps/web/e2e/playwright.config.ts</file>
+        <file>apps/web/e2e/helpers.ts</file>
+        <file>apps/web/e2e/rest-users-flow.spec.ts</file>
+      </test-files>
+      <module-checks>
+        <check-1>bun run test:coverage</check-1>
+        <check-2>bunx nx run web-admin:e2e</check-2>
+        <check-3>bunx nx run web:e2e</check-3>
+        <check-4>bun run verify:coverage</check-4>
+      </module-checks>
+      <thresholds>
+        <goStatements>100</goStatements>
+        <typescriptStatements>100</typescriptStatements>
+        <typescriptBranches>100</typescriptBranches>
+        <typescriptFunctions>100</typescriptFunctions>
+        <typescriptLines>100</typescriptLines>
+      </thresholds>
+      <allowlist>
+        <entry path="apps/api/internal/graph/generated.go" reason="gqlgen generated transport code" gate="bunx nx run api:codegen &amp;&amp; bunx nx build api" />
+        <entry path="apps/api/internal/graph/model/models_gen.go" reason="gqlgen generated model code" gate="bunx nx run api:codegen &amp;&amp; bunx nx build api" />
+        <entry path="apps/api/internal/repository/postgres/generated/db.go" reason="sqlc generated DBTX and Queries wrapper" gate="bunx nx run api:codegen &amp;&amp; bunx nx build api &amp;&amp; TEST_COMPOSE_PROJECT=mt-sqlc-ref TEST_POSTGRES_CONTAINER_NAME=mt-sqlc-ref-postgres TEST_REDIS_CONTAINER_NAME=mt-sqlc-ref-redis TEST_POSTGRES_VOLUME=mt-sqlc-ref-pg-test-data docker compose -f docker/docker-compose.test.yml up -d --wait postgres redis &amp;&amp; cd apps/api &amp;&amp; COVERAGE_GATE=1 API_TEST_DATABASE_DSN=postgres://app:secret@localhost:17501/monorepo_test?sslmode=disable go test ./internal/repository/postgres -run TestUserRepo -count=1 -v" />
+        <entry path="apps/api/internal/repository/postgres/generated/models.go" reason="sqlc generated table models" gate="bunx nx run api:codegen &amp;&amp; bunx nx build api &amp;&amp; TEST_COMPOSE_PROJECT=mt-sqlc-ref TEST_POSTGRES_CONTAINER_NAME=mt-sqlc-ref-postgres TEST_REDIS_CONTAINER_NAME=mt-sqlc-ref-redis TEST_POSTGRES_VOLUME=mt-sqlc-ref-pg-test-data docker compose -f docker/docker-compose.test.yml up -d --wait postgres redis &amp;&amp; cd apps/api &amp;&amp; COVERAGE_GATE=1 API_TEST_DATABASE_DSN=postgres://app:secret@localhost:17501/monorepo_test?sslmode=disable go test ./internal/repository/postgres -run TestUserRepo -count=1 -v" />
+        <entry path="apps/api/internal/repository/postgres/generated/querier.go" reason="sqlc generated query interface" gate="bunx nx run api:codegen &amp;&amp; bunx nx build api &amp;&amp; TEST_COMPOSE_PROJECT=mt-sqlc-ref TEST_POSTGRES_CONTAINER_NAME=mt-sqlc-ref-postgres TEST_REDIS_CONTAINER_NAME=mt-sqlc-ref-redis TEST_POSTGRES_VOLUME=mt-sqlc-ref-pg-test-data docker compose -f docker/docker-compose.test.yml up -d --wait postgres redis &amp;&amp; cd apps/api &amp;&amp; COVERAGE_GATE=1 API_TEST_DATABASE_DSN=postgres://app:secret@localhost:17501/monorepo_test?sslmode=disable go test ./internal/repository/postgres -run TestUserRepo -count=1 -v" />
+        <entry path="apps/api/internal/repository/postgres/generated/users.sql.go" reason="sqlc generated users query methods" gate="bunx nx run api:codegen &amp;&amp; bunx nx build api &amp;&amp; TEST_COMPOSE_PROJECT=mt-sqlc-ref TEST_POSTGRES_CONTAINER_NAME=mt-sqlc-ref-postgres TEST_REDIS_CONTAINER_NAME=mt-sqlc-ref-redis TEST_POSTGRES_VOLUME=mt-sqlc-ref-pg-test-data docker compose -f docker/docker-compose.test.yml up -d --wait postgres redis &amp;&amp; cd apps/api &amp;&amp; COVERAGE_GATE=1 API_TEST_DATABASE_DSN=postgres://app:secret@localhost:17501/monorepo_test?sslmode=disable go test ./internal/repository/postgres -run TestUserRepo -count=1 -v" />
+        <entry path="apps/api/internal/repository/postgres/generated/admin_users.sql.go" reason="sqlc generated admin users query methods" gate="bunx nx run api:codegen &amp;&amp; bunx nx build api &amp;&amp; TEST_COMPOSE_PROJECT=mt-admin-sqlc-ref TEST_POSTGRES_CONTAINER_NAME=mt-admin-sqlc-ref-postgres TEST_REDIS_CONTAINER_NAME=mt-admin-sqlc-ref-redis TEST_POSTGRES_VOLUME=mt-admin-sqlc-ref-pg-test-data docker compose -f docker/docker-compose.test.yml up -d --wait postgres redis &amp;&amp; cd apps/api &amp;&amp; COVERAGE_GATE=1 API_TEST_DATABASE_DSN=postgres://app:secret@localhost:17501/monorepo_test?sslmode=disable go test ./internal/repository/postgres -run TestAdminRepo -count=1 -v" />
+        <entry path="apps/web-admin/src/shared/api/generated/**" reason="GraphQL codegen output" gate="bunx nx run web-admin:codegen &amp;&amp; bunx nx run web-admin:typecheck" />
+        <entry path="apps/web-admin/src/main.tsx" reason="Vite admin bootstrap entrypoint" gate="bunx nx build web-admin &amp;&amp; bunx nx run web-admin:e2e" />
+        <entry path="apps/web/next-env.d.ts" reason="Next generated type shim" gate="bunx nx run web:typecheck &amp;&amp; bunx nx build web" />
+        <entry path="apps/api/cmd/server/main.go" reason="API bootstrap entrypoint" gate="Playwright health/readiness startup scenarios" />
+        <entry path="apps/bot/cmd/bot/main.go" reason="Bot bootstrap entrypoint" gate="bunx nx build bot" />
+      </allowlist>
+      <scenarios>
+        <scenario-1 kind="success">Coverage summaries and Go profiles meet all 100 percent thresholds after explicit allowlist filtering.</scenario-1>
+        <scenario-2 kind="success">Playwright starts Docker Compose PostgreSQL and Redis, API on `18080`, web-admin and web browser servers, and verifies health/readiness plus admin GraphQL and public REST browser users flows.</scenario-2>
+        <scenario-3 kind="failure">Any unallowlisted handwritten statement, branch, function, or line below threshold fails the gate.</scenario-3>
+        <scenario-4 kind="failure">Coverage and e2e gates fail before destructive cleanup when PostgreSQL target is empty, malformed, `monorepo_dev`, or dev port `7501`.</scenario-4>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>Allowlist entries must have a replacement gate and must match `tools/coverage/coverage.config.json` exactly.</assertion-1>
+        <assertion-2>Generated artifacts must be checked by codegen/build/typecheck instead of raw coverage.</assertion-2>
+        <assertion-3>Browser e2e must prove admin login cookie setup, admin GraphQL create/list/detail, and public REST create/list/detail UI behavior against the real API; duplicate-email UI mapping is covered by focused admin e2e and public web unit coverage.</assertion-3>
+        <assertion-4>Repository cleanup that truncates tables must run only after a safe `monorepo_test` DSN guard passes.</assertion-4>
+      </required-trace-assertions>
+      <wave-follow-up>Run focused behavior checks after ordinary source or test changes; run `bun run test:coverage` only for explicit coverage phases or coverage-policy/allowlist changes.</wave-follow-up>
+      <phase-follow-up>Run `bun run verify:coverage` before closing the coverage epic or release handoff.</phase-follow-up>
+    </V-M-COVERAGE-GATE>
+
+    <V-M-CI-CD MODULE="M-CI-CD" PRIORITY="high">
+      <test-files>
+        <file>.gitlab-ci.yml</file>
+        <file>docker/web.Dockerfile</file>
+        <file>docker/docker-compose.yml</file>
+        <file>tools/ci/src/core.test.ts</file>
+        <file>tools/ci/src/dokploy.test.ts</file>
+        <file>tools/ci/src/cli.test.ts</file>
+        <file>deploy/dokploy/docker-compose.template.yml</file>
+        <file>docs/infrastructure/ci-cd.md</file>
+        <file>docs/infrastructure/gitlab-runners.md</file>
+      </test-files>
+      <module-checks>
+        <check-1>bunx nx run ci-tools:test</check-1>
+        <check-2>bun tools/ci/src/cli.ts affected-base</check-2>
+        <check-3>CI_COMMIT_TAG=latest bun tools/ci/src/cli.ts assert-release-tag</check-3>
+        <check-4>xmllint --noout docs/requirements.xml docs/technology.xml docs/development-plan.xml docs/verification-plan.xml docs/knowledge-graph.xml docs/operational-packets.xml</check-4>
+        <check-5>grace lint --path .</check-5>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Merge request pipelines choose the merge request diff base for affected checks.</scenario-1>
+        <scenario-2 kind="success">`develop` pipelines run the full gate and deploy Dokploy dev after image push.</scenario-2>
+        <scenario-3 kind="success">SemVer tag pipelines validate tag ancestry, publish release images, create release metadata, and expose manual production deploy.</scenario-3>
+        <scenario-3a kind="success">`docker/web.Dockerfile` builds `apps/web` as the public Next standalone image, local Docker compose exposes the public `web` service, and Dokploy `web` uses runtime `WEB_API_BASE_URL`.</scenario-3a>
+        <scenario-4 kind="failure">Production deploy is unavailable from branch pipelines.</scenario-4>
+        <scenario-5 kind="failure">Dokploy deploy fails when compose update or compose deploy fails.</scenario-5>
+        <scenario-6 kind="failure">Docker-in-Docker jobs must not be routable to unprotected merge request runners.</scenario-6>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>`main` must not expose a production deploy job.</assertion-1>
+        <assertion-2>Production deploy requires a SemVer tag reachable from `origin/main`.</assertion-2>
+        <assertion-3>Dokploy compose update must happen before compose deploy when immutable image tags are used.</assertion-3>
+        <assertion-4>Full, image-build, and deploy jobs must request protected runner tags distinct from the unprivileged fast merge request runner.</assertion-4>
+        <assertion-5>CI and Dokploy deploy helpers must require and update `WEB_API_BASE_URL`; production deployment must not depend on `NEXT_PUBLIC_*` browser API bundle configuration.</assertion-5>
+      </required-trace-assertions>
+      <wave-follow-up>Run helper tests and CI YAML parse check after pipeline or helper changes.</wave-follow-up>
+      <phase-follow-up>Run full `bun run verify:coverage` before release handoff.</phase-follow-up>
+    </V-M-CI-CD>
+
+    <V-M-GO-CONFIG MODULE="M-GO-CONFIG" PRIORITY="high">
+      <test-files>
+        <file>libs/go/config/config_test.go</file>
+      </test-files>
+      <module-checks>
+        <check-1>bunx nx test go-config</check-1>
+        <check-2>bunx nx lint go-config</check-2>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Valid config files and environment variables load into validated structs.</scenario-1>
+        <scenario-2 kind="failure">Missing or invalid required fields fail deterministically.</scenario-2>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>Invalid config must not be accepted by API or bot startup.</assertion-1>
+      </required-trace-assertions>
+      <wave-follow-up>Run dependent API or bot tests when config contract changes.</wave-follow-up>
+      <phase-follow-up>Run full Go test suite through Nx.</phase-follow-up>
+    </V-M-GO-CONFIG>
+
+    <V-M-GO-LOGGER MODULE="M-GO-LOGGER" PRIORITY="high">
+      <test-files>
+        <file>libs/go/logger/context_test.go</file>
+        <file>libs/go/logger/logger_test.go</file>
+        <file>libs/go/logger/middleware_test.go</file>
+      </test-files>
+      <module-checks>
+        <check-1>bunx nx test go-logger</check-1>
+        <check-2>bunx nx lint go-logger</check-2>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Request IDs and logger fields propagate through context and middleware.</scenario-1>
+        <scenario-2 kind="failure">Missing context falls back safely without panics.</scenario-2>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>Middleware must not log secrets or raw authorization values.</assertion-1>
+      </required-trace-assertions>
+      <wave-follow-up>Run API and bot tests when logger middleware contract changes.</wave-follow-up>
+      <phase-follow-up>Run full Go test suite through Nx.</phase-follow-up>
+    </V-M-GO-LOGGER>
+
+    <V-M-GRAPHQL-SCHEMA MODULE="M-GRAPHQL-SCHEMA" PRIORITY="high">
+      <test-files>
+        <file>libs/graphql/schema/schema.graphql</file>
+        <file>libs/graphql/schema/user.graphql</file>
+        <file>libs/graphql/schema/admin_auth.graphql</file>
+        <file>libs/graphql/schema/common.graphql</file>
+      </test-files>
+      <module-checks>
+        <check-1>bunx nx run graphql:validate</check-1>
+        <check-2>bunx nx run api:codegen</check-2>
+        <check-3>bunx nx run web-admin:codegen</check-3>
+        <check-4>bunx nx run codegen:validate</check-4>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Schema builds and generated API plus web-admin artifacts match user and admin auth operations.</scenario-1>
+        <scenario-2 kind="failure">Invalid SDL fails before generated artifacts are treated as current.</scenario-2>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>Schema changes must trigger both API and web-admin codegen checks.</assertion-1>
+      </required-trace-assertions>
+      <wave-follow-up>Run API tests and web-admin typecheck after schema changes.</wave-follow-up>
+      <phase-follow-up>Run root codegen, test, and build.</phase-follow-up>
+    </V-M-GRAPHQL-SCHEMA>
+
+    <V-M-API MODULE="M-API" PRIORITY="high">
+      <test-files>
+        <file>apps/api/sqlc.yaml</file>
+        <file>apps/api/internal/repository/postgres/queries/users.sql</file>
+        <file>apps/api/internal/repository/postgres/queries/admin_users.sql</file>
+        <file>apps/api/internal/repository/postgres/migrations/00079_admin_users.sql</file>
+        <file>apps/api/internal/repository/postgres/user_repo_test.go</file>
+        <file>apps/api/internal/repository/postgres/admin_repo_test.go</file>
+        <file>apps/api/internal/repository/redis/admin_session_store_test.go</file>
+        <file>apps/api/internal/repository/postgres/user_repo_unit_test.go</file>
+        <file>apps/api/internal/appconfig/config_test.go</file>
+        <file>apps/api/internal/service/admin_auth_test.go</file>
+        <file>apps/api/internal/graph/schema.resolvers.go</file>
+        <file>apps/api/internal/graph/schema_resolvers_test.go</file>
+        <file>apps/api/internal/graph/admin_auth.resolvers.go</file>
+        <file>apps/api/internal/graph/admin_auth_resolvers_test.go</file>
+        <file>apps/api/internal/handler/health_test.go</file>
+        <file>apps/api/internal/handler/users_test.go</file>
+        <file>apps/api/internal/middleware/admin_auth_test.go</file>
+        <file>apps/api/internal/middleware/admin_origin_test.go</file>
+        <file>apps/api/internal/middleware/cors_test.go</file>
+        <file>apps/api/internal/service/user_service_test.go</file>
+      </test-files>
+      <module-checks>
+        <check-1>bunx nx test api</check-1>
+        <check-2>bunx nx lint api</check-2>
+        <check-3>bunx nx build api</check-3>
+        <check-4>cd apps/api &amp;&amp; go test ./internal/handler -run TestUsersHandler</check-4>
+        <check-5>bunx nx run api:codegen</check-5>
+        <check-6>cd apps/api &amp;&amp; COVERAGE_GATE=1 API_TEST_DATABASE_DSN=postgres://app:secret@localhost:17501/monorepo_test?sslmode=disable go test ./internal/repository/postgres -run TestUserRepo -count=1 -v</check-6>
+        <check-7>cd apps/api &amp;&amp; go test ./internal/appconfig -run 'TestConfig_(Admin|Pagination)' -count=1</check-7>
+        <check-8>cd apps/api &amp;&amp; go test ./internal/repository/postgres -run TestAdminRepo -count=1</check-8>
+        <check-9>cd apps/api &amp;&amp; go test ./internal/repository/redis -run TestAdminSessionStore -count=1</check-9>
+        <check-10>cd apps/api &amp;&amp; go test ./internal/service -run TestAdminAuth -count=1</check-10>
+        <check-11>cd apps/api &amp;&amp; go test ./internal/middleware -run 'TestCORS|TestAdmin' -count=1</check-11>
+        <check-12>cd apps/api &amp;&amp; go test ./internal/graph -run 'Test(Admin|LoginAdmin|LogoutAdmin|Me|CreateAdmin|ProtectedUser|CreateUser|Users|User|UpdateUser|DeleteUser)' -count=1</check-12>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Health, admin GraphQL user operations, and public REST user operations return stable success shapes.</scenario-1>
+        <scenario-2 kind="success">REST handlers map duplicate email, not-found, validation, and delete flows to stable HTTP status codes and JSON envelopes.</scenario-2>
+        <scenario-3 kind="success">Empty admin table startup requires env-backed first-admin values, seeds exactly one admin, and later non-empty startup skips seed without `ADMIN_INITIAL_*`.</scenario-3>
+        <scenario-4 kind="success">Login sets an httpOnly cookie, `me` resolves the current admin, logout revokes the Redis session and clears the cookie, and createAdmin requires an authenticated admin.</scenario-4>
+        <scenario-5 kind="failure">Validation, auth, duplicate, and not-found paths return stable GraphQL unions or REST error envelopes without transport-specific business drift.</scenario-5>
+        <scenario-6 kind="failure">Credentialed admin GraphQL requests from missing or rejected origins fail before protected resolver execution.</scenario-6>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>Invalid user mutation input must not persist partial state.</assertion-1>
+        <assertion-2>GraphQL resolvers and REST handlers must call the shared user service instead of duplicating user business rules.</assertion-2>
+        <assertion-3>TODO(product-auth): Downstream product authorization must add negative tests proving a caller cannot read, list, update, or delete another user's or tenant's resources.</assertion-3>
+        <assertion-4>Users repository tests must prove sqlc-generated queries against the goose-created `monorepo_test` schema before final closeout.</assertion-4>
+        <assertion-5>Admin auth logs must include `[AdminAuth]` seed, login, session, logout, guard, and csrf markers without passwords, password hashes, raw cookies, or raw session ids.</assertion-5>
+        <assertion-6>Public REST `/api/users` remains public while protected GraphQL user/admin operations require admin session context.</assertion-6>
+      </required-trace-assertions>
+      <wave-follow-up>Run schema validation, web-admin generated typecheck, and web REST client tests when API contract changes.</wave-follow-up>
+      <phase-follow-up>Run full root test and build gates.</phase-follow-up>
+    </V-M-API>
+
+    <V-M-WEB-ADMIN MODULE="M-WEB-ADMIN" PRIORITY="high">
+      <test-files>
+        <file>apps/web-admin/index.html</file>
+        <file>apps/web-admin/components.json</file>
+        <file>apps/web-admin/vite.config.ts</file>
+        <file>apps/web-admin/src/styles.css</file>
+        <file>apps/web-admin/src/App.tsx</file>
+        <file>apps/web-admin/src/app/admin-layout.tsx</file>
+        <file>apps/web-admin/src/app/protected-admin-layout.tsx</file>
+        <file>apps/web-admin/src/app/admin-navigation.ts</file>
+        <file>apps/web-admin/src/app/admin-navigation.test.ts</file>
+        <file>apps/web-admin/src/app/providers.tsx</file>
+        <file>apps/web-admin/src/pages/home.tsx</file>
+        <file>apps/web-admin/src/pages/login-page.tsx</file>
+        <file>apps/web-admin/src/pages/login-page.test.tsx</file>
+        <file>apps/web-admin/src/pages/ui-kit-page.tsx</file>
+        <file>apps/web-admin/src/pages/ui-kit-page.test.tsx</file>
+        <file>apps/web-admin/src/pages/users-page.tsx</file>
+        <file>apps/web-admin/src/pages/user-detail-page.tsx</file>
+        <file>apps/web-admin/src/entities/admin-auth</file>
+        <file>apps/web-admin/src/shared/ui</file>
+        <file>apps/web-admin/src/shared/ui/hooks/use-mobile.ts</file>
+        <file>apps/web-admin/src/shared/ui/hooks/use-mobile.test.tsx</file>
+        <file>apps/web-admin/src/shared/ui/layout/admin-app-shell.tsx</file>
+        <file>apps/web-admin/src/shared/ui/layout/admin-shell.test.tsx</file>
+        <file>apps/web-admin/src/shared/ui/theme-contract.test.ts</file>
+        <file>apps/web-admin/src/shared/ui/layout/theme-toggle.tsx</file>
+        <file>apps/web-admin/src/shared/ui/primitives/sidebar.tsx</file>
+        <file>apps/web-admin/src/shared/config/index.ts</file>
+        <file>apps/web-admin/src/shared/config/index.test.ts</file>
+        <file>apps/web-admin/src/shared/api/graphql-client.ts</file>
+        <file>apps/web-admin/src/shared/api/graphql-client.test.ts</file>
+        <file>apps/web-admin/src/entities/user/api/users.graphql</file>
+        <file>apps/web-admin/src/entities/user/api/createUser.graphql</file>
+        <file>apps/web-admin/src/entities/user/api/user.graphql</file>
+        <file>apps/web-admin/e2e/graphql-contract.spec.ts</file>
+        <file>apps/web-admin/e2e/users-flow.spec.ts</file>
+        <file>apps/web-admin/.eslintrc.json</file>
+      </test-files>
+      <module-checks>
+        <check-1>bunx nx test web-admin</check-1>
+        <check-2>bunx nx lint web-admin</check-2>
+        <check-3>bunx nx run web-admin:typecheck</check-3>
+        <check-4>bunx nx build web-admin</check-4>
+        <check-5>bunx nx run web-admin:test-coverage</check-5>
+        <check-6>bunx nx run web-admin:e2e</check-6>
+        <check-7>bunx nx run web-admin:codegen</check-7>
+        <check-8>cd apps/web-admin &amp;&amp; bun test --run src/shared/api/graphql-client.test.ts</check-8>
+        <check-frontend-auth-1>cd apps/web-admin &amp;&amp; bun run test -- src/entities/admin-auth/model.test.ts src/entities/admin-auth/client.test.ts src/entities/admin-auth/provider.test.tsx src/pages/login-page.test.tsx src/shared/ui/layout/admin-shell.test.tsx src/App.test.tsx</check-frontend-auth-1>
+        <check-frontend-auth-2>bunx nx run web-admin:codegen</check-frontend-auth-2>
+        <check-frontend-auth-3>bunx nx run web-admin:typecheck</check-frontend-auth-3>
+        <check-frontend-auth-4>bunx nx test web-admin</check-frontend-auth-4>
+        <check-frontend-auth-5>bunx nx lint web-admin</check-frontend-auth-5>
+        <check-frontend-auth-6>bunx nx build web-admin</check-frontend-auth-6>
+        <check-frontend-auth-7>bunx nx run web-admin:e2e</check-frontend-auth-7>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Vite web-admin app renders the adapted sidebar-07 shell, admin user flow, and /ui-kit reference route with generated GraphQL types, React Router routes, approved @shared/ui components, and cookie credential transport.</scenario-1>
+        <scenario-2 kind="success">Web-admin e2e logs in through the browser login page, uses the backend httpOnly admin session cookie, and runs protected user CRUD flows.</scenario-2>
+        <scenario-3 kind="failure">GraphQL request failures are surfaced without corrupting client state.</scenario-3>
+        <scenario-frontend-auth-1 kind="success">Unauthenticated visits to `/users` redirect to `/login?from=%2Fusers` without rendering protected user content.</scenario-frontend-auth-1>
+        <scenario-frontend-auth-2 kind="success">Login through `/login` with the seeded e2e admin forces a fresh `me` check even after a cached anonymous response and returns to the safe requested route, preserving search and hash when present.</scenario-frontend-auth-2>
+        <scenario-frontend-auth-3 kind="failure">Unsafe `from` values including absolute URLs, protocol-relative URLs, malformed paths, `/login`, and login loops fall back to `/`.</scenario-frontend-auth-3>
+        <scenario-frontend-auth-4 kind="success">Sidebar logout calls `logoutAdmin`, disables while pending, clears frontend auth state and protected query caches, returns to `/login`, and protected routes redirect again after logout.</scenario-frontend-auth-4>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>Schema changes must not leave stale generated web-admin client types.</assertion-1>
+        <assertion-2>Admin pages under `apps/web-admin/src/pages/**` must import UI through bare `@shared/ui`, not `@shared/ui/*`, `@/shared/ui`, `@/shared/ui/*`, relative `shared/ui` paths, Radix packages, class-composition helpers, or icon libraries.</assertion-2>
+        <assertion-3>Admin shadcn configuration must keep the Radix Rhea style, zinc base color, and indigo CSS theme tokens aligned between `apps/web-admin/components.json` and `apps/web-admin/src/styles.css`.</assertion-3>
+        <assertion-4>Admin theme toggle must switch the root `dark` class and persist `web-admin-theme` through localStorage.</assertion-4>
+        <assertion-5>`bunx nx run web-admin:test-coverage` must cover the UI-kit source surface without broad UI-kit coverage exclusions.</assertion-5>
+        <assertion-6>`bunx nx run web-admin:e2e` must cover the changed admin route flow including the visible `/ui-kit` route or record a blocker instead of READY.</assertion-6>
+        <assertion-7>The web-admin sidebar shell must keep route metadata app-owned and pass navigation data into @shared/ui without shared-to-app imports.</assertion-7>
+        <assertion-8>The sidebar trigger must collapse desktop navigation to the icon rail and expand it again without hiding route content.</assertion-8>
+        <assertion-9>The mobile sidebar trigger must open the shadcn sheet/offcanvas navigation, allow route navigation, close the sheet, and return focus to usable route content.</assertion-9>
+        <assertion-10>Sidebar, sheet, and use-mobile source must be covered by focused tests or a narrow reviewed coverage-policy change with replacement gates.</assertion-10>
+        <assertion-11>Web-admin GraphQL transport must include browser cookies and must not expose stale bearer-token mutation helpers.</assertion-11>
+        <assertion-12>Web-admin auth operation documents must include loginAdmin, logoutAdmin, CurrentAdmin, and createAdmin and be reflected in generated types.</assertion-12>
+        <assertion-13>Protected route tests must prove unauthenticated redirects and authenticated shell rendering without relying on direct cookie installation.</assertion-13>
+        <assertion-14>Login route tests must prove safe `from` parsing, rejection of unsafe return targets, and fresh CurrentAdmin state after login.</assertion-14>
+        <assertion-15>Sidebar logout tests must prove pending disabled state, backend logout call, protected-query cleanup, and return to `/login`.</assertion-15>
+        <assertion-16>Web-admin e2e must prove logout revokes browser access by opening a fresh page after logout and observing protected route redirect.</assertion-16>
+        <assertion-17>GRACE docs must not reference the removed aggregate admin-auth operation document.</assertion-17>
+      </required-trace-assertions>
+      <wave-follow-up>Run Playwright e2e for UI flow changes.</wave-follow-up>
+      <phase-follow-up>Run full web-admin test, typecheck, build, and e2e gate.</phase-follow-up>
+    </V-M-WEB-ADMIN>
+
+    <V-M-WEB MODULE="M-WEB" PRIORITY="high">
+      <test-files>
+        <file>apps/web/next.config.js</file>
+        <file>apps/web/postcss.config.mjs</file>
+        <file>apps/web/app/layout.tsx</file>
+        <file>apps/web/app/globals.css</file>
+        <file>apps/web/app/page.tsx</file>
+        <file>apps/web/app/users-client.tsx</file>
+        <file>apps/web/components.json</file>
+        <file>apps/web/app/api/users/route.ts</file>
+        <file>apps/web/app/api/users/[id]/route.ts</file>
+        <file>apps/web/app/__tests__/page.test.tsx</file>
+        <file>apps/web/app/__tests__/users-client.test.tsx</file>
+        <file>apps/web/app/api/users/route.test.ts</file>
+        <file>apps/web/src/shared/api/users.ts</file>
+        <file>apps/web/src/shared/api/users.test.ts</file>
+        <file>apps/web/src/shared/config.ts</file>
+        <file>apps/web/src/shared/config.test.ts</file>
+        <file>apps/web/src/shared/ui</file>
+        <file>apps/web/src/shared/ui/theme-contract.test.ts</file>
+        <file>apps/web/src/shared/ui/theme-toggle.tsx</file>
+        <file>apps/web/e2e/rest-users-flow.spec.ts</file>
+      </test-files>
+      <module-checks>
+        <check-1>bunx nx test web</check-1>
+        <check-2>bunx nx lint web</check-2>
+        <check-3>bunx nx run web:typecheck</check-3>
+        <check-4>bunx nx build web</check-4>
+        <check-5>bunx nx run web:test-coverage</check-5>
+        <check-6>bunx nx run web:e2e</check-6>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Next public web app renders users from the REST `/api/users` envelope and handles create-user success through same-origin route handlers.</scenario-1>
+        <scenario-2 kind="failure">REST error envelopes surface code, message, and field without corrupting React Query state.</scenario-2>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>Public web browser code must use same-origin `/api/users` REST endpoints, Next server/runtime code must use `WEB_API_BASE_URL`, and `apps/web` must not use GraphQL client generation.</assertion-1>
+        <assertion-2>Public web pages that use shared UI must import from the local `apps/web/src/shared/ui` surface through `@shared/ui`; `apps/web` must not import `apps/web-admin/src/shared/ui` files.</assertion-2>
+        <assertion-3>Public shadcn configuration must keep the Radix Rhea style, zinc base color, and indigo CSS theme tokens aligned between `apps/web/components.json` and `apps/web/app/globals.css`.</assertion-3>
+        <assertion-4>Public web theme toggle must switch the root `dark` class and persist `web-theme` through localStorage.</assertion-4>
+      </required-trace-assertions>
+      <wave-follow-up>Run REST client tests and web e2e for public UI or REST contract changes.</wave-follow-up>
+      <phase-follow-up>Run full web test, typecheck, build, and e2e gate.</phase-follow-up>
+    </V-M-WEB>
+
+    <V-M-BOT MODULE="M-BOT" PRIORITY="medium">
+      <test-files>
+        <file>apps/bot/internal/handler/handler_test.go</file>
+        <file>apps/bot/internal/middleware/logging_test.go</file>
+        <file>apps/bot/internal/middleware/recover_test.go</file>
+      </test-files>
+      <module-checks>
+        <check-1>bunx nx test bot</check-1>
+        <check-2>bunx nx lint bot</check-2>
+        <check-3>bunx nx build bot</check-3>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Start, help, and default handlers produce expected bot responses.</scenario-1>
+        <scenario-2 kind="failure">Middleware recovery handles panics without crashing the bot loop.</scenario-2>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>Handler failures must pass through recovery middleware.</assertion-1>
+      </required-trace-assertions>
+      <wave-follow-up>Run shared config and logger tests when bot wiring changes.</wave-follow-up>
+      <phase-follow-up>Run full Go test suite through Nx.</phase-follow-up>
+    </V-M-BOT>
+
+    <V-M-PRODUCT-DOCS MODULE="M-PRODUCT-DOCS" PRIORITY="medium">
+      <test-files>
+        <file>docs/product/index.md</file>
+        <file>docs/product/vision.md</file>
+      </test-files>
+      <module-checks>
+        <check-1>rg -n "TODO|TBD" docs/product</check-1>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Product background documents remain navigable and consistent with requirements.</scenario-1>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>Product docs are planning context and must not contradict `docs/requirements.xml`.</assertion-1>
+      </required-trace-assertions>
+      <wave-follow-up>Update `docs/requirements.xml` when product docs define new requirements.</wave-follow-up>
+      <phase-follow-up>Run `$verify-product-docs` before PRD-to-implementation handoff when raw product docs are incomplete, contradictory, or noisy.</phase-follow-up>
+    </V-M-PRODUCT-DOCS>
+
+    <V-M-PRODUCT-DOCS-VERIFIER MODULE="M-PRODUCT-DOCS-VERIFIER" PRIORITY="medium">
+      <test-files>
+        <file>.agents/skills/verify-product-docs/SKILL.md</file>
+        <file>.agents/skills/verify-product-docs/agents/openai.yaml</file>
+        <file>.agents/skills/verify-product-docs/references/output-contract.md</file>
+        <file>.agents/skills/verify-product-docs/references/subagent-roles.md</file>
+        <file>.agents/skills/verify-product-docs/scripts/scaffold_product_verified.py</file>
+        <file>.agents/skills/verify-product-docs/scripts/validate_product_verified.py</file>
+      </test-files>
+      <module-checks>
+        <check-1>python3 /home/nolood/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/verify-product-docs</check-1>
+        <check-2>python3 -m py_compile .agents/skills/verify-product-docs/scripts/scaffold_product_verified.py .agents/skills/verify-product-docs/scripts/validate_product_verified.py</check-2>
+        <check-3>Run scaffold and validate scripts against a temporary product-doc source folder.</check-3>
+        <check-4>git diff --check -- .agents/skills/verify-product-docs docs/development-plan.xml docs/knowledge-graph.xml docs/verification-plan.xml</check-4>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Skill metadata is valid and discoverable by Codex project skill loading.</scenario-1>
+        <scenario-2 kind="success">Scaffold creates the required staging product-verified structure, source inventory, excluded/noisy source list, and appendix question ledger from a product docs folder without touching final `docs/product-verified`.</scenario-2>
+        <scenario-3 kind="success">Validator accepts the required structure with placeholders during scaffold smoke tests and rejects final docs that still contain placeholders by default.</scenario-3>
+        <scenario-4 kind="success">The main session launches Phase 1 scope-orchestrators in parallel where possible, aggregates their outputs, then launches the consistency scope-orchestrator.</scenario-4>
+        <scenario-4a kind="success">If the consistency scope returns `needs-revision`, is interrupted, stalls, or lacks a final verdict, the main session relaunches `consistency-reviewer` with the same RUN_ID and prior artifacts while retry budget remains.</scenario-4a>
+        <scenario-4b kind="success">When new source docs or answers to previous open questions are present, the run records `source-delta.md`, passes it to every scope-orchestrator, and still follows the normal Phase 1, consistency, synthesis, and validation pipeline.</scenario-4b>
+        <scenario-5 kind="failure">The skill pauses with recovery artifacts and does not write `docs/product-verified/**` when source docs are missing, orchestration is interrupted, or any required scope lacks reviewer approval.</scenario-5>
+        <scenario-6 kind="failure">The skill rejects unsupported derivations and consolidates missing artifact families such as absent API documentation into one blocker question instead of speculative endpoint-level questions.</scenario-6>
+        <scenario-7 kind="failure">The skill fails validation when final docs contain stable requirement, rule, edge, or acceptance ids that are not represented in traceability, or derivations lack confidence evidence.</scenario-7>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>The main session must dispatch scope-orchestrators, not scope workers or scope reviewers directly.</assertion-1>
+        <assertion-2>Each scope-orchestrator owns only `.tasks/product-docs-verify/&lt;run-id&gt;/scopes/&lt;scope&gt;/` and must run that scope's worker/reviewer approval loop internally.</assertion-2>
+        <assertion-3>The consistency scope must run after primary scope outputs exist, not in the first parallel wave.</assertion-3>
+        <assertion-4>Open questions must use scope-prefixed ids and must be captured in per-scope question ledgers, the aggregate `.tasks/product-docs-verify/&lt;run-id&gt;/question-ledger.md`, `docs/product-verified/open-questions.md`, and `docs/product-verified/appendix/question-ledger.md`.</assertion-4>
+        <assertion-5>Final verified docs must trace material requirements, rules, edge cases, and acceptance criteria to source files, approved scope findings, approved derivations, assumptions, decisions, or open questions.</assertion-5>
+        <assertion-6>`docs/product` remains raw input; `docs/product-verified` is only source of truth after synthesis and validation.</assertion-6>
+        <assertion-7>Interrupted runs must resume from `.tasks/product-docs-verify/&lt;run-id&gt;/recovery.md`, aggregate scope status, and scope-local artifacts; direct controller synthesis from partial reports is forbidden.</assertion-7>
+        <assertion-8>Final verified docs must be evidence-constrained: derived roles, permissions, data fields, states, acceptance criteria, and edge cases require source signal, rationale, and confidence; missing source artifact families are consolidated into source-gap blockers.</assertion-8>
+        <assertion-9>Nested subagent unavailability must block the affected scope; the main controller must not bypass this by running scoped workers or reviewers directly.</assertion-9>
+        <assertion-10>Interrupted, stalled, missing-report, or missing-verdict scopes must not be treated as final blockers until the configured interruption retry budget is exhausted.</assertion-10>
+        <assertion-11>Additional docs and answered questions must be represented as source deltas and traced into source inventory, decisions, question ledger updates, or open questions; previous approvals are context, not current-run approval.</assertion-11>
+      </required-trace-assertions>
+      <wave-follow-up>Run the skill validation checks after editing the skill, references, or scripts.</wave-follow-up>
+      <phase-follow-up>Use `$verify-product-docs` before decomposing a new product with messy raw product documentation.</phase-follow-up>
+    </V-M-PRODUCT-DOCS-VERIFIER>
+
+    <V-M-TECHNICAL-DOCS-VERIFIER MODULE="M-TECHNICAL-DOCS-VERIFIER" PRIORITY="medium">
+      <test-files>
+        <file>.agents/skills/verify-technical-docs/SKILL.md</file>
+        <file>.agents/skills/verify-technical-docs/agents/openai.yaml</file>
+        <file>.agents/skills/verify-technical-docs/references/output-contract.md</file>
+        <file>.agents/skills/verify-technical-docs/references/subagent-roles.md</file>
+        <file>.agents/skills/verify-technical-docs/scripts/scaffold_technical_verified.py</file>
+        <file>.agents/skills/verify-technical-docs/scripts/validate_technical_verified.py</file>
+      </test-files>
+      <module-checks>
+        <check-1>python3 /home/nolood/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/verify-technical-docs</check-1>
+        <check-2>python3 -m py_compile .agents/skills/verify-technical-docs/scripts/scaffold_technical_verified.py .agents/skills/verify-technical-docs/scripts/validate_technical_verified.py</check-2>
+        <check-3>Run scaffold and validate scripts against a temporary product-verified source folder.</check-3>
+        <check-4>git diff --check -- .agents/skills/verify-technical-docs docs/requirements.xml docs/development-plan.xml docs/knowledge-graph.xml docs/verification-plan.xml</check-4>
+        <check-5>xmllint --noout docs/requirements.xml docs/technology.xml docs/development-plan.xml docs/verification-plan.xml docs/knowledge-graph.xml docs/operational-packets.xml</check-5>
+        <check-6>grace lint --path .</check-6>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Skill metadata is valid and discoverable by Codex project skill loading.</scenario-1>
+        <scenario-2 kind="success">Scaffold creates the required staging technical-verified structure and source inventory from a verified product docs folder without touching final `docs/technical-verified`.</scenario-2>
+        <scenario-3 kind="success">Validator accepts scaffold placeholders only with `--allow-placeholders` and rejects final docs that still contain placeholders by default.</scenario-3>
+        <scenario-4 kind="success">The main session launches technical scope-orchestrators, aggregates their question ledgers, then launches `consistency-loop-reviewer` to check contradictions and answer effects.</scenario-4>
+        <scenario-5 kind="success">When previous technical questions are answered, the run records source delta entries, preserves original question ids, links follow-up questions through the `Parent` column, and blocks `approved-to-dev` if any answer creates a new open blocker.</scenario-5>
+        <scenario-6 kind="failure">The skill refuses `approved-to-dev` when aggregate question ledgers contain open `dev-blocking` or `needs-owner-decision` rows.</scenario-6>
+        <scenario-7 kind="failure">The skill rejects unsupported technical invention and consolidates absent artifact families such as missing API, auth, integration, migration, or SLO contracts into source-gap questions.</scenario-7>
+        <scenario-8 kind="failure">The validator rejects false `approved-to-dev` packages that lack reviewer verdict rows for every required scope, lack existing traceable reviewer report paths, use placeholder run-id segments, lack passed approval gate rows, duplicate approval evidence rows, use shallow delta-review evidence, use missing or empty source inventory markers, have an empty, non-path, or non-existing Included Sources entry, or use invalid question severities or statuses.</scenario-8>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>The main session must dispatch scope-orchestrators, not scope workers or scope reviewers directly.</assertion-1>
+        <assertion-2>Each scope-orchestrator owns only `.tasks/technical-docs-verify/&lt;run-id&gt;/scopes/&lt;scope&gt;/` and must run that scope's worker/reviewer approval loop internally.</assertion-2>
+        <assertion-3>Open questions must be captured in per-scope question ledgers, the aggregate `.tasks/technical-docs-verify/&lt;run-id&gt;/question-ledger.md`, `docs/technical-verified/open-questions.md`, and `docs/technical-verified/appendix/question-ledger.md`.</assertion-3>
+        <assertion-4>`approved-to-dev` requires zero open `dev-blocking` and zero open `needs-owner-decision` questions after consistency review.</assertion-4>
+        <assertion-5>Answered prior questions must preserve their original ids and record whether they resolved, superseded, or spawned follow-up questions.</assertion-5>
+        <assertion-6>Follow-up blockers spawned by answers must prevent `approved-to-dev` and trigger another question loop.</assertion-6>
+        <assertion-7>Technical requirements, questions, decisions, slices, and test obligations must trace to product-verified sources, source deltas, approved scope findings, or explicit owner decisions.</assertion-7>
+      </required-trace-assertions>
+      <wave-follow-up>Run the skill validation checks after editing the skill, references, scripts, or GRACE entries.</wave-follow-up>
+      <phase-follow-up>Use `$verify-technical-docs` after `$verify-product-docs` and before GRACE planning, Beads decomposition, or developer handoff when a product package must be implementation-ready.</phase-follow-up>
+    </V-M-TECHNICAL-DOCS-VERIFIER>
+
+    <V-M-PRD-WAVE-DECOMPOSER MODULE="M-PRD-WAVE-DECOMPOSER" PRIORITY="medium">
+      <test-files>
+        <file>.agents/skills/decompose-prd-waves/SKILL.md</file>
+        <file>.agents/skills/decompose-prd-waves/agents/openai.yaml</file>
+        <file>.agents/skills/decompose-prd-waves/references/output-contract.md</file>
+        <file>.agents/skills/decompose-prd-waves/references/subagent-roles.md</file>
+        <file>.agents/skills/decompose-prd-waves/scripts/scaffold_prd_waves.py</file>
+        <file>.agents/skills/decompose-prd-waves/scripts/validate_prd_waves.py</file>
+      </test-files>
+      <module-checks>
+        <check-1>python3 /home/nolood/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/decompose-prd-waves</check-1>
+        <check-2>python3 -m py_compile .agents/skills/decompose-prd-waves/scripts/scaffold_prd_waves.py .agents/skills/decompose-prd-waves/scripts/validate_prd_waves.py</check-2>
+        <check-3>Run scaffold and validate scripts against temporary raw product, verified product, and technical source folders.</check-3>
+        <check-4>git diff --check -- .agents/skills/decompose-prd-waves AGENTS.md docs/requirements.xml docs/development-plan.xml docs/knowledge-graph.xml docs/verification-plan.xml</check-4>
+        <check-5>xmllint --noout docs/requirements.xml docs/technology.xml docs/development-plan.xml docs/verification-plan.xml docs/knowledge-graph.xml docs/operational-packets.xml</check-5>
+        <check-6>grace lint --path .</check-6>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Skill metadata is valid and discoverable by Codex project skill loading.</scenario-1>
+        <scenario-2 kind="success">Scaffold creates the required staging prd-waves structure from raw product, verified product, and technical source inventories without touching final `docs/prd-waves`.</scenario-2>
+        <scenario-3 kind="success">Validator accepts scaffold placeholders only with `--allow-placeholders` and rejects final docs that still contain placeholders by default.</scenario-3>
+        <scenario-4 kind="success">The main session launches scope-mapper orchestrators for product-capabilities, user-journeys, data-lifecycle, integrations-operations, client-experience, security-compliance, and delivery-sequencing, synthesizes a staging candidate package with backend-only waves plus per-page frontend files, then runs final consistency only after primary scope outputs and the candidate package exist.</scenario-4>
+        <scenario-5 kind="success">The final wave map covers every material verified backend PRD scope group as included in exactly one shallow backend wave or explicit deferral, while frontend PRD scope is covered in `frontend-pages/page-&lt;nnn&gt;.md` files sourced from raw and verified PRDs or explicit frontend deferral.</scenario-5>
+        <scenario-6 kind="success">A ready shallow map contains backend wave ids, outcomes, included and excluded backend scope, dependency order, risk class, frontend page order, per-page frontend files, recommended next planning surfaces, reviewer verdicts, source traceability, and no open decomposition blockers.</scenario-6>
+        <scenario-7 kind="failure">The validator rejects final prd-waves package files containing implementation tasks, acceptance criteria, exit criteria, API payloads, schemas, migrations, test cases, Beads, Jira, or code-level detail.</scenario-7>
+        <scenario-8 kind="failure">Open `decomposition-blocking` or `needs-owner-decision` rows prevent `waves-ready-awaiting-user-approval`, prevent user approval, and prevent downstream detailed planning.</scenario-8>
+        <scenario-9 kind="failure">A shallow PRD map with more than 8 top-level backend waves stops for an MVP re-scope question unless the user explicitly approves a broader release scope.</scenario-9>
+        <scenario-10 kind="failure">If nested subagents are unavailable, the affected scope is marked blocked and the main controller does not bypass the scope-mapper by running mapper or reviewer roles directly.</scenario-10>
+        <scenario-11 kind="failure">The validator rejects final approval when consistency reviewer evidence does not name an existing `.tasks/prd-wave-decomposition/&lt;run-id&gt;/staging/prd-waves` candidate package.</scenario-11>
+        <scenario-12 kind="failure">The validator rejects `waves-approved` when any wave lacks status `user-approved` plus explicit `approved-by-user`, `user-approved`, or `waves-approved-by-user` evidence in `## User Approval`, or when `appendix/decision-log.md` lacks matching explicit user approval evidence.</scenario-12>
+        <scenario-13 kind="failure">The validator rejects final packages that rely on deprecated `frontend-page-sequence.md`, omit `frontend-pages/index.md`, keep frontend pages in draft state, place `PAGE-...` only outside `## Page Order`, omit matching `frontend-pages/page-&lt;nnn&gt;.md` files, omit page detail sections, omit raw PRD traceability, omit verified PRD traceability, or lack explicit `FRONTEND_NONE_CONFIRMED` / `FRONTEND_DEFERRED` evidence when no frontend pages can be produced.</scenario-13>
+        <scenario-14 kind="failure">The validator rejects wave files, `waves/index.md`, or `wave-map.md` that include frontend page, route, navigation, UI, UX, user-interface, client-facing, mobile, screen, or client-experience scope.</scenario-14>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>The main session must dispatch scope-mapper orchestrators, not mapper workers or reviewers directly.</assertion-1>
+        <assertion-2>Each scope-mapper owns only `.tasks/prd-wave-decomposition/&lt;run-id&gt;/scopes/&lt;scope&gt;/` and must run its mapper/reviewer approval loop internally.</assertion-2>
+        <assertion-3>Final consistency review must run after primary scope outputs and a concrete staging candidate package exist, and reviewer evidence must identify that candidate package.</assertion-3>
+        <assertion-4>Every final package file must remain shallow and must not contain implementation tasks, module designs, acceptance criteria, exit criteria, detailed test plans, Beads, Jira, migrations, API payloads, schemas, component architecture, component designs, or code changes; source inventory may carry source paths only.</assertion-4>
+        <assertion-5>Open questions must be captured in scope-local ledgers, aggregate `.tasks/prd-wave-decomposition/&lt;run-id&gt;/question-ledger.md`, `docs/prd-waves/open-questions.md`, and `docs/prd-waves/appendix/question-ledger.md`.</assertion-5>
+        <assertion-6>Backend wave ids, outcomes, included backend scope, deferrals, dependencies, recommendations, decisions, and questions must trace to verified product docs, technical docs, source deltas, approved scope findings, or explicit user decisions; frontend page ids, page order, page contents, functional parts, empty states, and page questions must trace to both raw product docs and verified product docs.</assertion-6>
+        <assertion-7>User approval must be recorded separately from reviewer approval with an explicit approval marker and must not be accepted while open decomposition-blocking or owner-decision questions remain.</assertion-7>
+        <assertion-8>Frontend, UI, UX, user-interface, client-facing, page, route, navigation, mobile, screen, and client-experience scope must be represented only under `frontend-pages/`, not as backend waves.</assertion-8>
+      </required-trace-assertions>
+      <wave-follow-up>Run the skill validation checks after editing the skill, references, scripts, or GRACE entries.</wave-follow-up>
+      <phase-follow-up>Use `$decompose-prd-waves` after `$verify-product-docs` or `$verify-technical-docs` when the PRD needs shallow backend implementation waves plus source-backed frontend page files before detailed planning, Beads, Jira, GRACE planning, or developer handoff.</phase-follow-up>
+    </V-M-PRD-WAVE-DECOMPOSER>
+
+    <V-M-PRD-WAVE-DETAILER MODULE="M-PRD-WAVE-DETAILER" PRIORITY="medium">
+      <test-files>
+        <file>.agents/skills/detail-prd-wave/SKILL.md</file>
+        <file>.agents/skills/detail-prd-wave/agents/openai.yaml</file>
+        <file>.agents/skills/detail-prd-wave/references/output-contract.md</file>
+        <file>.agents/skills/detail-prd-wave/references/subagent-roles.md</file>
+        <file>.agents/skills/detail-prd-wave/scripts/scaffold_detail_prd_wave.py</file>
+        <file>.agents/skills/detail-prd-wave/scripts/validate_detail_prd_wave.py</file>
+      </test-files>
+      <module-checks>
+        <check-1>python3 /home/nolood/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/detail-prd-wave</check-1>
+        <check-2>python3 -m py_compile .agents/skills/detail-prd-wave/scripts/scaffold_detail_prd_wave.py .agents/skills/detail-prd-wave/scripts/validate_detail_prd_wave.py</check-2>
+        <check-3>Run scaffold and validate scripts against temporary shallow PRD wave, product, and technical source folders.</check-3>
+        <check-4>git diff --check -- .agents/skills/detail-prd-wave AGENTS.md docs/requirements.xml docs/development-plan.xml docs/knowledge-graph.xml docs/verification-plan.xml</check-4>
+        <check-5>xmllint --noout docs/requirements.xml docs/technology.xml docs/development-plan.xml docs/verification-plan.xml docs/knowledge-graph.xml docs/operational-packets.xml</check-5>
+        <check-6>grace lint --path .</check-6>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Skill metadata is valid and discoverable by Codex project skill loading.</scenario-1>
+        <scenario-2 kind="success">The skill refuses to detail a selected wave unless `docs/prd-waves` exists, the selected backend wave exists, the source wave is shallow-approved, frontend scope remains under `frontend-pages/`, and no open decomposition-blocking or owner-decision questions affect the wave.</scenario-2>
+        <scenario-3 kind="success">Scaffold creates the required staging prd-wave-details structure for exactly one selected backend wave without touching final `docs/prd-wave-details`.</scenario-3>
+        <scenario-4 kind="success">Validator accepts scaffold placeholders only with `--allow-placeholders` and rejects final docs that still contain placeholders by default.</scenario-4>
+        <scenario-5 kind="success">The main session dispatches exactly one wave-orchestrator for the selected wave, and the wave-orchestrator runs specialist planner and reviewer subagents internally.</scenario-5>
+        <scenario-6 kind="success">A ready-for-dev selected backend wave contains backend implementation slices, AC ids, EC ids, verification obligation ids, codebase fit evidence, neighboring-backend-wave fit evidence, read-only frontend-pages dependency context, reviewer approvals, source traceability, and a clear outcome after implementation.</scenario-6>
+        <scenario-7 kind="failure">Open `wave-blocking` or `needs-owner-decision` rows prevent `ready-for-dev`, prevent user approval, and prevent downstream Beads, Jira, GRACE execution, or implementation.</scenario-7>
+        <scenario-8 kind="failure">The skill does not detail wave N+1 while wave N remains open unless the user explicitly skips or supersedes wave N and the traceability impact is recorded.</scenario-8>
+        <scenario-9 kind="failure">The skill does not edit implementation code, generated artifacts, Beads, or Jira.</scenario-9>
+        <scenario-10 kind="failure">If nested subagents are unavailable, the current wave is marked blocked and the main controller does not bypass the wave-orchestrator by running planner or reviewer roles directly.</scenario-10>
+        <scenario-11 kind="failure">Final fit review rejects packages that detail later backend waves, plan frontend pages, UX states, screens, routes, navigation, or frontend implementation, invent unsupported contracts, miss codebase fit evidence, or mark ready-for-dev with open blockers.</scenario-11>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>The source wave gate must be recorded in `.tasks/prd-wave-detail/&lt;run-id&gt;/source-wave-gate.md` before selected-wave orchestration starts.</assertion-1>
+        <assertion-2>The context inventory must include neighboring backend waves, `frontend-pages/**` dependency context, prior detailed backend waves when present, GRACE module and verification references, and relevant code paths or an explicit none-needed rationale.</assertion-2>
+        <assertion-3>The main session must dispatch one wave-orchestrator for the selected wave, not planner workers or reviewers directly.</assertion-3>
+        <assertion-4>Each wave-orchestrator owns only `.tasks/prd-wave-detail/&lt;run-id&gt;/waves/&lt;wave-id&gt;/` and must run planner/reviewer approval loops internally.</assertion-4>
+        <assertion-5>Every ready-for-dev selected wave must have approved product-scope-and-ac, architecture-codebase-fit, data-api-integration-ops, security-privacy-compliance, testing-exit-criteria, sequencing-other-wave-fit, traceability-consistency, and final-wave-fit-review verdicts.</assertion-5>
+        <assertion-6>Open questions must be captured in wave-local ledgers, aggregate `.tasks/prd-wave-detail/&lt;run-id&gt;/question-ledger.md`, `docs/prd-wave-details/open-questions.md`, and `docs/prd-wave-details/appendix/question-ledger.md`.</assertion-6>
+        <assertion-7>Backend implementation slices, AC, EC, tests, decisions, code touchpoints, and questions must trace to the selected shallow backend wave, verified docs, GRACE XML, source deltas, relevant code paths, reviewer reports, `frontend-pages/**` dependency context, or explicit user decisions.</assertion-7>
+        <assertion-8>User approval must be recorded separately from ready-for-dev and must not be accepted while open wave-blocking or owner-decision questions remain.</assertion-8>
+        <assertion-9>Recovery reports must name the selected wave, interrupted actor, last completed phase, retry budget state, and next relaunch action before resuming.</assertion-9>
+      </required-trace-assertions>
+      <wave-follow-up>Run the skill validation checks after editing the skill, references, scripts, or GRACE entries.</wave-follow-up>
+      <phase-follow-up>Use `$detail-prd-wave` after `$decompose-prd-waves` when one backend PRD wave needs code-aware ready-for-dev detail before GRACE execution, Beads task creation, Jira export, or developer handoff; use `frontend-pages/**` only as read-only dependency context.</phase-follow-up>
+    </V-M-PRD-WAVE-DETAILER>
+
+    <V-M-BACKEND-WAVE-PLANNER MODULE="M-BACKEND-WAVE-PLANNER" PRIORITY="medium">
+      <test-files>
+        <file>.agents/skills/plan-backend-waves/SKILL.md</file>
+        <file>.agents/skills/plan-backend-waves/agents/openai.yaml</file>
+        <file>.agents/skills/plan-backend-waves/references/output-contract.md</file>
+        <file>.agents/skills/plan-backend-waves/references/subagent-roles.md</file>
+        <file>.agents/skills/plan-backend-waves/scripts/scaffold_backend_waves.py</file>
+        <file>.agents/skills/plan-backend-waves/scripts/validate_backend_waves.py</file>
+      </test-files>
+      <module-checks>
+        <check-1>python3 /home/nolood/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/plan-backend-waves</check-1>
+        <check-2>python3 -m py_compile .agents/skills/plan-backend-waves/scripts/scaffold_backend_waves.py .agents/skills/plan-backend-waves/scripts/validate_backend_waves.py</check-2>
+        <check-3>Run scaffold and validate scripts against temporary approved technical/product source folders.</check-3>
+        <check-4>git diff --check -- .agents/skills/plan-backend-waves docs/requirements.xml docs/development-plan.xml docs/knowledge-graph.xml docs/verification-plan.xml</check-4>
+        <check-5>xmllint --noout docs/requirements.xml docs/technology.xml docs/development-plan.xml docs/verification-plan.xml docs/knowledge-graph.xml docs/operational-packets.xml</check-5>
+        <check-6>grace lint --path .</check-6>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Skill metadata is valid and discoverable by Codex project skill loading.</scenario-1>
+        <scenario-2 kind="success">The skill refuses to start wave planning unless `docs/technical-verified` has status `approved-to-dev` and no open dev-blocking or owner-decision technical questions remain.</scenario-2>
+        <scenario-3 kind="success">Scaffold creates the required staging backend-waves structure from technical and product source inventories without touching final `docs/backend-waves`.</scenario-3>
+        <scenario-4 kind="success">Validator accepts scaffold placeholders only with `--allow-placeholders` and rejects final docs that still contain placeholders by default.</scenario-4>
+        <scenario-5 kind="success">The main session plans exactly one detailed current wave, dispatches a wave-orchestrator with nested planner and required reviewers, then stops for user approval after ready-for-dev.</scenario-5>
+        <scenario-6 kind="success">A ready-for-dev wave contains backend tasks, acceptance criteria, exit criteria, test obligations, reviewer approvals, source traceability, and a clear outcome after implementation.</scenario-6>
+        <scenario-7 kind="failure">Open `wave-blocking` or `needs-owner-decision` rows prevent `ready-for-dev`, prevent user approval, and prevent planning the next wave.</scenario-7>
+        <scenario-8 kind="failure">A tentative backend map with more than 8 waves stops for an MVP re-scope question unless the user explicitly approves a non-MVP release scope.</scenario-8>
+        <scenario-9 kind="failure">The skill does not create or mutate Jira issues unless the user separately asks for a Jira action.</scenario-9>
+        <scenario-10 kind="failure">Interrupted, stalled, missing-report, or missing-verdict wave-orchestrator runs create recovery artifacts and are relaunched with the same RUN_ID until interruption retry budget is exhausted; partial waves are not marked ready-for-dev.</scenario-10>
+        <scenario-11 kind="failure">If nested subagents are unavailable, the current wave is marked blocked and the main controller does not bypass the wave-orchestrator by running planner or reviewer roles directly.</scenario-11>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>The technical approval gate must be recorded in `.tasks/backend-wave-plan/&lt;run-id&gt;/technical-approval-gate.md` before wave orchestration starts.</assertion-1>
+        <assertion-2>The main session must dispatch one wave-orchestrator for the current wave, not planner workers or reviewers directly.</assertion-2>
+        <assertion-3>Each wave-orchestrator owns only `.tasks/backend-wave-plan/&lt;run-id&gt;/waves/&lt;wave-id&gt;/` and must run its planner/reviewer approval loop internally.</assertion-3>
+        <assertion-4>Future waves may appear only as shallow map entries until every prior wave is ready-for-dev and explicitly user-approved.</assertion-4>
+        <assertion-5>Every ready-for-dev wave must have approved backend-architecture, data-api-contract, security-integration, testing-delivery, sequencing-mvp, and traceability-consistency reviewer verdicts.</assertion-5>
+        <assertion-6>Open questions must be captured in wave-local ledgers, aggregate `.tasks/backend-wave-plan/&lt;run-id&gt;/question-ledger.md`, `docs/backend-waves/open-questions.md`, and `docs/backend-waves/appendix/question-ledger.md`.</assertion-6>
+        <assertion-7>Wave tasks, acceptance criteria, exit criteria, tests, decisions, and questions must trace to approved technical docs, verified product docs, source deltas, prior approved waves, or explicit user decisions.</assertion-7>
+        <assertion-8>User approval must be recorded separately from ready-for-dev and must not be accepted while open wave-blocking or owner-decision questions remain.</assertion-8>
+        <assertion-9>Recovery reports must name the current wave, interrupted actor, last completed phase, retry budget state, and next relaunch action before resuming.</assertion-9>
+        <assertion-10>Nested subagent unavailability must be represented as `WAVE_REVIEW_UNAVAILABLE` or a blocked wave status, not as controller-side synthesis from unreviewed planner output.</assertion-10>
+      </required-trace-assertions>
+      <wave-follow-up>Run the skill validation checks after editing the skill, references, scripts, or GRACE entries.</wave-follow-up>
+      <phase-follow-up>Use `$plan-backend-waves` only after `$verify-technical-docs` returns `approved-to-dev` and before GRACE execution, Beads task creation, Jira export, or developer handoff for backend implementation.</phase-follow-up>
+    </V-M-BACKEND-WAVE-PLANNER>
+
+    <V-M-PLAN-TO-BEADS-SKILL MODULE="M-PLAN-TO-BEADS-SKILL" PRIORITY="medium">
+      <test-files>
+        <file>.agents/skills/plan-to-beads/SKILL.md</file>
+        <file>.agents/skills/plan-to-beads/agents/openai.yaml</file>
+      </test-files>
+      <module-checks>
+        <check-1>python3 /home/nolood/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/plan-to-beads</check-1>
+        <check-2>test -f .agents/skills/plan-to-beads/agents/openai.yaml</check-2>
+        <check-3>git diff --check -- AGENTS.md .agents/skills/plan-to-beads docs/development-plan.xml docs/knowledge-graph.xml docs/verification-plan.xml</check-3>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Skill metadata is valid and discoverable by Codex project skill loading.</scenario-1>
+        <scenario-2 kind="success">Transferred project-local skill files preserve the `plan-to-beads` milestone, child epic, task, and Codex UI metadata instructions.</scenario-2>
+        <scenario-3 kind="failure">The skill asks for a source plan or Beads state instead of inventing scope when either artifact is missing.</scenario-3>
+        <scenario-4 kind="failure">The skill reports a Beads tooling mismatch instead of faking milestone semantics when milestone creation is unsupported.</scenario-4>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>Every generated Beads milestone, epic, or task must point back to the source plan and carry the common objective.</assertion-1>
+        <assertion-2>Serious implementation plans must use exactly one non-executable top-level milestone with separate implementation, full test coverage, and pre-MR QA child epics unless the user explicitly requests otherwise.</assertion-2>
+        <assertion-3>Executable implementation tasks must live under the child epics, not directly under the milestone.</assertion-3>
+      </required-trace-assertions>
+      <wave-follow-up>Run `$plan-to-beads` only after the source plan path and current Beads milestone support are known or can be checked.</wave-follow-up>
+      <phase-follow-up>Run focused skill validation after changing project-local skill metadata or instructions.</phase-follow-up>
+    </V-M-PLAN-TO-BEADS-SKILL>
+
+    <V-M-SUBAGENT-REVIEW-LOOP-SKILL MODULE="M-SUBAGENT-REVIEW-LOOP-SKILL" PRIORITY="medium">
+      <test-files>
+        <file>.agents/skills/subagent-review-loop/SKILL.md</file>
+        <file>.agents/skills/subagent-review-loop/agents/openai.yaml</file>
+      </test-files>
+      <module-checks>
+        <check-1>python3 /home/nolood/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/subagent-review-loop</check-1>
+        <check-2>test -f .agents/skills/subagent-review-loop/agents/openai.yaml</check-2>
+        <check-3>rg -n "START_MODULE_CONTRACT|START_MODULE_MAP|START_CHANGE_SUMMARY" .agents/skills/subagent-review-loop</check-3>
+        <check-4>git diff --check -- .agents/skills/subagent-review-loop docs/development-plan.xml docs/knowledge-graph.xml docs/verification-plan.xml</check-4>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">Skill metadata is valid and discoverable by Codex project skill loading.</scenario-1>
+        <scenario-2 kind="success">The skill tells the main session to spawn independent read-only reviewers with disjoint scopes and a structured verdict format.</scenario-2>
+        <scenario-3 kind="success">The skill keeps artifact edits and finding adjudication in the main session, including rejected findings with rationale.</scenario-3>
+        <scenario-4 kind="failure">The skill does not claim approval when subagents are unavailable, required reviewers still request changes, or reviewer conflict remains unresolved after controller re-check.</scenario-4>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>Reviewer prompts must require read-only reporting and must not delegate artifact edits to subagents.</assertion-1>
+        <assertion-2>The controller must validate every finding against source context before editing and must re-run affected reviewers after revisions.</assertion-2>
+        <assertion-3>Approval requires all required reviewer perspectives to return `APPROVE`, unless the user explicitly accepts a named blocker.</assertion-3>
+      </required-trace-assertions>
+      <wave-follow-up>Run `$subagent-review-loop` after generating or materially revising a spec, design doc, implementation plan, PRD, or other artifact that needs multi-angle approval.</wave-follow-up>
+      <phase-follow-up>Run focused skill validation after changing project-local skill metadata or instructions.</phase-follow-up>
+    </V-M-SUBAGENT-REVIEW-LOOP-SKILL>
+  </ModuleVerification>
+
+  <PhaseGates>
+    <Gate-Phase-1 PHASE="Phase-1">
+      <goal>GRACE migration artifacts are valid and legacy workflow references are removed from active guidance.</goal>
+      <commands>
+        <command-1>xmllint --noout docs/requirements.xml docs/technology.xml docs/development-plan.xml docs/verification-plan.xml docs/knowledge-graph.xml docs/operational-packets.xml</command-1>
+        <command-2>grace lint --path .</command-2>
+        <command-3>rg -n "legacy agent-docs workflow" AGENTS.md README.md .agents/skills .claude/skills docs --hidden</command-3>
+      </commands>
+      <required-evidence>
+        <evidence-1>XML files parse successfully.</evidence-1>
+        <evidence-2>GRACE lint passes.</evidence-2>
+        <evidence-3>No active legacy workflow references remain except explicit migration notes.</evidence-3>
+      </required-evidence>
+    </Gate-Phase-1>
+    <Gate-Phase-2 PHASE="Phase-2">
+      <goal>Feature development keeps module contracts, graph entries, and verification references synchronized.</goal>
+      <commands>
+        <command-1>bunx nx run-many --target=lint --all --parallel=1</command-1>
+        <command-2>bunx nx run-many --target=test --all</command-2>
+        <command-3>bunx nx run-many --target=build --all</command-3>
+        <command-4>grace lint --path .</command-4>
+        <command-5>bun run verify:coverage</command-5>
+      </commands>
+      <required-evidence>
+        <evidence-1>Focused module checks pass for touched modules.</evidence-1>
+        <evidence-2>Shared graph and verification refs match changed code.</evidence-2>
+      </required-evidence>
+    </Gate-Phase-2>
+  </PhaseGates>
+
+  <FailurePackets>
+    <packet-template>
+      <expected-fields>scenario, contract-ref, expected-evidence, observed-evidence, first-divergent-block, suggested-next-action</expected-fields>
+    </packet-template>
+  </FailurePackets>
+</VerificationPlan>

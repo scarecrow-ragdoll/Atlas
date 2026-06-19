@@ -1,0 +1,38 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  exclusions:
+    paths:
+      - internal/graph/generated.go
+      - internal/graph/model
+      - internal/graph/admin_auth.resolvers.go
+      - internal/graph/schema.resolvers.go
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - unused
+    - gosec
+    - misspell
+    - unconvert
+  settings:
+    gosec:
+      excludes:
+        - G117
+
+formatters:
+  exclusions:
+    paths:
+      - internal/graph/generated.go
+      - internal/graph/model
+      - internal/graph/admin_auth.resolvers.go
+      - internal/graph/schema.resolvers.go
+  enable:
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - monorepo-template

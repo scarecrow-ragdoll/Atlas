@@ -1,0 +1,39 @@
+# FILE: apps/web-admin/src/entities/admin-auth/api/createAdmin.graphql
+# VERSION: 1.0.0
+# START_MODULE_CONTRACT
+#   PURPOSE: Define the web-admin GraphQL create-admin operation document for cookie-backed admin authentication.
+#   SCOPE: Owns the CreateAdmin mutation document for codegen parity with the backend auth contract; excludes transport, schema ownership, and UI rendering.
+#   DEPENDS: libs/graphql/schema/admin_auth.graphql, tools/codegen/codegen.ts.
+#   LINKS: M-WEB-ADMIN / M-GRAPHQL-SCHEMA / V-M-WEB-ADMIN.
+#   ROLE: CONFIG
+#   MAP_MODE: SUMMARY
+# END_MODULE_CONTRACT
+# START_MODULE_MAP
+#   CreateAdmin - Creates a new admin from an authenticated admin session.
+# END_MODULE_MAP
+# START_CHANGE_SUMMARY
+#   LAST_CHANGE: 1.0.0 - Split CreateAdmin into a single-operation document for generated auth contract parity.
+# END_CHANGE_SUMMARY
+
+mutation CreateAdmin($input: CreateAdminInput!) {
+  createAdmin(input: $input) {
+    __typename
+    ... on CreateAdminSuccess {
+      admin {
+        id
+        email
+        name
+        role
+        createdAt
+        updatedAt
+      }
+    }
+    ... on ValidationError {
+      field
+      message
+    }
+    ... on AuthError {
+      message
+    }
+  }
+}

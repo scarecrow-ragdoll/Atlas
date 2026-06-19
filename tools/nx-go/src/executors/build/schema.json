@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "properties": {
+    "outputPath": { "type": "string", "description": "Output binary path" },
+    "main": { "type": "string", "description": "Main package path (relative to project root)", "default": "cmd/server" }
+  },
+  "required": ["outputPath"]
+}

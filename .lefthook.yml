@@ -1,0 +1,16 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint-staged:
+      run: bunx lint-staged
+    go-lint:
+      glob: '**/*.go'
+      run: cd apps/api && golangci-lint run --fix
+    go-test:
+      glob: '**/*.go'
+      run: cd apps/api && go test -short ./...
+
+commit-msg:
+  commands:
+    commitlint:
+      run: bunx commitlint --edit {1}

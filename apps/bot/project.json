@@ -1,0 +1,33 @@
+{
+  "name": "bot",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/bot",
+  "projectType": "application",
+  "tags": ["scope:bot"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/bot && go build -o ../../dist/apps/bot ./cmd/bot"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/bot && air -c air.toml"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/bot && mkdir -p ../../dist/coverage/go/bot && go test -coverprofile=../../dist/coverage/go/bot/coverage.out ./..."
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/bot && golangci-lint run"
+      }
+    }
+  }
+}

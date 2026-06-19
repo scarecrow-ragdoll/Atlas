@@ -1,0 +1,21 @@
+{
+  "name": "go-config",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/go/config",
+  "projectType": "library",
+  "tags": ["scope:shared", "lang:go"],
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd libs/go/config && mkdir -p ../../../dist/coverage/go/go-config && go test -v -coverprofile=../../../dist/coverage/go/go-config/coverage.out ./..."
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd libs/go/config && golangci-lint run"
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+dist
+.next
+node_modules
+coverage
+apps/api
+*.go
+bun.lock
+apps/web-admin/src/shared/api/generated

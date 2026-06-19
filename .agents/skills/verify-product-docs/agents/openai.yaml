@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Verify Product Docs'
+  short_description: 'Turn messy product docs into a source of truth'
+  default_prompt: 'Use $verify-product-docs to review ./docs/product with subagents and write ./docs/product-verified.'

@@ -1,0 +1,35 @@
+# FILE: apps/web-admin/src/entities/user/api/createUser.graphql
+# VERSION: 1.0.0
+# START_MODULE_CONTRACT
+#   PURPOSE: Define the admin CreateUser GraphQL mutation document.
+#   SCOPE: Owns the codegen-visible mutation and expected union response fields for admin create-user flows; excludes runtime transport, schema ownership, and form rendering.
+#   DEPENDS: apps/api/internal/graph/schema.graphqls, tools/codegen/codegen.ts, apps/web-admin/src/pages/users-page.tsx.
+#   LINKS: M-WEB-ADMIN / M-GRAPHQL-SCHEMA / V-M-WEB-ADMIN
+#   ROLE: RUNTIME
+#   MAP_MODE: SUMMARY
+# END_MODULE_CONTRACT
+# START_MODULE_MAP
+#   CreateUser - Creates a user and exposes success, validation, and auth error branches used by the admin users route.
+# END_MODULE_MAP
+# START_CHANGE_SUMMARY
+#   LAST_CHANGE: 1.0.0 - Added file-local GRACE markup for Task 8 governance scan.
+# END_CHANGE_SUMMARY
+
+mutation CreateUser($input: CreateUserInput!) {
+  createUser(input: $input) {
+    ... on CreateUserSuccess {
+      user {
+        id
+        email
+        name
+      }
+    }
+    ... on ValidationError {
+      field
+      message
+    }
+    ... on AuthError {
+      message
+    }
+  }
+}

@@ -1,0 +1,114 @@
+# FILE: docker/docker-compose.yml
+# VERSION: 1.0.0
+# START_MODULE_CONTRACT
+#   PURPOSE: Define the local development Docker stack for Postgres, Redis, API, and public web.
+#   SCOPE: Owns local compose wiring only; excludes test compose and production Dokploy deployment.
+#   DEPENDS: docker/api.Dockerfile, docker/web.Dockerfile, apps/api, apps/web, postgres, redis.
+#   LINKS: M-CI-CD / M-API / M-WEB / V-M-CI-CD.
+#   ROLE: CONFIG
+#   MAP_MODE: SUMMARY
+# END_MODULE_CONTRACT
+# START_MODULE_MAP
+#   postgres - Local development database service.
+#   redis - Local development cache service.
+#   api - Local Go API service.
+#   web - Local public Next web service proxied to api through WEB_API_BASE_URL.
+# END_MODULE_MAP
+# START_CHANGE_SUMMARY
+#   LAST_CHANGE: 1.0.1 - Replaced bearer placeholder env with web-admin bootstrap and session env.
+# END_CHANGE_SUMMARY
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+      POSTGRES_DB: ${POSTGRES_DB:-monorepo_dev}
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-app}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/api.Dockerfile
+      target: dev
+    restart: unless-stopped
+    ports:
+      - '${SERVER_PORT:-8090}:8080'
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER:-app}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secret}
+      - POSTGRES_DB=${POSTGRES_DB:-monorepo_dev}
+      - POSTGRES_SSLMODE=disable
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - ADMIN_INITIAL_EMAIL=${ADMIN_INITIAL_EMAIL:-}
+      - ADMIN_INITIAL_PASSWORD=${ADMIN_INITIAL_PASSWORD:-}
+      - ADMIN_INITIAL_NAME=${ADMIN_INITIAL_NAME:-}
+      - ADMIN_ORIGINS=${ADMIN_ORIGINS:-http://localhost:3100,http://127.0.0.1:3100}
+      - ADMIN_SESSION_COOKIE_NAME=${ADMIN_SESSION_COOKIE_NAME:-web_admin_session}
+      - ADMIN_SESSION_TTL=${ADMIN_SESSION_TTL:-168h}
+      - ADMIN_SESSION_COOKIE_SECURE=${ADMIN_SESSION_COOKIE_SECURE:-auto}
+      - ADMIN_SESSION_SAME_SITE=${ADMIN_SESSION_SAME_SITE:-Lax}
+      - ADMIN_SESSION_KEY_SECRET=${ADMIN_SESSION_KEY_SECRET:-dev-session-key-secret}
+      - SERVER_PORT=8080
+      - LOG_LEVEL=debug
+      - SERVER_ENV=development
+    volumes:
+      - ../apps/api:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:8080/healthz']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  web:
+    build:
+      context: ..
+      dockerfile: docker/web.Dockerfile
+      target: dev
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      - WEB_API_BASE_URL=http://api:8080
+    volumes:
+      - ../apps/web:/app/apps/web
+      - /app/apps/web/node_modules
+      - /app/apps/web/.next
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  postgres-data:

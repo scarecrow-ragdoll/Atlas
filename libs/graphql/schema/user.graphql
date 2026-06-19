@@ -1,0 +1,47 @@
+type User {
+  id: UUID!
+  email: String!
+  name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type UserEdge {
+  cursor: String!
+  node: User!
+}
+
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type CreateUserSuccess {
+  user: User!
+}
+
+union CreateUserResult = CreateUserSuccess | ValidationError | AuthError
+
+input CreateUserInput {
+  email: String!
+  name: String!
+  password: String!
+}
+
+type UpdateUserSuccess {
+  user: User!
+}
+
+union UpdateUserResult = UpdateUserSuccess | ValidationError | NotFoundError | AuthError
+
+input UpdateUserInput {
+  name: String
+  email: String
+}
+
+type DeleteUserSuccess {
+  ok: Boolean!
+}
+
+union DeleteUserResult = DeleteUserSuccess | AuthError

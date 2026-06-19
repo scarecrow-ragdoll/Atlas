@@ -1,0 +1,7 @@
+{
+  "type": "object",
+  "properties": {
+    "port": { "type": "number", "description": "Server port", "default": 8080 },
+    "configPath": { "type": "string", "description": "Path to air.toml config" }
+  }
+}

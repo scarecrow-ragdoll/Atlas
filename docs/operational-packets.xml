@@ -1,0 +1,157 @@
+<OperationalPackets VERSION="0.1.2">
+  <ExecutionPacketTemplate>
+    <ExecutionPacket>
+      <module-id>M-EXAMPLE</module-id>
+      <module-name>ExampleModule</module-name>
+      <purpose>Implement the approved module change without architectural drift.</purpose>
+      <write-scope>
+        <file-1>path/to/source</file-1>
+        <file-2>path/to/test</file-2>
+      </write-scope>
+      <contract-excerpt><![CDATA[
+Copy the relevant module contract from docs/development-plan.xml and any existing file-local MODULE_CONTRACT for files in write scope.
+      ]]></contract-excerpt>
+      <graph-entry-excerpt><![CDATA[
+Copy the relevant graph entry from docs/knowledge-graph.xml.
+      ]]></graph-entry-excerpt>
+      <dependency-contract-summaries>
+        <dependency-1 module="M-DEPENDENCY">Summarize only the public dependency contract required for the work.</dependency-1>
+      </dependency-contract-summaries>
+      <verification-excerpt><![CDATA[
+Copy the relevant module verification entry from docs/verification-plan.xml.
+      ]]></verification-excerpt>
+      <assumptions>
+        <assumption-1>Dependency contracts and write scope are already approved by the controller.</assumption-1>
+      </assumptions>
+      <stop-conditions>
+        <condition-1>Stop if a new dependency, new module, or unclear third-party surface is required.</condition-1>
+        <condition-2>Stop if generated files drift outside the approved write scope.</condition-2>
+        <condition-3>Stop if the requested behavior contradicts requirements or verification plan entries.</condition-3>
+        <condition-4>Stop if an explicit coverage-phase packet falls below 100 percent, or if any new allowlist entry lacks a replacement verification gate. Outside coverage phases, record coverage gaps as follow-up risk instead of expanding the task.</condition-4>
+        <condition-5>Stop if a new or meaningfully edited governed file outside `docs/*.xml` would remain without current MODULE_CONTRACT, MODULE_MAP, or required semantic anchors.</condition-5>
+      </stop-conditions>
+      <retry-budget>2</retry-budget>
+      <checkpoint-fields>
+        <field-1>assumptions-kept</field-1>
+        <field-2>commands-run</field-2>
+        <field-3>evidence-captured</field-3>
+        <field-4>graph-delta</field-4>
+        <field-5>verification-delta</field-5>
+        <field-6>file-local-contract-delta</field-6>
+        <field-7>next-action</field-7>
+      </checkpoint-fields>
+      <expected-graph-delta-fields>
+        <field-1>imports-added</field-1>
+        <field-2>imports-removed</field-2>
+        <field-3>exports-added</field-3>
+        <field-4>exports-removed</field-4>
+        <field-5>annotations-added</field-5>
+        <field-6>annotations-removed</field-6>
+        <field-7>CrossLinks</field-7>
+      </expected-graph-delta-fields>
+      <expected-verification-delta-fields>
+        <field-1>test-files</field-1>
+        <field-2>module-checks</field-2>
+        <field-3>scenarios</field-3>
+        <field-4>required-log-markers</field-4>
+        <field-5>required-trace-assertions</field-5>
+        <field-6>follow-up-checks</field-6>
+        <field-7>coverage-thresholds-and-allowlist</field-7>
+      </expected-verification-delta-fields>
+      <notes>
+        <note-1>Workers should only read more context when the packet is insufficient.</note-1>
+        <note-2>The controller owns shared GRACE artifact updates unless the packet explicitly delegates them.</note-2>
+        <note-3>Coverage workers must report exact coverage artifacts, any allowlist changes, and whether `bun run test:coverage` or a narrower target was run. Non-coverage workers should prefer the narrowest behavior-focused verification for the active development task.</note-3>
+        <note-4>Workers must add or update file-local GRACE markup for governed files they create or meaningfully edit, then report that delta to the controller.</note-4>
+      </notes>
+    </ExecutionPacket>
+  </ExecutionPacketTemplate>
+
+  <GraphDeltaTemplate>
+    <GraphDelta module="M-EXAMPLE">
+      <imports-added>
+        <import-1>M-DEPENDENCY</import-1>
+      </imports-added>
+      <imports-removed />
+      <exports-added>
+        <export-1>newPublicSymbol</export-1>
+      </exports-added>
+      <exports-removed />
+      <annotations-added>
+        <annotation-1>&lt;export-newPublicSymbol PURPOSE="Describe public symbol" /&gt;</annotation-1>
+      </annotations-added>
+      <annotations-removed />
+      <cross-links-added>
+        <CrossLink from="M-EXAMPLE" to="M-DEPENDENCY" relation="uses" />
+      </cross-links-added>
+      <cross-links-removed />
+      <notes>
+        <note-1>Only list graph facts that really changed in the code.</note-1>
+      </notes>
+    </GraphDelta>
+  </GraphDeltaTemplate>
+
+  <VerificationDeltaTemplate>
+    <VerificationDelta module="M-EXAMPLE">
+      <test-files-added>
+        <file-1>path/to/new.test</file-1>
+      </test-files-added>
+      <test-files-removed />
+      <module-checks>
+        <command-1>bunx nx test affected-project</command-1>
+      </module-checks>
+      <required-log-markers>
+        <marker-1>[ExampleModule][functionName][BLOCK_NAME]</marker-1>
+      </required-log-markers>
+      <required-trace-assertions>
+        <assertion-1>Failure path must not perform the success side effect.</assertion-1>
+      </required-trace-assertions>
+      <wave-follow-up>
+        <item-1>Run merged-surface checks for dependent modules.</item-1>
+      </wave-follow-up>
+      <phase-follow-up>
+        <item-1>Run the broader regression suite before marking the phase done.</item-1>
+      </phase-follow-up>
+    </VerificationDelta>
+  </VerificationDeltaTemplate>
+
+  <FailurePacketTemplate>
+    <FailurePacket>
+      <scenario>Describe the scenario that failed.</scenario>
+      <contract-ref>M-EXAMPLE / V-M-EXAMPLE / scenario-1</contract-ref>
+      <expected-evidence>
+        <marker-1>[ExampleModule][functionName][BLOCK_EXPECTED]</marker-1>
+        <assertion-1>Expected assertion or state transition.</assertion-1>
+      </expected-evidence>
+      <observed-evidence>
+        <log-1>Observed log marker or missing marker.</log-1>
+        <trace-1>Observed trace or command output summary.</trace-1>
+      </observed-evidence>
+      <first-divergent-block>BLOCK_NAME</first-divergent-block>
+      <suggested-next-action>Read the contract, inspect the divergent block, and apply the smallest safe fix.</suggested-next-action>
+    </FailurePacket>
+  </FailurePacketTemplate>
+
+  <CheckpointReportTemplate>
+    <CheckpointReport>
+      <scope>M-EXAMPLE / step-1</scope>
+      <assumptions-kept>
+        <item-1>Dependency contracts matched the packet.</item-1>
+      </assumptions-kept>
+      <commands-run>
+        <command-1>bunx nx test affected-project</command-1>
+      </commands-run>
+      <evidence-captured>
+        <item-1>Focused test passed with expected marker or assertion.</item-1>
+      </evidence-captured>
+      <graph-delta>
+        <item-1>No graph changes.</item-1>
+      </graph-delta>
+      <verification-delta>
+        <item-1>No verification changes.</item-1>
+      </verification-delta>
+      <retry-budget-used>0</retry-budget-used>
+      <next-action>Ready for controller review or shared-artifact sync.</next-action>
+    </CheckpointReport>
+  </CheckpointReportTemplate>
+</OperationalPackets>

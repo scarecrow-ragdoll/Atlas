@@ -1,0 +1,136 @@
+<TechnologyStack VERSION="0.2.5">
+  <Runtime>Bun 1.1+, Node 22+, Go 1.25, Docker Compose</Runtime>
+  <Language>Go 1.25, TypeScript 5.5, GraphQL SDL</Language>
+  <Framework>Nx 20, Next.js 15, Vite 5, React 19, gqlgen 0.17.49, go-telegram/bot 1.20.0</Framework>
+
+  <Dependencies>
+    <dep name="@nx/workspace" version="^20.0.0" purpose="Workspace orchestration and target graph" />
+    <dep name="@nx-go/nx-go" version="^3.3.1" purpose="Go integration for Nx projects" />
+    <dep name="next" version="^15.0.0" purpose="Public web App Router framework" />
+    <dep name="vite" version="^5.4.0" purpose="web-admin application bundler and dev server" />
+    <dep name="react" version="^19.0.0" purpose="Web UI runtime" />
+    <dep name="@tanstack/react-query" version="^5.0.0" purpose="Web data fetching and cache" />
+    <dep name="graphql-request" version="^7.0.0" purpose="Typed web-admin GraphQL client transport with browser cookie credentials" />
+    <dep name="tailwindcss" version="^4.3.0" purpose="Utility CSS and shadcn theme token pipeline for web-admin and public web" />
+    <dep name="@tailwindcss/vite" version="^4.3.0" purpose="Tailwind CSS integration for the Vite web-admin build" />
+    <dep name="@tailwindcss/postcss" version="^4.3.0" purpose="Tailwind CSS integration for the Next public web build" />
+    <dep name="radix-ui" version="^1.4.3" purpose="Accessible primitive implementation dependency for shadcn web-admin components and independent public web primitives" />
+    <dep name="class-variance-authority" version="^0.7.1" purpose="Variant class generation for shadcn-compatible primitives" />
+    <dep name="tailwind-merge" version="^3.6.0" purpose="Class conflict resolution for shadcn-compatible UI helpers" />
+    <dep name="clsx" version="^2.1.1" purpose="Conditional class composition for shadcn-compatible UI helpers" />
+    <dep name="lucide-react" version="^1.17.0" purpose="Icon dependency available only through approved web-admin and public web UI-kit exports" />
+    <dep name="tw-animate-css" version="^1.4.0" purpose="Animation utilities imported by shadcn theme CSS in web-admin and public web" />
+    <dep name="vitest" version="^2.1.9" purpose="Workspace and web unit coverage runner" />
+    <dep name="@vitest/coverage-v8" version="^2.1.9" purpose="V8 coverage provider for 100 percent TypeScript coverage gates" />
+    <dep name="@playwright/test" version="^1.48.0" purpose="Full-stack browser and HTTP e2e verification" />
+    <dep name="github.com/99designs/gqlgen" version="v0.17.49" purpose="Go GraphQL server generation" />
+    <dep name="github.com/go-chi/chi/v5" version="v5.2.1" purpose="API HTTP router" />
+    <dep name="github.com/jackc/pgx/v5" version="v5.7.5" purpose="PostgreSQL driver" />
+    <dep name="github.com/redis/go-redis/v9" version="v9.7.3" purpose="Redis client for cache and web-admin opaque session storage" />
+    <dep name="github.com/sqlc-dev/sqlc" version="v1.30.0" purpose="Typed Go query generation for PostgreSQL users and admin_users repository code" />
+    <dep name="go.uber.org/zap" version="v1.27.1" purpose="Structured logging" />
+    <dep name="github.com/go-telegram/bot" version="v1.20.0" purpose="Telegram bot runtime" />
+  </Dependencies>
+
+  <VersionConstraints>
+    <constraint lib="bun" min="1.1.0" reason="Root scripts and workspace installs use Bun." />
+    <constraint lib="node" min="22.0.0" reason="Root package engines require Node 22+." />
+    <constraint lib="go" min="1.25.0" reason="Go modules declare Go 1.25." />
+    <constraint lib="next" min="15.0.0" max="15.x" reason="Public web app depends on Next.js 15 conventions." />
+    <constraint lib="vite" min="5.4.0" max="5.x" reason="web-admin app depends on Vite conventions." />
+    <constraint lib="react" min="19.0.0" max="19.x" reason="Web app depends on React 19." />
+  </VersionConstraints>
+
+  <Tooling>
+    <tool name="workspace" value="Bun workspaces" version="1.1+" />
+    <tool name="task-runner" value="Nx" version="20.x" />
+    <tool name="api-sql-codegen" value="sqlc" version="v1.30.0" />
+    <tool name="api-codegen" value="gqlgen" version="0.17.49" />
+    <tool name="web-codegen" value="graphql-codegen" version="5.x CLI" />
+    <tool name="go-linter" value="golangci-lint" version="latest local install" />
+    <tool name="go-hot-reload" value="air" version="latest local install" />
+    <tool name="web-test-runner" value="vitest" version="^2.0.0" />
+    <tool name="web-e2e-runner" value="playwright" version="^1.48.0" />
+    <tool name="coverage-gate" value="tools/coverage/run.mjs" version="repo-local" />
+    <tool name="tools-test-config" value="tools/vitest.config.ts" version="repo-local" />
+    <tool name="ci-provider" value="GitLab CI" version="GitLab SaaS or compatible self-managed GitLab" />
+    <tool name="ci-runner-pool" value="GitLab group runners with Docker executor" version="department managed" />
+    <tool name="deployment-target" value="Dokploy Docker Compose" version="current Dokploy API" />
+    <tool name="image-builder" value="Docker Buildx" version="Docker 27 compatible" />
+    <tool name="release-tool" value="GitLab release-cli" version="latest compatible" />
+    <tool name="ci-helper" value="tools/ci/src/cli.ts" version="repo-local" />
+    <tool name="grace-cli" value="grace" version="3.7.0+ local" />
+  </Tooling>
+
+  <PreferredAgentStack>
+    <preferred-workspace-command>bunx nx</preferred-workspace-command>
+    <preferred-api-router>github.com/go-chi/chi/v5</preferred-api-router>
+    <preferred-api-sql-codegen>github.com/sqlc-dev/sqlc using pgx/v5 output from goose migrations plus users and admin_users repository query SQL</preferred-api-sql-codegen>
+    <preferred-api-codegen>github.com/99designs/gqlgen</preferred-api-codegen>
+    <preferred-database-driver>github.com/jackc/pgx/v5</preferred-database-driver>
+    <preferred-web-data-client>@tanstack/react-query plus REST fetch client for `web`; @tanstack/react-query plus credentialed graphql-request/codegen for `web-admin`</preferred-web-data-client>
+    <preferred-observability-library>go.uber.org/zap</preferred-observability-library>
+    <discouraged-surface reason="The template is already Nx-based.">Adding another root task orchestrator</discouraged-surface>
+    <discouraged-surface reason="Shared schema and codegen already define the API contract.">Handwritten duplicate GraphQL client types</discouraged-surface>
+  </PreferredAgentStack>
+
+  <Testing>
+    <module-level>
+      <command>bunx nx test api</command>
+      <command>bunx nx test bot</command>
+      <command>bunx nx test go-config</command>
+      <command>bunx nx test go-logger</command>
+      <command>bunx nx test web-admin</command>
+      <command>bunx nx lint web-admin</command>
+      <command>bunx nx run web-admin:codegen</command>
+      <command>bunx nx run web-admin:test-coverage</command>
+      <command>bunx nx test web</command>
+      <command>bunx nx run web:test-coverage</command>
+      <focus>Fast deterministic unit and contract checks close to each module; coverage targets are available for explicit coverage phases rather than required for ordinary active development.</focus>
+    </module-level>
+    <wave-level>
+      <command>bunx nx run graphql:validate</command>
+      <command>bunx nx run api:codegen</command>
+      <command>bunx nx run web-admin:codegen</command>
+      <command>bunx nx run web-admin:typecheck</command>
+      <command>bunx nx run web:typecheck</command>
+      <focus>Checks merged surfaces touched by schema, API, or web changes without requiring 100 percent coverage unless the current wave is explicitly a coverage phase.</focus>
+    </wave-level>
+    <phase-level>
+      <command>bun run lint</command>
+      <command>bun run test</command>
+      <command>bun run build</command>
+      <command>bunx nx run web-admin:e2e</command>
+      <command>bunx nx run web:e2e</command>
+      <command>bun run verify:coverage</command>
+      <command>bun tools/ci/src/cli.ts affected-base</command>
+      <command>bun tools/ci/src/cli.ts assert-release-tag</command>
+      <command>bun tools/ci/src/cli.ts deploy-dokploy dev</command>
+      <command>bun tools/ci/src/cli.ts deploy-dokploy prod</command>
+      <focus>Broader regression confidence before release or template handoff; `verify:coverage` is the explicit 100 percent coverage handoff gate.</focus>
+    </phase-level>
+    <active-development-test-policy>During active development, agents run the nearest useful behavior, contract, typecheck, lint, codegen, or e2e checks needed to prove the change. They do not chase 100 percent coverage unless the user explicitly requests it or the task is a coverage-policy, coverage epic, release, or template handoff phase.</active-development-test-policy>
+    <coverage-policy>When the coverage gate is invoked, thresholds are fixed at 100 percent for non-allowlisted Go and TypeScript behavior. Generated files and bootstrap entrypoints must be listed in `tools/coverage/coverage.config.json` with replacement gates.</coverage-policy>
+    <e2e-policy>Playwright starts PostgreSQL and Redis through `docker/docker-compose.test.yml`, targets `monorepo_test` on PostgreSQL port `17501` and Redis port `17502`, starts the API on `18080`, seeds the e2e admin through env-backed bootstrap, runs web-admin and web e2e sequentially on the configured browser port, and verifies health, readiness, admin login/session GraphQL CRUD, and public REST browser users flows.</e2e-policy>
+    <mocking-policy>Prefer real schema validation, deterministic Go tests, and narrow web test fixtures over broad monkey-patching.</mocking-policy>
+  </Testing>
+
+  <Observability>
+    <logger>go.uber.org/zap via shared logger library</logger>
+    <log-format>[Module][function][BLOCK_NAME] message</log-format>
+    <required-fields>requestId, correlationId where available, stable operation fields</required-fields>
+    <redaction>Never log secrets, credentials, raw tokens, passwords, or raw high-risk payloads.</redaction>
+  </Observability>
+
+  <AutonomyPolicy>
+    <default-execution-profile>balanced</default-execution-profile>
+    <max-fix-attempts-per-step>2</max-fix-attempts-per-step>
+    <replan-trigger>Missing dependency, contradictory contract, generated artifact drift, or unclear third-party surface.</replan-trigger>
+    <checkpoint-requirement>Every completed step must emit assumptions, commands, evidence, graph delta, verification delta, and next action.</checkpoint-requirement>
+    <file-local-contract-policy>New or meaningfully edited governed source, test, tooling, config, script, CI, Docker, and durable documentation files outside `docs/*.xml` must include current file-local GRACE markup before closeout; shared GRACE XML artifacts are governed by their XML structure directly, and historical unmarked files are backfilled when touched, not by broad sweep.</file-local-contract-policy>
+  </AutonomyPolicy>
+
+  <DeliveryShape>
+    <shape>Nx monorepo with Go API app, Go Telegram bot app, Vite GraphQL web-admin app, Next.js App Router REST public web app, shared Go libraries, shared GraphQL schema library, Docker Compose infrastructure, and generated artifacts.</shape>
+  </DeliveryShape>
+</TechnologyStack>

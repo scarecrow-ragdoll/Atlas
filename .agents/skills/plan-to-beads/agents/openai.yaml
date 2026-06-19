@@ -1,0 +1,21 @@
+# FILE: .agents/skills/plan-to-beads/agents/openai.yaml
+# VERSION: 1.1.0
+# START_MODULE_CONTRACT
+#   PURPOSE: Expose UI metadata for the plan-to-beads project skill.
+#   SCOPE: Defines display name, short description, and default invocation prompt; excludes skill workflow behavior.
+#   DEPENDS: .agents/skills/plan-to-beads/SKILL.md.
+#   LINKS: M-PLAN-TO-BEADS-SKILL / V-M-PLAN-TO-BEADS-SKILL.
+#   ROLE: CONFIG
+#   MAP_MODE: SUMMARY
+# END_MODULE_CONTRACT
+# START_MODULE_MAP
+#   interface - UI-facing skill labels and default prompt.
+# END_MODULE_MAP
+# START_CHANGE_SUMMARY
+#   LAST_CHANGE: 1.1.0 - Updated the default prompt to request one milestone with three child epics.
+# END_CHANGE_SUMMARY
+
+interface:
+  display_name: 'Plan To Beads'
+  short_description: 'Convert plans into complete Beads execution graphs.'
+  default_prompt: 'Use $plan-to-beads to turn this implementation plan into one non-executable Beads milestone with three strict child epics: implementation, full test coverage, and pre-MR QA.'

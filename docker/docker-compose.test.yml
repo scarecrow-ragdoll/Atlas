@@ -1,0 +1,40 @@
+name: ${TEST_COMPOSE_PROJECT:-mt-test}
+
+services:
+  postgres:
+    container_name: ${TEST_POSTGRES_CONTAINER_NAME:-mt-test-postgres}
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${TEST_POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${TEST_POSTGRES_PASSWORD:-secret}
+      POSTGRES_DB: ${TEST_POSTGRES_DB:-monorepo_test}
+    ports:
+      - '${TEST_POSTGRES_PORT:-17501}:5432'
+    volumes:
+      - pg-test-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${TEST_POSTGRES_USER:-app} -d ${TEST_POSTGRES_DB:-monorepo_test}',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    container_name: ${TEST_REDIS_CONTAINER_NAME:-mt-test-redis}
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '${TEST_REDIS_PORT:-17502}:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pg-test-data:
+    name: ${TEST_POSTGRES_VOLUME:-pg-test-data}

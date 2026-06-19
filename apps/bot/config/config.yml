@@ -1,0 +1,8 @@
+# BOT_TOKEN is provided via env var, bound explicitly in loadConfig().
+bot:
+  token: ''
+  poll_timeout: 10s
+
+log:
+  level: debug
+  format: console

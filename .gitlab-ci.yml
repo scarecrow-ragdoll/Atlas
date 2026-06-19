@@ -1,0 +1,242 @@
+# FILE: .gitlab-ci.yml
+# VERSION: 1.0.0
+# START_MODULE_CONTRACT
+#   PURPOSE: Define GitLab CI validation, coverage, build, release, and deployment workflow for the monorepo.
+#   SCOPE: Owns CI job topology, commands, artifacts, Docker image publishing, release checks, and Dokploy deployment triggers; excludes local-only developer commands and application runtime implementation.
+#   DEPENDS: package.json, bun.lock, docker/*, deploy/dokploy/docker-compose.template.yml, tools/ci, docs/verification-plan.xml.
+#   LINKS: M-CI-CD / M-COVERAGE-GATE / V-M-CI-CD / V-M-COVERAGE-GATE
+#   ROLE: CONFIG
+#   MAP_MODE: SUMMARY
+# END_MODULE_CONTRACT
+# START_MODULE_MAP
+#   workflow - Restricts pipeline entry points to merge requests, develop, main, and semantic version tags.
+#   validate/test/coverage - Runs deterministic lint, codegen, typecheck, build, coverage, e2e, XML, and GRACE gates.
+#   build/release/deploy - Builds and publishes deployable images and updates Dokploy services with required runtime env.
+# END_MODULE_MAP
+# START_CHANGE_SUMMARY
+#   LAST_CHANGE: 1.0.0 - Added file-local GRACE markup for Task 8 governance scan.
+# END_CHANGE_SUMMARY
+
+workflow:
+  rules:
+    - if: '$CI_MERGE_REQUEST_IID'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+    - when: never
+
+stages:
+  - prepare
+  - validate
+  - test
+  - coverage
+  - build
+  - release
+  - deploy
+
+variables:
+  GIT_DEPTH: '0'
+  NX_DAEMON: 'false'
+  NX_SKIP_NX_CACHE: '1'
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ''
+  DOCKER_HOST: tcp://docker:2375
+  CI_TOOLCHAIN_IMAGE: mcr.microsoft.com/playwright:v1.48.0-noble
+
+.toolchain:
+  image: $CI_TOOLCHAIN_IMAGE
+  before_script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends curl git ca-certificates libxml2-utils docker.io docker-compose-v2
+    - curl -fsSL https://bun.sh/install | bash
+    - export BUN_INSTALL="$HOME/.bun"
+    - export PATH="$BUN_INSTALL/bin:/usr/local/go/bin:$PATH"
+    - curl -fsSL https://go.dev/dl/go1.25.0.linux-amd64.tar.gz -o /tmp/go.tar.gz
+    - rm -rf /usr/local/go
+    - tar -C /usr/local -xzf /tmp/go.tar.gz
+    - bun install --frozen-lockfile
+    - bun add -g @osovv/grace-cli
+
+.docker_build:
+  image: docker:27
+  services:
+    - name: docker:27-dind
+      alias: docker
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - mkdir -p dist/ci
+    - docker buildx create --use --name template-builder || docker buildx use template-builder
+
+prepare:toolchain:
+  extends: .toolchain
+  stage: prepare
+  script:
+    - export BUN_INSTALL="$HOME/.bun"
+    - export PATH="$BUN_INSTALL/bin:/usr/local/go/bin:$PATH"
+    - node --version
+    - bun --version
+    - go version
+    - docker --version
+    - docker compose version
+    - xmllint --version
+    - grace --version
+
+validate:mr:
+  extends: .toolchain
+  stage: validate
+  rules:
+    - if: '$CI_MERGE_REQUEST_IID'
+  script:
+    - export BUN_INSTALL="$HOME/.bun"
+    - export PATH="$BUN_INSTALL/bin:/usr/local/go/bin:$PATH"
+    - NX_BASE="$(bun tools/ci/src/cli.ts affected-base)"
+    - bunx nx affected --target=lint --base="$NX_BASE" --parallel=1
+    - bunx nx affected --target=typecheck --base="$NX_BASE"
+    - bunx nx affected --target=test --base="$NX_BASE"
+    - bunx nx affected --target=build --base="$NX_BASE"
+
+validate:grace:
+  extends: .toolchain
+  stage: validate
+  rules:
+    - if: '$CI_MERGE_REQUEST_IID'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+  script:
+    - export BUN_INSTALL="$HOME/.bun"
+    - export PATH="$BUN_INSTALL/bin:/usr/local/go/bin:$PATH"
+    - xmllint --noout docs/requirements.xml docs/technology.xml docs/development-plan.xml docs/verification-plan.xml docs/knowledge-graph.xml docs/operational-packets.xml
+    - grace lint --path .
+
+verify:full:
+  extends: .toolchain
+  stage: coverage
+  services:
+    - name: docker:27-dind
+      alias: docker
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+  script:
+    - export BUN_INSTALL="$HOME/.bun"
+    - export PATH="$BUN_INSTALL/bin:/usr/local/go/bin:$PATH"
+    - bun run verify:coverage
+  artifacts:
+    when: always
+    expire_in: 14 days
+    paths:
+      - dist/coverage
+      - dist/test-results/web-admin-e2e
+      - dist/test-results/web-e2e
+      - dist/playwright-report/web-admin
+      - dist/playwright-report/web
+
+assert:release-tag:
+  extends: .toolchain
+  stage: validate
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+  script:
+    - export BUN_INSTALL="$HOME/.bun"
+    - export PATH="$BUN_INSTALL/bin:/usr/local/go/bin:$PATH"
+    - bun tools/ci/src/cli.ts assert-release-tag
+
+build:images:dev:
+  extends: .docker_build
+  stage: build
+  needs:
+    - verify:full
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+  variables:
+    IMAGE_TAG: develop-$CI_COMMIT_SHORT_SHA
+  script:
+    - docker buildx build --pull --target prod -f docker/api.Dockerfile -t "$CI_REGISTRY_IMAGE/api:$IMAGE_TAG" -t "$CI_REGISTRY_IMAGE/api:dev-latest" --metadata-file dist/ci/api-image.json --push .
+    - docker buildx build --pull --target prod -f docker/web.Dockerfile -t "$CI_REGISTRY_IMAGE/web:$IMAGE_TAG" -t "$CI_REGISTRY_IMAGE/web:dev-latest" --metadata-file dist/ci/web-image.json --push .
+    - docker buildx build --pull --target prod -f docker/bot.Dockerfile -t "$CI_REGISTRY_IMAGE/bot:$IMAGE_TAG" -t "$CI_REGISTRY_IMAGE/bot:dev-latest" --metadata-file dist/ci/bot-image.json --push .
+  artifacts:
+    expire_in: 14 days
+    paths:
+      - dist/ci
+
+build:images:release:
+  extends: .docker_build
+  stage: build
+  needs:
+    - verify:full
+    - assert:release-tag
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+  variables:
+    IMAGE_TAG: $CI_COMMIT_TAG
+  script:
+    - apk add --no-cache jq curl bash
+    - |
+      for service in api web bot; do
+        image="$CI_REGISTRY_IMAGE/$service:$IMAGE_TAG"
+        if docker manifest inspect "$image" >/dev/null 2>&1; then
+          echo "Release image already exists and will not be overwritten: $image" >&2
+          exit 1
+        fi
+      done
+    - docker buildx build --pull --target prod -f docker/api.Dockerfile -t "$CI_REGISTRY_IMAGE/api:$IMAGE_TAG" --metadata-file dist/ci/api-image.json --push .
+    - docker buildx build --pull --target prod -f docker/web.Dockerfile -t "$CI_REGISTRY_IMAGE/web:$IMAGE_TAG" --metadata-file dist/ci/web-image.json --push .
+    - docker buildx build --pull --target prod -f docker/bot.Dockerfile -t "$CI_REGISTRY_IMAGE/bot:$IMAGE_TAG" --metadata-file dist/ci/bot-image.json --push .
+    - export API_IMAGE_DIGEST="$(jq -r '.["containerimage.digest"]' dist/ci/api-image.json)"
+    - export WEB_IMAGE_DIGEST="$(jq -r '.["containerimage.digest"]' dist/ci/web-image.json)"
+    - export BOT_IMAGE_DIGEST="$(jq -r '.["containerimage.digest"]' dist/ci/bot-image.json)"
+    - curl -fsSL https://bun.sh/install | bash
+    - export BUN_INSTALL="$HOME/.bun"
+    - export PATH="$BUN_INSTALL/bin:$PATH"
+    - bun tools/ci/src/cli.ts write-image-metadata
+  artifacts:
+    expire_in: 90 days
+    paths:
+      - dist/ci
+
+release:gitlab:
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  stage: release
+  needs:
+    - build:images:release
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+  script:
+    - echo "Creating GitLab Release for $CI_COMMIT_TAG"
+  release:
+    tag_name: '$CI_COMMIT_TAG'
+    name: '$CI_COMMIT_TAG'
+    description: 'Release $CI_COMMIT_TAG from $CI_COMMIT_SHA. Image metadata is attached as a pipeline artifact.'
+
+deploy:dev:
+  extends: .toolchain
+  stage: deploy
+  needs:
+    - build:images:dev
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+  variables:
+    IMAGE_TAG: develop-$CI_COMMIT_SHORT_SHA
+  script:
+    - export BUN_INSTALL="$HOME/.bun"
+    - export PATH="$BUN_INSTALL/bin:/usr/local/go/bin:$PATH"
+    - bun tools/ci/src/cli.ts deploy-dokploy dev
+  environment:
+    name: dev
+
+deploy:prod:
+  extends: .toolchain
+  stage: deploy
+  needs:
+    - release:gitlab
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+      when: manual
+  script:
+    - export BUN_INSTALL="$HOME/.bun"
+    - export PATH="$BUN_INSTALL/bin:/usr/local/go/bin:$PATH"
+    - bun tools/ci/src/cli.ts deploy-dokploy prod
+  environment:
+    name: production

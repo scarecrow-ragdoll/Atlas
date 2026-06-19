@@ -1,0 +1,42 @@
+.git
+.gitignore
+.github
+
+# JS/TS
+node_modules
+.next
+out
+dist
+coverage
+bun.lockb
+
+# Go build artifacts
+apps/api/tmp
+apps/api/server
+apps/bot/tmp
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Agent/tool directories
+.agents
+.claude
+.tasks
+.protocols
+.nx
+docs
+
+# Docker data
+docker/postgres-data
