@@ -16,7 +16,7 @@
 //   TestWorkoutMigrations_WorkoutSetValidationRejectsInvalidBounds - Proves DB CHECK constraints reject invalid strength set values.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.1 - Tightened WAVE-03 migration verification for review feedback.
+//   LAST_CHANGE: 1.0.2 - Documented fixed migration path read for lint-clean final gates.
 // END_CHANGE_SUMMARY
 
 package postgres_test
@@ -91,6 +91,7 @@ func TestWorkoutMigrations_FilesExistWithGraceMarkup(t *testing.T) {
 
 	for path, snippets := range expected {
 		t.Run(path, func(t *testing.T) {
+			// #nosec G304 -- path comes from the fixed WAVE-03 migration fixture map above.
 			content, err := os.ReadFile(path)
 			require.NoError(t, err)
 			raw := string(content)

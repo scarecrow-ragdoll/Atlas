@@ -24,7 +24,7 @@
 //   ReorderWorkoutSets - Reorders sets only when IDs exactly match the exercise.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.2 - Rejected failed absent-date adds and no-op updates before version increments.
+//   LAST_CHANGE: 1.0.3 - Bounded append-position int32 conversion for lint-clean WAVE-03 service gates.
 // END_CHANGE_SUMMARY
 
 package service
@@ -33,6 +33,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 
 	"github.com/jackc/pgx/v5"
 
@@ -158,11 +159,15 @@ func (s *workoutService) AddWorkoutExercise(ctx context.Context, userID string, 
 		if err != nil {
 			return err
 		}
-		position := int32(len(aggregate.WorkoutExercises) + 1)
+		appendPosition := len(aggregate.WorkoutExercises) + 1
+		position, err := boundedInt32(appendPosition, "position cannot exceed append position")
+		if err != nil {
+			return err
+		}
 		if input.Position != nil {
 			position = *input.Position
 		}
-		if position > int32(len(aggregate.WorkoutExercises)+1) {
+		if int64(position) > int64(appendPosition) {
 			return validationError("position cannot exceed append position")
 		}
 		if _, err := tx.AddWorkoutExercise(ctx, userID, locked.ID, atlasRepo.AddWorkoutExerciseInput{
@@ -200,7 +205,7 @@ func (s *workoutService) UpdateWorkoutExercise(ctx context.Context, userID strin
 		if current == nil {
 			return notFoundError("workout exercise not found")
 		}
-		if input.Position != nil && *input.Position > int32(len(aggregate.WorkoutExercises)) {
+		if input.Position != nil && int64(*input.Position) > int64(len(aggregate.WorkoutExercises)) {
 			return validationError("position must refer to an existing workout exercise slot")
 		}
 		if isWorkoutExercisePositionOnlyUpdate(input) && current.Position == *input.Position {
@@ -301,11 +306,15 @@ func (s *workoutService) AddWorkoutSet(ctx context.Context, userID string, worko
 		if exercise == nil {
 			return notFoundError("workout exercise not found")
 		}
-		setNumber := int32(len(exercise.Sets) + 1)
+		appendSetNumber := len(exercise.Sets) + 1
+		setNumber, err := boundedInt32(appendSetNumber, "set number cannot exceed append position")
+		if err != nil {
+			return err
+		}
 		if input.SetNumber != nil {
 			setNumber = *input.SetNumber
 		}
-		if setNumber > int32(len(exercise.Sets)+1) {
+		if int64(setNumber) > int64(appendSetNumber) {
 			return validationError("set number cannot exceed append position")
 		}
 		if _, err := tx.AddWorkoutSet(ctx, userID, workoutExerciseID, atlasRepo.AddWorkoutSetInput{
@@ -349,7 +358,7 @@ func (s *workoutService) UpdateWorkoutSet(ctx context.Context, userID string, id
 		if currentSet == nil {
 			return notFoundError("workout set not found")
 		}
-		if input.SetNumber != nil && *input.SetNumber > int32(len(exercise.Sets)) {
+		if input.SetNumber != nil && int64(*input.SetNumber) > int64(len(exercise.Sets)) {
 			return validationError("set number must refer to an existing set slot")
 		}
 		if isWorkoutSetNumberOnlyUpdate(input) && currentSet.SetNumber == *input.SetNumber {
@@ -600,6 +609,13 @@ func validateExpectedVersion(expectedVersion int32) error {
 		return validationError("expected version must be greater than or equal to 0")
 	}
 	return nil
+}
+
+func boundedInt32(value int, overflowMessage string) (int32, error) {
+	if value > math.MaxInt32 {
+		return 0, validationError("%s", overflowMessage)
+	}
+	return int32(value), nil //nolint:gosec // bounded above by math.MaxInt32 before conversion.
 }
 
 func validateAddWorkoutSetInput(input models.AddWorkoutSetInput) error {

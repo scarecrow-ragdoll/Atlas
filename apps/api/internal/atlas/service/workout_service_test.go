@@ -14,7 +14,7 @@
 //   fakeExerciseRepo - ExerciseRepository fake used to prove exercise lookup and snapshot behavior.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.2 - Added WAVE-03 service coverage for summaries, conflicts, null clears, inserts, removals, and reorder success paths.
+//   LAST_CHANGE: 1.0.4 - Documented bounded fake reindex conversions for lint-clean final gates.
 // END_CHANGE_SUMMARY
 
 package service_test
@@ -655,7 +655,7 @@ func TestWorkoutService_AddExercise_RequiresExistingExercise(t *testing.T) {
 	require.Nil(t, log)
 	var notFoundErr *models.DailyLogNotFoundErr
 	require.ErrorAs(t, err, &notFoundErr)
-	assert.Equal(t, int32(0), int32(repo.getOrCreateHits))
+	assert.Zero(t, repo.getOrCreateHits)
 	assert.Empty(t, repo.dailyLogs)
 }
 
@@ -1396,7 +1396,7 @@ func insertWorkoutExercise(aggregate *atlasPostgres.DailyLogAggregate, record at
 	position := int(record.Position)
 	if position < 1 || position > len(aggregate.WorkoutExercises)+1 {
 		position = len(aggregate.WorkoutExercises) + 1
-		record.Position = int32(position)
+		record.Position = int32(position) //nolint:gosec // test fixture sizes are bounded by in-memory slices.
 	}
 	aggregate.WorkoutExercises = append(aggregate.WorkoutExercises, atlasPostgres.WorkoutExerciseRecord{})
 	copy(aggregate.WorkoutExercises[position:], aggregate.WorkoutExercises[position-1:])
@@ -1408,7 +1408,7 @@ func insertWorkoutSet(exercise *atlasPostgres.WorkoutExerciseRecord, record atla
 	position := int(record.SetNumber)
 	if position < 1 || position > len(exercise.Sets)+1 {
 		position = len(exercise.Sets) + 1
-		record.SetNumber = int32(position)
+		record.SetNumber = int32(position) //nolint:gosec // test fixture sizes are bounded by in-memory slices.
 	}
 	exercise.Sets = append(exercise.Sets, atlasPostgres.WorkoutSetRecord{})
 	copy(exercise.Sets[position:], exercise.Sets[position-1:])

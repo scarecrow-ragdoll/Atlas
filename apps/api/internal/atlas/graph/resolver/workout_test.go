@@ -20,7 +20,7 @@
 //   TestUpdateWorkoutSetResolver_MapsExplicitNullNullableFields - Proves explicit null RPE, RIR, and notes set the corresponding service flags.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.0 - Added WAVE-03 workout resolver TDD coverage.
+//   LAST_CHANGE: 1.0.1 - Added expectedVersion range coverage for resolver int32 conversion.
 // END_CHANGE_SUMMARY
 
 package resolver_test
@@ -28,6 +28,7 @@ package resolver_test
 import (
 	"context"
 	"errors"
+	"math"
 	"testing"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -161,6 +162,25 @@ func TestUpdateDailyLogNotesResolver_MapsConflictError(t *testing.T) {
 	assert.Equal(t, models.DailyLogErrorConflict, result.ConflictErr.Code)
 	assert.Equal(t, int32(7), result.ConflictErr.CurrentVersion)
 	assert.Equal(t, current, result.ConflictErr.CurrentDailyLog)
+}
+
+func TestUpdateDailyLogNotesResolver_RejectsOutOfRangeExpectedVersionBeforeService(t *testing.T) {
+	r := &resolver.Resolver{
+		WorkoutService: &mockWorkoutService{
+			updateDailyLogNotesFn: func(ctx context.Context, userID string, date models.Date, expectedVersion int32, notes *string) (*models.DailyLog, error) {
+				t.Fatalf("service should not be called for out-of-range expectedVersion")
+				return nil, nil
+			},
+		},
+	}
+
+	result, err := r.UpdateDailyLogNotes(userCtx("user-1"), models.MustDate("2026-06-19"), math.MaxInt32+1, stringPtr("notes"))
+
+	require.NoError(t, err)
+	require.NotNil(t, result)
+	require.NotNil(t, result.ValidationErr)
+	assert.Equal(t, models.DailyLogErrorValidation, result.ValidationErr.Code)
+	assert.Contains(t, result.ValidationErr.Message, "expectedVersion")
 }
 
 func TestAddWorkoutExerciseResolver_MapsValidationError(t *testing.T) {

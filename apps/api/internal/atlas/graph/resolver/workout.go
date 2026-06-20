@@ -22,7 +22,7 @@
 //   ReorderWorkoutSets - Reorders workout sets through WorkoutService.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.1 - Propagated DailyLogs API contract errors without leaking unexpected internals.
+//   LAST_CHANGE: 1.0.2 - Bounded GraphQL expectedVersion conversion before service delegation.
 // END_CHANGE_SUMMARY
 
 package resolver
@@ -30,6 +30,7 @@ package resolver
 import (
 	"context"
 	"errors"
+	"math"
 
 	"monorepo-template/apps/api/internal/atlas/middleware"
 	"monorepo-template/apps/api/internal/atlas/models"
@@ -90,13 +91,29 @@ func dailyLogQueryError(err error) error {
 	return errors.New("internal daily log error")
 }
 
+func expectedVersionForService(expectedVersion int) (int32, *models.DailyLogResult) {
+	if expectedVersion > math.MaxInt32 || expectedVersion < math.MinInt32 {
+		return 0, &models.DailyLogResult{
+			ValidationErr: &models.DailyLogValidationErr{
+				Message: "expectedVersion is out of range",
+				Code:    models.DailyLogErrorValidation,
+			},
+		}
+	}
+	return int32(expectedVersion), nil //nolint:gosec // bounded to int32 range before conversion.
+}
+
 func (r *Resolver) UpdateDailyLogNotes(ctx context.Context, date models.Date, expectedVersion int, notes *string) (*models.DailyLogResult, error) {
 	userID := middleware.GetAtlasUserID(ctx)
 	if userID == "" {
 		return unauthorizedDailyLogResult(), nil
 	}
+	version, invalid := expectedVersionForService(expectedVersion)
+	if invalid != nil {
+		return invalid, nil
+	}
 
-	log, err := r.WorkoutService.UpdateDailyLogNotes(ctx, userID, date, int32(expectedVersion), notes)
+	log, err := r.WorkoutService.UpdateDailyLogNotes(ctx, userID, date, version, notes)
 	return dailyLogResult(log, err), nil
 }
 
@@ -105,8 +122,12 @@ func (r *Resolver) AddWorkoutExercise(ctx context.Context, date models.Date, exp
 	if userID == "" {
 		return unauthorizedDailyLogResult(), nil
 	}
+	version, invalid := expectedVersionForService(expectedVersion)
+	if invalid != nil {
+		return invalid, nil
+	}
 
-	log, err := r.WorkoutService.AddWorkoutExercise(ctx, userID, date, int32(expectedVersion), input)
+	log, err := r.WorkoutService.AddWorkoutExercise(ctx, userID, date, version, input)
 	return dailyLogResult(log, err), nil
 }
 
@@ -124,8 +145,12 @@ func (r *Resolver) UpdateWorkoutExercise(ctx context.Context, id string, expecte
 		serviceInput.SetNotes = true
 		serviceInput.Notes = input.Notes.Value()
 	}
+	version, invalid := expectedVersionForService(expectedVersion)
+	if invalid != nil {
+		return invalid, nil
+	}
 
-	log, err := r.WorkoutService.UpdateWorkoutExercise(ctx, userID, id, int32(expectedVersion), serviceInput)
+	log, err := r.WorkoutService.UpdateWorkoutExercise(ctx, userID, id, version, serviceInput)
 	return dailyLogResult(log, err), nil
 }
 
@@ -134,8 +159,12 @@ func (r *Resolver) RemoveWorkoutExercise(ctx context.Context, id string, expecte
 	if userID == "" {
 		return unauthorizedDailyLogResult(), nil
 	}
+	version, invalid := expectedVersionForService(expectedVersion)
+	if invalid != nil {
+		return invalid, nil
+	}
 
-	log, err := r.WorkoutService.RemoveWorkoutExercise(ctx, userID, id, int32(expectedVersion))
+	log, err := r.WorkoutService.RemoveWorkoutExercise(ctx, userID, id, version)
 	return dailyLogResult(log, err), nil
 }
 
@@ -144,8 +173,12 @@ func (r *Resolver) ReorderWorkoutExercises(ctx context.Context, date models.Date
 	if userID == "" {
 		return unauthorizedDailyLogResult(), nil
 	}
+	version, invalid := expectedVersionForService(expectedVersion)
+	if invalid != nil {
+		return invalid, nil
+	}
 
-	log, err := r.WorkoutService.ReorderWorkoutExercises(ctx, userID, date, int32(expectedVersion), orderedIDs)
+	log, err := r.WorkoutService.ReorderWorkoutExercises(ctx, userID, date, version, orderedIDs)
 	return dailyLogResult(log, err), nil
 }
 
@@ -154,8 +187,12 @@ func (r *Resolver) AddWorkoutSet(ctx context.Context, workoutExerciseID string, 
 	if userID == "" {
 		return unauthorizedDailyLogResult(), nil
 	}
+	version, invalid := expectedVersionForService(expectedVersion)
+	if invalid != nil {
+		return invalid, nil
+	}
 
-	log, err := r.WorkoutService.AddWorkoutSet(ctx, userID, workoutExerciseID, int32(expectedVersion), input)
+	log, err := r.WorkoutService.AddWorkoutSet(ctx, userID, workoutExerciseID, version, input)
 	return dailyLogResult(log, err), nil
 }
 
@@ -187,8 +224,12 @@ func (r *Resolver) UpdateWorkoutSet(ctx context.Context, id string, expectedVers
 		serviceInput.SetNotes = true
 		serviceInput.Notes = input.Notes.Value()
 	}
+	version, invalid := expectedVersionForService(expectedVersion)
+	if invalid != nil {
+		return invalid, nil
+	}
 
-	log, err := r.WorkoutService.UpdateWorkoutSet(ctx, userID, id, int32(expectedVersion), serviceInput)
+	log, err := r.WorkoutService.UpdateWorkoutSet(ctx, userID, id, version, serviceInput)
 	return dailyLogResult(log, err), nil
 }
 
@@ -197,8 +238,12 @@ func (r *Resolver) RemoveWorkoutSet(ctx context.Context, id string, expectedVers
 	if userID == "" {
 		return unauthorizedDailyLogResult(), nil
 	}
+	version, invalid := expectedVersionForService(expectedVersion)
+	if invalid != nil {
+		return invalid, nil
+	}
 
-	log, err := r.WorkoutService.RemoveWorkoutSet(ctx, userID, id, int32(expectedVersion))
+	log, err := r.WorkoutService.RemoveWorkoutSet(ctx, userID, id, version)
 	return dailyLogResult(log, err), nil
 }
 
@@ -207,8 +252,12 @@ func (r *Resolver) ReorderWorkoutSets(ctx context.Context, workoutExerciseID str
 	if userID == "" {
 		return unauthorizedDailyLogResult(), nil
 	}
+	version, invalid := expectedVersionForService(expectedVersion)
+	if invalid != nil {
+		return invalid, nil
+	}
 
-	log, err := r.WorkoutService.ReorderWorkoutSets(ctx, userID, workoutExerciseID, int32(expectedVersion), orderedIDs)
+	log, err := r.WorkoutService.ReorderWorkoutSets(ctx, userID, workoutExerciseID, version, orderedIDs)
 	return dailyLogResult(log, err), nil
 }
 
