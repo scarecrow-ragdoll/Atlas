@@ -91,6 +91,27 @@ type DailyLog struct {
 	UpdatedAt pgtype.Timestamptz
 }
 
+type DailyNutritionOverride struct {
+	ID        pgtype.UUID
+	UserID    pgtype.UUID
+	Date      pgtype.Date
+	Notes     pgtype.Text
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+}
+
+type DailyNutritionOverrideItem struct {
+	ID          pgtype.UUID
+	OverrideID  pgtype.UUID
+	ProductID   pgtype.UUID
+	AmountGrams float32
+	Operation   string
+	MealLabel   pgtype.Text
+	Notes       pgtype.Text
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+}
+
 type Exercise struct {
 	ID            pgtype.UUID
 	UserID        pgtype.UUID
@@ -113,6 +134,41 @@ type ExerciseMedium struct {
 	MimeType   string
 	FileSize   int64
 	CreatedAt  pgtype.Timestamptz
+}
+
+type NutritionProduct struct {
+	ID              pgtype.UUID
+	UserID          pgtype.UUID
+	Name            string
+	CaloriesPer100g float32
+	ProteinPer100g  float32
+	FatPer100g      float32
+	CarbsPer100g    float32
+	Notes           pgtype.Text
+	IsActive        bool
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+}
+
+type NutritionTemplate struct {
+	ID            pgtype.UUID
+	UserID        pgtype.UUID
+	WeekStartDate pgtype.Date
+	Title         pgtype.Text
+	Notes         pgtype.Text
+	CreatedAt     pgtype.Timestamptz
+	UpdatedAt     pgtype.Timestamptz
+}
+
+type NutritionTemplateItem struct {
+	ID          pgtype.UUID
+	TemplateID  pgtype.UUID
+	ProductID   pgtype.UUID
+	AmountGrams float32
+	MealLabel   pgtype.Text
+	Notes       pgtype.Text
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
 }
 
 type ProgressPhoto struct {

@@ -183,3 +183,64 @@ models:
     model: monorepo-template/apps/api/internal/atlas/models.WeekFlagAuthErr
   WeekFlagErrorCode:
     model: monorepo-template/apps/api/internal/atlas/models.WeekFlagErrorCode
+  # WAVE-05 Nutrition
+  NutritionProduct:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionProduct
+  CreateProductInput:
+    model: monorepo-template/apps/api/internal/atlas/models.CreateProductInput
+  UpdateProductInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateProductInput
+  NutritionProductResult:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionProductResult
+  NutritionProductsResult:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionProductsResult
+  NutritionTemplate:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionTemplate
+  CreateTemplateInput:
+    model: monorepo-template/apps/api/internal/atlas/models.CreateTemplateInput
+  UpdateTemplateInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateTemplateInput
+  NutritionTemplateResult:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionTemplateResult
+  NutritionTemplatesResult:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionTemplatesResult
+  NutritionTemplateItem:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionTemplateItem
+  CreateTemplateItemInput:
+    model: monorepo-template/apps/api/internal/atlas/models.CreateTemplateItemInput
+  UpdateTemplateItemInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateTemplateItemInput
+  NutritionTemplateItemResult:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionTemplateItemResult
+  DailyNutritionOverride:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyNutritionOverride
+  CreateOverrideInput:
+    model: monorepo-template/apps/api/internal/atlas/models.CreateOverrideInput
+  UpdateOverrideInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateOverrideInput
+  DailyNutritionOverrideResult:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyNutritionOverrideResult
+  DailyNutritionOverridesResult:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyNutritionOverridesResult
+  DailyNutritionOverrideItem:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyNutritionOverrideItem
+  CreateOverrideItemInput:
+    model: monorepo-template/apps/api/internal/atlas/models.CreateOverrideItemInput
+  UpdateOverrideItemInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateOverrideItemInput
+  DailyNutritionOverrideItemResult:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyNutritionOverrideItemResult
+  NutritionMacros:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionMacros
+  NutritionMacrosResult:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionMacrosResult
+  Operation:
+    model: monorepo-template/apps/api/internal/atlas/models.Operation
+  NutritionErrorCode:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionErrorCode
+  NutritionValidationError:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionValidationErr
+  NutritionNotFoundError:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionNotFoundErr
+  NutritionAuthError:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionAuthErr

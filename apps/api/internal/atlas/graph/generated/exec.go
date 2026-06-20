@@ -51,10 +51,24 @@ type ResolverRoot interface {
 	CardioEntriesResult() CardioEntriesResultResolver
 	CardioEntry() CardioEntryResolver
 	CardioEntryResult() CardioEntryResultResolver
+	DailyNutritionOverride() DailyNutritionOverrideResolver
+	DailyNutritionOverrideItem() DailyNutritionOverrideItemResolver
+	DailyNutritionOverrideItemResult() DailyNutritionOverrideItemResultResolver
+	DailyNutritionOverrideResult() DailyNutritionOverrideResultResolver
+	DailyNutritionOverridesResult() DailyNutritionOverridesResultResolver
 	Exercise() ExerciseResolver
 	ExerciseMedia() ExerciseMediaResolver
 	ExerciseResult() ExerciseResultResolver
 	Mutation() MutationResolver
+	NutritionMacrosResult() NutritionMacrosResultResolver
+	NutritionProduct() NutritionProductResolver
+	NutritionProductResult() NutritionProductResultResolver
+	NutritionProductsResult() NutritionProductsResultResolver
+	NutritionTemplate() NutritionTemplateResolver
+	NutritionTemplateItem() NutritionTemplateItemResolver
+	NutritionTemplateItemResult() NutritionTemplateItemResultResolver
+	NutritionTemplateResult() NutritionTemplateResultResolver
+	NutritionTemplatesResult() NutritionTemplatesResultResolver
 	ProgressPhoto() ProgressPhotoResolver
 	ProgressPhotosResult() ProgressPhotosResultResolver
 	Query() QueryResolver
@@ -201,6 +215,48 @@ type ComplexityRoot struct {
 		Message func(childComplexity int) int
 	}
 
+	DailyNutritionOverride struct {
+		CreatedAt func(childComplexity int) int
+		Date      func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Items     func(childComplexity int) int
+		Notes     func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		UserID    func(childComplexity int) int
+	}
+
+	DailyNutritionOverrideItem struct {
+		AmountGrams func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		ID          func(childComplexity int) int
+		MealLabel   func(childComplexity int) int
+		Notes       func(childComplexity int) int
+		Operation   func(childComplexity int) int
+		OverrideID  func(childComplexity int) int
+		ProductID   func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+	}
+
+	DailyNutritionOverrideItemResult struct {
+		AuthError                  func(childComplexity int) int
+		DailyNutritionOverrideItem func(childComplexity int) int
+		NotFoundError              func(childComplexity int) int
+		ValidationError            func(childComplexity int) int
+	}
+
+	DailyNutritionOverrideResult struct {
+		AuthError              func(childComplexity int) int
+		DailyNutritionOverride func(childComplexity int) int
+		NotFoundError          func(childComplexity int) int
+		ValidationError        func(childComplexity int) int
+	}
+
+	DailyNutritionOverridesResult struct {
+		AuthError       func(childComplexity int) int
+		Overrides       func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
 	Exercise struct {
 		CreatedAt     func(childComplexity int) int
 		Description   func(childComplexity int) int
@@ -239,31 +295,143 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		ArchiveExercise       func(childComplexity int, id string) int
-		ChangePin             func(childComplexity int, input models.PinChangeInput) int
-		CreateBodyCheckIn     func(childComplexity int, input models.CreateCheckInInput) int
-		CreateBodyMeasurement func(childComplexity int, checkInID string, input models.CreateMeasurementInput) int
-		CreateBodyWeightEntry func(childComplexity int, input models.CreateBodyWeightInput) int
-		CreateCardioEntry     func(childComplexity int, input models.CreateCardioInput) int
-		CreateExercise        func(childComplexity int, input models.CreateExerciseInput) int
-		CreateWeekFlag        func(childComplexity int, input models.CreateWeekFlagInput) int
-		DeleteBodyCheckIn     func(childComplexity int, id string) int
-		DeleteBodyMeasurement func(childComplexity int, id string) int
-		DeleteBodyWeightEntry func(childComplexity int, id string) int
-		DeleteCardioEntry     func(childComplexity int, id string) int
-		DeleteWeekFlag        func(childComplexity int, id string) int
-		DisablePin            func(childComplexity int, input models.PinDisableInput) int
-		EnablePin             func(childComplexity int, input models.PinEnableInput) int
-		RestoreExercise       func(childComplexity int, id string) int
-		UpdateBodyCheckIn     func(childComplexity int, id string, input models.UpdateCheckInInput) int
-		UpdateBodyMeasurement func(childComplexity int, id string, input models.UpdateMeasurementInput) int
-		UpdateBodyWeightEntry func(childComplexity int, id string, input models.UpdateBodyWeightInput) int
-		UpdateCardioEntry     func(childComplexity int, id string, input models.UpdateCardioInput) int
-		UpdateExercise        func(childComplexity int, id string, input models.UpdateExerciseInput) int
-		UpdateSettings        func(childComplexity int, input models.SettingsInput) int
+		ArchiveExercise                  func(childComplexity int, id string) int
+		ChangePin                        func(childComplexity int, input models.PinChangeInput) int
+		CreateBodyCheckIn                func(childComplexity int, input models.CreateCheckInInput) int
+		CreateBodyMeasurement            func(childComplexity int, checkInID string, input models.CreateMeasurementInput) int
+		CreateBodyWeightEntry            func(childComplexity int, input models.CreateBodyWeightInput) int
+		CreateCardioEntry                func(childComplexity int, input models.CreateCardioInput) int
+		CreateDailyNutritionOverride     func(childComplexity int, input models.CreateOverrideInput) int
+		CreateDailyNutritionOverrideItem func(childComplexity int, input models.CreateOverrideItemInput) int
+		CreateExercise                   func(childComplexity int, input models.CreateExerciseInput) int
+		CreateNutritionProduct           func(childComplexity int, input models.CreateProductInput) int
+		CreateNutritionTemplate          func(childComplexity int, input models.CreateTemplateInput) int
+		CreateNutritionTemplateItem      func(childComplexity int, input models.CreateTemplateItemInput) int
+		CreateWeekFlag                   func(childComplexity int, input models.CreateWeekFlagInput) int
+		DeleteBodyCheckIn                func(childComplexity int, id string) int
+		DeleteBodyMeasurement            func(childComplexity int, id string) int
+		DeleteBodyWeightEntry            func(childComplexity int, id string) int
+		DeleteCardioEntry                func(childComplexity int, id string) int
+		DeleteDailyNutritionOverride     func(childComplexity int, id string) int
+		DeleteDailyNutritionOverrideItem func(childComplexity int, id string) int
+		DeleteNutritionProduct           func(childComplexity int, id string) int
+		DeleteNutritionTemplate          func(childComplexity int, id string) int
+		DeleteNutritionTemplateItem      func(childComplexity int, id string) int
+		DeleteWeekFlag                   func(childComplexity int, id string) int
+		DisablePin                       func(childComplexity int, input models.PinDisableInput) int
+		EnablePin                        func(childComplexity int, input models.PinEnableInput) int
+		RestoreExercise                  func(childComplexity int, id string) int
+		UpdateBodyCheckIn                func(childComplexity int, id string, input models.UpdateCheckInInput) int
+		UpdateBodyMeasurement            func(childComplexity int, id string, input models.UpdateMeasurementInput) int
+		UpdateBodyWeightEntry            func(childComplexity int, id string, input models.UpdateBodyWeightInput) int
+		UpdateCardioEntry                func(childComplexity int, id string, input models.UpdateCardioInput) int
+		UpdateDailyNutritionOverride     func(childComplexity int, id string, input models.UpdateOverrideInput) int
+		UpdateDailyNutritionOverrideItem func(childComplexity int, id string, input models.UpdateOverrideItemInput) int
+		UpdateExercise                   func(childComplexity int, id string, input models.UpdateExerciseInput) int
+		UpdateNutritionProduct           func(childComplexity int, id string, input models.UpdateProductInput) int
+		UpdateNutritionTemplate          func(childComplexity int, id string, input models.UpdateTemplateInput) int
+		UpdateNutritionTemplateItem      func(childComplexity int, id string, input models.UpdateTemplateItemInput) int
+		UpdateSettings                   func(childComplexity int, input models.SettingsInput) int
 	}
 
 	NotFoundError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	NutritionAuthError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	NutritionMacros struct {
+		Calories func(childComplexity int) int
+		Carbs    func(childComplexity int) int
+		Fat      func(childComplexity int) int
+		Protein  func(childComplexity int) int
+	}
+
+	NutritionMacrosResult struct {
+		AuthError       func(childComplexity int) int
+		Macros          func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	NutritionNotFoundError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	NutritionProduct struct {
+		CaloriesPer100g func(childComplexity int) int
+		CarbsPer100g    func(childComplexity int) int
+		CreatedAt       func(childComplexity int) int
+		FatPer100g      func(childComplexity int) int
+		ID              func(childComplexity int) int
+		IsActive        func(childComplexity int) int
+		Name            func(childComplexity int) int
+		Notes           func(childComplexity int) int
+		ProteinPer100g  func(childComplexity int) int
+		UpdatedAt       func(childComplexity int) int
+		UserID          func(childComplexity int) int
+	}
+
+	NutritionProductResult struct {
+		AuthError        func(childComplexity int) int
+		NotFoundError    func(childComplexity int) int
+		NutritionProduct func(childComplexity int) int
+		ValidationError  func(childComplexity int) int
+	}
+
+	NutritionProductsResult struct {
+		AuthError       func(childComplexity int) int
+		Products        func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	NutritionTemplate struct {
+		CreatedAt     func(childComplexity int) int
+		ID            func(childComplexity int) int
+		Items         func(childComplexity int) int
+		Notes         func(childComplexity int) int
+		Title         func(childComplexity int) int
+		UpdatedAt     func(childComplexity int) int
+		UserID        func(childComplexity int) int
+		WeekStartDate func(childComplexity int) int
+	}
+
+	NutritionTemplateItem struct {
+		AmountGrams func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		ID          func(childComplexity int) int
+		MealLabel   func(childComplexity int) int
+		Notes       func(childComplexity int) int
+		ProductID   func(childComplexity int) int
+		TemplateID  func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+	}
+
+	NutritionTemplateItemResult struct {
+		AuthError             func(childComplexity int) int
+		NotFoundError         func(childComplexity int) int
+		NutritionTemplateItem func(childComplexity int) int
+		ValidationError       func(childComplexity int) int
+	}
+
+	NutritionTemplateResult struct {
+		AuthError         func(childComplexity int) int
+		NotFoundError     func(childComplexity int) int
+		NutritionTemplate func(childComplexity int) int
+		ValidationError   func(childComplexity int) int
+	}
+
+	NutritionTemplatesResult struct {
+		AuthError       func(childComplexity int) int
+		Templates       func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	NutritionValidationError struct {
 		Code    func(childComplexity int) int
 		Message func(childComplexity int) int
 	}
@@ -313,20 +481,29 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		AllExercises      func(childComplexity int, includeInactive *bool) int
-		BodyCheckIn       func(childComplexity int, id string) int
-		BodyCheckIns      func(childComplexity int, from models.Date, to models.Date) int
-		BodyMeasurements  func(childComplexity int, checkInID string) int
-		BodyWeightEntries func(childComplexity int, from models.Date, to models.Date) int
-		BodyWeightEntry   func(childComplexity int, id string) int
-		CardioEntries     func(childComplexity int, date models.Date) int
-		CardioEntry       func(childComplexity int, id string) int
-		Exercise          func(childComplexity int, id string) int
-		Exercises         func(childComplexity int, first *int, after *string, includeInactive *bool) int
-		LatestBodyWeight  func(childComplexity int) int
-		ProgressPhotos    func(childComplexity int, checkInID string) int
-		Settings          func(childComplexity int) int
-		WeekFlags         func(childComplexity int, weekStartDate models.Date) int
+		AllExercises                 func(childComplexity int, includeInactive *bool) int
+		BodyCheckIn                  func(childComplexity int, id string) int
+		BodyCheckIns                 func(childComplexity int, from models.Date, to models.Date) int
+		BodyMeasurements             func(childComplexity int, checkInID string) int
+		BodyWeightEntries            func(childComplexity int, from models.Date, to models.Date) int
+		BodyWeightEntry              func(childComplexity int, id string) int
+		CardioEntries                func(childComplexity int, date models.Date) int
+		CardioEntry                  func(childComplexity int, id string) int
+		DailyNutritionOverride       func(childComplexity int, id string) int
+		DailyNutritionOverrideByDate func(childComplexity int, date models.Date) int
+		DailyNutritionOverrides      func(childComplexity int, startDate models.Date, endDate models.Date) int
+		Exercise                     func(childComplexity int, id string) int
+		Exercises                    func(childComplexity int, first *int, after *string, includeInactive *bool) int
+		LatestBodyWeight             func(childComplexity int) int
+		NutritionMacros              func(childComplexity int, weekStartDate models.Date, date *models.Date) int
+		NutritionProduct             func(childComplexity int, id string) int
+		NutritionProducts            func(childComplexity int) int
+		NutritionTemplate            func(childComplexity int, id string) int
+		NutritionTemplateCurrent     func(childComplexity int, weekStartDate models.Date) int
+		NutritionTemplates           func(childComplexity int, startDate models.Date, endDate models.Date) int
+		ProgressPhotos               func(childComplexity int, checkInID string) int
+		Settings                     func(childComplexity int) int
+		WeekFlags                    func(childComplexity int, weekStartDate models.Date) int
 	}
 
 	Settings struct {
@@ -441,6 +618,30 @@ type CardioEntryResultResolver interface {
 	NotFoundError(ctx context.Context, obj *models.CardioEntryResult) (*models.CardioNotFoundErr, error)
 	AuthError(ctx context.Context, obj *models.CardioEntryResult) (*models.CardioAuthErr, error)
 }
+type DailyNutritionOverrideResolver interface {
+	Date(ctx context.Context, obj *models.DailyNutritionOverride) (*models.Date, error)
+
+	CreatedAt(ctx context.Context, obj *models.DailyNutritionOverride) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.DailyNutritionOverride) (*time.Time, error)
+}
+type DailyNutritionOverrideItemResolver interface {
+	CreatedAt(ctx context.Context, obj *models.DailyNutritionOverrideItem) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.DailyNutritionOverrideItem) (*time.Time, error)
+}
+type DailyNutritionOverrideItemResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.DailyNutritionOverrideItemResult) (*models.NutritionValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.DailyNutritionOverrideItemResult) (*models.NutritionNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.DailyNutritionOverrideItemResult) (*models.NutritionAuthErr, error)
+}
+type DailyNutritionOverrideResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.DailyNutritionOverrideResult) (*models.NutritionValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.DailyNutritionOverrideResult) (*models.NutritionNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.DailyNutritionOverrideResult) (*models.NutritionAuthErr, error)
+}
+type DailyNutritionOverridesResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.DailyNutritionOverridesResult) (*models.NutritionValidationErr, error)
+	AuthError(ctx context.Context, obj *models.DailyNutritionOverridesResult) (*models.NutritionAuthErr, error)
+}
 type ExerciseResolver interface {
 	CreatedAt(ctx context.Context, obj *models.Exercise) (*time.Time, error)
 	UpdatedAt(ctx context.Context, obj *models.Exercise) (*time.Time, error)
@@ -476,6 +677,62 @@ type MutationResolver interface {
 	DeleteBodyMeasurement(ctx context.Context, id string) (*models.BodyMeasurementResult, error)
 	CreateWeekFlag(ctx context.Context, input models.CreateWeekFlagInput) (*models.WeekFlagResult, error)
 	DeleteWeekFlag(ctx context.Context, id string) (*models.WeekFlagResult, error)
+	CreateNutritionProduct(ctx context.Context, input models.CreateProductInput) (*models.NutritionProductResult, error)
+	UpdateNutritionProduct(ctx context.Context, id string, input models.UpdateProductInput) (*models.NutritionProductResult, error)
+	DeleteNutritionProduct(ctx context.Context, id string) (*models.NutritionProductResult, error)
+	CreateNutritionTemplate(ctx context.Context, input models.CreateTemplateInput) (*models.NutritionTemplateResult, error)
+	UpdateNutritionTemplate(ctx context.Context, id string, input models.UpdateTemplateInput) (*models.NutritionTemplateResult, error)
+	DeleteNutritionTemplate(ctx context.Context, id string) (*models.NutritionTemplateResult, error)
+	CreateNutritionTemplateItem(ctx context.Context, input models.CreateTemplateItemInput) (*models.NutritionTemplateItemResult, error)
+	UpdateNutritionTemplateItem(ctx context.Context, id string, input models.UpdateTemplateItemInput) (*models.NutritionTemplateItemResult, error)
+	DeleteNutritionTemplateItem(ctx context.Context, id string) (*models.NutritionTemplateItemResult, error)
+	CreateDailyNutritionOverride(ctx context.Context, input models.CreateOverrideInput) (*models.DailyNutritionOverrideResult, error)
+	UpdateDailyNutritionOverride(ctx context.Context, id string, input models.UpdateOverrideInput) (*models.DailyNutritionOverrideResult, error)
+	DeleteDailyNutritionOverride(ctx context.Context, id string) (*models.DailyNutritionOverrideResult, error)
+	CreateDailyNutritionOverrideItem(ctx context.Context, input models.CreateOverrideItemInput) (*models.DailyNutritionOverrideItemResult, error)
+	UpdateDailyNutritionOverrideItem(ctx context.Context, id string, input models.UpdateOverrideItemInput) (*models.DailyNutritionOverrideItemResult, error)
+	DeleteDailyNutritionOverrideItem(ctx context.Context, id string) (*models.DailyNutritionOverrideItemResult, error)
+}
+type NutritionMacrosResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.NutritionMacrosResult) (*models.NutritionValidationErr, error)
+	AuthError(ctx context.Context, obj *models.NutritionMacrosResult) (*models.NutritionAuthErr, error)
+}
+type NutritionProductResolver interface {
+	CreatedAt(ctx context.Context, obj *models.NutritionProduct) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.NutritionProduct) (*time.Time, error)
+}
+type NutritionProductResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.NutritionProductResult) (*models.NutritionValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.NutritionProductResult) (*models.NutritionNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.NutritionProductResult) (*models.NutritionAuthErr, error)
+}
+type NutritionProductsResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.NutritionProductsResult) (*models.NutritionValidationErr, error)
+	AuthError(ctx context.Context, obj *models.NutritionProductsResult) (*models.NutritionAuthErr, error)
+}
+type NutritionTemplateResolver interface {
+	WeekStartDate(ctx context.Context, obj *models.NutritionTemplate) (*models.Date, error)
+
+	CreatedAt(ctx context.Context, obj *models.NutritionTemplate) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.NutritionTemplate) (*time.Time, error)
+}
+type NutritionTemplateItemResolver interface {
+	CreatedAt(ctx context.Context, obj *models.NutritionTemplateItem) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.NutritionTemplateItem) (*time.Time, error)
+}
+type NutritionTemplateItemResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.NutritionTemplateItemResult) (*models.NutritionValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.NutritionTemplateItemResult) (*models.NutritionNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.NutritionTemplateItemResult) (*models.NutritionAuthErr, error)
+}
+type NutritionTemplateResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.NutritionTemplateResult) (*models.NutritionValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.NutritionTemplateResult) (*models.NutritionNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.NutritionTemplateResult) (*models.NutritionAuthErr, error)
+}
+type NutritionTemplatesResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.NutritionTemplatesResult) (*models.NutritionValidationErr, error)
+	AuthError(ctx context.Context, obj *models.NutritionTemplatesResult) (*models.NutritionAuthErr, error)
 }
 type ProgressPhotoResolver interface {
 	CreatedAt(ctx context.Context, obj *models.ProgressPhoto) (*time.Time, error)
@@ -500,6 +757,15 @@ type QueryResolver interface {
 	BodyMeasurements(ctx context.Context, checkInID string) ([]*models.BodyMeasurement, error)
 	ProgressPhotos(ctx context.Context, checkInID string) (*models.ProgressPhotosResult, error)
 	WeekFlags(ctx context.Context, weekStartDate models.Date) (*models.WeekFlagsResult, error)
+	NutritionProducts(ctx context.Context) (*models.NutritionProductsResult, error)
+	NutritionProduct(ctx context.Context, id string) (*models.NutritionProductResult, error)
+	NutritionTemplates(ctx context.Context, startDate models.Date, endDate models.Date) (*models.NutritionTemplatesResult, error)
+	NutritionTemplate(ctx context.Context, id string) (*models.NutritionTemplateResult, error)
+	NutritionTemplateCurrent(ctx context.Context, weekStartDate models.Date) (*models.NutritionTemplateResult, error)
+	DailyNutritionOverrides(ctx context.Context, startDate models.Date, endDate models.Date) (*models.DailyNutritionOverridesResult, error)
+	DailyNutritionOverride(ctx context.Context, id string) (*models.DailyNutritionOverrideResult, error)
+	DailyNutritionOverrideByDate(ctx context.Context, date models.Date) (*models.DailyNutritionOverrideResult, error)
+	NutritionMacros(ctx context.Context, weekStartDate models.Date, date *models.Date) (*models.NutritionMacrosResult, error)
 }
 type WeekFlagResolver interface {
 	CreatedAt(ctx context.Context, obj *models.WeekFlag) (*time.Time, error)
@@ -1073,6 +1339,195 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CardioValidationError.Message(childComplexity), true
 
+	case "DailyNutritionOverride.createdAt":
+		if e.complexity.DailyNutritionOverride.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverride.CreatedAt(childComplexity), true
+
+	case "DailyNutritionOverride.date":
+		if e.complexity.DailyNutritionOverride.Date == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverride.Date(childComplexity), true
+
+	case "DailyNutritionOverride.id":
+		if e.complexity.DailyNutritionOverride.ID == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverride.ID(childComplexity), true
+
+	case "DailyNutritionOverride.items":
+		if e.complexity.DailyNutritionOverride.Items == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverride.Items(childComplexity), true
+
+	case "DailyNutritionOverride.notes":
+		if e.complexity.DailyNutritionOverride.Notes == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverride.Notes(childComplexity), true
+
+	case "DailyNutritionOverride.updatedAt":
+		if e.complexity.DailyNutritionOverride.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverride.UpdatedAt(childComplexity), true
+
+	case "DailyNutritionOverride.userId":
+		if e.complexity.DailyNutritionOverride.UserID == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverride.UserID(childComplexity), true
+
+	case "DailyNutritionOverrideItem.amountGrams":
+		if e.complexity.DailyNutritionOverrideItem.AmountGrams == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideItem.AmountGrams(childComplexity), true
+
+	case "DailyNutritionOverrideItem.createdAt":
+		if e.complexity.DailyNutritionOverrideItem.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideItem.CreatedAt(childComplexity), true
+
+	case "DailyNutritionOverrideItem.id":
+		if e.complexity.DailyNutritionOverrideItem.ID == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideItem.ID(childComplexity), true
+
+	case "DailyNutritionOverrideItem.mealLabel":
+		if e.complexity.DailyNutritionOverrideItem.MealLabel == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideItem.MealLabel(childComplexity), true
+
+	case "DailyNutritionOverrideItem.notes":
+		if e.complexity.DailyNutritionOverrideItem.Notes == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideItem.Notes(childComplexity), true
+
+	case "DailyNutritionOverrideItem.operation":
+		if e.complexity.DailyNutritionOverrideItem.Operation == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideItem.Operation(childComplexity), true
+
+	case "DailyNutritionOverrideItem.overrideId":
+		if e.complexity.DailyNutritionOverrideItem.OverrideID == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideItem.OverrideID(childComplexity), true
+
+	case "DailyNutritionOverrideItem.productId":
+		if e.complexity.DailyNutritionOverrideItem.ProductID == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideItem.ProductID(childComplexity), true
+
+	case "DailyNutritionOverrideItem.updatedAt":
+		if e.complexity.DailyNutritionOverrideItem.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideItem.UpdatedAt(childComplexity), true
+
+	case "DailyNutritionOverrideItemResult.authError":
+		if e.complexity.DailyNutritionOverrideItemResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideItemResult.AuthError(childComplexity), true
+
+	case "DailyNutritionOverrideItemResult.dailyNutritionOverrideItem":
+		if e.complexity.DailyNutritionOverrideItemResult.DailyNutritionOverrideItem == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideItemResult.DailyNutritionOverrideItem(childComplexity), true
+
+	case "DailyNutritionOverrideItemResult.notFoundError":
+		if e.complexity.DailyNutritionOverrideItemResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideItemResult.NotFoundError(childComplexity), true
+
+	case "DailyNutritionOverrideItemResult.validationError":
+		if e.complexity.DailyNutritionOverrideItemResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideItemResult.ValidationError(childComplexity), true
+
+	case "DailyNutritionOverrideResult.authError":
+		if e.complexity.DailyNutritionOverrideResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideResult.AuthError(childComplexity), true
+
+	case "DailyNutritionOverrideResult.dailyNutritionOverride":
+		if e.complexity.DailyNutritionOverrideResult.DailyNutritionOverride == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideResult.DailyNutritionOverride(childComplexity), true
+
+	case "DailyNutritionOverrideResult.notFoundError":
+		if e.complexity.DailyNutritionOverrideResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideResult.NotFoundError(childComplexity), true
+
+	case "DailyNutritionOverrideResult.validationError":
+		if e.complexity.DailyNutritionOverrideResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverrideResult.ValidationError(childComplexity), true
+
+	case "DailyNutritionOverridesResult.authError":
+		if e.complexity.DailyNutritionOverridesResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverridesResult.AuthError(childComplexity), true
+
+	case "DailyNutritionOverridesResult.overrides":
+		if e.complexity.DailyNutritionOverridesResult.Overrides == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverridesResult.Overrides(childComplexity), true
+
+	case "DailyNutritionOverridesResult.validationError":
+		if e.complexity.DailyNutritionOverridesResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionOverridesResult.ValidationError(childComplexity), true
+
 	case "Exercise.createdAt":
 		if e.complexity.Exercise.CreatedAt == nil {
 			break
@@ -1320,6 +1775,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateCardioEntry(childComplexity, args["input"].(models.CreateCardioInput)), true
 
+	case "Mutation.createDailyNutritionOverride":
+		if e.complexity.Mutation.CreateDailyNutritionOverride == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createDailyNutritionOverride_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateDailyNutritionOverride(childComplexity, args["input"].(models.CreateOverrideInput)), true
+
+	case "Mutation.createDailyNutritionOverrideItem":
+		if e.complexity.Mutation.CreateDailyNutritionOverrideItem == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createDailyNutritionOverrideItem_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateDailyNutritionOverrideItem(childComplexity, args["input"].(models.CreateOverrideItemInput)), true
+
 	case "Mutation.createExercise":
 		if e.complexity.Mutation.CreateExercise == nil {
 			break
@@ -1331,6 +1810,42 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateExercise(childComplexity, args["input"].(models.CreateExerciseInput)), true
+
+	case "Mutation.createNutritionProduct":
+		if e.complexity.Mutation.CreateNutritionProduct == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createNutritionProduct_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateNutritionProduct(childComplexity, args["input"].(models.CreateProductInput)), true
+
+	case "Mutation.createNutritionTemplate":
+		if e.complexity.Mutation.CreateNutritionTemplate == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createNutritionTemplate_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateNutritionTemplate(childComplexity, args["input"].(models.CreateTemplateInput)), true
+
+	case "Mutation.createNutritionTemplateItem":
+		if e.complexity.Mutation.CreateNutritionTemplateItem == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createNutritionTemplateItem_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateNutritionTemplateItem(childComplexity, args["input"].(models.CreateTemplateItemInput)), true
 
 	case "Mutation.createWeekFlag":
 		if e.complexity.Mutation.CreateWeekFlag == nil {
@@ -1391,6 +1906,66 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteCardioEntry(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteDailyNutritionOverride":
+		if e.complexity.Mutation.DeleteDailyNutritionOverride == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteDailyNutritionOverride_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteDailyNutritionOverride(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteDailyNutritionOverrideItem":
+		if e.complexity.Mutation.DeleteDailyNutritionOverrideItem == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteDailyNutritionOverrideItem_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteDailyNutritionOverrideItem(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteNutritionProduct":
+		if e.complexity.Mutation.DeleteNutritionProduct == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteNutritionProduct_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteNutritionProduct(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteNutritionTemplate":
+		if e.complexity.Mutation.DeleteNutritionTemplate == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteNutritionTemplate_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteNutritionTemplate(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteNutritionTemplateItem":
+		if e.complexity.Mutation.DeleteNutritionTemplateItem == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteNutritionTemplateItem_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteNutritionTemplateItem(childComplexity, args["id"].(string)), true
 
 	case "Mutation.deleteWeekFlag":
 		if e.complexity.Mutation.DeleteWeekFlag == nil {
@@ -1488,6 +2063,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateCardioEntry(childComplexity, args["id"].(string), args["input"].(models.UpdateCardioInput)), true
 
+	case "Mutation.updateDailyNutritionOverride":
+		if e.complexity.Mutation.UpdateDailyNutritionOverride == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateDailyNutritionOverride_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateDailyNutritionOverride(childComplexity, args["id"].(string), args["input"].(models.UpdateOverrideInput)), true
+
+	case "Mutation.updateDailyNutritionOverrideItem":
+		if e.complexity.Mutation.UpdateDailyNutritionOverrideItem == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateDailyNutritionOverrideItem_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateDailyNutritionOverrideItem(childComplexity, args["id"].(string), args["input"].(models.UpdateOverrideItemInput)), true
+
 	case "Mutation.updateExercise":
 		if e.complexity.Mutation.UpdateExercise == nil {
 			break
@@ -1499,6 +2098,42 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateExercise(childComplexity, args["id"].(string), args["input"].(models.UpdateExerciseInput)), true
+
+	case "Mutation.updateNutritionProduct":
+		if e.complexity.Mutation.UpdateNutritionProduct == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateNutritionProduct_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateNutritionProduct(childComplexity, args["id"].(string), args["input"].(models.UpdateProductInput)), true
+
+	case "Mutation.updateNutritionTemplate":
+		if e.complexity.Mutation.UpdateNutritionTemplate == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateNutritionTemplate_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateNutritionTemplate(childComplexity, args["id"].(string), args["input"].(models.UpdateTemplateInput)), true
+
+	case "Mutation.updateNutritionTemplateItem":
+		if e.complexity.Mutation.UpdateNutritionTemplateItem == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateNutritionTemplateItem_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateNutritionTemplateItem(childComplexity, args["id"].(string), args["input"].(models.UpdateTemplateItemInput)), true
 
 	case "Mutation.updateSettings":
 		if e.complexity.Mutation.UpdateSettings == nil {
@@ -1525,6 +2160,412 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.NotFoundError.Message(childComplexity), true
+
+	case "NutritionAuthError.code":
+		if e.complexity.NutritionAuthError.Code == nil {
+			break
+		}
+
+		return e.complexity.NutritionAuthError.Code(childComplexity), true
+
+	case "NutritionAuthError.message":
+		if e.complexity.NutritionAuthError.Message == nil {
+			break
+		}
+
+		return e.complexity.NutritionAuthError.Message(childComplexity), true
+
+	case "NutritionMacros.calories":
+		if e.complexity.NutritionMacros.Calories == nil {
+			break
+		}
+
+		return e.complexity.NutritionMacros.Calories(childComplexity), true
+
+	case "NutritionMacros.carbs":
+		if e.complexity.NutritionMacros.Carbs == nil {
+			break
+		}
+
+		return e.complexity.NutritionMacros.Carbs(childComplexity), true
+
+	case "NutritionMacros.fat":
+		if e.complexity.NutritionMacros.Fat == nil {
+			break
+		}
+
+		return e.complexity.NutritionMacros.Fat(childComplexity), true
+
+	case "NutritionMacros.protein":
+		if e.complexity.NutritionMacros.Protein == nil {
+			break
+		}
+
+		return e.complexity.NutritionMacros.Protein(childComplexity), true
+
+	case "NutritionMacrosResult.authError":
+		if e.complexity.NutritionMacrosResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.NutritionMacrosResult.AuthError(childComplexity), true
+
+	case "NutritionMacrosResult.macros":
+		if e.complexity.NutritionMacrosResult.Macros == nil {
+			break
+		}
+
+		return e.complexity.NutritionMacrosResult.Macros(childComplexity), true
+
+	case "NutritionMacrosResult.validationError":
+		if e.complexity.NutritionMacrosResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.NutritionMacrosResult.ValidationError(childComplexity), true
+
+	case "NutritionNotFoundError.code":
+		if e.complexity.NutritionNotFoundError.Code == nil {
+			break
+		}
+
+		return e.complexity.NutritionNotFoundError.Code(childComplexity), true
+
+	case "NutritionNotFoundError.message":
+		if e.complexity.NutritionNotFoundError.Message == nil {
+			break
+		}
+
+		return e.complexity.NutritionNotFoundError.Message(childComplexity), true
+
+	case "NutritionProduct.caloriesPer100g":
+		if e.complexity.NutritionProduct.CaloriesPer100g == nil {
+			break
+		}
+
+		return e.complexity.NutritionProduct.CaloriesPer100g(childComplexity), true
+
+	case "NutritionProduct.carbsPer100g":
+		if e.complexity.NutritionProduct.CarbsPer100g == nil {
+			break
+		}
+
+		return e.complexity.NutritionProduct.CarbsPer100g(childComplexity), true
+
+	case "NutritionProduct.createdAt":
+		if e.complexity.NutritionProduct.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.NutritionProduct.CreatedAt(childComplexity), true
+
+	case "NutritionProduct.fatPer100g":
+		if e.complexity.NutritionProduct.FatPer100g == nil {
+			break
+		}
+
+		return e.complexity.NutritionProduct.FatPer100g(childComplexity), true
+
+	case "NutritionProduct.id":
+		if e.complexity.NutritionProduct.ID == nil {
+			break
+		}
+
+		return e.complexity.NutritionProduct.ID(childComplexity), true
+
+	case "NutritionProduct.isActive":
+		if e.complexity.NutritionProduct.IsActive == nil {
+			break
+		}
+
+		return e.complexity.NutritionProduct.IsActive(childComplexity), true
+
+	case "NutritionProduct.name":
+		if e.complexity.NutritionProduct.Name == nil {
+			break
+		}
+
+		return e.complexity.NutritionProduct.Name(childComplexity), true
+
+	case "NutritionProduct.notes":
+		if e.complexity.NutritionProduct.Notes == nil {
+			break
+		}
+
+		return e.complexity.NutritionProduct.Notes(childComplexity), true
+
+	case "NutritionProduct.proteinPer100g":
+		if e.complexity.NutritionProduct.ProteinPer100g == nil {
+			break
+		}
+
+		return e.complexity.NutritionProduct.ProteinPer100g(childComplexity), true
+
+	case "NutritionProduct.updatedAt":
+		if e.complexity.NutritionProduct.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.NutritionProduct.UpdatedAt(childComplexity), true
+
+	case "NutritionProduct.userId":
+		if e.complexity.NutritionProduct.UserID == nil {
+			break
+		}
+
+		return e.complexity.NutritionProduct.UserID(childComplexity), true
+
+	case "NutritionProductResult.authError":
+		if e.complexity.NutritionProductResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.NutritionProductResult.AuthError(childComplexity), true
+
+	case "NutritionProductResult.notFoundError":
+		if e.complexity.NutritionProductResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.NutritionProductResult.NotFoundError(childComplexity), true
+
+	case "NutritionProductResult.nutritionProduct":
+		if e.complexity.NutritionProductResult.NutritionProduct == nil {
+			break
+		}
+
+		return e.complexity.NutritionProductResult.NutritionProduct(childComplexity), true
+
+	case "NutritionProductResult.validationError":
+		if e.complexity.NutritionProductResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.NutritionProductResult.ValidationError(childComplexity), true
+
+	case "NutritionProductsResult.authError":
+		if e.complexity.NutritionProductsResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.NutritionProductsResult.AuthError(childComplexity), true
+
+	case "NutritionProductsResult.products":
+		if e.complexity.NutritionProductsResult.Products == nil {
+			break
+		}
+
+		return e.complexity.NutritionProductsResult.Products(childComplexity), true
+
+	case "NutritionProductsResult.validationError":
+		if e.complexity.NutritionProductsResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.NutritionProductsResult.ValidationError(childComplexity), true
+
+	case "NutritionTemplate.createdAt":
+		if e.complexity.NutritionTemplate.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplate.CreatedAt(childComplexity), true
+
+	case "NutritionTemplate.id":
+		if e.complexity.NutritionTemplate.ID == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplate.ID(childComplexity), true
+
+	case "NutritionTemplate.items":
+		if e.complexity.NutritionTemplate.Items == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplate.Items(childComplexity), true
+
+	case "NutritionTemplate.notes":
+		if e.complexity.NutritionTemplate.Notes == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplate.Notes(childComplexity), true
+
+	case "NutritionTemplate.title":
+		if e.complexity.NutritionTemplate.Title == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplate.Title(childComplexity), true
+
+	case "NutritionTemplate.updatedAt":
+		if e.complexity.NutritionTemplate.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplate.UpdatedAt(childComplexity), true
+
+	case "NutritionTemplate.userId":
+		if e.complexity.NutritionTemplate.UserID == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplate.UserID(childComplexity), true
+
+	case "NutritionTemplate.weekStartDate":
+		if e.complexity.NutritionTemplate.WeekStartDate == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplate.WeekStartDate(childComplexity), true
+
+	case "NutritionTemplateItem.amountGrams":
+		if e.complexity.NutritionTemplateItem.AmountGrams == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateItem.AmountGrams(childComplexity), true
+
+	case "NutritionTemplateItem.createdAt":
+		if e.complexity.NutritionTemplateItem.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateItem.CreatedAt(childComplexity), true
+
+	case "NutritionTemplateItem.id":
+		if e.complexity.NutritionTemplateItem.ID == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateItem.ID(childComplexity), true
+
+	case "NutritionTemplateItem.mealLabel":
+		if e.complexity.NutritionTemplateItem.MealLabel == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateItem.MealLabel(childComplexity), true
+
+	case "NutritionTemplateItem.notes":
+		if e.complexity.NutritionTemplateItem.Notes == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateItem.Notes(childComplexity), true
+
+	case "NutritionTemplateItem.productId":
+		if e.complexity.NutritionTemplateItem.ProductID == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateItem.ProductID(childComplexity), true
+
+	case "NutritionTemplateItem.templateId":
+		if e.complexity.NutritionTemplateItem.TemplateID == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateItem.TemplateID(childComplexity), true
+
+	case "NutritionTemplateItem.updatedAt":
+		if e.complexity.NutritionTemplateItem.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateItem.UpdatedAt(childComplexity), true
+
+	case "NutritionTemplateItemResult.authError":
+		if e.complexity.NutritionTemplateItemResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateItemResult.AuthError(childComplexity), true
+
+	case "NutritionTemplateItemResult.notFoundError":
+		if e.complexity.NutritionTemplateItemResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateItemResult.NotFoundError(childComplexity), true
+
+	case "NutritionTemplateItemResult.nutritionTemplateItem":
+		if e.complexity.NutritionTemplateItemResult.NutritionTemplateItem == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateItemResult.NutritionTemplateItem(childComplexity), true
+
+	case "NutritionTemplateItemResult.validationError":
+		if e.complexity.NutritionTemplateItemResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateItemResult.ValidationError(childComplexity), true
+
+	case "NutritionTemplateResult.authError":
+		if e.complexity.NutritionTemplateResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateResult.AuthError(childComplexity), true
+
+	case "NutritionTemplateResult.notFoundError":
+		if e.complexity.NutritionTemplateResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateResult.NotFoundError(childComplexity), true
+
+	case "NutritionTemplateResult.nutritionTemplate":
+		if e.complexity.NutritionTemplateResult.NutritionTemplate == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateResult.NutritionTemplate(childComplexity), true
+
+	case "NutritionTemplateResult.validationError":
+		if e.complexity.NutritionTemplateResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateResult.ValidationError(childComplexity), true
+
+	case "NutritionTemplatesResult.authError":
+		if e.complexity.NutritionTemplatesResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplatesResult.AuthError(childComplexity), true
+
+	case "NutritionTemplatesResult.templates":
+		if e.complexity.NutritionTemplatesResult.Templates == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplatesResult.Templates(childComplexity), true
+
+	case "NutritionTemplatesResult.validationError":
+		if e.complexity.NutritionTemplatesResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplatesResult.ValidationError(childComplexity), true
+
+	case "NutritionValidationError.code":
+		if e.complexity.NutritionValidationError.Code == nil {
+			break
+		}
+
+		return e.complexity.NutritionValidationError.Code(childComplexity), true
+
+	case "NutritionValidationError.message":
+		if e.complexity.NutritionValidationError.Message == nil {
+			break
+		}
+
+		return e.complexity.NutritionValidationError.Message(childComplexity), true
 
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
@@ -1783,6 +2824,42 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.CardioEntry(childComplexity, args["id"].(string)), true
 
+	case "Query.dailyNutritionOverride":
+		if e.complexity.Query.DailyNutritionOverride == nil {
+			break
+		}
+
+		args, err := ec.field_Query_dailyNutritionOverride_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.DailyNutritionOverride(childComplexity, args["id"].(string)), true
+
+	case "Query.dailyNutritionOverrideByDate":
+		if e.complexity.Query.DailyNutritionOverrideByDate == nil {
+			break
+		}
+
+		args, err := ec.field_Query_dailyNutritionOverrideByDate_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.DailyNutritionOverrideByDate(childComplexity, args["date"].(models.Date)), true
+
+	case "Query.dailyNutritionOverrides":
+		if e.complexity.Query.DailyNutritionOverrides == nil {
+			break
+		}
+
+		args, err := ec.field_Query_dailyNutritionOverrides_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.DailyNutritionOverrides(childComplexity, args["startDate"].(models.Date), args["endDate"].(models.Date)), true
+
 	case "Query.exercise":
 		if e.complexity.Query.Exercise == nil {
 			break
@@ -1813,6 +2890,73 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.LatestBodyWeight(childComplexity), true
+
+	case "Query.nutritionMacros":
+		if e.complexity.Query.NutritionMacros == nil {
+			break
+		}
+
+		args, err := ec.field_Query_nutritionMacros_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.NutritionMacros(childComplexity, args["weekStartDate"].(models.Date), args["date"].(*models.Date)), true
+
+	case "Query.nutritionProduct":
+		if e.complexity.Query.NutritionProduct == nil {
+			break
+		}
+
+		args, err := ec.field_Query_nutritionProduct_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.NutritionProduct(childComplexity, args["id"].(string)), true
+
+	case "Query.nutritionProducts":
+		if e.complexity.Query.NutritionProducts == nil {
+			break
+		}
+
+		return e.complexity.Query.NutritionProducts(childComplexity), true
+
+	case "Query.nutritionTemplate":
+		if e.complexity.Query.NutritionTemplate == nil {
+			break
+		}
+
+		args, err := ec.field_Query_nutritionTemplate_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.NutritionTemplate(childComplexity, args["id"].(string)), true
+
+	case "Query.nutritionTemplateCurrent":
+		if e.complexity.Query.NutritionTemplateCurrent == nil {
+			break
+		}
+
+		args, err := ec.field_Query_nutritionTemplateCurrent_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.NutritionTemplateCurrent(childComplexity, args["weekStartDate"].(models.Date)), true
+
+	case "Query.nutritionTemplates":
+		if e.complexity.Query.NutritionTemplates == nil {
+			break
+		}
+
+		args, err := ec.field_Query_nutritionTemplates_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.NutritionTemplates(childComplexity, args["startDate"].(models.Date), args["endDate"].(models.Date)), true
 
 	case "Query.progressPhotos":
 		if e.complexity.Query.ProgressPhotos == nil {
@@ -2061,6 +3205,11 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCreateCheckInInput,
 		ec.unmarshalInputCreateExerciseInput,
 		ec.unmarshalInputCreateMeasurementInput,
+		ec.unmarshalInputCreateOverrideInput,
+		ec.unmarshalInputCreateOverrideItemInput,
+		ec.unmarshalInputCreateProductInput,
+		ec.unmarshalInputCreateTemplateInput,
+		ec.unmarshalInputCreateTemplateItemInput,
 		ec.unmarshalInputCreateWeekFlagInput,
 		ec.unmarshalInputPinChangeInput,
 		ec.unmarshalInputPinDisableInput,
@@ -2071,6 +3220,11 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputUpdateCheckInInput,
 		ec.unmarshalInputUpdateExerciseInput,
 		ec.unmarshalInputUpdateMeasurementInput,
+		ec.unmarshalInputUpdateOverrideInput,
+		ec.unmarshalInputUpdateOverrideItemInput,
+		ec.unmarshalInputUpdateProductInput,
+		ec.unmarshalInputUpdateTemplateInput,
+		ec.unmarshalInputUpdateTemplateItemInput,
 	)
 	first := true
 
@@ -2489,6 +3643,235 @@ enum ExerciseErrorCode {
   AUTH_ERROR
   INTERNAL_ERROR
 }`, BuiltIn: false},
+	{Name: "../schema/nutrition.graphql", Input: `# FILE: apps/api/internal/atlas/graph/schema/nutrition.graphql
+# VERSION: 1.0.0
+# START_MODULE_CONTRACT
+#   PURPOSE: Define GraphQL types, enums, inputs, queries, mutations, and union result types for WAVE-05 Nutrition module.
+#   SCOPE: NutritionProduct, NutritionTemplate (with nested items), DailyNutritionOverride (with nested items), NutritionMacros. Operation and NutritionErrorCode enums. CRUD inputs and union results with ValidationError/NotFoundError/AuthError for all entities.
+#   DEPENDS: schema.graphql for Time and Date scalars, Query and Mutation root types.
+#   ROLE: RUNTIME
+#   MAP_MODE: LOCALS
+# END_MODULE_CONTRACT
+
+type NutritionProduct {
+  id: ID!
+  userId: ID!
+  name: String!
+  caloriesPer100g: Float!
+  proteinPer100g: Float!
+  fatPer100g: Float!
+  carbsPer100g: Float!
+  notes: String
+  isActive: Boolean!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type NutritionTemplate {
+  id: ID!
+  userId: ID!
+  weekStartDate: Date!
+  title: String
+  notes: String
+  items: [NutritionTemplateItem!]!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type NutritionTemplateItem {
+  id: ID!
+  templateId: ID!
+  productId: ID!
+  amountGrams: Float!
+  mealLabel: String
+  notes: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type DailyNutritionOverride {
+  id: ID!
+  userId: ID!
+  date: Date!
+  notes: String
+  items: [DailyNutritionOverrideItem!]!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type DailyNutritionOverrideItem {
+  id: ID!
+  overrideId: ID!
+  productId: ID!
+  amountGrams: Float!
+  operation: Operation!
+  mealLabel: String
+  notes: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type NutritionMacros {
+  calories: Float!
+  protein: Float!
+  fat: Float!
+  carbs: Float!
+}
+
+enum Operation {
+  ADD
+  SUBTRACT
+  REPLACE
+}
+
+enum NutritionErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}
+
+input CreateProductInput {
+  name: String!
+  caloriesPer100g: Float!
+  proteinPer100g: Float!
+  fatPer100g: Float!
+  carbsPer100g: Float!
+  notes: String
+}
+
+input UpdateProductInput {
+  name: String
+  caloriesPer100g: Float
+  proteinPer100g: Float
+  fatPer100g: Float
+  carbsPer100g: Float
+  notes: String
+}
+
+input CreateTemplateInput {
+  weekStartDate: Date!
+  title: String
+  notes: String
+}
+
+input UpdateTemplateInput {
+  title: String
+  notes: String
+}
+
+input CreateTemplateItemInput {
+  templateId: ID!
+  productId: ID!
+  amountGrams: Float!
+  mealLabel: String
+  notes: String
+}
+
+input UpdateTemplateItemInput {
+  amountGrams: Float
+  mealLabel: String
+  notes: String
+}
+
+input CreateOverrideInput {
+  date: Date!
+  notes: String
+}
+
+input UpdateOverrideInput {
+  notes: String
+}
+
+input CreateOverrideItemInput {
+  overrideId: ID!
+  productId: ID!
+  amountGrams: Float!
+  operation: Operation!
+  mealLabel: String
+  notes: String
+}
+
+input UpdateOverrideItemInput {
+  amountGrams: Float
+  operation: Operation
+  mealLabel: String
+  notes: String
+}
+
+type NutritionProductResult {
+  nutritionProduct: NutritionProduct
+  validationError: NutritionValidationError
+  notFoundError: NutritionNotFoundError
+  authError: NutritionAuthError
+}
+
+type NutritionProductsResult {
+  products: [NutritionProduct!]!
+  validationError: NutritionValidationError
+  authError: NutritionAuthError
+}
+
+type NutritionTemplateResult {
+  nutritionTemplate: NutritionTemplate
+  validationError: NutritionValidationError
+  notFoundError: NutritionNotFoundError
+  authError: NutritionAuthError
+}
+
+type NutritionTemplatesResult {
+  templates: [NutritionTemplate!]!
+  validationError: NutritionValidationError
+  authError: NutritionAuthError
+}
+
+type NutritionTemplateItemResult {
+  nutritionTemplateItem: NutritionTemplateItem
+  validationError: NutritionValidationError
+  notFoundError: NutritionNotFoundError
+  authError: NutritionAuthError
+}
+
+type DailyNutritionOverrideResult {
+  dailyNutritionOverride: DailyNutritionOverride
+  validationError: NutritionValidationError
+  notFoundError: NutritionNotFoundError
+  authError: NutritionAuthError
+}
+
+type DailyNutritionOverridesResult {
+  overrides: [DailyNutritionOverride!]!
+  validationError: NutritionValidationError
+  authError: NutritionAuthError
+}
+
+type DailyNutritionOverrideItemResult {
+  dailyNutritionOverrideItem: DailyNutritionOverrideItem
+  validationError: NutritionValidationError
+  notFoundError: NutritionNotFoundError
+  authError: NutritionAuthError
+}
+
+type NutritionMacrosResult {
+  macros: NutritionMacros
+  validationError: NutritionValidationError
+  authError: NutritionAuthError
+}
+
+type NutritionValidationError {
+  message: String!
+  code: NutritionErrorCode!
+}
+
+type NutritionNotFoundError {
+  message: String!
+  code: NutritionErrorCode!
+}
+
+type NutritionAuthError {
+  message: String!
+  code: NutritionErrorCode!
+}`, BuiltIn: false},
 	{Name: "../schema/pin.graphql", Input: `input PinEnableInput {
   pin: String!
 }
@@ -2593,6 +3976,17 @@ type Query {
 
   # WAVE-04 Week Flags
   weekFlags(weekStartDate: Date!): WeekFlagsResult!
+
+  # WAVE-05 Nutrition
+  nutritionProducts: NutritionProductsResult!
+  nutritionProduct(id: ID!): NutritionProductResult!
+  nutritionTemplates(startDate: Date!, endDate: Date!): NutritionTemplatesResult!
+  nutritionTemplate(id: ID!): NutritionTemplateResult!
+  nutritionTemplateCurrent(weekStartDate: Date!): NutritionTemplateResult!
+  dailyNutritionOverrides(startDate: Date!, endDate: Date!): DailyNutritionOverridesResult!
+  dailyNutritionOverride(id: ID!): DailyNutritionOverrideResult!
+  dailyNutritionOverrideByDate(date: Date!): DailyNutritionOverrideResult!
+  nutritionMacros(weekStartDate: Date!, date: Date): NutritionMacrosResult!
 }
 
 type Mutation {
@@ -2628,6 +4022,23 @@ type Mutation {
   # WAVE-04 Week Flags
   createWeekFlag(input: CreateWeekFlagInput!): WeekFlagResult!
   deleteWeekFlag(id: ID!): WeekFlagResult!
+
+  # WAVE-05 Nutrition
+  createNutritionProduct(input: CreateProductInput!): NutritionProductResult!
+  updateNutritionProduct(id: ID!, input: UpdateProductInput!): NutritionProductResult!
+  deleteNutritionProduct(id: ID!): NutritionProductResult!
+  createNutritionTemplate(input: CreateTemplateInput!): NutritionTemplateResult!
+  updateNutritionTemplate(id: ID!, input: UpdateTemplateInput!): NutritionTemplateResult!
+  deleteNutritionTemplate(id: ID!): NutritionTemplateResult!
+  createNutritionTemplateItem(input: CreateTemplateItemInput!): NutritionTemplateItemResult!
+  updateNutritionTemplateItem(id: ID!, input: UpdateTemplateItemInput!): NutritionTemplateItemResult!
+  deleteNutritionTemplateItem(id: ID!): NutritionTemplateItemResult!
+  createDailyNutritionOverride(input: CreateOverrideInput!): DailyNutritionOverrideResult!
+  updateDailyNutritionOverride(id: ID!, input: UpdateOverrideInput!): DailyNutritionOverrideResult!
+  deleteDailyNutritionOverride(id: ID!): DailyNutritionOverrideResult!
+  createDailyNutritionOverrideItem(input: CreateOverrideItemInput!): DailyNutritionOverrideItemResult!
+  updateDailyNutritionOverrideItem(id: ID!, input: UpdateOverrideItemInput!): DailyNutritionOverrideItemResult!
+  deleteDailyNutritionOverrideItem(id: ID!): DailyNutritionOverrideItemResult!
 }`, BuiltIn: false},
 	{Name: "../schema/settings.graphql", Input: `type Settings {
   pinEnabled: Boolean!
@@ -2824,6 +4235,36 @@ func (ec *executionContext) field_Mutation_createCardioEntry_args(ctx context.Co
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createDailyNutritionOverrideItem_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreateOverrideItemInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateOverrideItemInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateOverrideItemInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createDailyNutritionOverride_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreateOverrideInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateOverrideInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateOverrideInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createExercise_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -2831,6 +4272,51 @@ func (ec *executionContext) field_Mutation_createExercise_args(ctx context.Conte
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNCreateExerciseInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateExerciseInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createNutritionProduct_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreateProductInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateProductInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateProductInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createNutritionTemplateItem_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreateTemplateItemInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateTemplateItemInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateTemplateItemInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createNutritionTemplate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreateTemplateInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateTemplateInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateTemplateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2900,6 +4386,81 @@ func (ec *executionContext) field_Mutation_deleteBodyWeightEntry_args(ctx contex
 }
 
 func (ec *executionContext) field_Mutation_deleteCardioEntry_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteDailyNutritionOverrideItem_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteDailyNutritionOverride_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteNutritionProduct_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteNutritionTemplateItem_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteNutritionTemplate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -3070,6 +4631,54 @@ func (ec *executionContext) field_Mutation_updateCardioEntry_args(ctx context.Co
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_updateDailyNutritionOverrideItem_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 models.UpdateOverrideItemInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdateOverrideItemInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateOverrideItemInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateDailyNutritionOverride_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 models.UpdateOverrideInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdateOverrideInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateOverrideInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateExercise_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -3086,6 +4695,78 @@ func (ec *executionContext) field_Mutation_updateExercise_args(ctx context.Conte
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg1, err = ec.unmarshalNUpdateExerciseInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateExerciseInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateNutritionProduct_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 models.UpdateProductInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdateProductInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateProductInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateNutritionTemplateItem_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 models.UpdateTemplateItemInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdateTemplateItemInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateTemplateItemInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateNutritionTemplate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 models.UpdateTemplateInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdateTemplateInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateTemplateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3262,6 +4943,60 @@ func (ec *executionContext) field_Query_cardioEntry_args(ctx context.Context, ra
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_dailyNutritionOverrideByDate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.Date
+	if tmp, ok := rawArgs["date"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+		arg0, err = ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["date"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_dailyNutritionOverride_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_dailyNutritionOverrides_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.Date
+	if tmp, ok := rawArgs["startDate"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("startDate"))
+		arg0, err = ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["startDate"] = arg0
+	var arg1 models.Date
+	if tmp, ok := rawArgs["endDate"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("endDate"))
+		arg1, err = ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["endDate"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_exercise_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -3307,6 +5042,99 @@ func (ec *executionContext) field_Query_exercises_args(ctx context.Context, rawA
 		}
 	}
 	args["includeInactive"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_nutritionMacros_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.Date
+	if tmp, ok := rawArgs["weekStartDate"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("weekStartDate"))
+		arg0, err = ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["weekStartDate"] = arg0
+	var arg1 *models.Date
+	if tmp, ok := rawArgs["date"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+		arg1, err = ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["date"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_nutritionProduct_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_nutritionTemplateCurrent_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.Date
+	if tmp, ok := rawArgs["weekStartDate"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("weekStartDate"))
+		arg0, err = ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["weekStartDate"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_nutritionTemplate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_nutritionTemplates_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.Date
+	if tmp, ok := rawArgs["startDate"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("startDate"))
+		arg0, err = ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["startDate"] = arg0
+	var arg1 models.Date
+	if tmp, ok := rawArgs["endDate"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("endDate"))
+		arg1, err = ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["endDate"] = arg1
 	return args, nil
 }
 
@@ -6989,6 +8817,1275 @@ func (ec *executionContext) fieldContext_CardioValidationError_code(_ context.Co
 	return fc, nil
 }
 
+func (ec *executionContext) _DailyNutritionOverride_id(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverride) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverride_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverride_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverride",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverride_userId(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverride) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverride_userId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverride_userId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverride",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverride_date(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverride) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverride_date(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionOverride().Date(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Date)
+	fc.Result = res
+	return ec.marshalNDate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverride_date(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverride",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverride_notes(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverride) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverride_notes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Notes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverride_notes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverride",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverride_items(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverride) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverride_items(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Items, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.DailyNutritionOverrideItem)
+	fc.Result = res
+	return ec.marshalNDailyNutritionOverrideItem2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideItemᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverride_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverride",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_DailyNutritionOverrideItem_id(ctx, field)
+			case "overrideId":
+				return ec.fieldContext_DailyNutritionOverrideItem_overrideId(ctx, field)
+			case "productId":
+				return ec.fieldContext_DailyNutritionOverrideItem_productId(ctx, field)
+			case "amountGrams":
+				return ec.fieldContext_DailyNutritionOverrideItem_amountGrams(ctx, field)
+			case "operation":
+				return ec.fieldContext_DailyNutritionOverrideItem_operation(ctx, field)
+			case "mealLabel":
+				return ec.fieldContext_DailyNutritionOverrideItem_mealLabel(ctx, field)
+			case "notes":
+				return ec.fieldContext_DailyNutritionOverrideItem_notes(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_DailyNutritionOverrideItem_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_DailyNutritionOverrideItem_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionOverrideItem", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverride_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverride) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverride_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionOverride().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverride_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverride",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverride_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverride) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverride_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionOverride().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverride_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverride",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideItem_id(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideItem_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideItem_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideItem_overrideId(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideItem_overrideId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OverrideID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideItem_overrideId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideItem_productId(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideItem_productId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProductID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideItem_productId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideItem_amountGrams(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideItem_amountGrams(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AmountGrams, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideItem_amountGrams(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideItem_operation(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideItem_operation(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Operation, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Operation)
+	fc.Result = res
+	return ec.marshalNOperation2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐOperation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideItem_operation(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Operation does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideItem_mealLabel(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideItem_mealLabel(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MealLabel, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideItem_mealLabel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideItem_notes(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideItem_notes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Notes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideItem_notes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideItem_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideItem_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionOverrideItem().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideItem_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideItem",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideItem_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideItem_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionOverrideItem().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideItem_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideItem",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideItemResult_dailyNutritionOverrideItem(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideItemResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideItemResult_dailyNutritionOverrideItem(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DailyNutritionOverrideItem, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionOverrideItem)
+	fc.Result = res
+	return ec.marshalODailyNutritionOverrideItem2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideItem(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideItemResult_dailyNutritionOverrideItem(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideItemResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_DailyNutritionOverrideItem_id(ctx, field)
+			case "overrideId":
+				return ec.fieldContext_DailyNutritionOverrideItem_overrideId(ctx, field)
+			case "productId":
+				return ec.fieldContext_DailyNutritionOverrideItem_productId(ctx, field)
+			case "amountGrams":
+				return ec.fieldContext_DailyNutritionOverrideItem_amountGrams(ctx, field)
+			case "operation":
+				return ec.fieldContext_DailyNutritionOverrideItem_operation(ctx, field)
+			case "mealLabel":
+				return ec.fieldContext_DailyNutritionOverrideItem_mealLabel(ctx, field)
+			case "notes":
+				return ec.fieldContext_DailyNutritionOverrideItem_notes(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_DailyNutritionOverrideItem_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_DailyNutritionOverrideItem_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionOverrideItem", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideItemResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideItemResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideItemResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionOverrideItemResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionValidationErr)
+	fc.Result = res
+	return ec.marshalONutritionValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideItemResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideItemResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideItemResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideItemResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideItemResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionOverrideItemResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionNotFoundErr)
+	fc.Result = res
+	return ec.marshalONutritionNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideItemResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideItemResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideItemResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideItemResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideItemResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionOverrideItemResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionAuthErr)
+	fc.Result = res
+	return ec.marshalONutritionAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideItemResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideItemResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideResult_dailyNutritionOverride(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideResult_dailyNutritionOverride(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DailyNutritionOverride, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionOverride)
+	fc.Result = res
+	return ec.marshalODailyNutritionOverride2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverride(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideResult_dailyNutritionOverride(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_DailyNutritionOverride_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_DailyNutritionOverride_userId(ctx, field)
+			case "date":
+				return ec.fieldContext_DailyNutritionOverride_date(ctx, field)
+			case "notes":
+				return ec.fieldContext_DailyNutritionOverride_notes(ctx, field)
+			case "items":
+				return ec.fieldContext_DailyNutritionOverride_items(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_DailyNutritionOverride_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_DailyNutritionOverride_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionOverride", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionOverrideResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionValidationErr)
+	fc.Result = res
+	return ec.marshalONutritionValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionOverrideResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionNotFoundErr)
+	fc.Result = res
+	return ec.marshalONutritionNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverrideResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverrideResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverrideResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionOverrideResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionAuthErr)
+	fc.Result = res
+	return ec.marshalONutritionAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverrideResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverrideResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverridesResult_overrides(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverridesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverridesResult_overrides(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Overrides, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.DailyNutritionOverride)
+	fc.Result = res
+	return ec.marshalNDailyNutritionOverride2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverridesResult_overrides(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverridesResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_DailyNutritionOverride_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_DailyNutritionOverride_userId(ctx, field)
+			case "date":
+				return ec.fieldContext_DailyNutritionOverride_date(ctx, field)
+			case "notes":
+				return ec.fieldContext_DailyNutritionOverride_notes(ctx, field)
+			case "items":
+				return ec.fieldContext_DailyNutritionOverride_items(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_DailyNutritionOverride_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_DailyNutritionOverride_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionOverride", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverridesResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverridesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverridesResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionOverridesResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionValidationErr)
+	fc.Result = res
+	return ec.marshalONutritionValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverridesResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverridesResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionOverridesResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionOverridesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionOverridesResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionOverridesResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionAuthErr)
+	fc.Result = res
+	return ec.marshalONutritionAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionOverridesResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionOverridesResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Exercise_id(ctx context.Context, field graphql.CollectedField, obj *models.Exercise) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Exercise_id(ctx, field)
 	if err != nil {
@@ -9563,6 +12660,981 @@ func (ec *executionContext) fieldContext_Mutation_deleteWeekFlag(ctx context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createNutritionProduct(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createNutritionProduct(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateNutritionProduct(rctx, fc.Args["input"].(models.CreateProductInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionProductResult)
+	fc.Result = res
+	return ec.marshalNNutritionProductResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProductResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createNutritionProduct(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nutritionProduct":
+				return ec.fieldContext_NutritionProductResult_nutritionProduct(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionProductResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_NutritionProductResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionProductResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionProductResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createNutritionProduct_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateNutritionProduct(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateNutritionProduct(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateNutritionProduct(rctx, fc.Args["id"].(string), fc.Args["input"].(models.UpdateProductInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionProductResult)
+	fc.Result = res
+	return ec.marshalNNutritionProductResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProductResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateNutritionProduct(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nutritionProduct":
+				return ec.fieldContext_NutritionProductResult_nutritionProduct(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionProductResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_NutritionProductResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionProductResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionProductResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateNutritionProduct_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteNutritionProduct(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteNutritionProduct(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteNutritionProduct(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionProductResult)
+	fc.Result = res
+	return ec.marshalNNutritionProductResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProductResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteNutritionProduct(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nutritionProduct":
+				return ec.fieldContext_NutritionProductResult_nutritionProduct(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionProductResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_NutritionProductResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionProductResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionProductResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteNutritionProduct_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createNutritionTemplate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createNutritionTemplate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateNutritionTemplate(rctx, fc.Args["input"].(models.CreateTemplateInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionTemplateResult)
+	fc.Result = res
+	return ec.marshalNNutritionTemplateResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createNutritionTemplate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nutritionTemplate":
+				return ec.fieldContext_NutritionTemplateResult_nutritionTemplate(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionTemplateResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_NutritionTemplateResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionTemplateResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplateResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createNutritionTemplate_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateNutritionTemplate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateNutritionTemplate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateNutritionTemplate(rctx, fc.Args["id"].(string), fc.Args["input"].(models.UpdateTemplateInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionTemplateResult)
+	fc.Result = res
+	return ec.marshalNNutritionTemplateResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateNutritionTemplate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nutritionTemplate":
+				return ec.fieldContext_NutritionTemplateResult_nutritionTemplate(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionTemplateResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_NutritionTemplateResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionTemplateResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplateResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateNutritionTemplate_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteNutritionTemplate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteNutritionTemplate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteNutritionTemplate(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionTemplateResult)
+	fc.Result = res
+	return ec.marshalNNutritionTemplateResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteNutritionTemplate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nutritionTemplate":
+				return ec.fieldContext_NutritionTemplateResult_nutritionTemplate(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionTemplateResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_NutritionTemplateResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionTemplateResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplateResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteNutritionTemplate_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createNutritionTemplateItem(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createNutritionTemplateItem(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateNutritionTemplateItem(rctx, fc.Args["input"].(models.CreateTemplateItemInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionTemplateItemResult)
+	fc.Result = res
+	return ec.marshalNNutritionTemplateItemResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateItemResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createNutritionTemplateItem(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nutritionTemplateItem":
+				return ec.fieldContext_NutritionTemplateItemResult_nutritionTemplateItem(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionTemplateItemResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_NutritionTemplateItemResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionTemplateItemResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplateItemResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createNutritionTemplateItem_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateNutritionTemplateItem(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateNutritionTemplateItem(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateNutritionTemplateItem(rctx, fc.Args["id"].(string), fc.Args["input"].(models.UpdateTemplateItemInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionTemplateItemResult)
+	fc.Result = res
+	return ec.marshalNNutritionTemplateItemResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateItemResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateNutritionTemplateItem(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nutritionTemplateItem":
+				return ec.fieldContext_NutritionTemplateItemResult_nutritionTemplateItem(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionTemplateItemResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_NutritionTemplateItemResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionTemplateItemResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplateItemResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateNutritionTemplateItem_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteNutritionTemplateItem(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteNutritionTemplateItem(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteNutritionTemplateItem(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionTemplateItemResult)
+	fc.Result = res
+	return ec.marshalNNutritionTemplateItemResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateItemResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteNutritionTemplateItem(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nutritionTemplateItem":
+				return ec.fieldContext_NutritionTemplateItemResult_nutritionTemplateItem(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionTemplateItemResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_NutritionTemplateItemResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionTemplateItemResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplateItemResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteNutritionTemplateItem_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createDailyNutritionOverride(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createDailyNutritionOverride(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateDailyNutritionOverride(rctx, fc.Args["input"].(models.CreateOverrideInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionOverrideResult)
+	fc.Result = res
+	return ec.marshalNDailyNutritionOverrideResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createDailyNutritionOverride(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dailyNutritionOverride":
+				return ec.fieldContext_DailyNutritionOverrideResult_dailyNutritionOverride(ctx, field)
+			case "validationError":
+				return ec.fieldContext_DailyNutritionOverrideResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_DailyNutritionOverrideResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_DailyNutritionOverrideResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionOverrideResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createDailyNutritionOverride_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateDailyNutritionOverride(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateDailyNutritionOverride(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateDailyNutritionOverride(rctx, fc.Args["id"].(string), fc.Args["input"].(models.UpdateOverrideInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionOverrideResult)
+	fc.Result = res
+	return ec.marshalNDailyNutritionOverrideResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateDailyNutritionOverride(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dailyNutritionOverride":
+				return ec.fieldContext_DailyNutritionOverrideResult_dailyNutritionOverride(ctx, field)
+			case "validationError":
+				return ec.fieldContext_DailyNutritionOverrideResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_DailyNutritionOverrideResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_DailyNutritionOverrideResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionOverrideResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateDailyNutritionOverride_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteDailyNutritionOverride(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteDailyNutritionOverride(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteDailyNutritionOverride(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionOverrideResult)
+	fc.Result = res
+	return ec.marshalNDailyNutritionOverrideResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteDailyNutritionOverride(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dailyNutritionOverride":
+				return ec.fieldContext_DailyNutritionOverrideResult_dailyNutritionOverride(ctx, field)
+			case "validationError":
+				return ec.fieldContext_DailyNutritionOverrideResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_DailyNutritionOverrideResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_DailyNutritionOverrideResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionOverrideResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteDailyNutritionOverride_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createDailyNutritionOverrideItem(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createDailyNutritionOverrideItem(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateDailyNutritionOverrideItem(rctx, fc.Args["input"].(models.CreateOverrideItemInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionOverrideItemResult)
+	fc.Result = res
+	return ec.marshalNDailyNutritionOverrideItemResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideItemResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createDailyNutritionOverrideItem(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dailyNutritionOverrideItem":
+				return ec.fieldContext_DailyNutritionOverrideItemResult_dailyNutritionOverrideItem(ctx, field)
+			case "validationError":
+				return ec.fieldContext_DailyNutritionOverrideItemResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_DailyNutritionOverrideItemResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_DailyNutritionOverrideItemResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionOverrideItemResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createDailyNutritionOverrideItem_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateDailyNutritionOverrideItem(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateDailyNutritionOverrideItem(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateDailyNutritionOverrideItem(rctx, fc.Args["id"].(string), fc.Args["input"].(models.UpdateOverrideItemInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionOverrideItemResult)
+	fc.Result = res
+	return ec.marshalNDailyNutritionOverrideItemResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideItemResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateDailyNutritionOverrideItem(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dailyNutritionOverrideItem":
+				return ec.fieldContext_DailyNutritionOverrideItemResult_dailyNutritionOverrideItem(ctx, field)
+			case "validationError":
+				return ec.fieldContext_DailyNutritionOverrideItemResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_DailyNutritionOverrideItemResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_DailyNutritionOverrideItemResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionOverrideItemResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateDailyNutritionOverrideItem_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteDailyNutritionOverrideItem(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteDailyNutritionOverrideItem(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteDailyNutritionOverrideItem(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionOverrideItemResult)
+	fc.Result = res
+	return ec.marshalNDailyNutritionOverrideItemResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideItemResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteDailyNutritionOverrideItem(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dailyNutritionOverrideItem":
+				return ec.fieldContext_DailyNutritionOverrideItemResult_dailyNutritionOverrideItem(ctx, field)
+			case "validationError":
+				return ec.fieldContext_DailyNutritionOverrideItemResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_DailyNutritionOverrideItemResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_DailyNutritionOverrideItemResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionOverrideItemResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteDailyNutritionOverrideItem_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _NotFoundError_message(ctx context.Context, field graphql.CollectedField, obj *models.NotFoundErr) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_NotFoundError_message(ctx, field)
 	if err != nil {
@@ -9646,6 +13718,2706 @@ func (ec *executionContext) fieldContext_NotFoundError_code(_ context.Context, f
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ExerciseErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionAuthError_message(ctx context.Context, field graphql.CollectedField, obj *models.NutritionAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionAuthError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionAuthError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionAuthError_code(ctx context.Context, field graphql.CollectedField, obj *models.NutritionAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionAuthError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.NutritionErrorCode)
+	fc.Result = res
+	return ec.marshalNNutritionErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionAuthError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type NutritionErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionMacros_calories(ctx context.Context, field graphql.CollectedField, obj *models.NutritionMacros) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionMacros_calories(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Calories, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionMacros_calories(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionMacros",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionMacros_protein(ctx context.Context, field graphql.CollectedField, obj *models.NutritionMacros) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionMacros_protein(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Protein, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionMacros_protein(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionMacros",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionMacros_fat(ctx context.Context, field graphql.CollectedField, obj *models.NutritionMacros) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionMacros_fat(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Fat, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionMacros_fat(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionMacros",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionMacros_carbs(ctx context.Context, field graphql.CollectedField, obj *models.NutritionMacros) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionMacros_carbs(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Carbs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionMacros_carbs(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionMacros",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionMacrosResult_macros(ctx context.Context, field graphql.CollectedField, obj *models.NutritionMacrosResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionMacrosResult_macros(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Macros, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionMacros)
+	fc.Result = res
+	return ec.marshalONutritionMacros2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionMacros(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionMacrosResult_macros(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionMacrosResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "calories":
+				return ec.fieldContext_NutritionMacros_calories(ctx, field)
+			case "protein":
+				return ec.fieldContext_NutritionMacros_protein(ctx, field)
+			case "fat":
+				return ec.fieldContext_NutritionMacros_fat(ctx, field)
+			case "carbs":
+				return ec.fieldContext_NutritionMacros_carbs(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionMacros", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionMacrosResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionMacrosResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionMacrosResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionMacrosResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionValidationErr)
+	fc.Result = res
+	return ec.marshalONutritionValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionMacrosResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionMacrosResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionMacrosResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionMacrosResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionMacrosResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionMacrosResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionAuthErr)
+	fc.Result = res
+	return ec.marshalONutritionAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionMacrosResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionMacrosResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionNotFoundError_message(ctx context.Context, field graphql.CollectedField, obj *models.NutritionNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionNotFoundError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionNotFoundError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionNotFoundError_code(ctx context.Context, field graphql.CollectedField, obj *models.NutritionNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionNotFoundError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.NutritionErrorCode)
+	fc.Result = res
+	return ec.marshalNNutritionErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionNotFoundError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type NutritionErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProduct_id(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProduct_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProduct_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProduct",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProduct_userId(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProduct_userId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProduct_userId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProduct",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProduct_name(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProduct_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProduct_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProduct",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProduct_caloriesPer100g(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProduct_caloriesPer100g(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CaloriesPer100g, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProduct_caloriesPer100g(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProduct",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProduct_proteinPer100g(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProduct_proteinPer100g(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProteinPer100g, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProduct_proteinPer100g(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProduct",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProduct_fatPer100g(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProduct_fatPer100g(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FatPer100g, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProduct_fatPer100g(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProduct",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProduct_carbsPer100g(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProduct_carbsPer100g(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CarbsPer100g, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProduct_carbsPer100g(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProduct",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProduct_notes(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProduct_notes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Notes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProduct_notes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProduct",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProduct_isActive(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProduct_isActive(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsActive, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProduct_isActive(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProduct",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProduct_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProduct_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionProduct().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProduct_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProduct_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProduct_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionProduct().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProduct_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProductResult_nutritionProduct(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProductResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProductResult_nutritionProduct(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.NutritionProduct, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionProduct)
+	fc.Result = res
+	return ec.marshalONutritionProduct2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProduct(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProductResult_nutritionProduct(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProductResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_NutritionProduct_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_NutritionProduct_userId(ctx, field)
+			case "name":
+				return ec.fieldContext_NutritionProduct_name(ctx, field)
+			case "caloriesPer100g":
+				return ec.fieldContext_NutritionProduct_caloriesPer100g(ctx, field)
+			case "proteinPer100g":
+				return ec.fieldContext_NutritionProduct_proteinPer100g(ctx, field)
+			case "fatPer100g":
+				return ec.fieldContext_NutritionProduct_fatPer100g(ctx, field)
+			case "carbsPer100g":
+				return ec.fieldContext_NutritionProduct_carbsPer100g(ctx, field)
+			case "notes":
+				return ec.fieldContext_NutritionProduct_notes(ctx, field)
+			case "isActive":
+				return ec.fieldContext_NutritionProduct_isActive(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_NutritionProduct_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_NutritionProduct_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionProduct", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProductResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProductResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProductResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionProductResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionValidationErr)
+	fc.Result = res
+	return ec.marshalONutritionValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProductResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProductResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProductResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProductResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProductResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionProductResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionNotFoundErr)
+	fc.Result = res
+	return ec.marshalONutritionNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProductResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProductResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProductResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProductResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProductResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionProductResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionAuthErr)
+	fc.Result = res
+	return ec.marshalONutritionAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProductResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProductResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProductsResult_products(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProductsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProductsResult_products(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Products, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.NutritionProduct)
+	fc.Result = res
+	return ec.marshalNNutritionProduct2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProductᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProductsResult_products(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProductsResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_NutritionProduct_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_NutritionProduct_userId(ctx, field)
+			case "name":
+				return ec.fieldContext_NutritionProduct_name(ctx, field)
+			case "caloriesPer100g":
+				return ec.fieldContext_NutritionProduct_caloriesPer100g(ctx, field)
+			case "proteinPer100g":
+				return ec.fieldContext_NutritionProduct_proteinPer100g(ctx, field)
+			case "fatPer100g":
+				return ec.fieldContext_NutritionProduct_fatPer100g(ctx, field)
+			case "carbsPer100g":
+				return ec.fieldContext_NutritionProduct_carbsPer100g(ctx, field)
+			case "notes":
+				return ec.fieldContext_NutritionProduct_notes(ctx, field)
+			case "isActive":
+				return ec.fieldContext_NutritionProduct_isActive(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_NutritionProduct_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_NutritionProduct_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionProduct", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProductsResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProductsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProductsResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionProductsResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionValidationErr)
+	fc.Result = res
+	return ec.marshalONutritionValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProductsResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProductsResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionProductsResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionProductsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionProductsResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionProductsResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionAuthErr)
+	fc.Result = res
+	return ec.marshalONutritionAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionProductsResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionProductsResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplate_id(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplate_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplate_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplate_userId(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplate_userId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplate_userId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplate_weekStartDate(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplate_weekStartDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplate().WeekStartDate(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Date)
+	fc.Result = res
+	return ec.marshalNDate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplate_weekStartDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplate",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplate_title(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplate_title(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplate_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplate_notes(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplate_notes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Notes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplate_notes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplate_items(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplate_items(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Items, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.NutritionTemplateItem)
+	fc.Result = res
+	return ec.marshalNNutritionTemplateItem2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateItemᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplate_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_NutritionTemplateItem_id(ctx, field)
+			case "templateId":
+				return ec.fieldContext_NutritionTemplateItem_templateId(ctx, field)
+			case "productId":
+				return ec.fieldContext_NutritionTemplateItem_productId(ctx, field)
+			case "amountGrams":
+				return ec.fieldContext_NutritionTemplateItem_amountGrams(ctx, field)
+			case "mealLabel":
+				return ec.fieldContext_NutritionTemplateItem_mealLabel(ctx, field)
+			case "notes":
+				return ec.fieldContext_NutritionTemplateItem_notes(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_NutritionTemplateItem_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_NutritionTemplateItem_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplateItem", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplate_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplate_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplate().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplate_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplate",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplate_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplate_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplate().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplate_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplate",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateItem_id(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateItem_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateItem_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateItem_templateId(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateItem_templateId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TemplateID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateItem_templateId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateItem_productId(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateItem_productId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProductID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateItem_productId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateItem_amountGrams(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateItem_amountGrams(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AmountGrams, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateItem_amountGrams(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateItem_mealLabel(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateItem_mealLabel(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MealLabel, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateItem_mealLabel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateItem_notes(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateItem_notes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Notes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateItem_notes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateItem_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateItem_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateItem().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateItem_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateItem",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateItem_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateItem_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateItem().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateItem_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateItem",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateItemResult_nutritionTemplateItem(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateItemResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateItemResult_nutritionTemplateItem(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.NutritionTemplateItem, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionTemplateItem)
+	fc.Result = res
+	return ec.marshalONutritionTemplateItem2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateItem(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateItemResult_nutritionTemplateItem(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateItemResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_NutritionTemplateItem_id(ctx, field)
+			case "templateId":
+				return ec.fieldContext_NutritionTemplateItem_templateId(ctx, field)
+			case "productId":
+				return ec.fieldContext_NutritionTemplateItem_productId(ctx, field)
+			case "amountGrams":
+				return ec.fieldContext_NutritionTemplateItem_amountGrams(ctx, field)
+			case "mealLabel":
+				return ec.fieldContext_NutritionTemplateItem_mealLabel(ctx, field)
+			case "notes":
+				return ec.fieldContext_NutritionTemplateItem_notes(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_NutritionTemplateItem_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_NutritionTemplateItem_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplateItem", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateItemResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateItemResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateItemResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateItemResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionValidationErr)
+	fc.Result = res
+	return ec.marshalONutritionValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateItemResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateItemResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateItemResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateItemResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateItemResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateItemResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionNotFoundErr)
+	fc.Result = res
+	return ec.marshalONutritionNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateItemResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateItemResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateItemResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateItemResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateItemResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateItemResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionAuthErr)
+	fc.Result = res
+	return ec.marshalONutritionAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateItemResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateItemResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateResult_nutritionTemplate(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateResult_nutritionTemplate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.NutritionTemplate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionTemplate)
+	fc.Result = res
+	return ec.marshalONutritionTemplate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateResult_nutritionTemplate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_NutritionTemplate_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_NutritionTemplate_userId(ctx, field)
+			case "weekStartDate":
+				return ec.fieldContext_NutritionTemplate_weekStartDate(ctx, field)
+			case "title":
+				return ec.fieldContext_NutritionTemplate_title(ctx, field)
+			case "notes":
+				return ec.fieldContext_NutritionTemplate_notes(ctx, field)
+			case "items":
+				return ec.fieldContext_NutritionTemplate_items(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_NutritionTemplate_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_NutritionTemplate_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplate", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionValidationErr)
+	fc.Result = res
+	return ec.marshalONutritionValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionNotFoundErr)
+	fc.Result = res
+	return ec.marshalONutritionNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionAuthErr)
+	fc.Result = res
+	return ec.marshalONutritionAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplatesResult_templates(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplatesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplatesResult_templates(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Templates, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.NutritionTemplate)
+	fc.Result = res
+	return ec.marshalNNutritionTemplate2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplatesResult_templates(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplatesResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_NutritionTemplate_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_NutritionTemplate_userId(ctx, field)
+			case "weekStartDate":
+				return ec.fieldContext_NutritionTemplate_weekStartDate(ctx, field)
+			case "title":
+				return ec.fieldContext_NutritionTemplate_title(ctx, field)
+			case "notes":
+				return ec.fieldContext_NutritionTemplate_notes(ctx, field)
+			case "items":
+				return ec.fieldContext_NutritionTemplate_items(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_NutritionTemplate_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_NutritionTemplate_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplate", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplatesResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplatesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplatesResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplatesResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionValidationErr)
+	fc.Result = res
+	return ec.marshalONutritionValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplatesResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplatesResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplatesResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplatesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplatesResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplatesResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionAuthErr)
+	fc.Result = res
+	return ec.marshalONutritionAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplatesResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplatesResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionValidationError_message(ctx context.Context, field graphql.CollectedField, obj *models.NutritionValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionValidationError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionValidationError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionValidationError_code(ctx context.Context, field graphql.CollectedField, obj *models.NutritionValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionValidationError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.NutritionErrorCode)
+	fc.Result = res
+	return ec.marshalNNutritionErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionValidationError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type NutritionErrorCode does not have child fields")
 		},
 	}
 	return fc, nil
@@ -11568,6 +18340,572 @@ func (ec *executionContext) fieldContext_Query_weekFlags(ctx context.Context, fi
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_weekFlags_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_nutritionProducts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_nutritionProducts(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().NutritionProducts(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionProductsResult)
+	fc.Result = res
+	return ec.marshalNNutritionProductsResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProductsResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_nutritionProducts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "products":
+				return ec.fieldContext_NutritionProductsResult_products(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionProductsResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionProductsResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionProductsResult", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_nutritionProduct(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_nutritionProduct(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().NutritionProduct(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionProductResult)
+	fc.Result = res
+	return ec.marshalNNutritionProductResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProductResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_nutritionProduct(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nutritionProduct":
+				return ec.fieldContext_NutritionProductResult_nutritionProduct(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionProductResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_NutritionProductResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionProductResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionProductResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_nutritionProduct_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_nutritionTemplates(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_nutritionTemplates(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().NutritionTemplates(rctx, fc.Args["startDate"].(models.Date), fc.Args["endDate"].(models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionTemplatesResult)
+	fc.Result = res
+	return ec.marshalNNutritionTemplatesResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplatesResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_nutritionTemplates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "templates":
+				return ec.fieldContext_NutritionTemplatesResult_templates(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionTemplatesResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionTemplatesResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplatesResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_nutritionTemplates_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_nutritionTemplate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_nutritionTemplate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().NutritionTemplate(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionTemplateResult)
+	fc.Result = res
+	return ec.marshalNNutritionTemplateResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_nutritionTemplate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nutritionTemplate":
+				return ec.fieldContext_NutritionTemplateResult_nutritionTemplate(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionTemplateResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_NutritionTemplateResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionTemplateResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplateResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_nutritionTemplate_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_nutritionTemplateCurrent(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_nutritionTemplateCurrent(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().NutritionTemplateCurrent(rctx, fc.Args["weekStartDate"].(models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionTemplateResult)
+	fc.Result = res
+	return ec.marshalNNutritionTemplateResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_nutritionTemplateCurrent(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nutritionTemplate":
+				return ec.fieldContext_NutritionTemplateResult_nutritionTemplate(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionTemplateResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_NutritionTemplateResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionTemplateResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplateResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_nutritionTemplateCurrent_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_dailyNutritionOverrides(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_dailyNutritionOverrides(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().DailyNutritionOverrides(rctx, fc.Args["startDate"].(models.Date), fc.Args["endDate"].(models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionOverridesResult)
+	fc.Result = res
+	return ec.marshalNDailyNutritionOverridesResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverridesResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_dailyNutritionOverrides(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "overrides":
+				return ec.fieldContext_DailyNutritionOverridesResult_overrides(ctx, field)
+			case "validationError":
+				return ec.fieldContext_DailyNutritionOverridesResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_DailyNutritionOverridesResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionOverridesResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_dailyNutritionOverrides_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_dailyNutritionOverride(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_dailyNutritionOverride(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().DailyNutritionOverride(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionOverrideResult)
+	fc.Result = res
+	return ec.marshalNDailyNutritionOverrideResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_dailyNutritionOverride(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dailyNutritionOverride":
+				return ec.fieldContext_DailyNutritionOverrideResult_dailyNutritionOverride(ctx, field)
+			case "validationError":
+				return ec.fieldContext_DailyNutritionOverrideResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_DailyNutritionOverrideResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_DailyNutritionOverrideResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionOverrideResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_dailyNutritionOverride_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_dailyNutritionOverrideByDate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_dailyNutritionOverrideByDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().DailyNutritionOverrideByDate(rctx, fc.Args["date"].(models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionOverrideResult)
+	fc.Result = res
+	return ec.marshalNDailyNutritionOverrideResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_dailyNutritionOverrideByDate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dailyNutritionOverride":
+				return ec.fieldContext_DailyNutritionOverrideResult_dailyNutritionOverride(ctx, field)
+			case "validationError":
+				return ec.fieldContext_DailyNutritionOverrideResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_DailyNutritionOverrideResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_DailyNutritionOverrideResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionOverrideResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_dailyNutritionOverrideByDate_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_nutritionMacros(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_nutritionMacros(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().NutritionMacros(rctx, fc.Args["weekStartDate"].(models.Date), fc.Args["date"].(*models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionMacrosResult)
+	fc.Result = res
+	return ec.marshalNNutritionMacrosResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionMacrosResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_nutritionMacros(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "macros":
+				return ec.fieldContext_NutritionMacrosResult_macros(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionMacrosResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionMacrosResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionMacrosResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_nutritionMacros_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -15055,6 +22393,260 @@ func (ec *executionContext) unmarshalInputCreateMeasurementInput(ctx context.Con
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreateOverrideInput(ctx context.Context, obj interface{}) (models.CreateOverrideInput, error) {
+	var it models.CreateOverrideInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"date", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "date":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+			data, err := ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Date = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateOverrideItemInput(ctx context.Context, obj interface{}) (models.CreateOverrideItemInput, error) {
+	var it models.CreateOverrideItemInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"overrideId", "productId", "amountGrams", "operation", "mealLabel", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "overrideId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("overrideId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.OverrideID = data
+		case "productId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("productId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ProductID = data
+		case "amountGrams":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("amountGrams"))
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AmountGrams = data
+		case "operation":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("operation"))
+			data, err := ec.unmarshalNOperation2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐOperation(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Operation = data
+		case "mealLabel":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mealLabel"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MealLabel = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateProductInput(ctx context.Context, obj interface{}) (models.CreateProductInput, error) {
+	var it models.CreateProductInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "caloriesPer100g", "proteinPer100g", "fatPer100g", "carbsPer100g", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "caloriesPer100g":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("caloriesPer100g"))
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CaloriesPer100g = data
+		case "proteinPer100g":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("proteinPer100g"))
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ProteinPer100g = data
+		case "fatPer100g":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fatPer100g"))
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FatPer100g = data
+		case "carbsPer100g":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("carbsPer100g"))
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CarbsPer100g = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateTemplateInput(ctx context.Context, obj interface{}) (models.CreateTemplateInput, error) {
+	var it models.CreateTemplateInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"weekStartDate", "title", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "weekStartDate":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("weekStartDate"))
+			data, err := ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.WeekStartDate = data
+		case "title":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Title = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateTemplateItemInput(ctx context.Context, obj interface{}) (models.CreateTemplateItemInput, error) {
+	var it models.CreateTemplateItemInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"templateId", "productId", "amountGrams", "mealLabel", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "templateId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("templateId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TemplateID = data
+		case "productId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("productId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ProductID = data
+		case "amountGrams":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("amountGrams"))
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AmountGrams = data
+		case "mealLabel":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mealLabel"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MealLabel = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateWeekFlagInput(ctx context.Context, obj interface{}) (models.CreateWeekFlagInput, error) {
 	var it models.CreateWeekFlagInput
 	asMap := map[string]interface{}{}
@@ -15445,6 +23037,218 @@ func (ec *executionContext) unmarshalInputUpdateMeasurementInput(ctx context.Con
 				return it, err
 			}
 			it.Value = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateOverrideInput(ctx context.Context, obj interface{}) (models.UpdateOverrideInput, error) {
+	var it models.UpdateOverrideInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateOverrideItemInput(ctx context.Context, obj interface{}) (models.UpdateOverrideItemInput, error) {
+	var it models.UpdateOverrideItemInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"amountGrams", "operation", "mealLabel", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "amountGrams":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("amountGrams"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AmountGrams = data
+		case "operation":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("operation"))
+			data, err := ec.unmarshalOOperation2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐOperation(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Operation = data
+		case "mealLabel":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mealLabel"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MealLabel = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateProductInput(ctx context.Context, obj interface{}) (models.UpdateProductInput, error) {
+	var it models.UpdateProductInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "caloriesPer100g", "proteinPer100g", "fatPer100g", "carbsPer100g", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "caloriesPer100g":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("caloriesPer100g"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CaloriesPer100g = data
+		case "proteinPer100g":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("proteinPer100g"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ProteinPer100g = data
+		case "fatPer100g":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fatPer100g"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FatPer100g = data
+		case "carbsPer100g":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("carbsPer100g"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CarbsPer100g = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateTemplateInput(ctx context.Context, obj interface{}) (models.UpdateTemplateInput, error) {
+	var it models.UpdateTemplateInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"title", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "title":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Title = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateTemplateItemInput(ctx context.Context, obj interface{}) (models.UpdateTemplateItemInput, error) {
+	var it models.UpdateTemplateItemInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"amountGrams", "mealLabel", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "amountGrams":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("amountGrams"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AmountGrams = data
+		case "mealLabel":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mealLabel"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MealLabel = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
 		}
 	}
 
@@ -17259,6 +25063,675 @@ func (ec *executionContext) _CardioValidationError(ctx context.Context, sel ast.
 	return out
 }
 
+var dailyNutritionOverrideImplementors = []string{"DailyNutritionOverride"}
+
+func (ec *executionContext) _DailyNutritionOverride(ctx context.Context, sel ast.SelectionSet, obj *models.DailyNutritionOverride) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, dailyNutritionOverrideImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DailyNutritionOverride")
+		case "id":
+			out.Values[i] = ec._DailyNutritionOverride_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "userId":
+			out.Values[i] = ec._DailyNutritionOverride_userId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "date":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionOverride_date(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notes":
+			out.Values[i] = ec._DailyNutritionOverride_notes(ctx, field, obj)
+		case "items":
+			out.Values[i] = ec._DailyNutritionOverride_items(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionOverride_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionOverride_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var dailyNutritionOverrideItemImplementors = []string{"DailyNutritionOverrideItem"}
+
+func (ec *executionContext) _DailyNutritionOverrideItem(ctx context.Context, sel ast.SelectionSet, obj *models.DailyNutritionOverrideItem) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, dailyNutritionOverrideItemImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DailyNutritionOverrideItem")
+		case "id":
+			out.Values[i] = ec._DailyNutritionOverrideItem_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "overrideId":
+			out.Values[i] = ec._DailyNutritionOverrideItem_overrideId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "productId":
+			out.Values[i] = ec._DailyNutritionOverrideItem_productId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "amountGrams":
+			out.Values[i] = ec._DailyNutritionOverrideItem_amountGrams(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "operation":
+			out.Values[i] = ec._DailyNutritionOverrideItem_operation(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "mealLabel":
+			out.Values[i] = ec._DailyNutritionOverrideItem_mealLabel(ctx, field, obj)
+		case "notes":
+			out.Values[i] = ec._DailyNutritionOverrideItem_notes(ctx, field, obj)
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionOverrideItem_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionOverrideItem_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var dailyNutritionOverrideItemResultImplementors = []string{"DailyNutritionOverrideItemResult"}
+
+func (ec *executionContext) _DailyNutritionOverrideItemResult(ctx context.Context, sel ast.SelectionSet, obj *models.DailyNutritionOverrideItemResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, dailyNutritionOverrideItemResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DailyNutritionOverrideItemResult")
+		case "dailyNutritionOverrideItem":
+			out.Values[i] = ec._DailyNutritionOverrideItemResult_dailyNutritionOverrideItem(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionOverrideItemResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionOverrideItemResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionOverrideItemResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var dailyNutritionOverrideResultImplementors = []string{"DailyNutritionOverrideResult"}
+
+func (ec *executionContext) _DailyNutritionOverrideResult(ctx context.Context, sel ast.SelectionSet, obj *models.DailyNutritionOverrideResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, dailyNutritionOverrideResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DailyNutritionOverrideResult")
+		case "dailyNutritionOverride":
+			out.Values[i] = ec._DailyNutritionOverrideResult_dailyNutritionOverride(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionOverrideResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionOverrideResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionOverrideResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var dailyNutritionOverridesResultImplementors = []string{"DailyNutritionOverridesResult"}
+
+func (ec *executionContext) _DailyNutritionOverridesResult(ctx context.Context, sel ast.SelectionSet, obj *models.DailyNutritionOverridesResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, dailyNutritionOverridesResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DailyNutritionOverridesResult")
+		case "overrides":
+			out.Values[i] = ec._DailyNutritionOverridesResult_overrides(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionOverridesResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionOverridesResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var exerciseImplementors = []string{"Exercise"}
 
 func (ec *executionContext) _Exercise(ctx context.Context, sel ast.SelectionSet, obj *models.Exercise) graphql.Marshaler {
@@ -17855,6 +26328,111 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createNutritionProduct":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createNutritionProduct(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateNutritionProduct":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateNutritionProduct(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteNutritionProduct":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteNutritionProduct(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createNutritionTemplate":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createNutritionTemplate(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateNutritionTemplate":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateNutritionTemplate(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteNutritionTemplate":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteNutritionTemplate(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createNutritionTemplateItem":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createNutritionTemplateItem(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateNutritionTemplateItem":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateNutritionTemplateItem(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteNutritionTemplateItem":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteNutritionTemplateItem(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createDailyNutritionOverride":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createDailyNutritionOverride(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateDailyNutritionOverride":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateDailyNutritionOverride(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteDailyNutritionOverride":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteDailyNutritionOverride(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createDailyNutritionOverrideItem":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createDailyNutritionOverrideItem(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateDailyNutritionOverrideItem":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateDailyNutritionOverrideItem(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteDailyNutritionOverrideItem":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteDailyNutritionOverrideItem(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -17896,6 +26474,1348 @@ func (ec *executionContext) _NotFoundError(ctx context.Context, sel ast.Selectio
 			}
 		case "code":
 			out.Values[i] = ec._NotFoundError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionAuthErrorImplementors = []string{"NutritionAuthError"}
+
+func (ec *executionContext) _NutritionAuthError(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionAuthErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionAuthErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionAuthError")
+		case "message":
+			out.Values[i] = ec._NutritionAuthError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._NutritionAuthError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionMacrosImplementors = []string{"NutritionMacros"}
+
+func (ec *executionContext) _NutritionMacros(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionMacros) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionMacrosImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionMacros")
+		case "calories":
+			out.Values[i] = ec._NutritionMacros_calories(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "protein":
+			out.Values[i] = ec._NutritionMacros_protein(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "fat":
+			out.Values[i] = ec._NutritionMacros_fat(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "carbs":
+			out.Values[i] = ec._NutritionMacros_carbs(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionMacrosResultImplementors = []string{"NutritionMacrosResult"}
+
+func (ec *executionContext) _NutritionMacrosResult(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionMacrosResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionMacrosResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionMacrosResult")
+		case "macros":
+			out.Values[i] = ec._NutritionMacrosResult_macros(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionMacrosResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionMacrosResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionNotFoundErrorImplementors = []string{"NutritionNotFoundError"}
+
+func (ec *executionContext) _NutritionNotFoundError(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionNotFoundErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionNotFoundErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionNotFoundError")
+		case "message":
+			out.Values[i] = ec._NutritionNotFoundError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._NutritionNotFoundError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionProductImplementors = []string{"NutritionProduct"}
+
+func (ec *executionContext) _NutritionProduct(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionProduct) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionProductImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionProduct")
+		case "id":
+			out.Values[i] = ec._NutritionProduct_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "userId":
+			out.Values[i] = ec._NutritionProduct_userId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "name":
+			out.Values[i] = ec._NutritionProduct_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "caloriesPer100g":
+			out.Values[i] = ec._NutritionProduct_caloriesPer100g(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "proteinPer100g":
+			out.Values[i] = ec._NutritionProduct_proteinPer100g(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "fatPer100g":
+			out.Values[i] = ec._NutritionProduct_fatPer100g(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "carbsPer100g":
+			out.Values[i] = ec._NutritionProduct_carbsPer100g(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "notes":
+			out.Values[i] = ec._NutritionProduct_notes(ctx, field, obj)
+		case "isActive":
+			out.Values[i] = ec._NutritionProduct_isActive(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionProduct_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionProduct_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionProductResultImplementors = []string{"NutritionProductResult"}
+
+func (ec *executionContext) _NutritionProductResult(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionProductResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionProductResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionProductResult")
+		case "nutritionProduct":
+			out.Values[i] = ec._NutritionProductResult_nutritionProduct(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionProductResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionProductResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionProductResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionProductsResultImplementors = []string{"NutritionProductsResult"}
+
+func (ec *executionContext) _NutritionProductsResult(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionProductsResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionProductsResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionProductsResult")
+		case "products":
+			out.Values[i] = ec._NutritionProductsResult_products(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionProductsResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionProductsResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionTemplateImplementors = []string{"NutritionTemplate"}
+
+func (ec *executionContext) _NutritionTemplate(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionTemplate) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionTemplateImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionTemplate")
+		case "id":
+			out.Values[i] = ec._NutritionTemplate_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "userId":
+			out.Values[i] = ec._NutritionTemplate_userId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "weekStartDate":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplate_weekStartDate(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "title":
+			out.Values[i] = ec._NutritionTemplate_title(ctx, field, obj)
+		case "notes":
+			out.Values[i] = ec._NutritionTemplate_notes(ctx, field, obj)
+		case "items":
+			out.Values[i] = ec._NutritionTemplate_items(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplate_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplate_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionTemplateItemImplementors = []string{"NutritionTemplateItem"}
+
+func (ec *executionContext) _NutritionTemplateItem(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionTemplateItem) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionTemplateItemImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionTemplateItem")
+		case "id":
+			out.Values[i] = ec._NutritionTemplateItem_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "templateId":
+			out.Values[i] = ec._NutritionTemplateItem_templateId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "productId":
+			out.Values[i] = ec._NutritionTemplateItem_productId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "amountGrams":
+			out.Values[i] = ec._NutritionTemplateItem_amountGrams(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "mealLabel":
+			out.Values[i] = ec._NutritionTemplateItem_mealLabel(ctx, field, obj)
+		case "notes":
+			out.Values[i] = ec._NutritionTemplateItem_notes(ctx, field, obj)
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateItem_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateItem_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionTemplateItemResultImplementors = []string{"NutritionTemplateItemResult"}
+
+func (ec *executionContext) _NutritionTemplateItemResult(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionTemplateItemResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionTemplateItemResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionTemplateItemResult")
+		case "nutritionTemplateItem":
+			out.Values[i] = ec._NutritionTemplateItemResult_nutritionTemplateItem(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateItemResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateItemResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateItemResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionTemplateResultImplementors = []string{"NutritionTemplateResult"}
+
+func (ec *executionContext) _NutritionTemplateResult(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionTemplateResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionTemplateResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionTemplateResult")
+		case "nutritionTemplate":
+			out.Values[i] = ec._NutritionTemplateResult_nutritionTemplate(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionTemplatesResultImplementors = []string{"NutritionTemplatesResult"}
+
+func (ec *executionContext) _NutritionTemplatesResult(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionTemplatesResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionTemplatesResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionTemplatesResult")
+		case "templates":
+			out.Values[i] = ec._NutritionTemplatesResult_templates(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplatesResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplatesResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionValidationErrorImplementors = []string{"NutritionValidationError"}
+
+func (ec *executionContext) _NutritionValidationError(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionValidationErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionValidationErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionValidationError")
+		case "message":
+			out.Values[i] = ec._NutritionValidationError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._NutritionValidationError_code(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -18693,6 +28613,204 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_weekFlags(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "nutritionProducts":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_nutritionProducts(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "nutritionProduct":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_nutritionProduct(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "nutritionTemplates":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_nutritionTemplates(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "nutritionTemplate":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_nutritionTemplate(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "nutritionTemplateCurrent":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_nutritionTemplateCurrent(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "dailyNutritionOverrides":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_dailyNutritionOverrides(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "dailyNutritionOverride":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_dailyNutritionOverride(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "dailyNutritionOverrideByDate":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_dailyNutritionOverrideByDate(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "nutritionMacros":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_nutritionMacros(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -20199,9 +30317,172 @@ func (ec *executionContext) unmarshalNCreateMeasurementInput2monorepoᚑtemplate
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateOverrideInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateOverrideInput(ctx context.Context, v interface{}) (models.CreateOverrideInput, error) {
+	res, err := ec.unmarshalInputCreateOverrideInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateOverrideItemInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateOverrideItemInput(ctx context.Context, v interface{}) (models.CreateOverrideItemInput, error) {
+	res, err := ec.unmarshalInputCreateOverrideItemInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateProductInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateProductInput(ctx context.Context, v interface{}) (models.CreateProductInput, error) {
+	res, err := ec.unmarshalInputCreateProductInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateTemplateInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateTemplateInput(ctx context.Context, v interface{}) (models.CreateTemplateInput, error) {
+	res, err := ec.unmarshalInputCreateTemplateInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateTemplateItemInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateTemplateItemInput(ctx context.Context, v interface{}) (models.CreateTemplateItemInput, error) {
+	res, err := ec.unmarshalInputCreateTemplateItemInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateWeekFlagInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateWeekFlagInput(ctx context.Context, v interface{}) (models.CreateWeekFlagInput, error) {
 	res, err := ec.unmarshalInputCreateWeekFlagInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDailyNutritionOverride2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverride(ctx context.Context, sel ast.SelectionSet, v models.DailyNutritionOverride) graphql.Marshaler {
+	return ec._DailyNutritionOverride(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDailyNutritionOverride2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideᚄ(ctx context.Context, sel ast.SelectionSet, v []models.DailyNutritionOverride) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNDailyNutritionOverride2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverride(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNDailyNutritionOverrideItem2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideItem(ctx context.Context, sel ast.SelectionSet, v models.DailyNutritionOverrideItem) graphql.Marshaler {
+	return ec._DailyNutritionOverrideItem(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDailyNutritionOverrideItem2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideItemᚄ(ctx context.Context, sel ast.SelectionSet, v []models.DailyNutritionOverrideItem) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNDailyNutritionOverrideItem2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideItem(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNDailyNutritionOverrideItemResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideItemResult(ctx context.Context, sel ast.SelectionSet, v models.DailyNutritionOverrideItemResult) graphql.Marshaler {
+	return ec._DailyNutritionOverrideItemResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDailyNutritionOverrideItemResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideItemResult(ctx context.Context, sel ast.SelectionSet, v *models.DailyNutritionOverrideItemResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DailyNutritionOverrideItemResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDailyNutritionOverrideResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideResult(ctx context.Context, sel ast.SelectionSet, v models.DailyNutritionOverrideResult) graphql.Marshaler {
+	return ec._DailyNutritionOverrideResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDailyNutritionOverrideResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideResult(ctx context.Context, sel ast.SelectionSet, v *models.DailyNutritionOverrideResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DailyNutritionOverrideResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDailyNutritionOverridesResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverridesResult(ctx context.Context, sel ast.SelectionSet, v models.DailyNutritionOverridesResult) graphql.Marshaler {
+	return ec._DailyNutritionOverridesResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDailyNutritionOverridesResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverridesResult(ctx context.Context, sel ast.SelectionSet, v *models.DailyNutritionOverridesResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DailyNutritionOverridesResult(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx context.Context, v interface{}) (models.Date, error) {
@@ -20211,6 +30492,22 @@ func (ec *executionContext) unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋin
 }
 
 func (ec *executionContext) marshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx context.Context, sel ast.SelectionSet, v models.Date) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNDate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx context.Context, v interface{}) (*models.Date, error) {
+	var res = new(models.Date)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx context.Context, sel ast.SelectionSet, v *models.Date) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
 	return v
 }
 
@@ -20499,6 +30796,266 @@ func (ec *executionContext) marshalNMeasurementType2monorepoᚑtemplateᚋapps�
 	return res
 }
 
+func (ec *executionContext) unmarshalNNutritionErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionErrorCode(ctx context.Context, v interface{}) (models.NutritionErrorCode, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.NutritionErrorCode(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNNutritionErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionErrorCode(ctx context.Context, sel ast.SelectionSet, v models.NutritionErrorCode) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNNutritionMacrosResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionMacrosResult(ctx context.Context, sel ast.SelectionSet, v models.NutritionMacrosResult) graphql.Marshaler {
+	return ec._NutritionMacrosResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNutritionMacrosResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionMacrosResult(ctx context.Context, sel ast.SelectionSet, v *models.NutritionMacrosResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._NutritionMacrosResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNNutritionProduct2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProduct(ctx context.Context, sel ast.SelectionSet, v models.NutritionProduct) graphql.Marshaler {
+	return ec._NutritionProduct(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNutritionProduct2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProductᚄ(ctx context.Context, sel ast.SelectionSet, v []models.NutritionProduct) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNNutritionProduct2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProduct(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNNutritionProductResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProductResult(ctx context.Context, sel ast.SelectionSet, v models.NutritionProductResult) graphql.Marshaler {
+	return ec._NutritionProductResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNutritionProductResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProductResult(ctx context.Context, sel ast.SelectionSet, v *models.NutritionProductResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._NutritionProductResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNNutritionProductsResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProductsResult(ctx context.Context, sel ast.SelectionSet, v models.NutritionProductsResult) graphql.Marshaler {
+	return ec._NutritionProductsResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNutritionProductsResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProductsResult(ctx context.Context, sel ast.SelectionSet, v *models.NutritionProductsResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._NutritionProductsResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNNutritionTemplate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplate(ctx context.Context, sel ast.SelectionSet, v models.NutritionTemplate) graphql.Marshaler {
+	return ec._NutritionTemplate(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNutritionTemplate2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateᚄ(ctx context.Context, sel ast.SelectionSet, v []models.NutritionTemplate) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNNutritionTemplate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplate(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNNutritionTemplateItem2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateItem(ctx context.Context, sel ast.SelectionSet, v models.NutritionTemplateItem) graphql.Marshaler {
+	return ec._NutritionTemplateItem(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNutritionTemplateItem2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateItemᚄ(ctx context.Context, sel ast.SelectionSet, v []models.NutritionTemplateItem) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNNutritionTemplateItem2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateItem(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNNutritionTemplateItemResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateItemResult(ctx context.Context, sel ast.SelectionSet, v models.NutritionTemplateItemResult) graphql.Marshaler {
+	return ec._NutritionTemplateItemResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNutritionTemplateItemResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateItemResult(ctx context.Context, sel ast.SelectionSet, v *models.NutritionTemplateItemResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._NutritionTemplateItemResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNNutritionTemplateResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateResult(ctx context.Context, sel ast.SelectionSet, v models.NutritionTemplateResult) graphql.Marshaler {
+	return ec._NutritionTemplateResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNutritionTemplateResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateResult(ctx context.Context, sel ast.SelectionSet, v *models.NutritionTemplateResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._NutritionTemplateResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNNutritionTemplatesResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplatesResult(ctx context.Context, sel ast.SelectionSet, v models.NutritionTemplatesResult) graphql.Marshaler {
+	return ec._NutritionTemplatesResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNutritionTemplatesResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplatesResult(ctx context.Context, sel ast.SelectionSet, v *models.NutritionTemplatesResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._NutritionTemplatesResult(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNOperation2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐOperation(ctx context.Context, v interface{}) (models.Operation, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.Operation(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNOperation2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐOperation(ctx context.Context, sel ast.SelectionSet, v models.Operation) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) marshalNPageInfo2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v models.PageInfo) graphql.Marshaler {
 	return ec._PageInfo(ctx, sel, &v)
 }
@@ -20734,6 +31291,31 @@ func (ec *executionContext) unmarshalNUpdateExerciseInput2monorepoᚑtemplateᚋ
 
 func (ec *executionContext) unmarshalNUpdateMeasurementInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateMeasurementInput(ctx context.Context, v interface{}) (models.UpdateMeasurementInput, error) {
 	res, err := ec.unmarshalInputUpdateMeasurementInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateOverrideInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateOverrideInput(ctx context.Context, v interface{}) (models.UpdateOverrideInput, error) {
+	res, err := ec.unmarshalInputUpdateOverrideInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateOverrideItemInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateOverrideItemInput(ctx context.Context, v interface{}) (models.UpdateOverrideItemInput, error) {
+	res, err := ec.unmarshalInputUpdateOverrideItemInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateProductInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateProductInput(ctx context.Context, v interface{}) (models.UpdateProductInput, error) {
+	res, err := ec.unmarshalInputUpdateProductInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateTemplateInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateTemplateInput(ctx context.Context, v interface{}) (models.UpdateTemplateInput, error) {
+	res, err := ec.unmarshalInputUpdateTemplateInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateTemplateItemInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateTemplateItemInput(ctx context.Context, v interface{}) (models.UpdateTemplateItemInput, error) {
+	res, err := ec.unmarshalInputUpdateTemplateItemInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -21235,6 +31817,36 @@ func (ec *executionContext) marshalOCardioValidationError2ᚖmonorepoᚑtemplate
 	return ec._CardioValidationError(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalODailyNutritionOverride2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverride(ctx context.Context, sel ast.SelectionSet, v *models.DailyNutritionOverride) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._DailyNutritionOverride(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalODailyNutritionOverrideItem2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverrideItem(ctx context.Context, sel ast.SelectionSet, v *models.DailyNutritionOverrideItem) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._DailyNutritionOverrideItem(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx context.Context, v interface{}) (*models.Date, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(models.Date)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx context.Context, sel ast.SelectionSet, v *models.Date) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
 func (ec *executionContext) marshalOExercise2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐExercise(ctx context.Context, sel ast.SelectionSet, v *models.Exercise) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -21346,6 +31958,72 @@ func (ec *executionContext) marshalONotFoundError2ᚖmonorepoᚑtemplateᚋapps�
 		return graphql.Null
 	}
 	return ec._NotFoundError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalONutritionAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionAuthErr(ctx context.Context, sel ast.SelectionSet, v *models.NutritionAuthErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._NutritionAuthError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalONutritionMacros2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionMacros(ctx context.Context, sel ast.SelectionSet, v *models.NutritionMacros) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._NutritionMacros(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalONutritionNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionNotFoundErr(ctx context.Context, sel ast.SelectionSet, v *models.NutritionNotFoundErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._NutritionNotFoundError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalONutritionProduct2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProduct(ctx context.Context, sel ast.SelectionSet, v *models.NutritionProduct) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._NutritionProduct(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalONutritionTemplate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplate(ctx context.Context, sel ast.SelectionSet, v *models.NutritionTemplate) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._NutritionTemplate(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalONutritionTemplateItem2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateItem(ctx context.Context, sel ast.SelectionSet, v *models.NutritionTemplateItem) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._NutritionTemplateItem(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalONutritionValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionValidationErr(ctx context.Context, sel ast.SelectionSet, v *models.NutritionValidationErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._NutritionValidationError(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOOperation2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐOperation(ctx context.Context, v interface{}) (*models.Operation, error) {
+	if v == nil {
+		return nil, nil
+	}
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.Operation(tmp)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOOperation2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐOperation(ctx context.Context, sel ast.SelectionSet, v *models.Operation) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalString(string(*v))
+	return res
 }
 
 func (ec *executionContext) marshalOPinError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐPinError(ctx context.Context, sel ast.SelectionSet, v *models.PinError) graphql.Marshaler {

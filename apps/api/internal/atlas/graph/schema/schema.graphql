@@ -28,6 +28,17 @@ type Query {
 
   # WAVE-04 Week Flags
   weekFlags(weekStartDate: Date!): WeekFlagsResult!
+
+  # WAVE-05 Nutrition
+  nutritionProducts: NutritionProductsResult!
+  nutritionProduct(id: ID!): NutritionProductResult!
+  nutritionTemplates(startDate: Date!, endDate: Date!): NutritionTemplatesResult!
+  nutritionTemplate(id: ID!): NutritionTemplateResult!
+  nutritionTemplateCurrent(weekStartDate: Date!): NutritionTemplateResult!
+  dailyNutritionOverrides(startDate: Date!, endDate: Date!): DailyNutritionOverridesResult!
+  dailyNutritionOverride(id: ID!): DailyNutritionOverrideResult!
+  dailyNutritionOverrideByDate(date: Date!): DailyNutritionOverrideResult!
+  nutritionMacros(weekStartDate: Date!, date: Date): NutritionMacrosResult!
 }
 
 type Mutation {
@@ -63,4 +74,21 @@ type Mutation {
   # WAVE-04 Week Flags
   createWeekFlag(input: CreateWeekFlagInput!): WeekFlagResult!
   deleteWeekFlag(id: ID!): WeekFlagResult!
+
+  # WAVE-05 Nutrition
+  createNutritionProduct(input: CreateProductInput!): NutritionProductResult!
+  updateNutritionProduct(id: ID!, input: UpdateProductInput!): NutritionProductResult!
+  deleteNutritionProduct(id: ID!): NutritionProductResult!
+  createNutritionTemplate(input: CreateTemplateInput!): NutritionTemplateResult!
+  updateNutritionTemplate(id: ID!, input: UpdateTemplateInput!): NutritionTemplateResult!
+  deleteNutritionTemplate(id: ID!): NutritionTemplateResult!
+  createNutritionTemplateItem(input: CreateTemplateItemInput!): NutritionTemplateItemResult!
+  updateNutritionTemplateItem(id: ID!, input: UpdateTemplateItemInput!): NutritionTemplateItemResult!
+  deleteNutritionTemplateItem(id: ID!): NutritionTemplateItemResult!
+  createDailyNutritionOverride(input: CreateOverrideInput!): DailyNutritionOverrideResult!
+  updateDailyNutritionOverride(id: ID!, input: UpdateOverrideInput!): DailyNutritionOverrideResult!
+  deleteDailyNutritionOverride(id: ID!): DailyNutritionOverrideResult!
+  createDailyNutritionOverrideItem(input: CreateOverrideItemInput!): DailyNutritionOverrideItemResult!
+  updateDailyNutritionOverrideItem(id: ID!, input: UpdateOverrideItemInput!): DailyNutritionOverrideItemResult!
+  deleteDailyNutritionOverrideItem(id: ID!): DailyNutritionOverrideItemResult!
 }

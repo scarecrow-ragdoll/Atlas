@@ -167,6 +167,25 @@ func main() {
 	atlasWeekFlagRepo := atlasPostgres.NewWeekFlagRepository(db.Pool)
 	atlasWeekFlagService := atlasService.NewWeekFlagService(atlasWeekFlagRepo)
 
+	atlasNutritionProductRepo := atlasPostgres.NewNutritionProductRepository(db.Pool)
+	atlasNutritionTemplateRepo := atlasPostgres.NewNutritionTemplateRepository(db.Pool)
+	atlasNutritionTemplateItemRepo := atlasPostgres.NewNutritionTemplateItemRepository(db.Pool)
+	atlasNutritionOverrideRepo := atlasPostgres.NewDailyNutritionOverrideRepository(db.Pool)
+	atlasNutritionOverrideItemRepo := atlasPostgres.NewDailyNutritionOverrideItemRepository(db.Pool)
+
+	atlasNutritionProductService := atlasService.NewNutritionProductService(atlasNutritionProductRepo, l)
+	atlasNutritionTemplateService := atlasService.NewNutritionTemplateService(atlasNutritionTemplateRepo, atlasNutritionTemplateItemRepo, l)
+	atlasNutritionTemplateItemService := atlasService.NewNutritionTemplateItemService(atlasNutritionTemplateItemRepo, atlasNutritionTemplateRepo, l)
+	atlasNutritionOverrideService := atlasService.NewNutritionOverrideService(atlasNutritionOverrideRepo, atlasNutritionOverrideItemRepo, l)
+	atlasNutritionMacroService := atlasService.NewNutritionMacroService(
+		atlasNutritionTemplateRepo,
+		atlasNutritionTemplateItemRepo,
+		atlasNutritionOverrideRepo,
+		atlasNutritionOverrideItemRepo,
+		atlasNutritionProductRepo,
+		l,
+	)
+
 	atlasProgressPhotoHandler := healthHandler.NewProgressPhotoHandler(atlasPhotoRepo, atlasCheckInRepo, cfg.Media.BasePath)
 
 	l.Info("[Atlas][bootstrap] ensuring default user and settings")
@@ -188,6 +207,11 @@ func main() {
 		BodyCheckInService:   atlasCheckInService,
 		BodyMeasurementService: atlasMeasurementService,
 		WeekFlagService:      atlasWeekFlagService,
+		NutritionProductService:       atlasNutritionProductService,
+		NutritionTemplateService:      atlasNutritionTemplateService,
+		NutritionTemplateItemService:  atlasNutritionTemplateItemService,
+		DailyNutritionOverrideService: atlasNutritionOverrideService,
+		NutritionMacroService:         atlasNutritionMacroService,
 	}
 	atlasSrv := handler.NewDefaultServer(atlasGenerated.NewExecutableSchema(atlasGenerated.Config{Resolvers: atlasRes}))
 
