@@ -1,4 +1,4 @@
-<DevelopmentPlan VERSION="0.2.10">
+<DevelopmentPlan VERSION="0.2.11">
   <ArchitectureNotes>
     <objective>Keep the template usable as a production-grade starting point while making GRACE the primary agent workflow contract.</objective>
     <non-goal>Do not mirror every private helper in shared XML artifacts; use shared docs for public module boundaries and verification references.</non-goal>
@@ -321,10 +321,13 @@
         <source>apps/api/internal/repository/postgres/queries/workouts.sql</source>
         <source>apps/api/internal/atlas/models/date.go</source>
         <source>apps/api/internal/atlas/models/workout.go</source>
+        <source>apps/api/internal/atlas/models/workout_graphql.go</source>
         <source>apps/api/internal/atlas/repository/postgres/workout_repo.go</source>
         <source>apps/api/internal/atlas/service/workout.go</source>
         <source>apps/api/internal/atlas/graph/schema/workouts.graphql</source>
         <source>apps/api/internal/atlas/graph/resolver/workout.go</source>
+        <source>apps/api/internal/atlas/graph/resolver/workouts.resolvers.go</source>
+        <source>apps/api/internal/atlas/graph/resolver/workout_api_contract_test.go</source>
         <tests>apps/api/internal/**/*_test.go</tests>
       </target>
       <observability>

@@ -1,5 +1,5 @@
 <KnowledgeGraph>
-  <Project NAME="monorepo-template" VERSION="0.2.10">
+  <Project NAME="monorepo-template" VERSION="0.2.11">
     <keywords>monorepo-template, nx, bun, go, nextjs, vite, rest, graphql, gqlgen, postgresql, redis, telegram-bot, grace, product-verified, technical-verified, prd-waves, prd-wave-details, backend-waves</keywords>
     <annotation>Full-stack Nx monorepo template governed by GRACE artifacts and verification gates.</annotation>
 
@@ -135,15 +135,18 @@
       <path>apps/api/internal/repository/postgres/queries/workouts.sql</path>
       <path>apps/api/internal/atlas/models/date.go</path>
       <path>apps/api/internal/atlas/models/workout.go</path>
+      <path>apps/api/internal/atlas/models/workout_graphql.go</path>
       <path>apps/api/internal/atlas/repository/postgres/workout_repo.go</path>
       <path>apps/api/internal/atlas/service/workout.go</path>
       <path>apps/api/internal/atlas/graph/schema/workouts.graphql</path>
       <path>apps/api/internal/atlas/graph/resolver/workout.go</path>
+      <path>apps/api/internal/atlas/graph/resolver/workouts.resolvers.go</path>
       <path>apps/api/internal/atlas/models/date_test.go</path>
       <path>apps/api/internal/atlas/service/workout_service_test.go</path>
       <path>apps/api/internal/repository/postgres/workout_repo_test.go</path>
       <path>apps/api/internal/repository/postgres/workout_migration_test.go</path>
       <path>apps/api/internal/atlas/graph/resolver/workout_test.go</path>
+      <path>apps/api/internal/atlas/graph/resolver/workout_api_contract_test.go</path>
       <depends>M-GO-CONFIG, M-GO-LOGGER, M-GRAPHQL-SCHEMA</depends>
       <verification-ref>V-M-API</verification-ref>
       <annotations>

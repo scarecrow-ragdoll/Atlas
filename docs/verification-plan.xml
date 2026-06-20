@@ -1,4 +1,4 @@
-<VerificationPlan VERSION="0.2.11">
+<VerificationPlan VERSION="0.2.12">
   <GlobalPolicy>
     <log-format>[Module][function][BLOCK_NAME] message</log-format>
     <deterministic-first>true</deterministic-first>
@@ -322,6 +322,7 @@
         <file>apps/api/internal/atlas/models/date.go</file>
         <file>apps/api/internal/atlas/models/date_test.go</file>
         <file>apps/api/internal/atlas/models/workout.go</file>
+        <file>apps/api/internal/atlas/models/workout_graphql.go</file>
         <file>apps/api/internal/atlas/service/workout.go</file>
         <file>apps/api/internal/atlas/service/workout_service_test.go</file>
         <file>apps/api/internal/atlas/repository/postgres/workout_repo.go</file>
@@ -338,7 +339,9 @@
         <file>apps/api/internal/graph/admin_auth.resolvers.go</file>
         <file>apps/api/internal/graph/admin_auth_resolvers_test.go</file>
         <file>apps/api/internal/atlas/graph/resolver/workout.go</file>
+        <file>apps/api/internal/atlas/graph/resolver/workouts.resolvers.go</file>
         <file>apps/api/internal/atlas/graph/resolver/workout_test.go</file>
+        <file>apps/api/internal/atlas/graph/resolver/workout_api_contract_test.go</file>
         <file>apps/api/internal/handler/health_test.go</file>
         <file>apps/api/internal/handler/users_test.go</file>
         <file>apps/api/internal/middleware/admin_auth_test.go</file>
