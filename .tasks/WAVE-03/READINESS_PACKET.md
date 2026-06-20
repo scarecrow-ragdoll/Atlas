@@ -211,7 +211,9 @@ Branch delivery:
 - Branch: `wave-03-workout-diary`
 - Remote: `origin/wave-03-workout-diary`
 - Latest pushed evidence before this packet: `0a930b8 docs(wave-03): add grace consistency review`.
-- Final packet/lint-cleanup commit and push must be recorded by the session close commands and Beads close reason.
+- Final packet/lint-cleanup commit: `9573995 chore(wave-03): finalize readiness packet`.
+- Push evidence: `git push` updated `origin/wave-03-workout-diary` from `0a930b8` to `9573995`.
+- Post-push status evidence: `git status --short --branch` returned `## wave-03-workout-diary...origin/wave-03-workout-diary` after pushing `9573995`.
 
 Remaining risks/blockers:
 
