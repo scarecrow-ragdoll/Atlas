@@ -22,7 +22,7 @@
 //   ReorderWorkoutSets - Reorders workout sets through WorkoutService.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.0 - Added WAVE-03 workout diary resolver methods and typed DailyLogResult mapping.
+//   LAST_CHANGE: 1.0.1 - Propagated DailyLogs API contract errors without leaking unexpected internals.
 // END_CHANGE_SUMMARY
 
 package resolver
@@ -48,12 +48,15 @@ func (r *Resolver) GetDailyLog(ctx context.Context, date models.Date) (*models.D
 func (r *Resolver) DailyLogs(ctx context.Context, from models.Date, to models.Date) ([]*models.DailyLogSummary, error) {
 	userID := middleware.GetAtlasUserID(ctx)
 	if userID == "" {
-		return nil, nil
+		return nil, &models.DailyLogAuthErr{
+			Message: "unauthorized",
+			Code:    models.DailyLogErrorAuth,
+		}
 	}
 
 	summaries, err := r.WorkoutService.ListDailyLogSummaries(ctx, userID, from, to)
 	if err != nil {
-		return nil, nil
+		return nil, dailyLogQueryError(err)
 	}
 
 	out := make([]*models.DailyLogSummary, len(summaries))
@@ -61,6 +64,30 @@ func (r *Resolver) DailyLogs(ctx context.Context, from models.Date, to models.Da
 		out[i] = &summaries[i]
 	}
 	return out, nil
+}
+
+func dailyLogQueryError(err error) error {
+	var validationErr *models.DailyLogValidationErr
+	if errors.As(err, &validationErr) {
+		return validationErr
+	}
+
+	var notFoundErr *models.DailyLogNotFoundErr
+	if errors.As(err, &notFoundErr) {
+		return notFoundErr
+	}
+
+	var conflictErr *models.DailyLogConflictErr
+	if errors.As(err, &conflictErr) {
+		return conflictErr
+	}
+
+	var authErr *models.DailyLogAuthErr
+	if errors.As(err, &authErr) {
+		return authErr
+	}
+
+	return errors.New("internal daily log error")
 }
 
 func (r *Resolver) UpdateDailyLogNotes(ctx context.Context, date models.Date, expectedVersion int, notes *string) (*models.DailyLogResult, error) {
