@@ -40,11 +40,27 @@ type Config struct {
 
 type ResolverRoot interface {
 	ArchiveResult() ArchiveResultResolver
+	BodyCheckIn() BodyCheckInResolver
+	BodyCheckInResult() BodyCheckInResultResolver
+	BodyCheckInsResult() BodyCheckInsResultResolver
+	BodyMeasurement() BodyMeasurementResolver
+	BodyMeasurementResult() BodyMeasurementResultResolver
+	BodyWeightEntriesResult() BodyWeightEntriesResultResolver
+	BodyWeightEntry() BodyWeightEntryResolver
+	BodyWeightResult() BodyWeightResultResolver
+	CardioEntriesResult() CardioEntriesResultResolver
+	CardioEntry() CardioEntryResolver
+	CardioEntryResult() CardioEntryResultResolver
 	Exercise() ExerciseResolver
 	ExerciseMedia() ExerciseMediaResolver
 	ExerciseResult() ExerciseResultResolver
 	Mutation() MutationResolver
+	ProgressPhoto() ProgressPhotoResolver
+	ProgressPhotosResult() ProgressPhotosResultResolver
 	Query() QueryResolver
+	WeekFlag() WeekFlagResolver
+	WeekFlagResult() WeekFlagResultResolver
+	WeekFlagsResult() WeekFlagsResultResolver
 }
 
 type DirectiveRoot struct {
@@ -58,6 +74,129 @@ type ComplexityRoot struct {
 	}
 
 	AuthError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	BodyAuthError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	BodyCheckIn struct {
+		BodyFatPercentage func(childComplexity int) int
+		CreatedAt         func(childComplexity int) int
+		Date              func(childComplexity int) int
+		ID                func(childComplexity int) int
+		Measurements      func(childComplexity int) int
+		Notes             func(childComplexity int) int
+		ProgressPhotos    func(childComplexity int) int
+		UpdatedAt         func(childComplexity int) int
+		UserID            func(childComplexity int) int
+		Weight            func(childComplexity int) int
+	}
+
+	BodyCheckInResult struct {
+		AuthError       func(childComplexity int) int
+		CheckIn         func(childComplexity int) int
+		NotFoundError   func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	BodyCheckInsResult struct {
+		AuthError       func(childComplexity int) int
+		CheckIns        func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	BodyMeasurement struct {
+		CheckInID       func(childComplexity int) int
+		CreatedAt       func(childComplexity int) int
+		ID              func(childComplexity int) int
+		MeasurementType func(childComplexity int) int
+		Side            func(childComplexity int) int
+		UpdatedAt       func(childComplexity int) int
+		Value           func(childComplexity int) int
+	}
+
+	BodyMeasurementResult struct {
+		AuthError       func(childComplexity int) int
+		Measurement     func(childComplexity int) int
+		NotFoundError   func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	BodyNotFoundError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	BodyValidationError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	BodyWeightEntriesResult struct {
+		AuthError       func(childComplexity int) int
+		Entries         func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	BodyWeightEntry struct {
+		CreatedAt func(childComplexity int) int
+		Date      func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Notes     func(childComplexity int) int
+		Source    func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		UserID    func(childComplexity int) int
+		Weight    func(childComplexity int) int
+	}
+
+	BodyWeightResult struct {
+		AuthError       func(childComplexity int) int
+		Entry           func(childComplexity int) int
+		NotFoundError   func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	CardioAuthError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	CardioEntriesResult struct {
+		AuthError       func(childComplexity int) int
+		Entries         func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	CardioEntry struct {
+		AvgPulse        func(childComplexity int) int
+		CardioType      func(childComplexity int) int
+		CreatedAt       func(childComplexity int) int
+		DailyLogID      func(childComplexity int) int
+		DurationMinutes func(childComplexity int) int
+		HeartRateZone   func(childComplexity int) int
+		ID              func(childComplexity int) int
+		Notes           func(childComplexity int) int
+		UpdatedAt       func(childComplexity int) int
+		UserID          func(childComplexity int) int
+	}
+
+	CardioEntryResult struct {
+		AuthError       func(childComplexity int) int
+		CardioEntry     func(childComplexity int) int
+		NotFoundError   func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	CardioNotFoundError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	CardioValidationError struct {
 		Code    func(childComplexity int) int
 		Message func(childComplexity int) int
 	}
@@ -100,14 +239,28 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		ArchiveExercise func(childComplexity int, id string) int
-		ChangePin       func(childComplexity int, input models.PinChangeInput) int
-		CreateExercise  func(childComplexity int, input models.CreateExerciseInput) int
-		DisablePin      func(childComplexity int, input models.PinDisableInput) int
-		EnablePin       func(childComplexity int, input models.PinEnableInput) int
-		RestoreExercise func(childComplexity int, id string) int
-		UpdateExercise  func(childComplexity int, id string, input models.UpdateExerciseInput) int
-		UpdateSettings  func(childComplexity int, input models.SettingsInput) int
+		ArchiveExercise       func(childComplexity int, id string) int
+		ChangePin             func(childComplexity int, input models.PinChangeInput) int
+		CreateBodyCheckIn     func(childComplexity int, input models.CreateCheckInInput) int
+		CreateBodyMeasurement func(childComplexity int, checkInID string, input models.CreateMeasurementInput) int
+		CreateBodyWeightEntry func(childComplexity int, input models.CreateBodyWeightInput) int
+		CreateCardioEntry     func(childComplexity int, input models.CreateCardioInput) int
+		CreateExercise        func(childComplexity int, input models.CreateExerciseInput) int
+		CreateWeekFlag        func(childComplexity int, input models.CreateWeekFlagInput) int
+		DeleteBodyCheckIn     func(childComplexity int, id string) int
+		DeleteBodyMeasurement func(childComplexity int, id string) int
+		DeleteBodyWeightEntry func(childComplexity int, id string) int
+		DeleteCardioEntry     func(childComplexity int, id string) int
+		DeleteWeekFlag        func(childComplexity int, id string) int
+		DisablePin            func(childComplexity int, input models.PinDisableInput) int
+		EnablePin             func(childComplexity int, input models.PinEnableInput) int
+		RestoreExercise       func(childComplexity int, id string) int
+		UpdateBodyCheckIn     func(childComplexity int, id string, input models.UpdateCheckInInput) int
+		UpdateBodyMeasurement func(childComplexity int, id string, input models.UpdateMeasurementInput) int
+		UpdateBodyWeightEntry func(childComplexity int, id string, input models.UpdateBodyWeightInput) int
+		UpdateCardioEntry     func(childComplexity int, id string, input models.UpdateCardioInput) int
+		UpdateExercise        func(childComplexity int, id string, input models.UpdateExerciseInput) int
+		UpdateSettings        func(childComplexity int, input models.SettingsInput) int
 	}
 
 	NotFoundError struct {
@@ -130,11 +283,50 @@ type ComplexityRoot struct {
 		Success func(childComplexity int) int
 	}
 
+	ProgressPhoto struct {
+		Angle            func(childComplexity int) int
+		CheckInID        func(childComplexity int) int
+		CreatedAt        func(childComplexity int) int
+		ID               func(childComplexity int) int
+		Label            func(childComplexity int) int
+		MimeType         func(childComplexity int) int
+		Notes            func(childComplexity int) int
+		OriginalFileName func(childComplexity int) int
+		SizeBytes        func(childComplexity int) int
+		UpdatedAt        func(childComplexity int) int
+	}
+
+	ProgressPhotoAuthError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	ProgressPhotoValidationError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	ProgressPhotosResult struct {
+		AuthError       func(childComplexity int) int
+		Photos          func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
 	Query struct {
-		AllExercises func(childComplexity int, includeInactive *bool) int
-		Exercise     func(childComplexity int, id string) int
-		Exercises    func(childComplexity int, first *int, after *string, includeInactive *bool) int
-		Settings     func(childComplexity int) int
+		AllExercises      func(childComplexity int, includeInactive *bool) int
+		BodyCheckIn       func(childComplexity int, id string) int
+		BodyCheckIns      func(childComplexity int, from models.Date, to models.Date) int
+		BodyMeasurements  func(childComplexity int, checkInID string) int
+		BodyWeightEntries func(childComplexity int, from models.Date, to models.Date) int
+		BodyWeightEntry   func(childComplexity int, id string) int
+		CardioEntries     func(childComplexity int, date models.Date) int
+		CardioEntry       func(childComplexity int, id string) int
+		Exercise          func(childComplexity int, id string) int
+		Exercises         func(childComplexity int, first *int, after *string, includeInactive *bool) int
+		LatestBodyWeight  func(childComplexity int) int
+		ProgressPhotos    func(childComplexity int, checkInID string) int
+		Settings          func(childComplexity int) int
+		WeekFlags         func(childComplexity int, weekStartDate models.Date) int
 	}
 
 	Settings struct {
@@ -157,11 +349,97 @@ type ComplexityRoot struct {
 		Code    func(childComplexity int) int
 		Message func(childComplexity int) int
 	}
+
+	WeekFlag struct {
+		CreatedAt     func(childComplexity int) int
+		FlagType      func(childComplexity int) int
+		ID            func(childComplexity int) int
+		Notes         func(childComplexity int) int
+		UpdatedAt     func(childComplexity int) int
+		UserID        func(childComplexity int) int
+		WeekStartDate func(childComplexity int) int
+	}
+
+	WeekFlagAuthError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	WeekFlagNotFoundError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	WeekFlagResult struct {
+		AuthError       func(childComplexity int) int
+		NotFoundError   func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+		WeekFlag        func(childComplexity int) int
+	}
+
+	WeekFlagValidationError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	WeekFlagsResult struct {
+		AuthError       func(childComplexity int) int
+		Flags           func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
 }
 
 type ArchiveResultResolver interface {
 	NotFoundError(ctx context.Context, obj *models.ArchiveResult) (*models.NotFoundErr, error)
 	AuthError(ctx context.Context, obj *models.ArchiveResult) (*models.AuthErr, error)
+}
+type BodyCheckInResolver interface {
+	CreatedAt(ctx context.Context, obj *models.BodyCheckIn) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.BodyCheckIn) (*time.Time, error)
+}
+type BodyCheckInResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.BodyCheckInResult) (*models.BodyValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.BodyCheckInResult) (*models.BodyNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.BodyCheckInResult) (*models.BodyAuthErr, error)
+}
+type BodyCheckInsResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.BodyCheckInsResult) (*models.BodyValidationErr, error)
+	AuthError(ctx context.Context, obj *models.BodyCheckInsResult) (*models.BodyAuthErr, error)
+}
+type BodyMeasurementResolver interface {
+	CreatedAt(ctx context.Context, obj *models.BodyMeasurement) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.BodyMeasurement) (*time.Time, error)
+}
+type BodyMeasurementResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.BodyMeasurementResult) (*models.BodyValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.BodyMeasurementResult) (*models.BodyNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.BodyMeasurementResult) (*models.BodyAuthErr, error)
+}
+type BodyWeightEntriesResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.BodyWeightEntriesResult) (*models.BodyValidationErr, error)
+	AuthError(ctx context.Context, obj *models.BodyWeightEntriesResult) (*models.BodyAuthErr, error)
+}
+type BodyWeightEntryResolver interface {
+	CreatedAt(ctx context.Context, obj *models.BodyWeightEntry) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.BodyWeightEntry) (*time.Time, error)
+}
+type BodyWeightResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.BodyWeightResult) (*models.BodyValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.BodyWeightResult) (*models.BodyNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.BodyWeightResult) (*models.BodyAuthErr, error)
+}
+type CardioEntriesResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.CardioEntriesResult) (*models.CardioValidationErr, error)
+	AuthError(ctx context.Context, obj *models.CardioEntriesResult) (*models.CardioAuthErr, error)
+}
+type CardioEntryResolver interface {
+	CreatedAt(ctx context.Context, obj *models.CardioEntry) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.CardioEntry) (*time.Time, error)
+}
+type CardioEntryResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.CardioEntryResult) (*models.CardioValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.CardioEntryResult) (*models.CardioNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.CardioEntryResult) (*models.CardioAuthErr, error)
 }
 type ExerciseResolver interface {
 	CreatedAt(ctx context.Context, obj *models.Exercise) (*time.Time, error)
@@ -184,12 +462,57 @@ type MutationResolver interface {
 	UpdateExercise(ctx context.Context, id string, input models.UpdateExerciseInput) (*models.ExerciseResult, error)
 	ArchiveExercise(ctx context.Context, id string) (*models.ArchiveResult, error)
 	RestoreExercise(ctx context.Context, id string) (*models.ArchiveResult, error)
+	CreateCardioEntry(ctx context.Context, input models.CreateCardioInput) (*models.CardioEntryResult, error)
+	UpdateCardioEntry(ctx context.Context, id string, input models.UpdateCardioInput) (*models.CardioEntryResult, error)
+	DeleteCardioEntry(ctx context.Context, id string) (*models.CardioEntryResult, error)
+	CreateBodyWeightEntry(ctx context.Context, input models.CreateBodyWeightInput) (*models.BodyWeightResult, error)
+	UpdateBodyWeightEntry(ctx context.Context, id string, input models.UpdateBodyWeightInput) (*models.BodyWeightResult, error)
+	DeleteBodyWeightEntry(ctx context.Context, id string) (*models.BodyWeightResult, error)
+	CreateBodyCheckIn(ctx context.Context, input models.CreateCheckInInput) (*models.BodyCheckInResult, error)
+	UpdateBodyCheckIn(ctx context.Context, id string, input models.UpdateCheckInInput) (*models.BodyCheckInResult, error)
+	DeleteBodyCheckIn(ctx context.Context, id string) (*models.BodyCheckInResult, error)
+	CreateBodyMeasurement(ctx context.Context, checkInID string, input models.CreateMeasurementInput) (*models.BodyMeasurementResult, error)
+	UpdateBodyMeasurement(ctx context.Context, id string, input models.UpdateMeasurementInput) (*models.BodyMeasurementResult, error)
+	DeleteBodyMeasurement(ctx context.Context, id string) (*models.BodyMeasurementResult, error)
+	CreateWeekFlag(ctx context.Context, input models.CreateWeekFlagInput) (*models.WeekFlagResult, error)
+	DeleteWeekFlag(ctx context.Context, id string) (*models.WeekFlagResult, error)
+}
+type ProgressPhotoResolver interface {
+	CreatedAt(ctx context.Context, obj *models.ProgressPhoto) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.ProgressPhoto) (*time.Time, error)
+}
+type ProgressPhotosResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.ProgressPhotosResult) (*models.ProgressPhotoValidationErr, error)
+	AuthError(ctx context.Context, obj *models.ProgressPhotosResult) (*models.ProgressPhotoAuthErr, error)
 }
 type QueryResolver interface {
 	Settings(ctx context.Context) (*models.SettingsResult, error)
 	Exercises(ctx context.Context, first *int, after *string, includeInactive *bool) (*models.ExerciseConnection, error)
 	Exercise(ctx context.Context, id string) (*models.ExerciseResult, error)
 	AllExercises(ctx context.Context, includeInactive *bool) ([]*models.Exercise, error)
+	CardioEntry(ctx context.Context, id string) (*models.CardioEntryResult, error)
+	CardioEntries(ctx context.Context, date models.Date) (*models.CardioEntriesResult, error)
+	BodyWeightEntry(ctx context.Context, id string) (*models.BodyWeightResult, error)
+	BodyWeightEntries(ctx context.Context, from models.Date, to models.Date) (*models.BodyWeightEntriesResult, error)
+	LatestBodyWeight(ctx context.Context) (*models.BodyWeightResult, error)
+	BodyCheckIn(ctx context.Context, id string) (*models.BodyCheckInResult, error)
+	BodyCheckIns(ctx context.Context, from models.Date, to models.Date) (*models.BodyCheckInsResult, error)
+	BodyMeasurements(ctx context.Context, checkInID string) ([]*models.BodyMeasurement, error)
+	ProgressPhotos(ctx context.Context, checkInID string) (*models.ProgressPhotosResult, error)
+	WeekFlags(ctx context.Context, weekStartDate models.Date) (*models.WeekFlagsResult, error)
+}
+type WeekFlagResolver interface {
+	CreatedAt(ctx context.Context, obj *models.WeekFlag) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.WeekFlag) (*time.Time, error)
+}
+type WeekFlagResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.WeekFlagResult) (*models.WeekFlagValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.WeekFlagResult) (*models.WeekFlagNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.WeekFlagResult) (*models.WeekFlagAuthErr, error)
+}
+type WeekFlagsResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.WeekFlagsResult) (*models.WeekFlagValidationErr, error)
+	AuthError(ctx context.Context, obj *models.WeekFlagsResult) (*models.WeekFlagAuthErr, error)
 }
 
 type executableSchema struct {
@@ -245,6 +568,510 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.AuthError.Message(childComplexity), true
+
+	case "BodyAuthError.code":
+		if e.complexity.BodyAuthError.Code == nil {
+			break
+		}
+
+		return e.complexity.BodyAuthError.Code(childComplexity), true
+
+	case "BodyAuthError.message":
+		if e.complexity.BodyAuthError.Message == nil {
+			break
+		}
+
+		return e.complexity.BodyAuthError.Message(childComplexity), true
+
+	case "BodyCheckIn.bodyFatPercentage":
+		if e.complexity.BodyCheckIn.BodyFatPercentage == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckIn.BodyFatPercentage(childComplexity), true
+
+	case "BodyCheckIn.createdAt":
+		if e.complexity.BodyCheckIn.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckIn.CreatedAt(childComplexity), true
+
+	case "BodyCheckIn.date":
+		if e.complexity.BodyCheckIn.Date == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckIn.Date(childComplexity), true
+
+	case "BodyCheckIn.id":
+		if e.complexity.BodyCheckIn.ID == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckIn.ID(childComplexity), true
+
+	case "BodyCheckIn.measurements":
+		if e.complexity.BodyCheckIn.Measurements == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckIn.Measurements(childComplexity), true
+
+	case "BodyCheckIn.notes":
+		if e.complexity.BodyCheckIn.Notes == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckIn.Notes(childComplexity), true
+
+	case "BodyCheckIn.progressPhotos":
+		if e.complexity.BodyCheckIn.ProgressPhotos == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckIn.ProgressPhotos(childComplexity), true
+
+	case "BodyCheckIn.updatedAt":
+		if e.complexity.BodyCheckIn.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckIn.UpdatedAt(childComplexity), true
+
+	case "BodyCheckIn.userId":
+		if e.complexity.BodyCheckIn.UserID == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckIn.UserID(childComplexity), true
+
+	case "BodyCheckIn.weight":
+		if e.complexity.BodyCheckIn.Weight == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckIn.Weight(childComplexity), true
+
+	case "BodyCheckInResult.authError":
+		if e.complexity.BodyCheckInResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckInResult.AuthError(childComplexity), true
+
+	case "BodyCheckInResult.checkIn":
+		if e.complexity.BodyCheckInResult.CheckIn == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckInResult.CheckIn(childComplexity), true
+
+	case "BodyCheckInResult.notFoundError":
+		if e.complexity.BodyCheckInResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckInResult.NotFoundError(childComplexity), true
+
+	case "BodyCheckInResult.validationError":
+		if e.complexity.BodyCheckInResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckInResult.ValidationError(childComplexity), true
+
+	case "BodyCheckInsResult.authError":
+		if e.complexity.BodyCheckInsResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckInsResult.AuthError(childComplexity), true
+
+	case "BodyCheckInsResult.checkIns":
+		if e.complexity.BodyCheckInsResult.CheckIns == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckInsResult.CheckIns(childComplexity), true
+
+	case "BodyCheckInsResult.validationError":
+		if e.complexity.BodyCheckInsResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.BodyCheckInsResult.ValidationError(childComplexity), true
+
+	case "BodyMeasurement.checkInId":
+		if e.complexity.BodyMeasurement.CheckInID == nil {
+			break
+		}
+
+		return e.complexity.BodyMeasurement.CheckInID(childComplexity), true
+
+	case "BodyMeasurement.createdAt":
+		if e.complexity.BodyMeasurement.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.BodyMeasurement.CreatedAt(childComplexity), true
+
+	case "BodyMeasurement.id":
+		if e.complexity.BodyMeasurement.ID == nil {
+			break
+		}
+
+		return e.complexity.BodyMeasurement.ID(childComplexity), true
+
+	case "BodyMeasurement.measurementType":
+		if e.complexity.BodyMeasurement.MeasurementType == nil {
+			break
+		}
+
+		return e.complexity.BodyMeasurement.MeasurementType(childComplexity), true
+
+	case "BodyMeasurement.side":
+		if e.complexity.BodyMeasurement.Side == nil {
+			break
+		}
+
+		return e.complexity.BodyMeasurement.Side(childComplexity), true
+
+	case "BodyMeasurement.updatedAt":
+		if e.complexity.BodyMeasurement.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.BodyMeasurement.UpdatedAt(childComplexity), true
+
+	case "BodyMeasurement.value":
+		if e.complexity.BodyMeasurement.Value == nil {
+			break
+		}
+
+		return e.complexity.BodyMeasurement.Value(childComplexity), true
+
+	case "BodyMeasurementResult.authError":
+		if e.complexity.BodyMeasurementResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.BodyMeasurementResult.AuthError(childComplexity), true
+
+	case "BodyMeasurementResult.measurement":
+		if e.complexity.BodyMeasurementResult.Measurement == nil {
+			break
+		}
+
+		return e.complexity.BodyMeasurementResult.Measurement(childComplexity), true
+
+	case "BodyMeasurementResult.notFoundError":
+		if e.complexity.BodyMeasurementResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.BodyMeasurementResult.NotFoundError(childComplexity), true
+
+	case "BodyMeasurementResult.validationError":
+		if e.complexity.BodyMeasurementResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.BodyMeasurementResult.ValidationError(childComplexity), true
+
+	case "BodyNotFoundError.code":
+		if e.complexity.BodyNotFoundError.Code == nil {
+			break
+		}
+
+		return e.complexity.BodyNotFoundError.Code(childComplexity), true
+
+	case "BodyNotFoundError.message":
+		if e.complexity.BodyNotFoundError.Message == nil {
+			break
+		}
+
+		return e.complexity.BodyNotFoundError.Message(childComplexity), true
+
+	case "BodyValidationError.code":
+		if e.complexity.BodyValidationError.Code == nil {
+			break
+		}
+
+		return e.complexity.BodyValidationError.Code(childComplexity), true
+
+	case "BodyValidationError.message":
+		if e.complexity.BodyValidationError.Message == nil {
+			break
+		}
+
+		return e.complexity.BodyValidationError.Message(childComplexity), true
+
+	case "BodyWeightEntriesResult.authError":
+		if e.complexity.BodyWeightEntriesResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightEntriesResult.AuthError(childComplexity), true
+
+	case "BodyWeightEntriesResult.entries":
+		if e.complexity.BodyWeightEntriesResult.Entries == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightEntriesResult.Entries(childComplexity), true
+
+	case "BodyWeightEntriesResult.validationError":
+		if e.complexity.BodyWeightEntriesResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightEntriesResult.ValidationError(childComplexity), true
+
+	case "BodyWeightEntry.createdAt":
+		if e.complexity.BodyWeightEntry.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightEntry.CreatedAt(childComplexity), true
+
+	case "BodyWeightEntry.date":
+		if e.complexity.BodyWeightEntry.Date == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightEntry.Date(childComplexity), true
+
+	case "BodyWeightEntry.id":
+		if e.complexity.BodyWeightEntry.ID == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightEntry.ID(childComplexity), true
+
+	case "BodyWeightEntry.notes":
+		if e.complexity.BodyWeightEntry.Notes == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightEntry.Notes(childComplexity), true
+
+	case "BodyWeightEntry.source":
+		if e.complexity.BodyWeightEntry.Source == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightEntry.Source(childComplexity), true
+
+	case "BodyWeightEntry.updatedAt":
+		if e.complexity.BodyWeightEntry.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightEntry.UpdatedAt(childComplexity), true
+
+	case "BodyWeightEntry.userId":
+		if e.complexity.BodyWeightEntry.UserID == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightEntry.UserID(childComplexity), true
+
+	case "BodyWeightEntry.weight":
+		if e.complexity.BodyWeightEntry.Weight == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightEntry.Weight(childComplexity), true
+
+	case "BodyWeightResult.authError":
+		if e.complexity.BodyWeightResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightResult.AuthError(childComplexity), true
+
+	case "BodyWeightResult.entry":
+		if e.complexity.BodyWeightResult.Entry == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightResult.Entry(childComplexity), true
+
+	case "BodyWeightResult.notFoundError":
+		if e.complexity.BodyWeightResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightResult.NotFoundError(childComplexity), true
+
+	case "BodyWeightResult.validationError":
+		if e.complexity.BodyWeightResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightResult.ValidationError(childComplexity), true
+
+	case "CardioAuthError.code":
+		if e.complexity.CardioAuthError.Code == nil {
+			break
+		}
+
+		return e.complexity.CardioAuthError.Code(childComplexity), true
+
+	case "CardioAuthError.message":
+		if e.complexity.CardioAuthError.Message == nil {
+			break
+		}
+
+		return e.complexity.CardioAuthError.Message(childComplexity), true
+
+	case "CardioEntriesResult.authError":
+		if e.complexity.CardioEntriesResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.CardioEntriesResult.AuthError(childComplexity), true
+
+	case "CardioEntriesResult.entries":
+		if e.complexity.CardioEntriesResult.Entries == nil {
+			break
+		}
+
+		return e.complexity.CardioEntriesResult.Entries(childComplexity), true
+
+	case "CardioEntriesResult.validationError":
+		if e.complexity.CardioEntriesResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.CardioEntriesResult.ValidationError(childComplexity), true
+
+	case "CardioEntry.avgPulse":
+		if e.complexity.CardioEntry.AvgPulse == nil {
+			break
+		}
+
+		return e.complexity.CardioEntry.AvgPulse(childComplexity), true
+
+	case "CardioEntry.cardioType":
+		if e.complexity.CardioEntry.CardioType == nil {
+			break
+		}
+
+		return e.complexity.CardioEntry.CardioType(childComplexity), true
+
+	case "CardioEntry.createdAt":
+		if e.complexity.CardioEntry.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.CardioEntry.CreatedAt(childComplexity), true
+
+	case "CardioEntry.dailyLogId":
+		if e.complexity.CardioEntry.DailyLogID == nil {
+			break
+		}
+
+		return e.complexity.CardioEntry.DailyLogID(childComplexity), true
+
+	case "CardioEntry.durationMinutes":
+		if e.complexity.CardioEntry.DurationMinutes == nil {
+			break
+		}
+
+		return e.complexity.CardioEntry.DurationMinutes(childComplexity), true
+
+	case "CardioEntry.heartRateZone":
+		if e.complexity.CardioEntry.HeartRateZone == nil {
+			break
+		}
+
+		return e.complexity.CardioEntry.HeartRateZone(childComplexity), true
+
+	case "CardioEntry.id":
+		if e.complexity.CardioEntry.ID == nil {
+			break
+		}
+
+		return e.complexity.CardioEntry.ID(childComplexity), true
+
+	case "CardioEntry.notes":
+		if e.complexity.CardioEntry.Notes == nil {
+			break
+		}
+
+		return e.complexity.CardioEntry.Notes(childComplexity), true
+
+	case "CardioEntry.updatedAt":
+		if e.complexity.CardioEntry.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.CardioEntry.UpdatedAt(childComplexity), true
+
+	case "CardioEntry.userId":
+		if e.complexity.CardioEntry.UserID == nil {
+			break
+		}
+
+		return e.complexity.CardioEntry.UserID(childComplexity), true
+
+	case "CardioEntryResult.authError":
+		if e.complexity.CardioEntryResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.CardioEntryResult.AuthError(childComplexity), true
+
+	case "CardioEntryResult.cardioEntry":
+		if e.complexity.CardioEntryResult.CardioEntry == nil {
+			break
+		}
+
+		return e.complexity.CardioEntryResult.CardioEntry(childComplexity), true
+
+	case "CardioEntryResult.notFoundError":
+		if e.complexity.CardioEntryResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.CardioEntryResult.NotFoundError(childComplexity), true
+
+	case "CardioEntryResult.validationError":
+		if e.complexity.CardioEntryResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.CardioEntryResult.ValidationError(childComplexity), true
+
+	case "CardioNotFoundError.code":
+		if e.complexity.CardioNotFoundError.Code == nil {
+			break
+		}
+
+		return e.complexity.CardioNotFoundError.Code(childComplexity), true
+
+	case "CardioNotFoundError.message":
+		if e.complexity.CardioNotFoundError.Message == nil {
+			break
+		}
+
+		return e.complexity.CardioNotFoundError.Message(childComplexity), true
+
+	case "CardioValidationError.code":
+		if e.complexity.CardioValidationError.Code == nil {
+			break
+		}
+
+		return e.complexity.CardioValidationError.Code(childComplexity), true
+
+	case "CardioValidationError.message":
+		if e.complexity.CardioValidationError.Message == nil {
+			break
+		}
+
+		return e.complexity.CardioValidationError.Message(childComplexity), true
 
 	case "Exercise.createdAt":
 		if e.complexity.Exercise.CreatedAt == nil {
@@ -445,6 +1272,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.ChangePin(childComplexity, args["input"].(models.PinChangeInput)), true
 
+	case "Mutation.createBodyCheckIn":
+		if e.complexity.Mutation.CreateBodyCheckIn == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createBodyCheckIn_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateBodyCheckIn(childComplexity, args["input"].(models.CreateCheckInInput)), true
+
+	case "Mutation.createBodyMeasurement":
+		if e.complexity.Mutation.CreateBodyMeasurement == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createBodyMeasurement_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateBodyMeasurement(childComplexity, args["checkInId"].(string), args["input"].(models.CreateMeasurementInput)), true
+
+	case "Mutation.createBodyWeightEntry":
+		if e.complexity.Mutation.CreateBodyWeightEntry == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createBodyWeightEntry_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateBodyWeightEntry(childComplexity, args["input"].(models.CreateBodyWeightInput)), true
+
+	case "Mutation.createCardioEntry":
+		if e.complexity.Mutation.CreateCardioEntry == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createCardioEntry_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateCardioEntry(childComplexity, args["input"].(models.CreateCardioInput)), true
+
 	case "Mutation.createExercise":
 		if e.complexity.Mutation.CreateExercise == nil {
 			break
@@ -456,6 +1331,78 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateExercise(childComplexity, args["input"].(models.CreateExerciseInput)), true
+
+	case "Mutation.createWeekFlag":
+		if e.complexity.Mutation.CreateWeekFlag == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createWeekFlag_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateWeekFlag(childComplexity, args["input"].(models.CreateWeekFlagInput)), true
+
+	case "Mutation.deleteBodyCheckIn":
+		if e.complexity.Mutation.DeleteBodyCheckIn == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteBodyCheckIn_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteBodyCheckIn(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteBodyMeasurement":
+		if e.complexity.Mutation.DeleteBodyMeasurement == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteBodyMeasurement_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteBodyMeasurement(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteBodyWeightEntry":
+		if e.complexity.Mutation.DeleteBodyWeightEntry == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteBodyWeightEntry_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteBodyWeightEntry(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteCardioEntry":
+		if e.complexity.Mutation.DeleteCardioEntry == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteCardioEntry_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteCardioEntry(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteWeekFlag":
+		if e.complexity.Mutation.DeleteWeekFlag == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteWeekFlag_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteWeekFlag(childComplexity, args["id"].(string)), true
 
 	case "Mutation.disablePin":
 		if e.complexity.Mutation.DisablePin == nil {
@@ -492,6 +1439,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.RestoreExercise(childComplexity, args["id"].(string)), true
+
+	case "Mutation.updateBodyCheckIn":
+		if e.complexity.Mutation.UpdateBodyCheckIn == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateBodyCheckIn_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateBodyCheckIn(childComplexity, args["id"].(string), args["input"].(models.UpdateCheckInInput)), true
+
+	case "Mutation.updateBodyMeasurement":
+		if e.complexity.Mutation.UpdateBodyMeasurement == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateBodyMeasurement_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateBodyMeasurement(childComplexity, args["id"].(string), args["input"].(models.UpdateMeasurementInput)), true
+
+	case "Mutation.updateBodyWeightEntry":
+		if e.complexity.Mutation.UpdateBodyWeightEntry == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateBodyWeightEntry_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateBodyWeightEntry(childComplexity, args["id"].(string), args["input"].(models.UpdateBodyWeightInput)), true
+
+	case "Mutation.updateCardioEntry":
+		if e.complexity.Mutation.UpdateCardioEntry == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateCardioEntry_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateCardioEntry(childComplexity, args["id"].(string), args["input"].(models.UpdateCardioInput)), true
 
 	case "Mutation.updateExercise":
 		if e.complexity.Mutation.UpdateExercise == nil {
@@ -573,6 +1568,125 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PinOperationResult.Success(childComplexity), true
 
+	case "ProgressPhoto.angle":
+		if e.complexity.ProgressPhoto.Angle == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhoto.Angle(childComplexity), true
+
+	case "ProgressPhoto.checkInId":
+		if e.complexity.ProgressPhoto.CheckInID == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhoto.CheckInID(childComplexity), true
+
+	case "ProgressPhoto.createdAt":
+		if e.complexity.ProgressPhoto.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhoto.CreatedAt(childComplexity), true
+
+	case "ProgressPhoto.id":
+		if e.complexity.ProgressPhoto.ID == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhoto.ID(childComplexity), true
+
+	case "ProgressPhoto.label":
+		if e.complexity.ProgressPhoto.Label == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhoto.Label(childComplexity), true
+
+	case "ProgressPhoto.mimeType":
+		if e.complexity.ProgressPhoto.MimeType == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhoto.MimeType(childComplexity), true
+
+	case "ProgressPhoto.notes":
+		if e.complexity.ProgressPhoto.Notes == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhoto.Notes(childComplexity), true
+
+	case "ProgressPhoto.originalFileName":
+		if e.complexity.ProgressPhoto.OriginalFileName == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhoto.OriginalFileName(childComplexity), true
+
+	case "ProgressPhoto.sizeBytes":
+		if e.complexity.ProgressPhoto.SizeBytes == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhoto.SizeBytes(childComplexity), true
+
+	case "ProgressPhoto.updatedAt":
+		if e.complexity.ProgressPhoto.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhoto.UpdatedAt(childComplexity), true
+
+	case "ProgressPhotoAuthError.code":
+		if e.complexity.ProgressPhotoAuthError.Code == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhotoAuthError.Code(childComplexity), true
+
+	case "ProgressPhotoAuthError.message":
+		if e.complexity.ProgressPhotoAuthError.Message == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhotoAuthError.Message(childComplexity), true
+
+	case "ProgressPhotoValidationError.code":
+		if e.complexity.ProgressPhotoValidationError.Code == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhotoValidationError.Code(childComplexity), true
+
+	case "ProgressPhotoValidationError.message":
+		if e.complexity.ProgressPhotoValidationError.Message == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhotoValidationError.Message(childComplexity), true
+
+	case "ProgressPhotosResult.authError":
+		if e.complexity.ProgressPhotosResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhotosResult.AuthError(childComplexity), true
+
+	case "ProgressPhotosResult.photos":
+		if e.complexity.ProgressPhotosResult.Photos == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhotosResult.Photos(childComplexity), true
+
+	case "ProgressPhotosResult.validationError":
+		if e.complexity.ProgressPhotosResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.ProgressPhotosResult.ValidationError(childComplexity), true
+
 	case "Query.allExercises":
 		if e.complexity.Query.AllExercises == nil {
 			break
@@ -584,6 +1698,90 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.AllExercises(childComplexity, args["includeInactive"].(*bool)), true
+
+	case "Query.bodyCheckIn":
+		if e.complexity.Query.BodyCheckIn == nil {
+			break
+		}
+
+		args, err := ec.field_Query_bodyCheckIn_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.BodyCheckIn(childComplexity, args["id"].(string)), true
+
+	case "Query.bodyCheckIns":
+		if e.complexity.Query.BodyCheckIns == nil {
+			break
+		}
+
+		args, err := ec.field_Query_bodyCheckIns_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.BodyCheckIns(childComplexity, args["from"].(models.Date), args["to"].(models.Date)), true
+
+	case "Query.bodyMeasurements":
+		if e.complexity.Query.BodyMeasurements == nil {
+			break
+		}
+
+		args, err := ec.field_Query_bodyMeasurements_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.BodyMeasurements(childComplexity, args["checkInId"].(string)), true
+
+	case "Query.bodyWeightEntries":
+		if e.complexity.Query.BodyWeightEntries == nil {
+			break
+		}
+
+		args, err := ec.field_Query_bodyWeightEntries_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.BodyWeightEntries(childComplexity, args["from"].(models.Date), args["to"].(models.Date)), true
+
+	case "Query.bodyWeightEntry":
+		if e.complexity.Query.BodyWeightEntry == nil {
+			break
+		}
+
+		args, err := ec.field_Query_bodyWeightEntry_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.BodyWeightEntry(childComplexity, args["id"].(string)), true
+
+	case "Query.cardioEntries":
+		if e.complexity.Query.CardioEntries == nil {
+			break
+		}
+
+		args, err := ec.field_Query_cardioEntries_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.CardioEntries(childComplexity, args["date"].(models.Date)), true
+
+	case "Query.cardioEntry":
+		if e.complexity.Query.CardioEntry == nil {
+			break
+		}
+
+		args, err := ec.field_Query_cardioEntry_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.CardioEntry(childComplexity, args["id"].(string)), true
 
 	case "Query.exercise":
 		if e.complexity.Query.Exercise == nil {
@@ -609,12 +1807,43 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Exercises(childComplexity, args["first"].(*int), args["after"].(*string), args["includeInactive"].(*bool)), true
 
+	case "Query.latestBodyWeight":
+		if e.complexity.Query.LatestBodyWeight == nil {
+			break
+		}
+
+		return e.complexity.Query.LatestBodyWeight(childComplexity), true
+
+	case "Query.progressPhotos":
+		if e.complexity.Query.ProgressPhotos == nil {
+			break
+		}
+
+		args, err := ec.field_Query_progressPhotos_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ProgressPhotos(childComplexity, args["checkInId"].(string)), true
+
 	case "Query.settings":
 		if e.complexity.Query.Settings == nil {
 			break
 		}
 
 		return e.complexity.Query.Settings(childComplexity), true
+
+	case "Query.weekFlags":
+		if e.complexity.Query.WeekFlags == nil {
+			break
+		}
+
+		args, err := ec.field_Query_weekFlags_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.WeekFlags(childComplexity, args["weekStartDate"].(models.Date)), true
 
 	case "Settings.defaultAiExportWeeks":
 		if e.complexity.Settings.DefaultAiExportWeeks == nil {
@@ -679,6 +1908,146 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ValidationError.Message(childComplexity), true
 
+	case "WeekFlag.createdAt":
+		if e.complexity.WeekFlag.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.WeekFlag.CreatedAt(childComplexity), true
+
+	case "WeekFlag.flagType":
+		if e.complexity.WeekFlag.FlagType == nil {
+			break
+		}
+
+		return e.complexity.WeekFlag.FlagType(childComplexity), true
+
+	case "WeekFlag.id":
+		if e.complexity.WeekFlag.ID == nil {
+			break
+		}
+
+		return e.complexity.WeekFlag.ID(childComplexity), true
+
+	case "WeekFlag.notes":
+		if e.complexity.WeekFlag.Notes == nil {
+			break
+		}
+
+		return e.complexity.WeekFlag.Notes(childComplexity), true
+
+	case "WeekFlag.updatedAt":
+		if e.complexity.WeekFlag.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.WeekFlag.UpdatedAt(childComplexity), true
+
+	case "WeekFlag.userId":
+		if e.complexity.WeekFlag.UserID == nil {
+			break
+		}
+
+		return e.complexity.WeekFlag.UserID(childComplexity), true
+
+	case "WeekFlag.weekStartDate":
+		if e.complexity.WeekFlag.WeekStartDate == nil {
+			break
+		}
+
+		return e.complexity.WeekFlag.WeekStartDate(childComplexity), true
+
+	case "WeekFlagAuthError.code":
+		if e.complexity.WeekFlagAuthError.Code == nil {
+			break
+		}
+
+		return e.complexity.WeekFlagAuthError.Code(childComplexity), true
+
+	case "WeekFlagAuthError.message":
+		if e.complexity.WeekFlagAuthError.Message == nil {
+			break
+		}
+
+		return e.complexity.WeekFlagAuthError.Message(childComplexity), true
+
+	case "WeekFlagNotFoundError.code":
+		if e.complexity.WeekFlagNotFoundError.Code == nil {
+			break
+		}
+
+		return e.complexity.WeekFlagNotFoundError.Code(childComplexity), true
+
+	case "WeekFlagNotFoundError.message":
+		if e.complexity.WeekFlagNotFoundError.Message == nil {
+			break
+		}
+
+		return e.complexity.WeekFlagNotFoundError.Message(childComplexity), true
+
+	case "WeekFlagResult.authError":
+		if e.complexity.WeekFlagResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.WeekFlagResult.AuthError(childComplexity), true
+
+	case "WeekFlagResult.notFoundError":
+		if e.complexity.WeekFlagResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.WeekFlagResult.NotFoundError(childComplexity), true
+
+	case "WeekFlagResult.validationError":
+		if e.complexity.WeekFlagResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.WeekFlagResult.ValidationError(childComplexity), true
+
+	case "WeekFlagResult.weekFlag":
+		if e.complexity.WeekFlagResult.WeekFlag == nil {
+			break
+		}
+
+		return e.complexity.WeekFlagResult.WeekFlag(childComplexity), true
+
+	case "WeekFlagValidationError.code":
+		if e.complexity.WeekFlagValidationError.Code == nil {
+			break
+		}
+
+		return e.complexity.WeekFlagValidationError.Code(childComplexity), true
+
+	case "WeekFlagValidationError.message":
+		if e.complexity.WeekFlagValidationError.Message == nil {
+			break
+		}
+
+		return e.complexity.WeekFlagValidationError.Message(childComplexity), true
+
+	case "WeekFlagsResult.authError":
+		if e.complexity.WeekFlagsResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.WeekFlagsResult.AuthError(childComplexity), true
+
+	case "WeekFlagsResult.flags":
+		if e.complexity.WeekFlagsResult.Flags == nil {
+			break
+		}
+
+		return e.complexity.WeekFlagsResult.Flags(childComplexity), true
+
+	case "WeekFlagsResult.validationError":
+		if e.complexity.WeekFlagsResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.WeekFlagsResult.ValidationError(childComplexity), true
+
 	}
 	return 0, false
 }
@@ -687,12 +2056,21 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputCreateBodyWeightInput,
+		ec.unmarshalInputCreateCardioInput,
+		ec.unmarshalInputCreateCheckInInput,
 		ec.unmarshalInputCreateExerciseInput,
+		ec.unmarshalInputCreateMeasurementInput,
+		ec.unmarshalInputCreateWeekFlagInput,
 		ec.unmarshalInputPinChangeInput,
 		ec.unmarshalInputPinDisableInput,
 		ec.unmarshalInputPinEnableInput,
 		ec.unmarshalInputSettingsInput,
+		ec.unmarshalInputUpdateBodyWeightInput,
+		ec.unmarshalInputUpdateCardioInput,
+		ec.unmarshalInputUpdateCheckInInput,
 		ec.unmarshalInputUpdateExerciseInput,
+		ec.unmarshalInputUpdateMeasurementInput,
 	)
 	first := true
 
@@ -790,6 +2168,242 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
+	{Name: "../schema/body_tracking.graphql", Input: `type BodyWeightEntry {
+  id: ID!
+  userId: ID!
+  date: Date!
+  weight: Float!
+  source: BodyWeightSource!
+  notes: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+enum BodyWeightSource {
+  SCALE
+  MANUAL
+  BACKUP_IMPORT
+  UNKNOWN
+}
+
+input CreateBodyWeightInput {
+  date: Date!
+  weight: Float!
+  source: BodyWeightSource!
+  notes: String
+}
+
+input UpdateBodyWeightInput {
+  weight: Float
+  source: BodyWeightSource
+  notes: String
+}
+
+type BodyWeightResult {
+  entry: BodyWeightEntry
+  validationError: BodyValidationError
+  notFoundError: BodyNotFoundError
+  authError: BodyAuthError
+}
+
+type BodyWeightEntriesResult {
+  entries: [BodyWeightEntry!]!
+  validationError: BodyValidationError
+  authError: BodyAuthError
+}
+
+type BodyCheckIn {
+  id: ID!
+  userId: ID!
+  date: Date!
+  weight: Float
+  bodyFatPercentage: Float
+  notes: String
+  measurements: [BodyMeasurement!]!
+  progressPhotos: [ProgressPhoto!]!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input CreateCheckInInput {
+  date: Date!
+  weight: Float
+  bodyFatPercentage: Float
+  notes: String
+}
+
+input UpdateCheckInInput {
+  weight: Float
+  bodyFatPercentage: Float
+  notes: String
+}
+
+type BodyCheckInResult {
+  checkIn: BodyCheckIn
+  validationError: BodyValidationError
+  notFoundError: BodyNotFoundError
+  authError: BodyAuthError
+}
+
+type BodyCheckInsResult {
+  checkIns: [BodyCheckIn!]!
+  validationError: BodyValidationError
+  authError: BodyAuthError
+}
+
+type BodyMeasurement {
+  id: ID!
+  checkInId: ID!
+  measurementType: MeasurementType!
+  side: MeasurementSide
+  value: Float!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+enum MeasurementType {
+  NECK
+  SHOULDERS
+  FOREARM
+  BICEPS
+  CHEST
+  WAIST
+  ABDOMEN
+  HIPS
+  THIGH
+  CALF
+}
+
+enum MeasurementSide {
+  NONE
+  LEFT
+  RIGHT
+}
+
+input CreateMeasurementInput {
+  measurementType: MeasurementType!
+  side: MeasurementSide
+  value: Float!
+}
+
+input UpdateMeasurementInput {
+  measurementType: MeasurementType
+  side: MeasurementSide
+  value: Float
+}
+
+type BodyMeasurementResult {
+  measurement: BodyMeasurement
+  validationError: BodyValidationError
+  notFoundError: BodyNotFoundError
+  authError: BodyAuthError
+}
+
+type BodyValidationError {
+  message: String!
+  code: BodyErrorCode!
+}
+
+type BodyNotFoundError {
+  message: String!
+  code: BodyErrorCode!
+}
+
+type BodyAuthError {
+  message: String!
+  code: BodyErrorCode!
+}
+
+enum BodyErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}`, BuiltIn: false},
+	{Name: "../schema/cardio.graphql", Input: `type CardioEntry {
+  id: ID!
+  userId: ID!
+  dailyLogId: ID!
+  cardioType: CardioType!
+  durationMinutes: Int!
+  avgPulse: Int
+  heartRateZone: HeartRateZone
+  notes: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+enum CardioType {
+  WALKING
+  RUNNING
+  TREADMILL
+  BIKE
+  ELLIPTICAL
+  STAIRS
+  ROWING
+  OTHER
+}
+
+enum HeartRateZone {
+  UNKNOWN
+  ZONE_1
+  ZONE_2
+  ZONE_3
+  ZONE_4
+  ZONE_5
+}
+
+input CreateCardioInput {
+  date: Date!
+  cardioType: CardioType!
+  durationMinutes: Int!
+  avgPulse: Int
+  heartRateZone: HeartRateZone
+  notes: String
+}
+
+input UpdateCardioInput {
+  cardioType: CardioType
+  durationMinutes: Int
+  avgPulse: Int
+  heartRateZone: HeartRateZone
+  notes: String
+}
+
+type CardioEntryResult {
+  cardioEntry: CardioEntry
+  validationError: CardioValidationError
+  notFoundError: CardioNotFoundError
+  authError: CardioAuthError
+}
+
+type CardioEntriesResult {
+  entries: [CardioEntry!]!
+  validationError: CardioValidationError
+  authError: CardioAuthError
+}
+
+type CardioValidationError {
+  message: String!
+  code: CardioErrorCode!
+}
+
+type CardioNotFoundError {
+  message: String!
+  code: CardioErrorCode!
+}
+
+type CardioAuthError {
+  message: String!
+  code: CardioErrorCode!
+}
+
+enum CardioErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}`, BuiltIn: false},
 	{Name: "../schema/exercises.graphql", Input: `type Exercise {
   id: ID!
   userId: ID!
@@ -907,13 +2521,78 @@ enum PinErrorCode {
   SESSION_EXPIRED
   INTERNAL_ERROR
 }`, BuiltIn: false},
+	{Name: "../schema/progress_photo.graphql", Input: `type ProgressPhoto {
+  id: ID!
+  checkInId: ID!
+  originalFileName: String!
+  mimeType: String!
+  sizeBytes: Int!
+  angle: ProgressPhotoAngle
+  label: String
+  notes: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+enum ProgressPhotoAngle {
+  FRONT
+  SIDE
+  BACK
+  CUSTOM
+}
+
+type ProgressPhotosResult {
+  photos: [ProgressPhoto!]!
+  validationError: ProgressPhotoValidationError
+  authError: ProgressPhotoAuthError
+}
+
+type ProgressPhotoValidationError {
+  message: String!
+  code: ProgressPhotoErrorCode!
+}
+
+type ProgressPhotoAuthError {
+  message: String!
+  code: ProgressPhotoErrorCode!
+}
+
+enum ProgressPhotoErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}`, BuiltIn: false},
 	{Name: "../schema/schema.graphql", Input: `scalar Time
+scalar Date
 
 type Query {
   settings: SettingsResult!
   exercises(first: Int = 20, after: String, includeInactive: Boolean = false): ExerciseConnection!
   exercise(id: ID!): ExerciseResult!
   allExercises(includeInactive: Boolean = false): [Exercise!]!
+
+  # WAVE-04 Cardio
+  cardioEntry(id: ID!): CardioEntryResult!
+  cardioEntries(date: Date!): CardioEntriesResult!
+
+  # WAVE-04 Body Weight
+  bodyWeightEntry(id: ID!): BodyWeightResult!
+  bodyWeightEntries(from: Date!, to: Date!): BodyWeightEntriesResult!
+  latestBodyWeight: BodyWeightResult!
+
+  # WAVE-04 Check-in
+  bodyCheckIn(id: ID!): BodyCheckInResult!
+  bodyCheckIns(from: Date!, to: Date!): BodyCheckInsResult!
+
+  # WAVE-04 Measurements
+  bodyMeasurements(checkInId: ID!): [BodyMeasurement!]!
+
+  # WAVE-04 Progress Photos
+  progressPhotos(checkInId: ID!): ProgressPhotosResult!
+
+  # WAVE-04 Week Flags
+  weekFlags(weekStartDate: Date!): WeekFlagsResult!
 }
 
 type Mutation {
@@ -925,6 +2604,30 @@ type Mutation {
   updateExercise(id: ID!, input: UpdateExerciseInput!): ExerciseResult!
   archiveExercise(id: ID!): ArchiveResult!
   restoreExercise(id: ID!): ArchiveResult!
+
+  # WAVE-04 Cardio
+  createCardioEntry(input: CreateCardioInput!): CardioEntryResult!
+  updateCardioEntry(id: ID!, input: UpdateCardioInput!): CardioEntryResult!
+  deleteCardioEntry(id: ID!): CardioEntryResult!
+
+  # WAVE-04 Body Weight
+  createBodyWeightEntry(input: CreateBodyWeightInput!): BodyWeightResult!
+  updateBodyWeightEntry(id: ID!, input: UpdateBodyWeightInput!): BodyWeightResult!
+  deleteBodyWeightEntry(id: ID!): BodyWeightResult!
+
+  # WAVE-04 Check-in
+  createBodyCheckIn(input: CreateCheckInInput!): BodyCheckInResult!
+  updateBodyCheckIn(id: ID!, input: UpdateCheckInInput!): BodyCheckInResult!
+  deleteBodyCheckIn(id: ID!): BodyCheckInResult!
+
+  # WAVE-04 Measurements
+  createBodyMeasurement(checkInId: ID!, input: CreateMeasurementInput!): BodyMeasurementResult!
+  updateBodyMeasurement(id: ID!, input: UpdateMeasurementInput!): BodyMeasurementResult!
+  deleteBodyMeasurement(id: ID!): BodyMeasurementResult!
+
+  # WAVE-04 Week Flags
+  createWeekFlag(input: CreateWeekFlagInput!): WeekFlagResult!
+  deleteWeekFlag(id: ID!): WeekFlagResult!
 }`, BuiltIn: false},
 	{Name: "../schema/settings.graphql", Input: `type Settings {
   pinEnabled: Boolean!
@@ -951,6 +2654,69 @@ enum SettingsErrorCode {
 input SettingsInput {
   units: String
   defaultAiExportWeeks: Int
+}`, BuiltIn: false},
+	{Name: "../schema/week_flag.graphql", Input: `type WeekFlag {
+  id: ID!
+  userId: ID!
+  weekStartDate: Date!
+  flagType: WeekFlagType!
+  notes: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+enum WeekFlagType {
+  POOR_SLEEP
+  HIGH_STRESS
+  ILLNESS
+  INJURY_PAIN
+  CYCLE
+  CALORIE_DEFICIT
+  SURPLUS
+  MAINTENANCE
+  MISSED_WORKOUTS
+  TRAVEL
+}
+
+input CreateWeekFlagInput {
+  weekStartDate: Date!
+  flagType: WeekFlagType!
+  notes: String
+}
+
+type WeekFlagResult {
+  weekFlag: WeekFlag
+  validationError: WeekFlagValidationError
+  notFoundError: WeekFlagNotFoundError
+  authError: WeekFlagAuthError
+}
+
+type WeekFlagsResult {
+  flags: [WeekFlag!]!
+  validationError: WeekFlagValidationError
+  authError: WeekFlagAuthError
+}
+
+type WeekFlagValidationError {
+  message: String!
+  code: WeekFlagErrorCode!
+}
+
+type WeekFlagNotFoundError {
+  message: String!
+  code: WeekFlagErrorCode!
+}
+
+type WeekFlagAuthError {
+  message: String!
+  code: WeekFlagErrorCode!
+}
+
+enum WeekFlagErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -989,6 +2755,75 @@ func (ec *executionContext) field_Mutation_changePin_args(ctx context.Context, r
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createBodyCheckIn_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreateCheckInInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateCheckInInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateCheckInInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createBodyMeasurement_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["checkInId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("checkInId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["checkInId"] = arg0
+	var arg1 models.CreateMeasurementInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNCreateMeasurementInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateMeasurementInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createBodyWeightEntry_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreateBodyWeightInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateBodyWeightInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateBodyWeightInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createCardioEntry_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreateCardioInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateCardioInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateCardioInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createExercise_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1001,6 +2836,96 @@ func (ec *executionContext) field_Mutation_createExercise_args(ctx context.Conte
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createWeekFlag_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreateWeekFlagInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateWeekFlagInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateWeekFlagInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteBodyCheckIn_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteBodyMeasurement_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteBodyWeightEntry_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteCardioEntry_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteWeekFlag_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -1046,6 +2971,102 @@ func (ec *executionContext) field_Mutation_restoreExercise_args(ctx context.Cont
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateBodyCheckIn_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 models.UpdateCheckInInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdateCheckInInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateCheckInInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateBodyMeasurement_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 models.UpdateMeasurementInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdateMeasurementInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateMeasurementInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateBodyWeightEntry_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 models.UpdateBodyWeightInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdateBodyWeightInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateBodyWeightInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateCardioEntry_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 models.UpdateCardioInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdateCardioInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateCardioInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
 	return args, nil
 }
 
@@ -1118,6 +3139,129 @@ func (ec *executionContext) field_Query_allExercises_args(ctx context.Context, r
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_bodyCheckIn_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_bodyCheckIns_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.Date
+	if tmp, ok := rawArgs["from"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
+		arg0, err = ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["from"] = arg0
+	var arg1 models.Date
+	if tmp, ok := rawArgs["to"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("to"))
+		arg1, err = ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["to"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_bodyMeasurements_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["checkInId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("checkInId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["checkInId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_bodyWeightEntries_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.Date
+	if tmp, ok := rawArgs["from"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
+		arg0, err = ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["from"] = arg0
+	var arg1 models.Date
+	if tmp, ok := rawArgs["to"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("to"))
+		arg1, err = ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["to"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_bodyWeightEntry_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_cardioEntries_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.Date
+	if tmp, ok := rawArgs["date"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+		arg0, err = ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["date"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_cardioEntry_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_exercise_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1163,6 +3307,36 @@ func (ec *executionContext) field_Query_exercises_args(ctx context.Context, rawA
 		}
 	}
 	args["includeInactive"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_progressPhotos_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["checkInId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("checkInId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["checkInId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_weekFlags_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.Date
+	if tmp, ok := rawArgs["weekStartDate"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("weekStartDate"))
+		arg0, err = ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["weekStartDate"] = arg0
 	return args, nil
 }
 
@@ -1446,6 +3620,3370 @@ func (ec *executionContext) fieldContext_AuthError_code(_ context.Context, field
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ExerciseErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyAuthError_message(ctx context.Context, field graphql.CollectedField, obj *models.BodyAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyAuthError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyAuthError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyAuthError_code(ctx context.Context, field graphql.CollectedField, obj *models.BodyAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyAuthError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.BodyErrorCode)
+	fc.Result = res
+	return ec.marshalNBodyErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyAuthError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BodyErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckIn_id(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckIn) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckIn_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckIn_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckIn",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckIn_userId(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckIn) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckIn_userId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckIn_userId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckIn",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckIn_date(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckIn) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckIn_date(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Date, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Date)
+	fc.Result = res
+	return ec.marshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckIn_date(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckIn",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckIn_weight(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckIn) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckIn_weight(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Weight, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckIn_weight(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckIn",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckIn_bodyFatPercentage(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckIn) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckIn_bodyFatPercentage(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BodyFatPercentage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckIn_bodyFatPercentage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckIn",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckIn_notes(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckIn) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckIn_notes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Notes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckIn_notes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckIn",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckIn_measurements(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckIn) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckIn_measurements(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Measurements, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.BodyMeasurement)
+	fc.Result = res
+	return ec.marshalNBodyMeasurement2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurementᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckIn_measurements(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckIn",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_BodyMeasurement_id(ctx, field)
+			case "checkInId":
+				return ec.fieldContext_BodyMeasurement_checkInId(ctx, field)
+			case "measurementType":
+				return ec.fieldContext_BodyMeasurement_measurementType(ctx, field)
+			case "side":
+				return ec.fieldContext_BodyMeasurement_side(ctx, field)
+			case "value":
+				return ec.fieldContext_BodyMeasurement_value(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_BodyMeasurement_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_BodyMeasurement_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyMeasurement", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckIn_progressPhotos(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckIn) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckIn_progressPhotos(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProgressPhotos, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.ProgressPhoto)
+	fc.Result = res
+	return ec.marshalNProgressPhoto2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotoᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckIn_progressPhotos(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckIn",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_ProgressPhoto_id(ctx, field)
+			case "checkInId":
+				return ec.fieldContext_ProgressPhoto_checkInId(ctx, field)
+			case "originalFileName":
+				return ec.fieldContext_ProgressPhoto_originalFileName(ctx, field)
+			case "mimeType":
+				return ec.fieldContext_ProgressPhoto_mimeType(ctx, field)
+			case "sizeBytes":
+				return ec.fieldContext_ProgressPhoto_sizeBytes(ctx, field)
+			case "angle":
+				return ec.fieldContext_ProgressPhoto_angle(ctx, field)
+			case "label":
+				return ec.fieldContext_ProgressPhoto_label(ctx, field)
+			case "notes":
+				return ec.fieldContext_ProgressPhoto_notes(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_ProgressPhoto_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_ProgressPhoto_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ProgressPhoto", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckIn_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckIn) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckIn_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyCheckIn().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckIn_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckIn",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckIn_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckIn) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckIn_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyCheckIn().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckIn_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckIn",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckInResult_checkIn(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckInResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckInResult_checkIn(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CheckIn, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyCheckIn)
+	fc.Result = res
+	return ec.marshalOBodyCheckIn2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckIn(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckInResult_checkIn(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckInResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_BodyCheckIn_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_BodyCheckIn_userId(ctx, field)
+			case "date":
+				return ec.fieldContext_BodyCheckIn_date(ctx, field)
+			case "weight":
+				return ec.fieldContext_BodyCheckIn_weight(ctx, field)
+			case "bodyFatPercentage":
+				return ec.fieldContext_BodyCheckIn_bodyFatPercentage(ctx, field)
+			case "notes":
+				return ec.fieldContext_BodyCheckIn_notes(ctx, field)
+			case "measurements":
+				return ec.fieldContext_BodyCheckIn_measurements(ctx, field)
+			case "progressPhotos":
+				return ec.fieldContext_BodyCheckIn_progressPhotos(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_BodyCheckIn_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_BodyCheckIn_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyCheckIn", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckInResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckInResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckInResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyCheckInResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyValidationErr)
+	fc.Result = res
+	return ec.marshalOBodyValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckInResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckInResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_BodyValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_BodyValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckInResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckInResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckInResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyCheckInResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyNotFoundErr)
+	fc.Result = res
+	return ec.marshalOBodyNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckInResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckInResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_BodyNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_BodyNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckInResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckInResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckInResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyCheckInResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyAuthErr)
+	fc.Result = res
+	return ec.marshalOBodyAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckInResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckInResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_BodyAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_BodyAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckInsResult_checkIns(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckInsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckInsResult_checkIns(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CheckIns, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.BodyCheckIn)
+	fc.Result = res
+	return ec.marshalNBodyCheckIn2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckInᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckInsResult_checkIns(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckInsResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_BodyCheckIn_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_BodyCheckIn_userId(ctx, field)
+			case "date":
+				return ec.fieldContext_BodyCheckIn_date(ctx, field)
+			case "weight":
+				return ec.fieldContext_BodyCheckIn_weight(ctx, field)
+			case "bodyFatPercentage":
+				return ec.fieldContext_BodyCheckIn_bodyFatPercentage(ctx, field)
+			case "notes":
+				return ec.fieldContext_BodyCheckIn_notes(ctx, field)
+			case "measurements":
+				return ec.fieldContext_BodyCheckIn_measurements(ctx, field)
+			case "progressPhotos":
+				return ec.fieldContext_BodyCheckIn_progressPhotos(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_BodyCheckIn_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_BodyCheckIn_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyCheckIn", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckInsResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckInsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckInsResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyCheckInsResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyValidationErr)
+	fc.Result = res
+	return ec.marshalOBodyValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckInsResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckInsResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_BodyValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_BodyValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyCheckInsResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.BodyCheckInsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyCheckInsResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyCheckInsResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyAuthErr)
+	fc.Result = res
+	return ec.marshalOBodyAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyCheckInsResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyCheckInsResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_BodyAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_BodyAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyMeasurement_id(ctx context.Context, field graphql.CollectedField, obj *models.BodyMeasurement) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyMeasurement_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyMeasurement_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyMeasurement",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyMeasurement_checkInId(ctx context.Context, field graphql.CollectedField, obj *models.BodyMeasurement) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyMeasurement_checkInId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CheckInID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyMeasurement_checkInId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyMeasurement",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyMeasurement_measurementType(ctx context.Context, field graphql.CollectedField, obj *models.BodyMeasurement) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyMeasurement_measurementType(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MeasurementType, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.MeasurementType)
+	fc.Result = res
+	return ec.marshalNMeasurementType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementType(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyMeasurement_measurementType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyMeasurement",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type MeasurementType does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyMeasurement_side(ctx context.Context, field graphql.CollectedField, obj *models.BodyMeasurement) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyMeasurement_side(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Side, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.MeasurementSide)
+	fc.Result = res
+	return ec.marshalOMeasurementSide2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementSide(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyMeasurement_side(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyMeasurement",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type MeasurementSide does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyMeasurement_value(ctx context.Context, field graphql.CollectedField, obj *models.BodyMeasurement) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyMeasurement_value(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyMeasurement_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyMeasurement",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyMeasurement_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.BodyMeasurement) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyMeasurement_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyMeasurement().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyMeasurement_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyMeasurement",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyMeasurement_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.BodyMeasurement) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyMeasurement_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyMeasurement().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyMeasurement_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyMeasurement",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyMeasurementResult_measurement(ctx context.Context, field graphql.CollectedField, obj *models.BodyMeasurementResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyMeasurementResult_measurement(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Measurement, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyMeasurement)
+	fc.Result = res
+	return ec.marshalOBodyMeasurement2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurement(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyMeasurementResult_measurement(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyMeasurementResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_BodyMeasurement_id(ctx, field)
+			case "checkInId":
+				return ec.fieldContext_BodyMeasurement_checkInId(ctx, field)
+			case "measurementType":
+				return ec.fieldContext_BodyMeasurement_measurementType(ctx, field)
+			case "side":
+				return ec.fieldContext_BodyMeasurement_side(ctx, field)
+			case "value":
+				return ec.fieldContext_BodyMeasurement_value(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_BodyMeasurement_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_BodyMeasurement_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyMeasurement", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyMeasurementResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.BodyMeasurementResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyMeasurementResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyMeasurementResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyValidationErr)
+	fc.Result = res
+	return ec.marshalOBodyValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyMeasurementResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyMeasurementResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_BodyValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_BodyValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyMeasurementResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.BodyMeasurementResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyMeasurementResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyMeasurementResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyNotFoundErr)
+	fc.Result = res
+	return ec.marshalOBodyNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyMeasurementResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyMeasurementResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_BodyNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_BodyNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyMeasurementResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.BodyMeasurementResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyMeasurementResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyMeasurementResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyAuthErr)
+	fc.Result = res
+	return ec.marshalOBodyAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyMeasurementResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyMeasurementResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_BodyAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_BodyAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyNotFoundError_message(ctx context.Context, field graphql.CollectedField, obj *models.BodyNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyNotFoundError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyNotFoundError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyNotFoundError_code(ctx context.Context, field graphql.CollectedField, obj *models.BodyNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyNotFoundError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.BodyErrorCode)
+	fc.Result = res
+	return ec.marshalNBodyErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyNotFoundError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BodyErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyValidationError_message(ctx context.Context, field graphql.CollectedField, obj *models.BodyValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyValidationError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyValidationError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyValidationError_code(ctx context.Context, field graphql.CollectedField, obj *models.BodyValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyValidationError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.BodyErrorCode)
+	fc.Result = res
+	return ec.marshalNBodyErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyValidationError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BodyErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightEntriesResult_entries(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightEntriesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightEntriesResult_entries(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Entries, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.BodyWeightEntry)
+	fc.Result = res
+	return ec.marshalNBodyWeightEntry2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightEntryᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightEntriesResult_entries(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightEntriesResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_BodyWeightEntry_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_BodyWeightEntry_userId(ctx, field)
+			case "date":
+				return ec.fieldContext_BodyWeightEntry_date(ctx, field)
+			case "weight":
+				return ec.fieldContext_BodyWeightEntry_weight(ctx, field)
+			case "source":
+				return ec.fieldContext_BodyWeightEntry_source(ctx, field)
+			case "notes":
+				return ec.fieldContext_BodyWeightEntry_notes(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_BodyWeightEntry_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_BodyWeightEntry_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyWeightEntry", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightEntriesResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightEntriesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightEntriesResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyWeightEntriesResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyValidationErr)
+	fc.Result = res
+	return ec.marshalOBodyValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightEntriesResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightEntriesResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_BodyValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_BodyValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightEntriesResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightEntriesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightEntriesResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyWeightEntriesResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyAuthErr)
+	fc.Result = res
+	return ec.marshalOBodyAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightEntriesResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightEntriesResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_BodyAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_BodyAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightEntry_id(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightEntry_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightEntry_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightEntry_userId(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightEntry_userId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightEntry_userId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightEntry_date(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightEntry_date(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Date, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Date)
+	fc.Result = res
+	return ec.marshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightEntry_date(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightEntry_weight(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightEntry_weight(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Weight, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightEntry_weight(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightEntry_source(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightEntry_source(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Source, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.BodyWeightSource)
+	fc.Result = res
+	return ec.marshalNBodyWeightSource2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightSource(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightEntry_source(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BodyWeightSource does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightEntry_notes(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightEntry_notes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Notes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightEntry_notes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightEntry_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightEntry_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyWeightEntry().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightEntry_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightEntry_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightEntry_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyWeightEntry().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightEntry_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightResult_entry(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightResult_entry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Entry, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyWeightEntry)
+	fc.Result = res
+	return ec.marshalOBodyWeightEntry2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightEntry(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightResult_entry(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_BodyWeightEntry_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_BodyWeightEntry_userId(ctx, field)
+			case "date":
+				return ec.fieldContext_BodyWeightEntry_date(ctx, field)
+			case "weight":
+				return ec.fieldContext_BodyWeightEntry_weight(ctx, field)
+			case "source":
+				return ec.fieldContext_BodyWeightEntry_source(ctx, field)
+			case "notes":
+				return ec.fieldContext_BodyWeightEntry_notes(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_BodyWeightEntry_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_BodyWeightEntry_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyWeightEntry", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyWeightResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyValidationErr)
+	fc.Result = res
+	return ec.marshalOBodyValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_BodyValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_BodyValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyWeightResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyNotFoundErr)
+	fc.Result = res
+	return ec.marshalOBodyNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_BodyNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_BodyNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyWeightResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyAuthErr)
+	fc.Result = res
+	return ec.marshalOBodyAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_BodyAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_BodyAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioAuthError_message(ctx context.Context, field graphql.CollectedField, obj *models.CardioAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioAuthError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioAuthError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioAuthError_code(ctx context.Context, field graphql.CollectedField, obj *models.CardioAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioAuthError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.CardioErrorCode)
+	fc.Result = res
+	return ec.marshalNCardioErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioAuthError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type CardioErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntriesResult_entries(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntriesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntriesResult_entries(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Entries, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.CardioEntry)
+	fc.Result = res
+	return ec.marshalNCardioEntry2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntryᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntriesResult_entries(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntriesResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_CardioEntry_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_CardioEntry_userId(ctx, field)
+			case "dailyLogId":
+				return ec.fieldContext_CardioEntry_dailyLogId(ctx, field)
+			case "cardioType":
+				return ec.fieldContext_CardioEntry_cardioType(ctx, field)
+			case "durationMinutes":
+				return ec.fieldContext_CardioEntry_durationMinutes(ctx, field)
+			case "avgPulse":
+				return ec.fieldContext_CardioEntry_avgPulse(ctx, field)
+			case "heartRateZone":
+				return ec.fieldContext_CardioEntry_heartRateZone(ctx, field)
+			case "notes":
+				return ec.fieldContext_CardioEntry_notes(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_CardioEntry_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_CardioEntry_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CardioEntry", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntriesResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntriesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntriesResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.CardioEntriesResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.CardioValidationErr)
+	fc.Result = res
+	return ec.marshalOCardioValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntriesResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntriesResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_CardioValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_CardioValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CardioValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntriesResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntriesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntriesResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.CardioEntriesResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.CardioAuthErr)
+	fc.Result = res
+	return ec.marshalOCardioAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntriesResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntriesResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_CardioAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_CardioAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CardioAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntry_id(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntry_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntry_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntry_userId(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntry_userId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntry_userId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntry_dailyLogId(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntry_dailyLogId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DailyLogID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntry_dailyLogId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntry_cardioType(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntry_cardioType(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CardioType, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.CardioType)
+	fc.Result = res
+	return ec.marshalNCardioType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioType(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntry_cardioType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type CardioType does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntry_durationMinutes(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntry_durationMinutes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DurationMinutes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int32)
+	fc.Result = res
+	return ec.marshalNInt2int32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntry_durationMinutes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntry_avgPulse(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntry_avgPulse(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AvgPulse, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int32)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntry_avgPulse(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntry_heartRateZone(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntry_heartRateZone(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HeartRateZone, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.HeartRateZone)
+	fc.Result = res
+	return ec.marshalOHeartRateZone2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐHeartRateZone(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntry_heartRateZone(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type HeartRateZone does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntry_notes(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntry_notes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Notes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntry_notes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntry_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntry_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.CardioEntry().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntry_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntry_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntry_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.CardioEntry().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntry_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntryResult_cardioEntry(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntryResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntryResult_cardioEntry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CardioEntry, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.CardioEntry)
+	fc.Result = res
+	return ec.marshalOCardioEntry2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntry(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntryResult_cardioEntry(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntryResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_CardioEntry_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_CardioEntry_userId(ctx, field)
+			case "dailyLogId":
+				return ec.fieldContext_CardioEntry_dailyLogId(ctx, field)
+			case "cardioType":
+				return ec.fieldContext_CardioEntry_cardioType(ctx, field)
+			case "durationMinutes":
+				return ec.fieldContext_CardioEntry_durationMinutes(ctx, field)
+			case "avgPulse":
+				return ec.fieldContext_CardioEntry_avgPulse(ctx, field)
+			case "heartRateZone":
+				return ec.fieldContext_CardioEntry_heartRateZone(ctx, field)
+			case "notes":
+				return ec.fieldContext_CardioEntry_notes(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_CardioEntry_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_CardioEntry_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CardioEntry", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntryResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntryResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntryResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.CardioEntryResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.CardioValidationErr)
+	fc.Result = res
+	return ec.marshalOCardioValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntryResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntryResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_CardioValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_CardioValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CardioValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntryResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntryResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntryResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.CardioEntryResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.CardioNotFoundErr)
+	fc.Result = res
+	return ec.marshalOCardioNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntryResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntryResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_CardioNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_CardioNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CardioNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioEntryResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.CardioEntryResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioEntryResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.CardioEntryResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.CardioAuthErr)
+	fc.Result = res
+	return ec.marshalOCardioAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioEntryResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioEntryResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_CardioAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_CardioAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CardioAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioNotFoundError_message(ctx context.Context, field graphql.CollectedField, obj *models.CardioNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioNotFoundError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioNotFoundError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioNotFoundError_code(ctx context.Context, field graphql.CollectedField, obj *models.CardioNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioNotFoundError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.CardioErrorCode)
+	fc.Result = res
+	return ec.marshalNCardioErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioNotFoundError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type CardioErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioValidationError_message(ctx context.Context, field graphql.CollectedField, obj *models.CardioValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioValidationError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioValidationError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CardioValidationError_code(ctx context.Context, field graphql.CollectedField, obj *models.CardioValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CardioValidationError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.CardioErrorCode)
+	fc.Result = res
+	return ec.marshalNCardioErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CardioValidationError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CardioValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type CardioErrorCode does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3115,6 +8653,916 @@ func (ec *executionContext) fieldContext_Mutation_restoreExercise(ctx context.Co
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createCardioEntry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createCardioEntry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateCardioEntry(rctx, fc.Args["input"].(models.CreateCardioInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.CardioEntryResult)
+	fc.Result = res
+	return ec.marshalNCardioEntryResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntryResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createCardioEntry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "cardioEntry":
+				return ec.fieldContext_CardioEntryResult_cardioEntry(ctx, field)
+			case "validationError":
+				return ec.fieldContext_CardioEntryResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_CardioEntryResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_CardioEntryResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CardioEntryResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createCardioEntry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateCardioEntry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateCardioEntry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateCardioEntry(rctx, fc.Args["id"].(string), fc.Args["input"].(models.UpdateCardioInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.CardioEntryResult)
+	fc.Result = res
+	return ec.marshalNCardioEntryResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntryResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateCardioEntry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "cardioEntry":
+				return ec.fieldContext_CardioEntryResult_cardioEntry(ctx, field)
+			case "validationError":
+				return ec.fieldContext_CardioEntryResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_CardioEntryResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_CardioEntryResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CardioEntryResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateCardioEntry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteCardioEntry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteCardioEntry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteCardioEntry(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.CardioEntryResult)
+	fc.Result = res
+	return ec.marshalNCardioEntryResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntryResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteCardioEntry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "cardioEntry":
+				return ec.fieldContext_CardioEntryResult_cardioEntry(ctx, field)
+			case "validationError":
+				return ec.fieldContext_CardioEntryResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_CardioEntryResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_CardioEntryResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CardioEntryResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteCardioEntry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createBodyWeightEntry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createBodyWeightEntry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateBodyWeightEntry(rctx, fc.Args["input"].(models.CreateBodyWeightInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyWeightResult)
+	fc.Result = res
+	return ec.marshalNBodyWeightResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createBodyWeightEntry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "entry":
+				return ec.fieldContext_BodyWeightResult_entry(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyWeightResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_BodyWeightResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyWeightResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyWeightResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createBodyWeightEntry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateBodyWeightEntry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateBodyWeightEntry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateBodyWeightEntry(rctx, fc.Args["id"].(string), fc.Args["input"].(models.UpdateBodyWeightInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyWeightResult)
+	fc.Result = res
+	return ec.marshalNBodyWeightResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateBodyWeightEntry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "entry":
+				return ec.fieldContext_BodyWeightResult_entry(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyWeightResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_BodyWeightResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyWeightResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyWeightResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateBodyWeightEntry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteBodyWeightEntry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteBodyWeightEntry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteBodyWeightEntry(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyWeightResult)
+	fc.Result = res
+	return ec.marshalNBodyWeightResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteBodyWeightEntry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "entry":
+				return ec.fieldContext_BodyWeightResult_entry(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyWeightResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_BodyWeightResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyWeightResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyWeightResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteBodyWeightEntry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createBodyCheckIn(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createBodyCheckIn(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateBodyCheckIn(rctx, fc.Args["input"].(models.CreateCheckInInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyCheckInResult)
+	fc.Result = res
+	return ec.marshalNBodyCheckInResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckInResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createBodyCheckIn(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "checkIn":
+				return ec.fieldContext_BodyCheckInResult_checkIn(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyCheckInResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_BodyCheckInResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyCheckInResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyCheckInResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createBodyCheckIn_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateBodyCheckIn(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateBodyCheckIn(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateBodyCheckIn(rctx, fc.Args["id"].(string), fc.Args["input"].(models.UpdateCheckInInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyCheckInResult)
+	fc.Result = res
+	return ec.marshalNBodyCheckInResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckInResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateBodyCheckIn(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "checkIn":
+				return ec.fieldContext_BodyCheckInResult_checkIn(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyCheckInResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_BodyCheckInResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyCheckInResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyCheckInResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateBodyCheckIn_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteBodyCheckIn(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteBodyCheckIn(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteBodyCheckIn(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyCheckInResult)
+	fc.Result = res
+	return ec.marshalNBodyCheckInResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckInResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteBodyCheckIn(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "checkIn":
+				return ec.fieldContext_BodyCheckInResult_checkIn(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyCheckInResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_BodyCheckInResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyCheckInResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyCheckInResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteBodyCheckIn_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createBodyMeasurement(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createBodyMeasurement(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateBodyMeasurement(rctx, fc.Args["checkInId"].(string), fc.Args["input"].(models.CreateMeasurementInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyMeasurementResult)
+	fc.Result = res
+	return ec.marshalNBodyMeasurementResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurementResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createBodyMeasurement(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "measurement":
+				return ec.fieldContext_BodyMeasurementResult_measurement(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyMeasurementResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_BodyMeasurementResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyMeasurementResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyMeasurementResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createBodyMeasurement_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateBodyMeasurement(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateBodyMeasurement(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateBodyMeasurement(rctx, fc.Args["id"].(string), fc.Args["input"].(models.UpdateMeasurementInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyMeasurementResult)
+	fc.Result = res
+	return ec.marshalNBodyMeasurementResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurementResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateBodyMeasurement(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "measurement":
+				return ec.fieldContext_BodyMeasurementResult_measurement(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyMeasurementResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_BodyMeasurementResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyMeasurementResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyMeasurementResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateBodyMeasurement_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteBodyMeasurement(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteBodyMeasurement(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteBodyMeasurement(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyMeasurementResult)
+	fc.Result = res
+	return ec.marshalNBodyMeasurementResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurementResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteBodyMeasurement(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "measurement":
+				return ec.fieldContext_BodyMeasurementResult_measurement(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyMeasurementResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_BodyMeasurementResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyMeasurementResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyMeasurementResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteBodyMeasurement_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createWeekFlag(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createWeekFlag(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateWeekFlag(rctx, fc.Args["input"].(models.CreateWeekFlagInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.WeekFlagResult)
+	fc.Result = res
+	return ec.marshalNWeekFlagResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createWeekFlag(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "weekFlag":
+				return ec.fieldContext_WeekFlagResult_weekFlag(ctx, field)
+			case "validationError":
+				return ec.fieldContext_WeekFlagResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_WeekFlagResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_WeekFlagResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WeekFlagResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createWeekFlag_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteWeekFlag(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteWeekFlag(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteWeekFlag(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.WeekFlagResult)
+	fc.Result = res
+	return ec.marshalNWeekFlagResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteWeekFlag(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "weekFlag":
+				return ec.fieldContext_WeekFlagResult_weekFlag(ctx, field)
+			case "validationError":
+				return ec.fieldContext_WeekFlagResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_WeekFlagResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_WeekFlagResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WeekFlagResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteWeekFlag_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _NotFoundError_message(ctx context.Context, field graphql.CollectedField, obj *models.NotFoundErr) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_NotFoundError_message(ctx, field)
 	if err != nil {
@@ -3467,6 +9915,773 @@ func (ec *executionContext) fieldContext_PinOperationResult_error(_ context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _ProgressPhoto_id(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhoto) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhoto_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhoto_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhoto",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhoto_checkInId(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhoto) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhoto_checkInId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CheckInID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhoto_checkInId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhoto",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhoto_originalFileName(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhoto) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhoto_originalFileName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OriginalFileName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhoto_originalFileName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhoto",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhoto_mimeType(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhoto) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhoto_mimeType(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MimeType, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhoto_mimeType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhoto",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhoto_sizeBytes(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhoto) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhoto_sizeBytes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SizeBytes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhoto_sizeBytes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhoto",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhoto_angle(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhoto) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhoto_angle(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Angle, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.ProgressPhotoAngle)
+	fc.Result = res
+	return ec.marshalOProgressPhotoAngle2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotoAngle(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhoto_angle(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhoto",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ProgressPhotoAngle does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhoto_label(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhoto) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhoto_label(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Label, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhoto_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhoto",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhoto_notes(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhoto) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhoto_notes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Notes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhoto_notes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhoto",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhoto_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhoto) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhoto_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ProgressPhoto().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhoto_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhoto",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhoto_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhoto) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhoto_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ProgressPhoto().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhoto_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhoto",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhotoAuthError_message(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhotoAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhotoAuthError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhotoAuthError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhotoAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhotoAuthError_code(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhotoAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhotoAuthError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.ProgressPhotoErrorCode)
+	fc.Result = res
+	return ec.marshalNProgressPhotoErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotoErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhotoAuthError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhotoAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ProgressPhotoErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhotoValidationError_message(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhotoValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhotoValidationError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhotoValidationError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhotoValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhotoValidationError_code(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhotoValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhotoValidationError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.ProgressPhotoErrorCode)
+	fc.Result = res
+	return ec.marshalNProgressPhotoErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotoErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhotoValidationError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhotoValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ProgressPhotoErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhotosResult_photos(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhotosResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhotosResult_photos(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Photos, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.ProgressPhoto)
+	fc.Result = res
+	return ec.marshalNProgressPhoto2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotoᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhotosResult_photos(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhotosResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_ProgressPhoto_id(ctx, field)
+			case "checkInId":
+				return ec.fieldContext_ProgressPhoto_checkInId(ctx, field)
+			case "originalFileName":
+				return ec.fieldContext_ProgressPhoto_originalFileName(ctx, field)
+			case "mimeType":
+				return ec.fieldContext_ProgressPhoto_mimeType(ctx, field)
+			case "sizeBytes":
+				return ec.fieldContext_ProgressPhoto_sizeBytes(ctx, field)
+			case "angle":
+				return ec.fieldContext_ProgressPhoto_angle(ctx, field)
+			case "label":
+				return ec.fieldContext_ProgressPhoto_label(ctx, field)
+			case "notes":
+				return ec.fieldContext_ProgressPhoto_notes(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_ProgressPhoto_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_ProgressPhoto_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ProgressPhoto", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhotosResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhotosResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhotosResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ProgressPhotosResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.ProgressPhotoValidationErr)
+	fc.Result = res
+	return ec.marshalOProgressPhotoValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotoValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhotosResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhotosResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_ProgressPhotoValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_ProgressPhotoValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ProgressPhotoValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProgressPhotosResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.ProgressPhotosResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProgressPhotosResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ProgressPhotosResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.ProgressPhotoAuthErr)
+	fc.Result = res
+	return ec.marshalOProgressPhotoAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotoAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ProgressPhotosResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProgressPhotosResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_ProgressPhotoAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_ProgressPhotoAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ProgressPhotoAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_settings(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_settings(ctx, field)
 	if err != nil {
@@ -3718,6 +10933,641 @@ func (ec *executionContext) fieldContext_Query_allExercises(ctx context.Context,
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_allExercises_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_cardioEntry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_cardioEntry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CardioEntry(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.CardioEntryResult)
+	fc.Result = res
+	return ec.marshalNCardioEntryResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntryResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_cardioEntry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "cardioEntry":
+				return ec.fieldContext_CardioEntryResult_cardioEntry(ctx, field)
+			case "validationError":
+				return ec.fieldContext_CardioEntryResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_CardioEntryResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_CardioEntryResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CardioEntryResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_cardioEntry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_cardioEntries(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_cardioEntries(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CardioEntries(rctx, fc.Args["date"].(models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.CardioEntriesResult)
+	fc.Result = res
+	return ec.marshalNCardioEntriesResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntriesResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_cardioEntries(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "entries":
+				return ec.fieldContext_CardioEntriesResult_entries(ctx, field)
+			case "validationError":
+				return ec.fieldContext_CardioEntriesResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_CardioEntriesResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CardioEntriesResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_cardioEntries_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_bodyWeightEntry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_bodyWeightEntry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().BodyWeightEntry(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyWeightResult)
+	fc.Result = res
+	return ec.marshalNBodyWeightResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_bodyWeightEntry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "entry":
+				return ec.fieldContext_BodyWeightResult_entry(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyWeightResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_BodyWeightResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyWeightResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyWeightResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_bodyWeightEntry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_bodyWeightEntries(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_bodyWeightEntries(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().BodyWeightEntries(rctx, fc.Args["from"].(models.Date), fc.Args["to"].(models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyWeightEntriesResult)
+	fc.Result = res
+	return ec.marshalNBodyWeightEntriesResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightEntriesResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_bodyWeightEntries(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "entries":
+				return ec.fieldContext_BodyWeightEntriesResult_entries(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyWeightEntriesResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyWeightEntriesResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyWeightEntriesResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_bodyWeightEntries_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_latestBodyWeight(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_latestBodyWeight(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().LatestBodyWeight(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyWeightResult)
+	fc.Result = res
+	return ec.marshalNBodyWeightResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_latestBodyWeight(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "entry":
+				return ec.fieldContext_BodyWeightResult_entry(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyWeightResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_BodyWeightResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyWeightResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyWeightResult", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_bodyCheckIn(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_bodyCheckIn(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().BodyCheckIn(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyCheckInResult)
+	fc.Result = res
+	return ec.marshalNBodyCheckInResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckInResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_bodyCheckIn(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "checkIn":
+				return ec.fieldContext_BodyCheckInResult_checkIn(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyCheckInResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_BodyCheckInResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyCheckInResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyCheckInResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_bodyCheckIn_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_bodyCheckIns(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_bodyCheckIns(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().BodyCheckIns(rctx, fc.Args["from"].(models.Date), fc.Args["to"].(models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyCheckInsResult)
+	fc.Result = res
+	return ec.marshalNBodyCheckInsResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckInsResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_bodyCheckIns(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "checkIns":
+				return ec.fieldContext_BodyCheckInsResult_checkIns(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyCheckInsResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyCheckInsResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyCheckInsResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_bodyCheckIns_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_bodyMeasurements(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_bodyMeasurements(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().BodyMeasurements(rctx, fc.Args["checkInId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.BodyMeasurement)
+	fc.Result = res
+	return ec.marshalNBodyMeasurement2ᚕᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurementᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_bodyMeasurements(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_BodyMeasurement_id(ctx, field)
+			case "checkInId":
+				return ec.fieldContext_BodyMeasurement_checkInId(ctx, field)
+			case "measurementType":
+				return ec.fieldContext_BodyMeasurement_measurementType(ctx, field)
+			case "side":
+				return ec.fieldContext_BodyMeasurement_side(ctx, field)
+			case "value":
+				return ec.fieldContext_BodyMeasurement_value(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_BodyMeasurement_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_BodyMeasurement_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyMeasurement", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_bodyMeasurements_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_progressPhotos(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_progressPhotos(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ProgressPhotos(rctx, fc.Args["checkInId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.ProgressPhotosResult)
+	fc.Result = res
+	return ec.marshalNProgressPhotosResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotosResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_progressPhotos(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "photos":
+				return ec.fieldContext_ProgressPhotosResult_photos(ctx, field)
+			case "validationError":
+				return ec.fieldContext_ProgressPhotosResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_ProgressPhotosResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ProgressPhotosResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_progressPhotos_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_weekFlags(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_weekFlags(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().WeekFlags(rctx, fc.Args["weekStartDate"].(models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.WeekFlagsResult)
+	fc.Result = res
+	return ec.marshalNWeekFlagsResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagsResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_weekFlags(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "flags":
+				return ec.fieldContext_WeekFlagsResult_flags(ctx, field)
+			case "validationError":
+				return ec.fieldContext_WeekFlagsResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_WeekFlagsResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WeekFlagsResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_weekFlags_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4252,6 +12102,927 @@ func (ec *executionContext) fieldContext_ValidationError_code(_ context.Context,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ExerciseErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlag_id(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlag) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlag_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlag_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlag",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlag_userId(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlag) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlag_userId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlag_userId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlag",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlag_weekStartDate(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlag) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlag_weekStartDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WeekStartDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Date)
+	fc.Result = res
+	return ec.marshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlag_weekStartDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlag",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlag_flagType(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlag) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlag_flagType(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FlagType, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.WeekFlagType)
+	fc.Result = res
+	return ec.marshalNWeekFlagType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagType(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlag_flagType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlag",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type WeekFlagType does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlag_notes(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlag) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlag_notes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Notes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlag_notes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlag",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlag_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlag) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlag_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.WeekFlag().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlag_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlag",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlag_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlag) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlag_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.WeekFlag().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlag_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlag",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlagAuthError_message(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlagAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlagAuthError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlagAuthError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlagAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlagAuthError_code(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlagAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlagAuthError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.WeekFlagErrorCode)
+	fc.Result = res
+	return ec.marshalNWeekFlagErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlagAuthError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlagAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type WeekFlagErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlagNotFoundError_message(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlagNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlagNotFoundError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlagNotFoundError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlagNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlagNotFoundError_code(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlagNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlagNotFoundError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.WeekFlagErrorCode)
+	fc.Result = res
+	return ec.marshalNWeekFlagErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlagNotFoundError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlagNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type WeekFlagErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlagResult_weekFlag(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlagResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlagResult_weekFlag(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WeekFlag, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.WeekFlag)
+	fc.Result = res
+	return ec.marshalOWeekFlag2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlag(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlagResult_weekFlag(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlagResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_WeekFlag_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_WeekFlag_userId(ctx, field)
+			case "weekStartDate":
+				return ec.fieldContext_WeekFlag_weekStartDate(ctx, field)
+			case "flagType":
+				return ec.fieldContext_WeekFlag_flagType(ctx, field)
+			case "notes":
+				return ec.fieldContext_WeekFlag_notes(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_WeekFlag_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_WeekFlag_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WeekFlag", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlagResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlagResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlagResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.WeekFlagResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.WeekFlagValidationErr)
+	fc.Result = res
+	return ec.marshalOWeekFlagValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlagResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlagResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_WeekFlagValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_WeekFlagValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WeekFlagValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlagResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlagResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlagResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.WeekFlagResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.WeekFlagNotFoundErr)
+	fc.Result = res
+	return ec.marshalOWeekFlagNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlagResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlagResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_WeekFlagNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_WeekFlagNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WeekFlagNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlagResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlagResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlagResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.WeekFlagResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.WeekFlagAuthErr)
+	fc.Result = res
+	return ec.marshalOWeekFlagAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlagResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlagResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_WeekFlagAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_WeekFlagAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WeekFlagAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlagValidationError_message(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlagValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlagValidationError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlagValidationError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlagValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlagValidationError_code(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlagValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlagValidationError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.WeekFlagErrorCode)
+	fc.Result = res
+	return ec.marshalNWeekFlagErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlagValidationError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlagValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type WeekFlagErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlagsResult_flags(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlagsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlagsResult_flags(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Flags, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.WeekFlag)
+	fc.Result = res
+	return ec.marshalNWeekFlag2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlagsResult_flags(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlagsResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_WeekFlag_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_WeekFlag_userId(ctx, field)
+			case "weekStartDate":
+				return ec.fieldContext_WeekFlag_weekStartDate(ctx, field)
+			case "flagType":
+				return ec.fieldContext_WeekFlag_flagType(ctx, field)
+			case "notes":
+				return ec.fieldContext_WeekFlag_notes(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_WeekFlag_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_WeekFlag_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WeekFlag", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlagsResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlagsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlagsResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.WeekFlagsResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.WeekFlagValidationErr)
+	fc.Result = res
+	return ec.marshalOWeekFlagValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlagsResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlagsResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_WeekFlagValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_WeekFlagValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WeekFlagValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeekFlagsResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.WeekFlagsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WeekFlagsResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.WeekFlagsResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.WeekFlagAuthErr)
+	fc.Result = res
+	return ec.marshalOWeekFlagAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WeekFlagsResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeekFlagsResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_WeekFlagAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_WeekFlagAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WeekFlagAuthError", field.Name)
 		},
 	}
 	return fc, nil
@@ -6030,6 +14801,164 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputCreateBodyWeightInput(ctx context.Context, obj interface{}) (models.CreateBodyWeightInput, error) {
+	var it models.CreateBodyWeightInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"date", "weight", "source", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "date":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+			data, err := ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Date = data
+		case "weight":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("weight"))
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Weight = data
+		case "source":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("source"))
+			data, err := ec.unmarshalNBodyWeightSource2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightSource(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Source = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateCardioInput(ctx context.Context, obj interface{}) (models.CreateCardioInput, error) {
+	var it models.CreateCardioInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"date", "cardioType", "durationMinutes", "avgPulse", "heartRateZone", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "date":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+			data, err := ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Date = data
+		case "cardioType":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cardioType"))
+			data, err := ec.unmarshalNCardioType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CardioType = data
+		case "durationMinutes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("durationMinutes"))
+			data, err := ec.unmarshalNInt2int32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DurationMinutes = data
+		case "avgPulse":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("avgPulse"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AvgPulse = data
+		case "heartRateZone":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("heartRateZone"))
+			data, err := ec.unmarshalOHeartRateZone2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐHeartRateZone(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HeartRateZone = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateCheckInInput(ctx context.Context, obj interface{}) (models.CreateCheckInInput, error) {
+	var it models.CreateCheckInInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"date", "weight", "bodyFatPercentage", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "date":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+			data, err := ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Date = data
+		case "weight":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("weight"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Weight = data
+		case "bodyFatPercentage":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bodyFatPercentage"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BodyFatPercentage = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateExerciseInput(ctx context.Context, obj interface{}) (models.CreateExerciseInput, error) {
 	var it models.CreateExerciseInput
 	asMap := map[string]interface{}{}
@@ -6079,6 +15008,88 @@ func (ec *executionContext) unmarshalInputCreateExerciseInput(ctx context.Contex
 				return it, err
 			}
 			it.WorkingWeight = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateMeasurementInput(ctx context.Context, obj interface{}) (models.CreateMeasurementInput, error) {
+	var it models.CreateMeasurementInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"measurementType", "side", "value"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "measurementType":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("measurementType"))
+			data, err := ec.unmarshalNMeasurementType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MeasurementType = data
+		case "side":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("side"))
+			data, err := ec.unmarshalOMeasurementSide2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementSide(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Side = data
+		case "value":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("value"))
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Value = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateWeekFlagInput(ctx context.Context, obj interface{}) (models.CreateWeekFlagInput, error) {
+	var it models.CreateWeekFlagInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"weekStartDate", "flagType", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "weekStartDate":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("weekStartDate"))
+			data, err := ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.WeekStartDate = data
+		case "flagType":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("flagType"))
+			data, err := ec.unmarshalNWeekFlagType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FlagType = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
 		}
 	}
 
@@ -6207,6 +15218,143 @@ func (ec *executionContext) unmarshalInputSettingsInput(ctx context.Context, obj
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateBodyWeightInput(ctx context.Context, obj interface{}) (models.UpdateBodyWeightInput, error) {
+	var it models.UpdateBodyWeightInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"weight", "source", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "weight":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("weight"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Weight = data
+		case "source":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("source"))
+			data, err := ec.unmarshalOBodyWeightSource2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightSource(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Source = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateCardioInput(ctx context.Context, obj interface{}) (models.UpdateCardioInput, error) {
+	var it models.UpdateCardioInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"cardioType", "durationMinutes", "avgPulse", "heartRateZone", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "cardioType":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cardioType"))
+			data, err := ec.unmarshalOCardioType2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CardioType = data
+		case "durationMinutes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("durationMinutes"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DurationMinutes = data
+		case "avgPulse":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("avgPulse"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AvgPulse = data
+		case "heartRateZone":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("heartRateZone"))
+			data, err := ec.unmarshalOHeartRateZone2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐHeartRateZone(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HeartRateZone = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateCheckInInput(ctx context.Context, obj interface{}) (models.UpdateCheckInInput, error) {
+	var it models.UpdateCheckInInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"weight", "bodyFatPercentage", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "weight":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("weight"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Weight = data
+		case "bodyFatPercentage":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bodyFatPercentage"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BodyFatPercentage = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateExerciseInput(ctx context.Context, obj interface{}) (models.UpdateExerciseInput, error) {
 	var it models.UpdateExerciseInput
 	asMap := map[string]interface{}{}
@@ -6256,6 +15404,47 @@ func (ec *executionContext) unmarshalInputUpdateExerciseInput(ctx context.Contex
 				return it, err
 			}
 			it.WorkingWeight = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateMeasurementInput(ctx context.Context, obj interface{}) (models.UpdateMeasurementInput, error) {
+	var it models.UpdateMeasurementInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"measurementType", "side", "value"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "measurementType":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("measurementType"))
+			data, err := ec.unmarshalOMeasurementType2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MeasurementType = data
+		case "side":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("side"))
+			data, err := ec.unmarshalOMeasurementSide2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementSide(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Side = data
+		case "value":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("value"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Value = data
 		}
 	}
 
@@ -6390,6 +15579,1660 @@ func (ec *executionContext) _AuthError(ctx context.Context, sel ast.SelectionSet
 			}
 		case "code":
 			out.Values[i] = ec._AuthError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var bodyAuthErrorImplementors = []string{"BodyAuthError"}
+
+func (ec *executionContext) _BodyAuthError(ctx context.Context, sel ast.SelectionSet, obj *models.BodyAuthErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bodyAuthErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BodyAuthError")
+		case "message":
+			out.Values[i] = ec._BodyAuthError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._BodyAuthError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var bodyCheckInImplementors = []string{"BodyCheckIn"}
+
+func (ec *executionContext) _BodyCheckIn(ctx context.Context, sel ast.SelectionSet, obj *models.BodyCheckIn) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bodyCheckInImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BodyCheckIn")
+		case "id":
+			out.Values[i] = ec._BodyCheckIn_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "userId":
+			out.Values[i] = ec._BodyCheckIn_userId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "date":
+			out.Values[i] = ec._BodyCheckIn_date(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "weight":
+			out.Values[i] = ec._BodyCheckIn_weight(ctx, field, obj)
+		case "bodyFatPercentage":
+			out.Values[i] = ec._BodyCheckIn_bodyFatPercentage(ctx, field, obj)
+		case "notes":
+			out.Values[i] = ec._BodyCheckIn_notes(ctx, field, obj)
+		case "measurements":
+			out.Values[i] = ec._BodyCheckIn_measurements(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "progressPhotos":
+			out.Values[i] = ec._BodyCheckIn_progressPhotos(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyCheckIn_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyCheckIn_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var bodyCheckInResultImplementors = []string{"BodyCheckInResult"}
+
+func (ec *executionContext) _BodyCheckInResult(ctx context.Context, sel ast.SelectionSet, obj *models.BodyCheckInResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bodyCheckInResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BodyCheckInResult")
+		case "checkIn":
+			out.Values[i] = ec._BodyCheckInResult_checkIn(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyCheckInResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyCheckInResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyCheckInResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var bodyCheckInsResultImplementors = []string{"BodyCheckInsResult"}
+
+func (ec *executionContext) _BodyCheckInsResult(ctx context.Context, sel ast.SelectionSet, obj *models.BodyCheckInsResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bodyCheckInsResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BodyCheckInsResult")
+		case "checkIns":
+			out.Values[i] = ec._BodyCheckInsResult_checkIns(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyCheckInsResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyCheckInsResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var bodyMeasurementImplementors = []string{"BodyMeasurement"}
+
+func (ec *executionContext) _BodyMeasurement(ctx context.Context, sel ast.SelectionSet, obj *models.BodyMeasurement) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bodyMeasurementImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BodyMeasurement")
+		case "id":
+			out.Values[i] = ec._BodyMeasurement_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "checkInId":
+			out.Values[i] = ec._BodyMeasurement_checkInId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "measurementType":
+			out.Values[i] = ec._BodyMeasurement_measurementType(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "side":
+			out.Values[i] = ec._BodyMeasurement_side(ctx, field, obj)
+		case "value":
+			out.Values[i] = ec._BodyMeasurement_value(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyMeasurement_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyMeasurement_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var bodyMeasurementResultImplementors = []string{"BodyMeasurementResult"}
+
+func (ec *executionContext) _BodyMeasurementResult(ctx context.Context, sel ast.SelectionSet, obj *models.BodyMeasurementResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bodyMeasurementResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BodyMeasurementResult")
+		case "measurement":
+			out.Values[i] = ec._BodyMeasurementResult_measurement(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyMeasurementResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyMeasurementResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyMeasurementResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var bodyNotFoundErrorImplementors = []string{"BodyNotFoundError"}
+
+func (ec *executionContext) _BodyNotFoundError(ctx context.Context, sel ast.SelectionSet, obj *models.BodyNotFoundErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bodyNotFoundErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BodyNotFoundError")
+		case "message":
+			out.Values[i] = ec._BodyNotFoundError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._BodyNotFoundError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var bodyValidationErrorImplementors = []string{"BodyValidationError"}
+
+func (ec *executionContext) _BodyValidationError(ctx context.Context, sel ast.SelectionSet, obj *models.BodyValidationErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bodyValidationErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BodyValidationError")
+		case "message":
+			out.Values[i] = ec._BodyValidationError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._BodyValidationError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var bodyWeightEntriesResultImplementors = []string{"BodyWeightEntriesResult"}
+
+func (ec *executionContext) _BodyWeightEntriesResult(ctx context.Context, sel ast.SelectionSet, obj *models.BodyWeightEntriesResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bodyWeightEntriesResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BodyWeightEntriesResult")
+		case "entries":
+			out.Values[i] = ec._BodyWeightEntriesResult_entries(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyWeightEntriesResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyWeightEntriesResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var bodyWeightEntryImplementors = []string{"BodyWeightEntry"}
+
+func (ec *executionContext) _BodyWeightEntry(ctx context.Context, sel ast.SelectionSet, obj *models.BodyWeightEntry) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bodyWeightEntryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BodyWeightEntry")
+		case "id":
+			out.Values[i] = ec._BodyWeightEntry_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "userId":
+			out.Values[i] = ec._BodyWeightEntry_userId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "date":
+			out.Values[i] = ec._BodyWeightEntry_date(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "weight":
+			out.Values[i] = ec._BodyWeightEntry_weight(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "source":
+			out.Values[i] = ec._BodyWeightEntry_source(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "notes":
+			out.Values[i] = ec._BodyWeightEntry_notes(ctx, field, obj)
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyWeightEntry_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyWeightEntry_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var bodyWeightResultImplementors = []string{"BodyWeightResult"}
+
+func (ec *executionContext) _BodyWeightResult(ctx context.Context, sel ast.SelectionSet, obj *models.BodyWeightResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bodyWeightResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BodyWeightResult")
+		case "entry":
+			out.Values[i] = ec._BodyWeightResult_entry(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyWeightResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyWeightResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyWeightResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var cardioAuthErrorImplementors = []string{"CardioAuthError"}
+
+func (ec *executionContext) _CardioAuthError(ctx context.Context, sel ast.SelectionSet, obj *models.CardioAuthErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, cardioAuthErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CardioAuthError")
+		case "message":
+			out.Values[i] = ec._CardioAuthError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._CardioAuthError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var cardioEntriesResultImplementors = []string{"CardioEntriesResult"}
+
+func (ec *executionContext) _CardioEntriesResult(ctx context.Context, sel ast.SelectionSet, obj *models.CardioEntriesResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, cardioEntriesResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CardioEntriesResult")
+		case "entries":
+			out.Values[i] = ec._CardioEntriesResult_entries(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._CardioEntriesResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._CardioEntriesResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var cardioEntryImplementors = []string{"CardioEntry"}
+
+func (ec *executionContext) _CardioEntry(ctx context.Context, sel ast.SelectionSet, obj *models.CardioEntry) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, cardioEntryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CardioEntry")
+		case "id":
+			out.Values[i] = ec._CardioEntry_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "userId":
+			out.Values[i] = ec._CardioEntry_userId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "dailyLogId":
+			out.Values[i] = ec._CardioEntry_dailyLogId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "cardioType":
+			out.Values[i] = ec._CardioEntry_cardioType(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "durationMinutes":
+			out.Values[i] = ec._CardioEntry_durationMinutes(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "avgPulse":
+			out.Values[i] = ec._CardioEntry_avgPulse(ctx, field, obj)
+		case "heartRateZone":
+			out.Values[i] = ec._CardioEntry_heartRateZone(ctx, field, obj)
+		case "notes":
+			out.Values[i] = ec._CardioEntry_notes(ctx, field, obj)
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._CardioEntry_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._CardioEntry_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var cardioEntryResultImplementors = []string{"CardioEntryResult"}
+
+func (ec *executionContext) _CardioEntryResult(ctx context.Context, sel ast.SelectionSet, obj *models.CardioEntryResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, cardioEntryResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CardioEntryResult")
+		case "cardioEntry":
+			out.Values[i] = ec._CardioEntryResult_cardioEntry(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._CardioEntryResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._CardioEntryResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._CardioEntryResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var cardioNotFoundErrorImplementors = []string{"CardioNotFoundError"}
+
+func (ec *executionContext) _CardioNotFoundError(ctx context.Context, sel ast.SelectionSet, obj *models.CardioNotFoundErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, cardioNotFoundErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CardioNotFoundError")
+		case "message":
+			out.Values[i] = ec._CardioNotFoundError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._CardioNotFoundError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var cardioValidationErrorImplementors = []string{"CardioValidationError"}
+
+func (ec *executionContext) _CardioValidationError(ctx context.Context, sel ast.SelectionSet, obj *models.CardioValidationErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, cardioValidationErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CardioValidationError")
+		case "message":
+			out.Values[i] = ec._CardioValidationError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._CardioValidationError_code(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -6914,6 +17757,104 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createCardioEntry":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createCardioEntry(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateCardioEntry":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateCardioEntry(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteCardioEntry":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteCardioEntry(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createBodyWeightEntry":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createBodyWeightEntry(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateBodyWeightEntry":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateBodyWeightEntry(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteBodyWeightEntry":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteBodyWeightEntry(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createBodyCheckIn":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createBodyCheckIn(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateBodyCheckIn":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateBodyCheckIn(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteBodyCheckIn":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteBodyCheckIn(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createBodyMeasurement":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createBodyMeasurement(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateBodyMeasurement":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateBodyMeasurement(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteBodyMeasurement":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteBodyMeasurement(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createWeekFlag":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createWeekFlag(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteWeekFlag":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteWeekFlag(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7107,6 +18048,336 @@ func (ec *executionContext) _PinOperationResult(ctx context.Context, sel ast.Sel
 	return out
 }
 
+var progressPhotoImplementors = []string{"ProgressPhoto"}
+
+func (ec *executionContext) _ProgressPhoto(ctx context.Context, sel ast.SelectionSet, obj *models.ProgressPhoto) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, progressPhotoImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ProgressPhoto")
+		case "id":
+			out.Values[i] = ec._ProgressPhoto_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "checkInId":
+			out.Values[i] = ec._ProgressPhoto_checkInId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "originalFileName":
+			out.Values[i] = ec._ProgressPhoto_originalFileName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "mimeType":
+			out.Values[i] = ec._ProgressPhoto_mimeType(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "sizeBytes":
+			out.Values[i] = ec._ProgressPhoto_sizeBytes(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "angle":
+			out.Values[i] = ec._ProgressPhoto_angle(ctx, field, obj)
+		case "label":
+			out.Values[i] = ec._ProgressPhoto_label(ctx, field, obj)
+		case "notes":
+			out.Values[i] = ec._ProgressPhoto_notes(ctx, field, obj)
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ProgressPhoto_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ProgressPhoto_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var progressPhotoAuthErrorImplementors = []string{"ProgressPhotoAuthError"}
+
+func (ec *executionContext) _ProgressPhotoAuthError(ctx context.Context, sel ast.SelectionSet, obj *models.ProgressPhotoAuthErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, progressPhotoAuthErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ProgressPhotoAuthError")
+		case "message":
+			out.Values[i] = ec._ProgressPhotoAuthError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._ProgressPhotoAuthError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var progressPhotoValidationErrorImplementors = []string{"ProgressPhotoValidationError"}
+
+func (ec *executionContext) _ProgressPhotoValidationError(ctx context.Context, sel ast.SelectionSet, obj *models.ProgressPhotoValidationErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, progressPhotoValidationErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ProgressPhotoValidationError")
+		case "message":
+			out.Values[i] = ec._ProgressPhotoValidationError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._ProgressPhotoValidationError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var progressPhotosResultImplementors = []string{"ProgressPhotosResult"}
+
+func (ec *executionContext) _ProgressPhotosResult(ctx context.Context, sel ast.SelectionSet, obj *models.ProgressPhotosResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, progressPhotosResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ProgressPhotosResult")
+		case "photos":
+			out.Values[i] = ec._ProgressPhotosResult_photos(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ProgressPhotosResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ProgressPhotosResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var queryImplementors = []string{"Query"}
 
 func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -7202,6 +18473,226 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_allExercises(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "cardioEntry":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_cardioEntry(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "cardioEntries":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_cardioEntries(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "bodyWeightEntry":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_bodyWeightEntry(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "bodyWeightEntries":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_bodyWeightEntries(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "latestBodyWeight":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_latestBodyWeight(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "bodyCheckIn":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_bodyCheckIn(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "bodyCheckIns":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_bodyCheckIns(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "bodyMeasurements":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_bodyMeasurements(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "progressPhotos":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_progressPhotos(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "weekFlags":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_weekFlags(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -7397,6 +18888,506 @@ func (ec *executionContext) _ValidationError(ctx context.Context, sel ast.Select
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var weekFlagImplementors = []string{"WeekFlag"}
+
+func (ec *executionContext) _WeekFlag(ctx context.Context, sel ast.SelectionSet, obj *models.WeekFlag) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, weekFlagImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("WeekFlag")
+		case "id":
+			out.Values[i] = ec._WeekFlag_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "userId":
+			out.Values[i] = ec._WeekFlag_userId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "weekStartDate":
+			out.Values[i] = ec._WeekFlag_weekStartDate(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "flagType":
+			out.Values[i] = ec._WeekFlag_flagType(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "notes":
+			out.Values[i] = ec._WeekFlag_notes(ctx, field, obj)
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._WeekFlag_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._WeekFlag_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var weekFlagAuthErrorImplementors = []string{"WeekFlagAuthError"}
+
+func (ec *executionContext) _WeekFlagAuthError(ctx context.Context, sel ast.SelectionSet, obj *models.WeekFlagAuthErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, weekFlagAuthErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("WeekFlagAuthError")
+		case "message":
+			out.Values[i] = ec._WeekFlagAuthError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._WeekFlagAuthError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var weekFlagNotFoundErrorImplementors = []string{"WeekFlagNotFoundError"}
+
+func (ec *executionContext) _WeekFlagNotFoundError(ctx context.Context, sel ast.SelectionSet, obj *models.WeekFlagNotFoundErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, weekFlagNotFoundErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("WeekFlagNotFoundError")
+		case "message":
+			out.Values[i] = ec._WeekFlagNotFoundError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._WeekFlagNotFoundError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var weekFlagResultImplementors = []string{"WeekFlagResult"}
+
+func (ec *executionContext) _WeekFlagResult(ctx context.Context, sel ast.SelectionSet, obj *models.WeekFlagResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, weekFlagResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("WeekFlagResult")
+		case "weekFlag":
+			out.Values[i] = ec._WeekFlagResult_weekFlag(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._WeekFlagResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._WeekFlagResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._WeekFlagResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var weekFlagValidationErrorImplementors = []string{"WeekFlagValidationError"}
+
+func (ec *executionContext) _WeekFlagValidationError(ctx context.Context, sel ast.SelectionSet, obj *models.WeekFlagValidationErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, weekFlagValidationErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("WeekFlagValidationError")
+		case "message":
+			out.Values[i] = ec._WeekFlagValidationError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._WeekFlagValidationError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var weekFlagsResultImplementors = []string{"WeekFlagsResult"}
+
+func (ec *executionContext) _WeekFlagsResult(ctx context.Context, sel ast.SelectionSet, obj *models.WeekFlagsResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, weekFlagsResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("WeekFlagsResult")
+		case "flags":
+			out.Values[i] = ec._WeekFlagsResult_flags(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._WeekFlagsResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._WeekFlagsResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7760,6 +19751,306 @@ func (ec *executionContext) marshalNArchiveResult2ᚖmonorepoᚑtemplateᚋapps�
 	return ec._ArchiveResult(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNBodyCheckIn2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckIn(ctx context.Context, sel ast.SelectionSet, v models.BodyCheckIn) graphql.Marshaler {
+	return ec._BodyCheckIn(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBodyCheckIn2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckInᚄ(ctx context.Context, sel ast.SelectionSet, v []models.BodyCheckIn) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNBodyCheckIn2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckIn(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNBodyCheckInResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckInResult(ctx context.Context, sel ast.SelectionSet, v models.BodyCheckInResult) graphql.Marshaler {
+	return ec._BodyCheckInResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBodyCheckInResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckInResult(ctx context.Context, sel ast.SelectionSet, v *models.BodyCheckInResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._BodyCheckInResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNBodyCheckInsResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckInsResult(ctx context.Context, sel ast.SelectionSet, v models.BodyCheckInsResult) graphql.Marshaler {
+	return ec._BodyCheckInsResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBodyCheckInsResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckInsResult(ctx context.Context, sel ast.SelectionSet, v *models.BodyCheckInsResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._BodyCheckInsResult(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNBodyErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyErrorCode(ctx context.Context, v interface{}) (models.BodyErrorCode, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.BodyErrorCode(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNBodyErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyErrorCode(ctx context.Context, sel ast.SelectionSet, v models.BodyErrorCode) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNBodyMeasurement2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurement(ctx context.Context, sel ast.SelectionSet, v models.BodyMeasurement) graphql.Marshaler {
+	return ec._BodyMeasurement(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBodyMeasurement2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurementᚄ(ctx context.Context, sel ast.SelectionSet, v []models.BodyMeasurement) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNBodyMeasurement2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurement(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNBodyMeasurement2ᚕᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurementᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.BodyMeasurement) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNBodyMeasurement2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurement(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNBodyMeasurement2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurement(ctx context.Context, sel ast.SelectionSet, v *models.BodyMeasurement) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._BodyMeasurement(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNBodyMeasurementResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurementResult(ctx context.Context, sel ast.SelectionSet, v models.BodyMeasurementResult) graphql.Marshaler {
+	return ec._BodyMeasurementResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBodyMeasurementResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurementResult(ctx context.Context, sel ast.SelectionSet, v *models.BodyMeasurementResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._BodyMeasurementResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNBodyWeightEntriesResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightEntriesResult(ctx context.Context, sel ast.SelectionSet, v models.BodyWeightEntriesResult) graphql.Marshaler {
+	return ec._BodyWeightEntriesResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBodyWeightEntriesResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightEntriesResult(ctx context.Context, sel ast.SelectionSet, v *models.BodyWeightEntriesResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._BodyWeightEntriesResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNBodyWeightEntry2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightEntry(ctx context.Context, sel ast.SelectionSet, v models.BodyWeightEntry) graphql.Marshaler {
+	return ec._BodyWeightEntry(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBodyWeightEntry2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightEntryᚄ(ctx context.Context, sel ast.SelectionSet, v []models.BodyWeightEntry) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNBodyWeightEntry2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightEntry(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNBodyWeightResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightResult(ctx context.Context, sel ast.SelectionSet, v models.BodyWeightResult) graphql.Marshaler {
+	return ec._BodyWeightResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBodyWeightResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightResult(ctx context.Context, sel ast.SelectionSet, v *models.BodyWeightResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._BodyWeightResult(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNBodyWeightSource2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightSource(ctx context.Context, v interface{}) (models.BodyWeightSource, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.BodyWeightSource(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNBodyWeightSource2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightSource(ctx context.Context, sel ast.SelectionSet, v models.BodyWeightSource) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7775,9 +20066,152 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalNCardioEntriesResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntriesResult(ctx context.Context, sel ast.SelectionSet, v models.CardioEntriesResult) graphql.Marshaler {
+	return ec._CardioEntriesResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCardioEntriesResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntriesResult(ctx context.Context, sel ast.SelectionSet, v *models.CardioEntriesResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CardioEntriesResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCardioEntry2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntry(ctx context.Context, sel ast.SelectionSet, v models.CardioEntry) graphql.Marshaler {
+	return ec._CardioEntry(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCardioEntry2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntryᚄ(ctx context.Context, sel ast.SelectionSet, v []models.CardioEntry) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCardioEntry2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntry(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNCardioEntryResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntryResult(ctx context.Context, sel ast.SelectionSet, v models.CardioEntryResult) graphql.Marshaler {
+	return ec._CardioEntryResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCardioEntryResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntryResult(ctx context.Context, sel ast.SelectionSet, v *models.CardioEntryResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CardioEntryResult(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNCardioErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioErrorCode(ctx context.Context, v interface{}) (models.CardioErrorCode, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.CardioErrorCode(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNCardioErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioErrorCode(ctx context.Context, sel ast.SelectionSet, v models.CardioErrorCode) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNCardioType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioType(ctx context.Context, v interface{}) (models.CardioType, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.CardioType(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNCardioType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioType(ctx context.Context, sel ast.SelectionSet, v models.CardioType) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNCreateBodyWeightInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateBodyWeightInput(ctx context.Context, v interface{}) (models.CreateBodyWeightInput, error) {
+	res, err := ec.unmarshalInputCreateBodyWeightInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateCardioInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateCardioInput(ctx context.Context, v interface{}) (models.CreateCardioInput, error) {
+	res, err := ec.unmarshalInputCreateCardioInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateCheckInInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateCheckInInput(ctx context.Context, v interface{}) (models.CreateCheckInInput, error) {
+	res, err := ec.unmarshalInputCreateCheckInInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateExerciseInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateExerciseInput(ctx context.Context, v interface{}) (models.CreateExerciseInput, error) {
 	res, err := ec.unmarshalInputCreateExerciseInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateMeasurementInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateMeasurementInput(ctx context.Context, v interface{}) (models.CreateMeasurementInput, error) {
+	res, err := ec.unmarshalInputCreateMeasurementInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateWeekFlagInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateWeekFlagInput(ctx context.Context, v interface{}) (models.CreateWeekFlagInput, error) {
+	res, err := ec.unmarshalInputCreateWeekFlagInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx context.Context, v interface{}) (models.Date, error) {
+	var res models.Date
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx context.Context, sel ast.SelectionSet, v models.Date) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) marshalNExercise2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐExercise(ctx context.Context, sel ast.SelectionSet, v models.Exercise) graphql.Marshaler {
@@ -7974,6 +20408,21 @@ func (ec *executionContext) marshalNExerciseResult2ᚖmonorepoᚑtemplateᚋapps
 	return ec._ExerciseResult(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v interface{}) (float64, error) {
+	res, err := graphql.UnmarshalFloatContext(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.SelectionSet, v float64) graphql.Marshaler {
+	res := graphql.MarshalFloatContext(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return graphql.WrapContextMarshaler(ctx, res)
+}
+
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -8004,6 +20453,21 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
+func (ec *executionContext) unmarshalNInt2int32(ctx context.Context, v interface{}) (int32, error) {
+	res, err := graphql.UnmarshalInt32(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int32(ctx context.Context, sel ast.SelectionSet, v int32) graphql.Marshaler {
+	res := graphql.MarshalInt32(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) unmarshalNInt2int64(ctx context.Context, v interface{}) (int64, error) {
 	res, err := graphql.UnmarshalInt64(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -8011,6 +20475,22 @@ func (ec *executionContext) unmarshalNInt2int64(ctx context.Context, v interface
 
 func (ec *executionContext) marshalNInt2int64(ctx context.Context, sel ast.SelectionSet, v int64) graphql.Marshaler {
 	res := graphql.MarshalInt64(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNMeasurementType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementType(ctx context.Context, v interface{}) (models.MeasurementType, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.MeasurementType(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNMeasurementType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementType(ctx context.Context, sel ast.SelectionSet, v models.MeasurementType) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -8066,6 +20546,84 @@ func (ec *executionContext) marshalNPinOperationResult2ᚖmonorepoᚑtemplateᚋ
 		return graphql.Null
 	}
 	return ec._PinOperationResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNProgressPhoto2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhoto(ctx context.Context, sel ast.SelectionSet, v models.ProgressPhoto) graphql.Marshaler {
+	return ec._ProgressPhoto(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNProgressPhoto2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotoᚄ(ctx context.Context, sel ast.SelectionSet, v []models.ProgressPhoto) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNProgressPhoto2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhoto(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalNProgressPhotoErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotoErrorCode(ctx context.Context, v interface{}) (models.ProgressPhotoErrorCode, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.ProgressPhotoErrorCode(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNProgressPhotoErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotoErrorCode(ctx context.Context, sel ast.SelectionSet, v models.ProgressPhotoErrorCode) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNProgressPhotosResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotosResult(ctx context.Context, sel ast.SelectionSet, v models.ProgressPhotosResult) graphql.Marshaler {
+	return ec._ProgressPhotosResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNProgressPhotosResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotosResult(ctx context.Context, sel ast.SelectionSet, v *models.ProgressPhotosResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._ProgressPhotosResult(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNSettingsErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐSettingsErrorCode(ctx context.Context, v interface{}) (models.SettingsErrorCode, error) {
@@ -8154,9 +20712,137 @@ func (ec *executionContext) marshalNTime2ᚖtimeᚐTime(ctx context.Context, sel
 	return res
 }
 
+func (ec *executionContext) unmarshalNUpdateBodyWeightInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateBodyWeightInput(ctx context.Context, v interface{}) (models.UpdateBodyWeightInput, error) {
+	res, err := ec.unmarshalInputUpdateBodyWeightInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateCardioInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateCardioInput(ctx context.Context, v interface{}) (models.UpdateCardioInput, error) {
+	res, err := ec.unmarshalInputUpdateCardioInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateCheckInInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateCheckInInput(ctx context.Context, v interface{}) (models.UpdateCheckInInput, error) {
+	res, err := ec.unmarshalInputUpdateCheckInInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNUpdateExerciseInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateExerciseInput(ctx context.Context, v interface{}) (models.UpdateExerciseInput, error) {
 	res, err := ec.unmarshalInputUpdateExerciseInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateMeasurementInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateMeasurementInput(ctx context.Context, v interface{}) (models.UpdateMeasurementInput, error) {
+	res, err := ec.unmarshalInputUpdateMeasurementInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNWeekFlag2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlag(ctx context.Context, sel ast.SelectionSet, v models.WeekFlag) graphql.Marshaler {
+	return ec._WeekFlag(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNWeekFlag2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagᚄ(ctx context.Context, sel ast.SelectionSet, v []models.WeekFlag) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNWeekFlag2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlag(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalNWeekFlagErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagErrorCode(ctx context.Context, v interface{}) (models.WeekFlagErrorCode, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.WeekFlagErrorCode(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNWeekFlagErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagErrorCode(ctx context.Context, sel ast.SelectionSet, v models.WeekFlagErrorCode) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNWeekFlagResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagResult(ctx context.Context, sel ast.SelectionSet, v models.WeekFlagResult) graphql.Marshaler {
+	return ec._WeekFlagResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNWeekFlagResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagResult(ctx context.Context, sel ast.SelectionSet, v *models.WeekFlagResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._WeekFlagResult(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNWeekFlagType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagType(ctx context.Context, v interface{}) (models.WeekFlagType, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.WeekFlagType(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNWeekFlagType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagType(ctx context.Context, sel ast.SelectionSet, v models.WeekFlagType) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNWeekFlagsResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagsResult(ctx context.Context, sel ast.SelectionSet, v models.WeekFlagsResult) graphql.Marshaler {
+	return ec._WeekFlagsResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNWeekFlagsResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagsResult(ctx context.Context, sel ast.SelectionSet, v *models.WeekFlagsResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._WeekFlagsResult(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -8419,6 +21105,65 @@ func (ec *executionContext) marshalOAuthError2ᚖmonorepoᚑtemplateᚋappsᚋap
 	return ec._AuthError(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalOBodyAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyAuthErr(ctx context.Context, sel ast.SelectionSet, v *models.BodyAuthErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._BodyAuthError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOBodyCheckIn2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyCheckIn(ctx context.Context, sel ast.SelectionSet, v *models.BodyCheckIn) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._BodyCheckIn(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOBodyMeasurement2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyMeasurement(ctx context.Context, sel ast.SelectionSet, v *models.BodyMeasurement) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._BodyMeasurement(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOBodyNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyNotFoundErr(ctx context.Context, sel ast.SelectionSet, v *models.BodyNotFoundErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._BodyNotFoundError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOBodyValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyValidationErr(ctx context.Context, sel ast.SelectionSet, v *models.BodyValidationErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._BodyValidationError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOBodyWeightEntry2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightEntry(ctx context.Context, sel ast.SelectionSet, v *models.BodyWeightEntry) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._BodyWeightEntry(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOBodyWeightSource2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightSource(ctx context.Context, v interface{}) (*models.BodyWeightSource, error) {
+	if v == nil {
+		return nil, nil
+	}
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.BodyWeightSource(tmp)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOBodyWeightSource2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightSource(ctx context.Context, sel ast.SelectionSet, v *models.BodyWeightSource) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalString(string(*v))
+	return res
+}
+
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -8445,6 +21190,51 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
+func (ec *executionContext) marshalOCardioAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioAuthErr(ctx context.Context, sel ast.SelectionSet, v *models.CardioAuthErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CardioAuthError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCardioEntry2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioEntry(ctx context.Context, sel ast.SelectionSet, v *models.CardioEntry) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CardioEntry(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCardioNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioNotFoundErr(ctx context.Context, sel ast.SelectionSet, v *models.CardioNotFoundErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CardioNotFoundError(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOCardioType2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioType(ctx context.Context, v interface{}) (*models.CardioType, error) {
+	if v == nil {
+		return nil, nil
+	}
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.CardioType(tmp)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOCardioType2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioType(ctx context.Context, sel ast.SelectionSet, v *models.CardioType) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalString(string(*v))
+	return res
+}
+
+func (ec *executionContext) marshalOCardioValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioValidationErr(ctx context.Context, sel ast.SelectionSet, v *models.CardioValidationErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CardioValidationError(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalOExercise2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐExercise(ctx context.Context, sel ast.SelectionSet, v *models.Exercise) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -8468,6 +21258,23 @@ func (ec *executionContext) marshalOFloat2ᚖfloat64(ctx context.Context, sel as
 	return graphql.WrapContextMarshaler(ctx, res)
 }
 
+func (ec *executionContext) unmarshalOHeartRateZone2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐHeartRateZone(ctx context.Context, v interface{}) (*models.HeartRateZone, error) {
+	if v == nil {
+		return nil, nil
+	}
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.HeartRateZone(tmp)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOHeartRateZone2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐHeartRateZone(ctx context.Context, sel ast.SelectionSet, v *models.HeartRateZone) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalString(string(*v))
+	return res
+}
+
 func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
 	if v == nil {
 		return nil, nil
@@ -8484,6 +21291,56 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	return res
 }
 
+func (ec *executionContext) unmarshalOInt2ᚖint32(ctx context.Context, v interface{}) (*int32, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt32(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint32(ctx context.Context, sel ast.SelectionSet, v *int32) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalInt32(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOMeasurementSide2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementSide(ctx context.Context, v interface{}) (*models.MeasurementSide, error) {
+	if v == nil {
+		return nil, nil
+	}
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.MeasurementSide(tmp)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOMeasurementSide2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementSide(ctx context.Context, sel ast.SelectionSet, v *models.MeasurementSide) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalString(string(*v))
+	return res
+}
+
+func (ec *executionContext) unmarshalOMeasurementType2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementType(ctx context.Context, v interface{}) (*models.MeasurementType, error) {
+	if v == nil {
+		return nil, nil
+	}
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.MeasurementType(tmp)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOMeasurementType2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementType(ctx context.Context, sel ast.SelectionSet, v *models.MeasurementType) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalString(string(*v))
+	return res
+}
+
 func (ec *executionContext) marshalONotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNotFoundErr(ctx context.Context, sel ast.SelectionSet, v *models.NotFoundErr) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -8496,6 +21353,37 @@ func (ec *executionContext) marshalOPinError2ᚖmonorepoᚑtemplateᚋappsᚋapi
 		return graphql.Null
 	}
 	return ec._PinError(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOProgressPhotoAngle2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotoAngle(ctx context.Context, v interface{}) (*models.ProgressPhotoAngle, error) {
+	if v == nil {
+		return nil, nil
+	}
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.ProgressPhotoAngle(tmp)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOProgressPhotoAngle2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotoAngle(ctx context.Context, sel ast.SelectionSet, v *models.ProgressPhotoAngle) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalString(string(*v))
+	return res
+}
+
+func (ec *executionContext) marshalOProgressPhotoAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotoAuthErr(ctx context.Context, sel ast.SelectionSet, v *models.ProgressPhotoAuthErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ProgressPhotoAuthError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOProgressPhotoValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐProgressPhotoValidationErr(ctx context.Context, sel ast.SelectionSet, v *models.ProgressPhotoValidationErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ProgressPhotoValidationError(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOSettings2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐSettings(ctx context.Context, sel ast.SelectionSet, v *models.Settings) graphql.Marshaler {
@@ -8583,6 +21471,34 @@ func (ec *executionContext) marshalOValidationError2ᚖmonorepoᚑtemplateᚋapp
 		return graphql.Null
 	}
 	return ec._ValidationError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOWeekFlag2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlag(ctx context.Context, sel ast.SelectionSet, v *models.WeekFlag) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._WeekFlag(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOWeekFlagAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagAuthErr(ctx context.Context, sel ast.SelectionSet, v *models.WeekFlagAuthErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._WeekFlagAuthError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOWeekFlagNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagNotFoundErr(ctx context.Context, sel ast.SelectionSet, v *models.WeekFlagNotFoundErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._WeekFlagNotFoundError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOWeekFlagValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlagValidationErr(ctx context.Context, sel ast.SelectionSet, v *models.WeekFlagValidationErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._WeekFlagValidationError(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

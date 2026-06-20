@@ -1,0 +1,63 @@
+type WeekFlag {
+  id: ID!
+  userId: ID!
+  weekStartDate: Date!
+  flagType: WeekFlagType!
+  notes: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+enum WeekFlagType {
+  POOR_SLEEP
+  HIGH_STRESS
+  ILLNESS
+  INJURY_PAIN
+  CYCLE
+  CALORIE_DEFICIT
+  SURPLUS
+  MAINTENANCE
+  MISSED_WORKOUTS
+  TRAVEL
+}
+
+input CreateWeekFlagInput {
+  weekStartDate: Date!
+  flagType: WeekFlagType!
+  notes: String
+}
+
+type WeekFlagResult {
+  weekFlag: WeekFlag
+  validationError: WeekFlagValidationError
+  notFoundError: WeekFlagNotFoundError
+  authError: WeekFlagAuthError
+}
+
+type WeekFlagsResult {
+  flags: [WeekFlag!]!
+  validationError: WeekFlagValidationError
+  authError: WeekFlagAuthError
+}
+
+type WeekFlagValidationError {
+  message: String!
+  code: WeekFlagErrorCode!
+}
+
+type WeekFlagNotFoundError {
+  message: String!
+  code: WeekFlagErrorCode!
+}
+
+type WeekFlagAuthError {
+  message: String!
+  code: WeekFlagErrorCode!
+}
+
+enum WeekFlagErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}

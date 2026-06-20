@@ -1,0 +1,42 @@
+type ProgressPhoto {
+  id: ID!
+  checkInId: ID!
+  originalFileName: String!
+  mimeType: String!
+  sizeBytes: Int!
+  angle: ProgressPhotoAngle
+  label: String
+  notes: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+enum ProgressPhotoAngle {
+  FRONT
+  SIDE
+  BACK
+  CUSTOM
+}
+
+type ProgressPhotosResult {
+  photos: [ProgressPhoto!]!
+  validationError: ProgressPhotoValidationError
+  authError: ProgressPhotoAuthError
+}
+
+type ProgressPhotoValidationError {
+  message: String!
+  code: ProgressPhotoErrorCode!
+}
+
+type ProgressPhotoAuthError {
+  message: String!
+  code: ProgressPhotoErrorCode!
+}
+
+enum ProgressPhotoErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}

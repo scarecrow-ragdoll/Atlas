@@ -37,6 +37,60 @@ type AtlasUser struct {
 	UpdatedAt   pgtype.Timestamptz
 }
 
+type BodyCheckIn struct {
+	ID                pgtype.UUID
+	UserID            pgtype.UUID
+	Date              pgtype.Date
+	Weight            pgtype.Float4
+	BodyFatPercentage pgtype.Float4
+	Notes             pgtype.Text
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+}
+
+type BodyMeasurement struct {
+	ID              pgtype.UUID
+	CheckInID       pgtype.UUID
+	MeasurementType string
+	Side            pgtype.Text
+	Value           float32
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+}
+
+type BodyWeightEntry struct {
+	ID        pgtype.UUID
+	UserID    pgtype.UUID
+	Date      pgtype.Date
+	Weight    float32
+	Source    string
+	Notes     pgtype.Text
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+}
+
+type CardioEntry struct {
+	ID              pgtype.UUID
+	UserID          pgtype.UUID
+	DailyLogID      pgtype.UUID
+	CardioType      string
+	DurationMinutes int32
+	AvgPulse        pgtype.Int4
+	HeartRateZone   pgtype.Text
+	Notes           pgtype.Text
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+}
+
+type DailyLog struct {
+	ID        pgtype.UUID
+	UserID    pgtype.UUID
+	Date      pgtype.Date
+	Notes     pgtype.Text
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+}
+
 type Exercise struct {
 	ID            pgtype.UUID
 	UserID        pgtype.UUID
@@ -61,6 +115,20 @@ type ExerciseMedium struct {
 	CreatedAt  pgtype.Timestamptz
 }
 
+type ProgressPhoto struct {
+	ID               pgtype.UUID
+	CheckInID        pgtype.UUID
+	FilePath         string
+	OriginalFileName string
+	MimeType         string
+	SizeBytes        int64
+	Angle            pgtype.Text
+	Label            pgtype.Text
+	Notes            pgtype.Text
+	CreatedAt        pgtype.Timestamptz
+	UpdatedAt        pgtype.Timestamptz
+}
+
 type User struct {
 	ID           pgtype.UUID
 	Email        string
@@ -68,4 +136,14 @@ type User struct {
 	PasswordHash string
 	CreatedAt    pgtype.Timestamptz
 	UpdatedAt    pgtype.Timestamptz
+}
+
+type WeekFlag struct {
+	ID            pgtype.UUID
+	UserID        pgtype.UUID
+	WeekStartDate pgtype.Date
+	FlagType      string
+	Notes         pgtype.Text
+	CreatedAt     pgtype.Timestamptz
+	UpdatedAt     pgtype.Timestamptz
 }

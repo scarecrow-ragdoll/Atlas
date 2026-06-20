@@ -143,3 +143,29 @@ func formatTimestamp(value pgtype.Timestamptz) string {
 	}
 	return value.Time.Format("2006-01-02T15:04:05.999999999Z07:00")
 }
+
+func nullableInt4(value *int32) pgtype.Int4 {
+	if value == nil {
+		return pgtype.Int4{}
+	}
+	return pgtype.Int4{Int32: *value, Valid: true}
+}
+
+func int4Ptr(value pgtype.Int4) *int32 {
+	if !value.Valid {
+		return nil
+	}
+	return &value.Int32
+}
+
+func parseTwoUUIDs(first string, second string) (pgtype.UUID, pgtype.UUID, error) {
+	one, err := uuidFromString(first)
+	if err != nil {
+		return pgtype.UUID{}, pgtype.UUID{}, err
+	}
+	two, err := uuidFromString(second)
+	if err != nil {
+		return pgtype.UUID{}, pgtype.UUID{}, err
+	}
+	return one, two, nil
+}

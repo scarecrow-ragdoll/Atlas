@@ -80,3 +80,106 @@ models:
     model: monorepo-template/apps/api/internal/atlas/models.ExerciseErrorCode
   Time:
     model: github.com/99designs/gqlgen/graphql.Time
+  Date:
+    model: monorepo-template/apps/api/internal/atlas/models.Date
+  # WAVE-04 Cardio
+  CardioEntry:
+    model: monorepo-template/apps/api/internal/atlas/models.CardioEntry
+  CardioType:
+    model: monorepo-template/apps/api/internal/atlas/models.CardioType
+  HeartRateZone:
+    model: monorepo-template/apps/api/internal/atlas/models.HeartRateZone
+  CreateCardioInput:
+    model: monorepo-template/apps/api/internal/atlas/models.CreateCardioInput
+  UpdateCardioInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateCardioInput
+  CardioEntryResult:
+    model: monorepo-template/apps/api/internal/atlas/models.CardioEntryResult
+  CardioEntriesResult:
+    model: monorepo-template/apps/api/internal/atlas/models.CardioEntriesResult
+  CardioValidationError:
+    model: monorepo-template/apps/api/internal/atlas/models.CardioValidationErr
+  CardioNotFoundError:
+    model: monorepo-template/apps/api/internal/atlas/models.CardioNotFoundErr
+  CardioAuthError:
+    model: monorepo-template/apps/api/internal/atlas/models.CardioAuthErr
+  CardioErrorCode:
+    model: monorepo-template/apps/api/internal/atlas/models.CardioErrorCode
+  # WAVE-04 Body Weight
+  BodyWeightEntry:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyWeightEntry
+  BodyWeightSource:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyWeightSource
+  CreateBodyWeightInput:
+    model: monorepo-template/apps/api/internal/atlas/models.CreateBodyWeightInput
+  UpdateBodyWeightInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateBodyWeightInput
+  BodyWeightResult:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyWeightResult
+  BodyWeightEntriesResult:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyWeightEntriesResult
+  # WAVE-04 Body Check-in
+  BodyCheckIn:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyCheckIn
+  CreateCheckInInput:
+    model: monorepo-template/apps/api/internal/atlas/models.CreateCheckInInput
+  UpdateCheckInInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateCheckInInput
+  BodyCheckInResult:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyCheckInResult
+  BodyCheckInsResult:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyCheckInsResult
+  # WAVE-04 Body Measurement
+  BodyMeasurement:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyMeasurement
+  MeasurementType:
+    model: monorepo-template/apps/api/internal/atlas/models.MeasurementType
+  MeasurementSide:
+    model: monorepo-template/apps/api/internal/atlas/models.MeasurementSide
+  CreateMeasurementInput:
+    model: monorepo-template/apps/api/internal/atlas/models.CreateMeasurementInput
+  UpdateMeasurementInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateMeasurementInput
+  BodyMeasurementResult:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyMeasurementResult
+  # WAVE-04 Body shared errors
+  BodyValidationError:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyValidationErr
+  BodyNotFoundError:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyNotFoundErr
+  BodyAuthError:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyAuthErr
+  BodyErrorCode:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyErrorCode
+  # WAVE-04 Progress Photo
+  ProgressPhoto:
+    model: monorepo-template/apps/api/internal/atlas/models.ProgressPhoto
+  ProgressPhotoAngle:
+    model: monorepo-template/apps/api/internal/atlas/models.ProgressPhotoAngle
+  ProgressPhotosResult:
+    model: monorepo-template/apps/api/internal/atlas/models.ProgressPhotosResult
+  ProgressPhotoValidationError:
+    model: monorepo-template/apps/api/internal/atlas/models.ProgressPhotoValidationErr
+  ProgressPhotoAuthError:
+    model: monorepo-template/apps/api/internal/atlas/models.ProgressPhotoAuthErr
+  ProgressPhotoErrorCode:
+    model: monorepo-template/apps/api/internal/atlas/models.ProgressPhotoErrorCode
+  # WAVE-04 Week Flag
+  WeekFlag:
+    model: monorepo-template/apps/api/internal/atlas/models.WeekFlag
+  WeekFlagType:
+    model: monorepo-template/apps/api/internal/atlas/models.WeekFlagType
+  CreateWeekFlagInput:
+    model: monorepo-template/apps/api/internal/atlas/models.CreateWeekFlagInput
+  WeekFlagResult:
+    model: monorepo-template/apps/api/internal/atlas/models.WeekFlagResult
+  WeekFlagsResult:
+    model: monorepo-template/apps/api/internal/atlas/models.WeekFlagsResult
+  WeekFlagValidationError:
+    model: monorepo-template/apps/api/internal/atlas/models.WeekFlagValidationErr
+  WeekFlagNotFoundError:
+    model: monorepo-template/apps/api/internal/atlas/models.WeekFlagNotFoundErr
+  WeekFlagAuthError:
+    model: monorepo-template/apps/api/internal/atlas/models.WeekFlagAuthErr
+  WeekFlagErrorCode:
+    model: monorepo-template/apps/api/internal/atlas/models.WeekFlagErrorCode

@@ -14,9 +14,67 @@ type Querier interface {
 	ArchiveExercise(ctx context.Context, arg ArchiveExerciseParams) (Exercise, error)
 	CountAdminUsers(ctx context.Context) (int64, error)
 	CountExercises(ctx context.Context, arg CountExercisesParams) (int64, error)
+	CountProgressPhotosByCheckIn(ctx context.Context, checkInID pgtype.UUID) (int64, error)
 	CountUsers(ctx context.Context) (int64, error)
 	CreateAdminUser(ctx context.Context, arg CreateAdminUserParams) (AdminUser, error)
 	CreateAtlasSettings(ctx context.Context, userID pgtype.UUID) error
+	// FILE: apps/api/internal/repository/postgres/queries/body_check_ins.sql
+	// VERSION: 1.0.0
+	// START_MODULE_CONTRACT
+	//   PURPOSE: Define sqlc queries for the body_check_ins table in WAVE-04.
+	//   SCOPE: Body check-in CRUD, list by date range, user-scoped access.
+	//   DEPENDS: body_check_ins table (00086_body_check_ins.sql).
+	//   LINKS: M-API / V-M-API / WAVE-04.
+	//   ROLE: CONFIG
+	//   MAP_MODE: SUMMARY
+	// END_MODULE_CONTRACT
+	// START_CHANGE_SUMMARY
+	//   LAST_CHANGE: 1.0.0 - Added body check-in queries for WAVE-04.
+	// END_CHANGE_SUMMARY
+	CreateBodyCheckIn(ctx context.Context, arg CreateBodyCheckInParams) (BodyCheckIn, error)
+	// FILE: apps/api/internal/repository/postgres/queries/body_measurements.sql
+	// VERSION: 1.0.0
+	// START_MODULE_CONTRACT
+	//   PURPOSE: Define sqlc queries for the body_measurements table in WAVE-04.
+	//   SCOPE: Body measurement CRUD, list by check-in ID, user-scoped via check-in join.
+	//   DEPENDS: body_measurements table (00087_body_measurements.sql), body_check_ins table (00086_body_check_ins.sql).
+	//   LINKS: M-API / V-M-API / WAVE-04.
+	//   ROLE: CONFIG
+	//   MAP_MODE: SUMMARY
+	// END_MODULE_CONTRACT
+	// START_CHANGE_SUMMARY
+	//   LAST_CHANGE: 1.0.0 - Added body measurement queries for WAVE-04.
+	// END_CHANGE_SUMMARY
+	CreateBodyMeasurement(ctx context.Context, arg CreateBodyMeasurementParams) (BodyMeasurement, error)
+	// FILE: apps/api/internal/repository/postgres/queries/body_weight_entries.sql
+	// VERSION: 1.0.0
+	// START_MODULE_CONTRACT
+	//   PURPOSE: Define sqlc queries for the body_weight_entries table in WAVE-04.
+	//   SCOPE: Body weight entry CRUD, list by date range, latest entry, user-scoped access.
+	//   DEPENDS: body_weight_entries table (00085_body_weight_entries.sql).
+	//   LINKS: M-API / V-M-API / WAVE-04.
+	//   ROLE: CONFIG
+	//   MAP_MODE: SUMMARY
+	// END_MODULE_CONTRACT
+	// START_CHANGE_SUMMARY
+	//   LAST_CHANGE: 1.0.0 - Added body weight entry queries for WAVE-04.
+	// END_CHANGE_SUMMARY
+	CreateBodyWeightEntry(ctx context.Context, arg CreateBodyWeightEntryParams) (BodyWeightEntry, error)
+	// FILE: apps/api/internal/repository/postgres/queries/cardio_entries.sql
+	// VERSION: 1.0.0
+	// START_MODULE_CONTRACT
+	//   PURPOSE: Define sqlc queries for the cardio_entries table in WAVE-04.
+	//   SCOPE: Cardio entry CRUD, list by daily log ID, user-scoped access.
+	//   DEPENDS: cardio_entries table (00084_cardio_entries.sql), daily_logs table (00083_daily_logs.sql).
+	//   LINKS: M-API / V-M-API / WAVE-04.
+	//   ROLE: CONFIG
+	//   MAP_MODE: SUMMARY
+	// END_MODULE_CONTRACT
+	// START_CHANGE_SUMMARY
+	//   LAST_CHANGE: 1.0.0 - Added cardio entry queries for WAVE-04.
+	// END_CHANGE_SUMMARY
+	CreateCardioEntry(ctx context.Context, arg CreateCardioEntryParams) (CardioEntry, error)
+	CreateDailyLog(ctx context.Context, arg CreateDailyLogParams) (DailyLog, error)
 	// FILE: apps/api/internal/repository/postgres/queries/exercises.sql
 	// VERSION: 1.0.0
 	// START_MODULE_CONTRACT
@@ -32,9 +90,44 @@ type Querier interface {
 	// END_CHANGE_SUMMARY
 	CreateExercise(ctx context.Context, arg CreateExerciseParams) (Exercise, error)
 	CreateExerciseMedia(ctx context.Context, arg CreateExerciseMediaParams) (ExerciseMedium, error)
+	// FILE: apps/api/internal/repository/postgres/queries/progress_photos.sql
+	// VERSION: 1.0.0
+	// START_MODULE_CONTRACT
+	//   PURPOSE: Define sqlc queries for the progress_photos table in WAVE-04.
+	//   SCOPE: Progress photo CRUD, list by check-in ID, user-scoped via check-in join.
+	//   DEPENDS: progress_photos table (00088_progress_photos.sql), body_check_ins table (00086_body_check_ins.sql).
+	//   LINKS: M-API / V-M-API / WAVE-04.
+	//   ROLE: CONFIG
+	//   MAP_MODE: SUMMARY
+	// END_MODULE_CONTRACT
+	// START_CHANGE_SUMMARY
+	//   LAST_CHANGE: 1.0.0 - Added progress photo queries for WAVE-04.
+	// END_CHANGE_SUMMARY
+	CreateProgressPhoto(ctx context.Context, arg CreateProgressPhotoParams) (ProgressPhoto, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error)
+	// FILE: apps/api/internal/repository/postgres/queries/week_flags.sql
+	// VERSION: 1.0.0
+	// START_MODULE_CONTRACT
+	//   PURPOSE: Define sqlc queries for the week_flags table in WAVE-04.
+	//   SCOPE: Week flag CRUD, list by week start date, user-scoped access.
+	//   DEPENDS: week_flags table (00089_week_flags.sql).
+	//   LINKS: M-API / V-M-API / WAVE-04.
+	//   ROLE: CONFIG
+	//   MAP_MODE: SUMMARY
+	// END_MODULE_CONTRACT
+	// START_CHANGE_SUMMARY
+	//   LAST_CHANGE: 1.0.0 - Added week flag queries for WAVE-04.
+	// END_CHANGE_SUMMARY
+	CreateWeekFlag(ctx context.Context, arg CreateWeekFlagParams) (WeekFlag, error)
+	DeleteBodyCheckIn(ctx context.Context, arg DeleteBodyCheckInParams) (BodyCheckIn, error)
+	DeleteBodyMeasurement(ctx context.Context, arg DeleteBodyMeasurementParams) (BodyMeasurement, error)
+	DeleteBodyWeightEntry(ctx context.Context, arg DeleteBodyWeightEntryParams) (BodyWeightEntry, error)
+	DeleteCardioEntry(ctx context.Context, arg DeleteCardioEntryParams) (CardioEntry, error)
+	DeleteDailyLog(ctx context.Context, arg DeleteDailyLogParams) (DailyLog, error)
 	DeleteExerciseMedia(ctx context.Context, arg DeleteExerciseMediaParams) (ExerciseMedium, error)
+	DeleteProgressPhoto(ctx context.Context, arg DeleteProgressPhotoParams) (ProgressPhoto, error)
 	DeleteUser(ctx context.Context, id pgtype.UUID) error
+	DeleteWeekFlag(ctx context.Context, arg DeleteWeekFlagParams) (WeekFlag, error)
 	GetAdminUserByEmail(ctx context.Context, lower string) (AdminUser, error)
 	GetAdminUserByID(ctx context.Context, id pgtype.UUID) (AdminUser, error)
 	GetAtlasDefaultUser(ctx context.Context) (AtlasUser, error)
@@ -52,17 +145,48 @@ type Querier interface {
 	//   LAST_CHANGE: 1.0.1 - Removed ON CONFLICT DO NOTHING from user upsert since atlas_users has no unique constraint on display_name.
 	// END_CHANGE_SUMMARY
 	GetAtlasSettingsByUserID(ctx context.Context, userID pgtype.UUID) (AtlasSetting, error)
+	GetBodyCheckInByID(ctx context.Context, arg GetBodyCheckInByIDParams) (BodyCheckIn, error)
+	GetBodyMeasurementByID(ctx context.Context, arg GetBodyMeasurementByIDParams) (BodyMeasurement, error)
+	GetBodyWeightEntryByID(ctx context.Context, arg GetBodyWeightEntryByIDParams) (BodyWeightEntry, error)
+	GetCardioEntryByID(ctx context.Context, arg GetCardioEntryByIDParams) (CardioEntry, error)
+	// FILE: apps/api/internal/repository/postgres/queries/daily_logs.sql
+	// VERSION: 1.0.0
+	// START_MODULE_CONTRACT
+	//   PURPOSE: Define sqlc queries for the daily_logs table used by WAVE-04 cardio FK.
+	//   SCOPE: GetOrCreateDailyLog (by user_id + date), GetDailyLogByDate. Minimal — WAVE-03 adds full aggregate queries.
+	//   DEPENDS: daily_logs table (00083_daily_logs.sql).
+	//   LINKS: M-API / V-M-API / WAVE-04.
+	//   ROLE: CONFIG
+	//   MAP_MODE: SUMMARY
+	// END_MODULE_CONTRACT
+	// START_CHANGE_SUMMARY
+	//   LAST_CHANGE: 1.0.0 - Added daily_log queries for WAVE-04 cardio support.
+	// END_CHANGE_SUMMARY
+	GetDailyLogByDate(ctx context.Context, arg GetDailyLogByDateParams) (DailyLog, error)
 	GetExerciseByID(ctx context.Context, arg GetExerciseByIDParams) (Exercise, error)
 	GetExerciseMediaByID(ctx context.Context, arg GetExerciseMediaByIDParams) (ExerciseMedium, error)
+	GetProgressPhotoByID(ctx context.Context, arg GetProgressPhotoByIDParams) (ProgressPhoto, error)
 	GetUserByID(ctx context.Context, id pgtype.UUID) (GetUserByIDRow, error)
+	GetWeekFlagByID(ctx context.Context, arg GetWeekFlagByIDParams) (WeekFlag, error)
 	InsertAtlasDefaultUser(ctx context.Context, displayName string) (pgtype.UUID, error)
+	LatestBodyWeightEntry(ctx context.Context, userID pgtype.UUID) (BodyWeightEntry, error)
 	ListAllExercises(ctx context.Context, arg ListAllExercisesParams) ([]Exercise, error)
+	ListBodyCheckInsByDateRange(ctx context.Context, arg ListBodyCheckInsByDateRangeParams) ([]BodyCheckIn, error)
+	ListBodyMeasurementsByCheckIn(ctx context.Context, arg ListBodyMeasurementsByCheckInParams) ([]BodyMeasurement, error)
+	ListBodyWeightEntriesByDateRange(ctx context.Context, arg ListBodyWeightEntriesByDateRangeParams) ([]BodyWeightEntry, error)
+	ListCardioEntriesByDailyLog(ctx context.Context, arg ListCardioEntriesByDailyLogParams) ([]CardioEntry, error)
 	ListExerciseMediaByExercise(ctx context.Context, arg ListExerciseMediaByExerciseParams) ([]ExerciseMedium, error)
 	ListExercises(ctx context.Context, arg ListExercisesParams) ([]Exercise, error)
 	ListExercisesCursor(ctx context.Context, arg ListExercisesCursorParams) ([]Exercise, error)
+	ListProgressPhotosByCheckIn(ctx context.Context, arg ListProgressPhotosByCheckInParams) ([]ProgressPhoto, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]ListUsersRow, error)
+	ListWeekFlagsByWeekStart(ctx context.Context, arg ListWeekFlagsByWeekStartParams) ([]WeekFlag, error)
 	RestoreExercise(ctx context.Context, arg RestoreExerciseParams) (Exercise, error)
 	UpdateAtlasPinState(ctx context.Context, arg UpdateAtlasPinStateParams) (AtlasSetting, error)
+	UpdateBodyCheckIn(ctx context.Context, arg UpdateBodyCheckInParams) (BodyCheckIn, error)
+	UpdateBodyMeasurement(ctx context.Context, arg UpdateBodyMeasurementParams) (BodyMeasurement, error)
+	UpdateBodyWeightEntry(ctx context.Context, arg UpdateBodyWeightEntryParams) (BodyWeightEntry, error)
+	UpdateCardioEntry(ctx context.Context, arg UpdateCardioEntryParams) (CardioEntry, error)
 	UpdateExercise(ctx context.Context, arg UpdateExerciseParams) (Exercise, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (UpdateUserRow, error)
 	UpsertAtlasSettings(ctx context.Context, arg UpsertAtlasSettingsParams) (AtlasSetting, error)

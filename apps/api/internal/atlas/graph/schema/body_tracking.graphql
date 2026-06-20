@@ -1,0 +1,152 @@
+type BodyWeightEntry {
+  id: ID!
+  userId: ID!
+  date: Date!
+  weight: Float!
+  source: BodyWeightSource!
+  notes: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+enum BodyWeightSource {
+  SCALE
+  MANUAL
+  BACKUP_IMPORT
+  UNKNOWN
+}
+
+input CreateBodyWeightInput {
+  date: Date!
+  weight: Float!
+  source: BodyWeightSource!
+  notes: String
+}
+
+input UpdateBodyWeightInput {
+  weight: Float
+  source: BodyWeightSource
+  notes: String
+}
+
+type BodyWeightResult {
+  entry: BodyWeightEntry
+  validationError: BodyValidationError
+  notFoundError: BodyNotFoundError
+  authError: BodyAuthError
+}
+
+type BodyWeightEntriesResult {
+  entries: [BodyWeightEntry!]!
+  validationError: BodyValidationError
+  authError: BodyAuthError
+}
+
+type BodyCheckIn {
+  id: ID!
+  userId: ID!
+  date: Date!
+  weight: Float
+  bodyFatPercentage: Float
+  notes: String
+  measurements: [BodyMeasurement!]!
+  progressPhotos: [ProgressPhoto!]!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input CreateCheckInInput {
+  date: Date!
+  weight: Float
+  bodyFatPercentage: Float
+  notes: String
+}
+
+input UpdateCheckInInput {
+  weight: Float
+  bodyFatPercentage: Float
+  notes: String
+}
+
+type BodyCheckInResult {
+  checkIn: BodyCheckIn
+  validationError: BodyValidationError
+  notFoundError: BodyNotFoundError
+  authError: BodyAuthError
+}
+
+type BodyCheckInsResult {
+  checkIns: [BodyCheckIn!]!
+  validationError: BodyValidationError
+  authError: BodyAuthError
+}
+
+type BodyMeasurement {
+  id: ID!
+  checkInId: ID!
+  measurementType: MeasurementType!
+  side: MeasurementSide
+  value: Float!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+enum MeasurementType {
+  NECK
+  SHOULDERS
+  FOREARM
+  BICEPS
+  CHEST
+  WAIST
+  ABDOMEN
+  HIPS
+  THIGH
+  CALF
+}
+
+enum MeasurementSide {
+  NONE
+  LEFT
+  RIGHT
+}
+
+input CreateMeasurementInput {
+  measurementType: MeasurementType!
+  side: MeasurementSide
+  value: Float!
+}
+
+input UpdateMeasurementInput {
+  measurementType: MeasurementType
+  side: MeasurementSide
+  value: Float
+}
+
+type BodyMeasurementResult {
+  measurement: BodyMeasurement
+  validationError: BodyValidationError
+  notFoundError: BodyNotFoundError
+  authError: BodyAuthError
+}
+
+type BodyValidationError {
+  message: String!
+  code: BodyErrorCode!
+}
+
+type BodyNotFoundError {
+  message: String!
+  code: BodyErrorCode!
+}
+
+type BodyAuthError {
+  message: String!
+  code: BodyErrorCode!
+}
+
+enum BodyErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}

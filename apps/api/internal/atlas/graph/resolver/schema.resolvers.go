@@ -51,6 +51,76 @@ func (r *mutationResolver) RestoreExercise(ctx context.Context, id string) (*mod
 	return r.Resolver.RestoreExercise(ctx, id)
 }
 
+// CreateCardioEntry is the resolver for the createCardioEntry field.
+func (r *mutationResolver) CreateCardioEntry(ctx context.Context, input models.CreateCardioInput) (*models.CardioEntryResult, error) {
+	return r.Resolver.CreateCardioEntry(ctx, input)
+}
+
+// UpdateCardioEntry is the resolver for the updateCardioEntry field.
+func (r *mutationResolver) UpdateCardioEntry(ctx context.Context, id string, input models.UpdateCardioInput) (*models.CardioEntryResult, error) {
+	return r.Resolver.UpdateCardioEntry(ctx, id, input)
+}
+
+// DeleteCardioEntry is the resolver for the deleteCardioEntry field.
+func (r *mutationResolver) DeleteCardioEntry(ctx context.Context, id string) (*models.CardioEntryResult, error) {
+	return r.Resolver.DeleteCardioEntry(ctx, id)
+}
+
+// CreateBodyWeightEntry is the resolver for the createBodyWeightEntry field.
+func (r *mutationResolver) CreateBodyWeightEntry(ctx context.Context, input models.CreateBodyWeightInput) (*models.BodyWeightResult, error) {
+	return r.Resolver.CreateBodyWeightEntry(ctx, input)
+}
+
+// UpdateBodyWeightEntry is the resolver for the updateBodyWeightEntry field.
+func (r *mutationResolver) UpdateBodyWeightEntry(ctx context.Context, id string, input models.UpdateBodyWeightInput) (*models.BodyWeightResult, error) {
+	return r.Resolver.UpdateBodyWeightEntry(ctx, id, input)
+}
+
+// DeleteBodyWeightEntry is the resolver for the deleteBodyWeightEntry field.
+func (r *mutationResolver) DeleteBodyWeightEntry(ctx context.Context, id string) (*models.BodyWeightResult, error) {
+	return r.Resolver.DeleteBodyWeightEntry(ctx, id)
+}
+
+// CreateBodyCheckIn is the resolver for the createBodyCheckIn field.
+func (r *mutationResolver) CreateBodyCheckIn(ctx context.Context, input models.CreateCheckInInput) (*models.BodyCheckInResult, error) {
+	return r.Resolver.CreateBodyCheckIn(ctx, input)
+}
+
+// UpdateBodyCheckIn is the resolver for the updateBodyCheckIn field.
+func (r *mutationResolver) UpdateBodyCheckIn(ctx context.Context, id string, input models.UpdateCheckInInput) (*models.BodyCheckInResult, error) {
+	return r.Resolver.UpdateBodyCheckIn(ctx, id, input)
+}
+
+// DeleteBodyCheckIn is the resolver for the deleteBodyCheckIn field.
+func (r *mutationResolver) DeleteBodyCheckIn(ctx context.Context, id string) (*models.BodyCheckInResult, error) {
+	return r.Resolver.DeleteBodyCheckIn(ctx, id)
+}
+
+// CreateBodyMeasurement is the resolver for the createBodyMeasurement field.
+func (r *mutationResolver) CreateBodyMeasurement(ctx context.Context, checkInID string, input models.CreateMeasurementInput) (*models.BodyMeasurementResult, error) {
+	return r.Resolver.CreateBodyMeasurement(ctx, checkInID, input)
+}
+
+// UpdateBodyMeasurement is the resolver for the updateBodyMeasurement field.
+func (r *mutationResolver) UpdateBodyMeasurement(ctx context.Context, id string, input models.UpdateMeasurementInput) (*models.BodyMeasurementResult, error) {
+	return r.Resolver.UpdateBodyMeasurement(ctx, id, input)
+}
+
+// DeleteBodyMeasurement is the resolver for the deleteBodyMeasurement field.
+func (r *mutationResolver) DeleteBodyMeasurement(ctx context.Context, id string) (*models.BodyMeasurementResult, error) {
+	return r.Resolver.DeleteBodyMeasurement(ctx, id)
+}
+
+// CreateWeekFlag is the resolver for the createWeekFlag field.
+func (r *mutationResolver) CreateWeekFlag(ctx context.Context, input models.CreateWeekFlagInput) (*models.WeekFlagResult, error) {
+	return r.Resolver.CreateWeekFlag(ctx, input)
+}
+
+// DeleteWeekFlag is the resolver for the deleteWeekFlag field.
+func (r *mutationResolver) DeleteWeekFlag(ctx context.Context, id string) (*models.WeekFlagResult, error) {
+	return r.Resolver.DeleteWeekFlag(ctx, id)
+}
+
 // Settings is the resolver for the settings field.
 func (r *queryResolver) Settings(ctx context.Context) (*models.SettingsResult, error) {
 	panic(fmt.Errorf("not implemented: Settings - settings"))
@@ -71,6 +141,56 @@ func (r *queryResolver) AllExercises(ctx context.Context, includeInactive *bool)
 	return r.Resolver.AllExercises(ctx, includeInactive)
 }
 
+// CardioEntry is the resolver for the cardioEntry field.
+func (r *queryResolver) CardioEntry(ctx context.Context, id string) (*models.CardioEntryResult, error) {
+	return r.Resolver.GetCardioEntry(ctx, id)
+}
+
+// CardioEntries is the resolver for the cardioEntries field.
+func (r *queryResolver) CardioEntries(ctx context.Context, date models.Date) (*models.CardioEntriesResult, error) {
+	return r.Resolver.GetCardioEntries(ctx, date)
+}
+
+// BodyWeightEntry is the resolver for the bodyWeightEntry field.
+func (r *queryResolver) BodyWeightEntry(ctx context.Context, id string) (*models.BodyWeightResult, error) {
+	return r.Resolver.GetBodyWeightEntry(ctx, id)
+}
+
+// BodyWeightEntries is the resolver for the bodyWeightEntries field.
+func (r *queryResolver) BodyWeightEntries(ctx context.Context, from models.Date, to models.Date) (*models.BodyWeightEntriesResult, error) {
+	return r.Resolver.GetBodyWeightEntries(ctx, from, to)
+}
+
+// LatestBodyWeight is the resolver for the latestBodyWeight field.
+func (r *queryResolver) LatestBodyWeight(ctx context.Context) (*models.BodyWeightResult, error) {
+	return r.Resolver.GetLatestBodyWeight(ctx)
+}
+
+// BodyCheckIn is the resolver for the bodyCheckIn field.
+func (r *queryResolver) BodyCheckIn(ctx context.Context, id string) (*models.BodyCheckInResult, error) {
+	return r.Resolver.GetBodyCheckIn(ctx, id)
+}
+
+// BodyCheckIns is the resolver for the bodyCheckIns field.
+func (r *queryResolver) BodyCheckIns(ctx context.Context, from models.Date, to models.Date) (*models.BodyCheckInsResult, error) {
+	return r.Resolver.GetBodyCheckIns(ctx, from, to)
+}
+
+// BodyMeasurements is the resolver for the bodyMeasurements field.
+func (r *queryResolver) BodyMeasurements(ctx context.Context, checkInID string) ([]*models.BodyMeasurement, error) {
+	return r.Resolver.GetBodyMeasurements(ctx, checkInID)
+}
+
+// ProgressPhotos is the resolver for the progressPhotos field.
+func (r *queryResolver) ProgressPhotos(ctx context.Context, checkInID string) (*models.ProgressPhotosResult, error) {
+	return r.Resolver.GetProgressPhotos(ctx, checkInID)
+}
+
+// WeekFlags is the resolver for the weekFlags field.
+func (r *queryResolver) WeekFlags(ctx context.Context, weekStartDate models.Date) (*models.WeekFlagsResult, error) {
+	return r.Resolver.GetWeekFlags(ctx, weekStartDate)
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
@@ -79,3 +199,13 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *mutationResolver) DeleteProgressPhoto(ctx context.Context, id string) (*models.CardioEntryResult, error) {
+	panic(fmt.Errorf("not implemented: DeleteProgressPhoto - deleteProgressPhoto"))
+}

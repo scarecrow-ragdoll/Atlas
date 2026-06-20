@@ -7,7 +7,6 @@
   },
   "permission": {
     "edit": "allow",
-    "bash": "ask",
     "webfetch": "ask",
     "websearch": "ask"
   },

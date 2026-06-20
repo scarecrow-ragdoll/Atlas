@@ -1,0 +1,48 @@
+-- FILE: apps/api/internal/repository/postgres/queries/body_measurements.sql
+-- VERSION: 1.0.0
+-- START_MODULE_CONTRACT
+--   PURPOSE: Define sqlc queries for the body_measurements table in WAVE-04.
+--   SCOPE: Body measurement CRUD, list by check-in ID, user-scoped via check-in join.
+--   DEPENDS: body_measurements table (00087_body_measurements.sql), body_check_ins table (00086_body_check_ins.sql).
+--   LINKS: M-API / V-M-API / WAVE-04.
+--   ROLE: CONFIG
+--   MAP_MODE: SUMMARY
+-- END_MODULE_CONTRACT
+-- START_CHANGE_SUMMARY
+--   LAST_CHANGE: 1.0.0 - Added body measurement queries for WAVE-04.
+-- END_CHANGE_SUMMARY
+
+-- name: CreateBodyMeasurement :one
+INSERT INTO body_measurements (check_in_id, measurement_type, side, value)
+VALUES ($1, $2, $3, $4)
+RETURNING id, check_in_id, measurement_type, side, value, created_at, updated_at;
+
+-- name: GetBodyMeasurementByID :one
+SELECT m.id, m.check_in_id, m.measurement_type, m.side, m.value, m.created_at, m.updated_at
+FROM body_measurements m
+JOIN body_check_ins c ON c.id = m.check_in_id
+WHERE m.id = $1 AND c.user_id = $2
+LIMIT 1;
+
+-- name: ListBodyMeasurementsByCheckIn :many
+SELECT m.id, m.check_in_id, m.measurement_type, m.side, m.value, m.created_at, m.updated_at
+FROM body_measurements m
+JOIN body_check_ins c ON c.id = m.check_in_id
+WHERE m.check_in_id = $1 AND c.user_id = $2
+ORDER BY m.measurement_type ASC, m.side ASC NULLS FIRST;
+
+-- name: UpdateBodyMeasurement :one
+UPDATE body_measurements m
+SET measurement_type = COALESCE($3, m.measurement_type),
+    side = $4,
+    value = COALESCE($5, m.value),
+    updated_at = now()
+FROM body_check_ins c
+WHERE m.check_in_id = c.id AND m.id = $1 AND c.user_id = $2
+RETURNING m.id, m.check_in_id, m.measurement_type, m.side, m.value, m.created_at, m.updated_at;
+
+-- name: DeleteBodyMeasurement :one
+DELETE FROM body_measurements m
+USING body_check_ins c
+WHERE m.check_in_id = c.id AND m.id = $1 AND c.user_id = $2
+RETURNING m.id, m.check_in_id, m.measurement_type, m.side, m.value, m.created_at, m.updated_at;

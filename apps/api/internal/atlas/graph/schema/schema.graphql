@@ -1,10 +1,33 @@
 scalar Time
+scalar Date
 
 type Query {
   settings: SettingsResult!
   exercises(first: Int = 20, after: String, includeInactive: Boolean = false): ExerciseConnection!
   exercise(id: ID!): ExerciseResult!
   allExercises(includeInactive: Boolean = false): [Exercise!]!
+
+  # WAVE-04 Cardio
+  cardioEntry(id: ID!): CardioEntryResult!
+  cardioEntries(date: Date!): CardioEntriesResult!
+
+  # WAVE-04 Body Weight
+  bodyWeightEntry(id: ID!): BodyWeightResult!
+  bodyWeightEntries(from: Date!, to: Date!): BodyWeightEntriesResult!
+  latestBodyWeight: BodyWeightResult!
+
+  # WAVE-04 Check-in
+  bodyCheckIn(id: ID!): BodyCheckInResult!
+  bodyCheckIns(from: Date!, to: Date!): BodyCheckInsResult!
+
+  # WAVE-04 Measurements
+  bodyMeasurements(checkInId: ID!): [BodyMeasurement!]!
+
+  # WAVE-04 Progress Photos
+  progressPhotos(checkInId: ID!): ProgressPhotosResult!
+
+  # WAVE-04 Week Flags
+  weekFlags(weekStartDate: Date!): WeekFlagsResult!
 }
 
 type Mutation {
@@ -16,4 +39,28 @@ type Mutation {
   updateExercise(id: ID!, input: UpdateExerciseInput!): ExerciseResult!
   archiveExercise(id: ID!): ArchiveResult!
   restoreExercise(id: ID!): ArchiveResult!
+
+  # WAVE-04 Cardio
+  createCardioEntry(input: CreateCardioInput!): CardioEntryResult!
+  updateCardioEntry(id: ID!, input: UpdateCardioInput!): CardioEntryResult!
+  deleteCardioEntry(id: ID!): CardioEntryResult!
+
+  # WAVE-04 Body Weight
+  createBodyWeightEntry(input: CreateBodyWeightInput!): BodyWeightResult!
+  updateBodyWeightEntry(id: ID!, input: UpdateBodyWeightInput!): BodyWeightResult!
+  deleteBodyWeightEntry(id: ID!): BodyWeightResult!
+
+  # WAVE-04 Check-in
+  createBodyCheckIn(input: CreateCheckInInput!): BodyCheckInResult!
+  updateBodyCheckIn(id: ID!, input: UpdateCheckInInput!): BodyCheckInResult!
+  deleteBodyCheckIn(id: ID!): BodyCheckInResult!
+
+  # WAVE-04 Measurements
+  createBodyMeasurement(checkInId: ID!, input: CreateMeasurementInput!): BodyMeasurementResult!
+  updateBodyMeasurement(id: ID!, input: UpdateMeasurementInput!): BodyMeasurementResult!
+  deleteBodyMeasurement(id: ID!): BodyMeasurementResult!
+
+  # WAVE-04 Week Flags
+  createWeekFlag(input: CreateWeekFlagInput!): WeekFlagResult!
+  deleteWeekFlag(id: ID!): WeekFlagResult!
 }

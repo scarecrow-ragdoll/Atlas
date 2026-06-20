@@ -151,6 +151,24 @@ func main() {
 	atlasExerciseService := atlasService.NewExerciseService(atlasExerciseRepo)
 	atlasMediaHandler := healthHandler.NewAtlasMediaHandler(atlasExerciseService, cfg.Media.BasePath)
 
+	atlasDailyLogRepo := atlasPostgres.NewDailyLogRepository(db.Pool)
+	atlasCardioRepo := atlasPostgres.NewCardioEntryRepository(db.Pool)
+	atlasCardioService := atlasService.NewCardioService(atlasCardioRepo, atlasDailyLogRepo)
+
+	atlasBodyWeightRepo := atlasPostgres.NewBodyWeightEntryRepository(db.Pool)
+	atlasBodyWeightService := atlasService.NewBodyWeightService(atlasBodyWeightRepo)
+
+	atlasCheckInRepo := atlasPostgres.NewBodyCheckInRepository(db.Pool)
+	atlasMeasurementRepo := atlasPostgres.NewBodyMeasurementRepository(db.Pool)
+	atlasPhotoRepo := atlasPostgres.NewProgressPhotoRepository(db.Pool)
+	atlasCheckInService := atlasService.NewBodyCheckInService(atlasCheckInRepo, atlasMeasurementRepo, atlasPhotoRepo)
+	atlasMeasurementService := atlasService.NewBodyMeasurementService(atlasMeasurementRepo, atlasCheckInRepo)
+
+	atlasWeekFlagRepo := atlasPostgres.NewWeekFlagRepository(db.Pool)
+	atlasWeekFlagService := atlasService.NewWeekFlagService(atlasWeekFlagRepo)
+
+	atlasProgressPhotoHandler := healthHandler.NewProgressPhotoHandler(atlasPhotoRepo, atlasCheckInRepo, cfg.Media.BasePath)
+
 	l.Info("[Atlas][bootstrap] ensuring default user and settings")
 	atlasUserID, err := atlasBootstrapService.EnsureDefaultUser(context.Background())
 	if err != nil {
@@ -162,9 +180,14 @@ func main() {
 	l.Info("[Atlas][bootstrap] default user ready", zap.String("user_id", atlasUserID))
 
 	atlasRes := &atlasResolver.Resolver{
-		SettingsService: atlasSettingsService,
-		PinService:      atlasPinService,
-		ExerciseService: atlasExerciseService,
+		SettingsService:      atlasSettingsService,
+		PinService:           atlasPinService,
+		ExerciseService:      atlasExerciseService,
+		CardioService:        atlasCardioService,
+		BodyWeightService:    atlasBodyWeightService,
+		BodyCheckInService:   atlasCheckInService,
+		BodyMeasurementService: atlasMeasurementService,
+		WeekFlagService:      atlasWeekFlagService,
 	}
 	atlasSrv := handler.NewDefaultServer(atlasGenerated.NewExecutableSchema(atlasGenerated.Config{Resolvers: atlasRes}))
 
@@ -241,6 +264,9 @@ func main() {
 		atlas.Post("/api/v1/media/upload", atlasMediaHandler.Upload)
 		atlas.Get("/api/v1/media/{id}", atlasMediaHandler.Download)
 		atlas.Delete("/api/v1/media/{id}", atlasMediaHandler.Delete)
+		atlas.Post("/api/v1/progress-photos/upload", atlasProgressPhotoHandler.Upload)
+		atlas.Get("/api/v1/progress-photos/{id}", atlasProgressPhotoHandler.Download)
+		atlas.Delete("/api/v1/progress-photos/{id}", atlasProgressPhotoHandler.Delete)
 	})
 
 	httpServer := &http.Server{
