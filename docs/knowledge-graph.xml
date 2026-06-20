@@ -202,6 +202,52 @@
       </annotations>
     </M-BOT>
 
+    <M-API-NUTRITION NAME="AtlasNutritionModule" TYPE="CORE_LOGIC" STATUS="implemented">
+      <purpose>Atlas WAVE-05 Nutrition module: KJBJU product catalog, weekly meal templates with item CRUD, daily nutrition overrides with item CRUD, macro calculation engine with add/subtract/replace operations, and GraphQL union error resolvers.</purpose>
+      <path>apps/api/internal/atlas/models/nutrition.go</path>
+      <path>apps/api/internal/atlas/repository/postgres/nutrition_product_repo.go</path>
+      <path>apps/api/internal/atlas/repository/postgres/nutrition_template_repo.go</path>
+      <path>apps/api/internal/atlas/repository/postgres/nutrition_template_item_repo.go</path>
+      <path>apps/api/internal/atlas/repository/postgres/nutrition_override_repo.go</path>
+      <path>apps/api/internal/atlas/repository/postgres/nutrition_override_item_repo.go</path>
+      <path>apps/api/internal/atlas/service/nutrition_product_service.go</path>
+      <path>apps/api/internal/atlas/service/nutrition_template_service.go</path>
+      <path>apps/api/internal/atlas/service/nutrition_template_item_service.go</path>
+      <path>apps/api/internal/atlas/service/nutrition_override_service.go</path>
+      <path>apps/api/internal/atlas/service/nutrition_macro_service.go</path>
+      <path>apps/api/internal/atlas/graph/schema/nutrition.graphql</path>
+      <path>apps/api/internal/atlas/graph/resolver/nutrition.go</path>
+      <path>apps/api/internal/repository/postgres/queries/nutrition_products.sql</path>
+      <path>apps/api/internal/repository/postgres/queries/nutrition_templates.sql</path>
+      <path>apps/api/internal/repository/postgres/queries/nutrition_template_items.sql</path>
+      <path>apps/api/internal/repository/postgres/queries/nutrition_overrides.sql</path>
+      <path>apps/api/internal/repository/postgres/queries/nutrition_override_items.sql</path>
+      <path>apps/api/internal/repository/postgres/migrations/00090_nutrition_tables.sql</path>
+      <depends>M-API</depends>
+      <verification-ref>V-M-API-NUTRITION</verification-ref>
+      <annotations>
+        <export-NutritionProductService PURPOSE="Product CRUD with soft-delete, name validation, macro non-negative check." />
+        <export-NutritionTemplateService PURPOSE="Weekly template upsert with cascading item loading." />
+        <export-NutritionTemplateItemService PURPOSE="Template item CRUD with template ownership check." />
+        <export-DailyNutritionOverrideService PURPOSE="Daily override upsert with isolated item CRUD." />
+        <export-NutritionMacroService PURPOSE="KJBJU calculation per RULE-010/RULE-011 with ADD/SUBTRACT/REPLACE operations." />
+        <export-NutritionGraphQLSchema PURPOSE="Types, inputs, enums, union results, queries, and mutations for all 5 entities." />
+        <export-NutritionResolvers PURPOSE="PIN auth-guarded GraphQL resolvers with union error returns." />
+        <constraint-MacroCalc PURPOSE="Soft-deleted products contribute 0 macros. Override REPLACE removes all template occurrences of same product." />
+      </annotations>
+    </M-API-NUTRITION>
+      <purpose>Telegram bot app with config, logging middleware, recovery middleware, and command handlers.</purpose>
+      <path>apps/bot</path>
+      <depends>M-GO-CONFIG, M-GO-LOGGER</depends>
+      <verification-ref>V-M-BOT</verification-ref>
+      <annotations>
+        <export-main PURPOSE="Bot startup, middleware, handlers, and graceful shutdown." />
+        <fn-startHandler PURPOSE="Handle start command." />
+        <fn-helpHandler PURPOSE="Handle help command." />
+        <fn-defaultHandler PURPOSE="Handle fallback messages." />
+      </annotations>
+    </M-BOT>
+
     <M-PRODUCT-DOCS NAME="ProductDocs" TYPE="UTILITY" STATUS="partial">
       <purpose>Product background, glossary, journeys, personas, business rules, and data dictionary used as planning context.</purpose>
       <path>docs/product</path>
@@ -363,5 +409,7 @@
     <CrossLink from="M-BACKEND-WAVE-PLANNER" to="M-GRACE-WORKFLOW" relation="uses GRACE-governed skill artifacts, traceability, validation, and user approval gates before implementation handoff" />
     <CrossLink from="M-PLAN-TO-BEADS-SKILL" to="M-GRACE-WORKFLOW" relation="converts approved plans into Beads milestone, epic, and task graphs while preserving GRACE source-plan intent" />
     <CrossLink from="M-SUBAGENT-REVIEW-LOOP-SKILL" to="M-GRACE-WORKFLOW" relation="reviews and revises agent-generated artifacts through independent subagent approval loops under controller adjudication" />
+    <CrossLink from="M-API" to="M-API-NUTRITION" relation="wires nutrition repos, services, and resolvers in main.go and gqlgen config" />
+    <CrossLink from="M-API-NUTRITION" to="M-API" relation="uses API foundation: postgres pool, sqlc config, gqlgen config, go module path, and middleware auth" />
   </Project>
 </KnowledgeGraph>
