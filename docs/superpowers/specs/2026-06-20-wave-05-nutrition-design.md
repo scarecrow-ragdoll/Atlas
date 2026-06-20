@@ -81,9 +81,9 @@ All entities are independent from WAVE-02/03/04 tables. Only FK dependency is `a
 - `DeleteNutritionProduct :one` — UPDATE is_active = false, RETURNING
 
 ### nutrition_templates.sql
-- `CreateNutritionTemplate :one` — INSERT ON CONFLICT DO UPDATE (upsert)
+- `CreateNutritionTemplate :one` — INSERT ON CONFLICT (user_id, week_start_date) DO UPDATE SET title = COALESCE($3, nutrition_template.title), notes = COALESCE($4, nutrition_template.notes) RETURNING * (upsert — same conflict target on insert and update)
 - `GetNutritionTemplateByID :one` — SELECT by id + user_id
-- `GetNutritionTemplateByWeek :one` — SELECT by user_id + week_start_date
+- `GetNutritionTemplateByWeek :one` — SELECT by user_id + week_start_date (returns template header only; items are loaded separately by service layer)
 - `ListNutritionTemplatesByRange :many` — SELECT by user_id + date range
 - `UpdateNutritionTemplate :one` — UPDATE title, notes
 - `DeleteNutritionTemplate :one` — DELETE (cascade due to FK)
@@ -96,7 +96,7 @@ All entities are independent from WAVE-02/03/04 tables. Only FK dependency is `a
 - `DeleteNutritionTemplateItem :one` — DELETE
 
 ### nutrition_overrides.sql
-- `CreateDailyNutritionOverride :one` — INSERT ON CONFLICT DO NOTHING / unique constraint
+- `CreateDailyNutritionOverride :one` — INSERT ON CONFLICT (user_id, date) DO UPDATE SET notes = EXCLUDED.notes RETURNING *. Returns the existing record on conflict (upsert semantics matching templates)
 - `GetDailyNutritionOverrideByID :one` — SELECT by id + user_id
 - `GetDailyNutritionOverrideByDate :one` — SELECT by user_id + date
 - `ListDailyNutritionOverridesByRange :many` — SELECT by user_id + date range
@@ -117,7 +117,7 @@ Types following the cardio.go pattern:
 - **DB Records**: `NutritionProductRecord`, `NutritionTemplateRecord`, `NutritionTemplateItemRecord`, `DailyNutritionOverrideRecord`, `DailyNutritionOverrideItemRecord`
 - **Public Models**: `NutritionProduct`, `NutritionTemplate`, `NutritionTemplateItem`, `DailyNutritionOverride`, `DailyNutritionOverrideItem`, `NutritionMacros`
 - **Inputs**: `CreateProductInput`, `UpdateProductInput`, `CreateTemplateInput`, `UpdateTemplateInput`, `CreateTemplateItemInput`, `UpdateTemplateItemInput`, `CreateOverrideInput`, `UpdateOverrideInput`, `CreateOverrideItemInput`, `UpdateOverrideItemInput`
-- **Result Unions**: `NutritionProductResult`, `NutritionTemplatesResult`, `NutritionTemplateResult`, `DailyNutritionOverrideResult`, `DailyNutritionOverridesResult`, `NutritionTemplateItemResult`, `DailyNutritionOverrideItemResult`, `NutritionMacrosResult`
+- **Result Unions**: `NutritionProductResult`, `NutritionProductsResult`, `NutritionTemplateResult`, `NutritionTemplatesResult`, `DailyNutritionOverrideResult`, `DailyNutritionOverridesResult`, `NutritionTemplateItemResult`, `DailyNutritionOverrideItemResult`, `NutritionMacrosResult`
 - **Errors**: `NutritionValidationErr`, `NutritionNotFoundErr`, `NutritionAuthErr` (shared across entities, like WAVE-04 body errors)
 - **Enums**: `Operation` (ADD/SUBTRACT/REPLACE), `NutritionErrorCode`
 - **Converters**: `NutritionProductFromRecord`, `NutritionTemplateFromRecord`, etc.
@@ -192,16 +192,15 @@ Each follows the exact cardio pattern:
 - `Calculate(ctx, userID, weekStartDate, date)` — stateless calculation
 - Algorithm:
   1. Load template for weekStartDate
-  2. If no template → return all zeros
+  2. If no template → return all zeros (not an error)
   3. For each template item: get product macros, scale by (amountGrams / 100)
   4. If a date is specified: check for override
-  5. If override exists: apply override items per operation:
-     - ADD: add override macro values
-     - SUBTRACT: subtract override macro values
-     - REPLACE: for the given product, use override values instead of template values
-  6. If product is soft-deleted (isActive=false): contribute 0
+  5. If override exists: apply override items per operation. Override item macros calculated identically to template items: (product macros × amount_grams / 100).
+     - ADD: add override macro values to template totals
+     - SUBTRACT: subtract override macro values from template totals
+     - REPLACE: for the given product, use override values instead of template values. If the same product appears in multiple template items, REPLACE applies to all occurrences of that product_id in the template.
+  6. If product is soft-deleted (isActive=false): contribute 0 for that item
   7. Return aggregated NutritionMacros
-- Error vars: `ErrTemplateNotFound` for missing week template
 
 ## GraphQL Schema (`schema/nutrition.graphql`)
 
@@ -233,6 +232,7 @@ input CreateOverrideItemInput { overrideId!, productId!, amountGrams!, operation
 input UpdateOverrideItemInput { amountGrams, operation, mealLabel, notes }
 
 # Result Unions
+type NutritionProductsResult { products: [NutritionProduct!]!, validationError: NutritionValidationError, authError: NutritionAuthError }
 type NutritionProductResult { nutritionProduct, validationError: NutritionValidationError, notFoundError: NutritionNotFoundError, authError: NutritionAuthError }
 type NutritionTemplatesResult { templates: [NutritionTemplate!], validationError: NutritionValidationError, authError: NutritionAuthError }
 type NutritionTemplateResult { nutritionTemplate, validationError: NutritionValidationError, notFoundError: NutritionNotFoundError, authError: NutritionAuthError }
@@ -248,7 +248,43 @@ type NutritionNotFoundError { message: String!, code: NutritionErrorCode! }
 type NutritionAuthError { message: String!, code: NutritionErrorCode! }
 ```
 
-### Queries and Mutations (on Query/Mutation types in the schema)
+### Queries
+
+```graphql
+type Query {
+  nutritionProducts: NutritionProductsResult!
+  nutritionProduct(id: ID!): NutritionProductResult!
+  nutritionTemplates(startDate: Date!, endDate: Date!): NutritionTemplatesResult!
+  nutritionTemplate(id: ID!): NutritionTemplateResult!
+  nutritionTemplateCurrent(weekStartDate: Date!): NutritionTemplateResult!
+  dailyNutritionOverrides(startDate: Date!, endDate: Date!): DailyNutritionOverridesResult!
+  dailyNutritionOverride(id: ID!): DailyNutritionOverrideResult!
+  dailyNutritionOverrideByDate(date: Date!): DailyNutritionOverrideResult!
+  nutritionMacros(weekStartDate: Date!, date: Date): NutritionMacrosResult!
+}
+```
+
+### Mutations
+
+```graphql
+type Mutation {
+  createNutritionProduct(input: CreateProductInput!): NutritionProductResult!
+  updateNutritionProduct(id: ID!, input: UpdateProductInput!): NutritionProductResult!
+  deleteNutritionProduct(id: ID!): NutritionProductResult!
+  createNutritionTemplate(input: CreateTemplateInput!): NutritionTemplateResult!
+  updateNutritionTemplate(id: ID!, input: UpdateTemplateInput!): NutritionTemplateResult!
+  deleteNutritionTemplate(id: ID!): NutritionTemplateResult!
+  createNutritionTemplateItem(input: CreateTemplateItemInput!): NutritionTemplateItemResult!
+  updateNutritionTemplateItem(id: ID!, input: UpdateTemplateItemInput!): NutritionTemplateItemResult!
+  deleteNutritionTemplateItem(id: ID!): NutritionTemplateItemResult!
+  createDailyNutritionOverride(input: CreateOverrideInput!): DailyNutritionOverrideResult!
+  updateDailyNutritionOverride(id: ID!, input: UpdateOverrideInput!): DailyNutritionOverrideResult!
+  deleteDailyNutritionOverride(id: ID!): DailyNutritionOverrideResult!
+  createDailyNutritionOverrideItem(input: CreateOverrideItemInput!): DailyNutritionOverrideItemResult!
+  updateDailyNutritionOverrideItem(id: ID!, input: UpdateOverrideItemInput!): DailyNutritionOverrideItemResult!
+  deleteDailyNutritionOverrideItem(id: ID!): DailyNutritionOverrideItemResult!
+}
+```
 
 ## Resolvers (`resolver/nutrition.go`)
 
