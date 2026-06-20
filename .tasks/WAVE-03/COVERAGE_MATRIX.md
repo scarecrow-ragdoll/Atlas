@@ -4,7 +4,7 @@
 <!--   PURPOSE: Map WAVE-03 Workout Diary source-plan requirements to committed tests, verification commands, deterministic test-environment assumptions, and follow-up coverage beads. -->
 <!--   SCOPE: Coverage evidence for DailyLog, strength workout exercises, workout sets, Date scalar, generated-artifact gates, Docker-backed Postgres assumptions, explicit non-goals, and known non-W03 blockers; excludes product code, test code, shared GRACE XML edits, Beads DB edits, frontend, cardio, body weight, charts, and AI export. -->
 <!--   DEPENDS: docs/superpowers/plans/2026-06-19-wave-03-workout-diary.md, docs/superpowers/specs/2026-06-19-wave-03-workout-diary-design.md, docs/verification-plan.xml, .tasks/WAVE-03/HANDOFF.md. -->
-<!--   LINKS: M-API / V-M-API / WAVE-03 / Atlas-qb2.2.1 / Atlas-qb2.2.5. -->
+<!--   LINKS: M-API / V-M-API / WAVE-03 / Atlas-qb2.2.1 / Atlas-qb2.2.5 / Atlas-qb2.2.6. -->
 <!--   ROLE: DOC -->
 <!--   MAP_MODE: SUMMARY -->
 <!-- END_MODULE_CONTRACT -->
@@ -17,7 +17,7 @@
 <!--   Current Blockers / Explicit Non-Blockers - Separates W03 coverage gaps from baseline GRACE/tooling blockers. -->
 <!-- END_MODULE_MAP -->
 <!-- START_CHANGE_SUMMARY -->
-<!--   LAST_CHANGE: 1.0.3 - Recorded Atlas-qb2.2.5 cross-wave regression and no-scope proof closure. -->
+<!--   LAST_CHANGE: 1.0.4 - Recorded Atlas-qb2.2.6 final coverage closure command evidence. -->
 <!-- END_CHANGE_SUMMARY -->
 
 # WAVE-03 Coverage Matrix
@@ -135,9 +135,9 @@ Legend: `COVERED` means committed tests directly prove the behavior. `PARTIAL` m
 | Optimistic concurrency: stale DailyLog version returns conflict, no last-write-wins, child mutations validate `expectedVersion` before mutation, version increments are reusable for future child domains. | DailyLog stale conflict: `TestWorkoutService_UpdateNotes_RejectsStaleVersion`; absent non-zero conflict tests; child stale conflicts/no-last-write-wins: `TestWorkoutService_ChildMutationsRejectStaleVersionWithCurrentAggregateAndNoMutation`; reusable increment: `TestWorkoutRepo_IncrementDailyLogVersion`; multiple success tests assert incremented versions; API conflict envelope sample in `TestWorkoutGraphQLMutations_ResultMappings`. | COVERED | None. |
 | Resolver auth, delegation, typed domain error mapping, unexpected internal error behavior, explicit null mapping. | Auth: `TestDailyLogResolver_UnauthorizedReturnsAuthError`; delegation: `TestDailyLogResolver_DelegatesAuthenticatedDailyLog`; conflict: `TestUpdateDailyLogNotesResolver_MapsConflictError`; validation: `TestAddWorkoutExerciseResolver_MapsValidationError`; not found: `TestWorkoutSetResolvers_MapNotFoundError`; internal: `TestWorkoutResolvers_DoNotLeakUnexpectedErrors`; explicit null: `TestUpdateWorkoutExerciseResolver_MapsExplicitNullNotes`, `TestUpdateWorkoutSetResolver_MapsExplicitNullNullableFields`; API contract expansion: `TestWorkoutGraphQLSchema_OperationSignaturesAndNoWave04Placeholders`, `TestWorkoutGraphQLDailyLog_AuthNoCreateAndDateBinding`, `TestWorkoutGraphQLDailyLogs_RangeSuccessMapping`, `TestWorkoutGraphQLDailyLogs_InvalidRangePropagatesValidationError`, and `TestWorkoutGraphQLMutations_ResultMappings`. | COVERED | None. |
 | Date scalar accepts strict `YYYY-MM-DD`, rejects timestamps, marshals quoted dates, and marshals zero value as null. | `TestDate_UnmarshalStrictYYYYMMDD`; `TestDate_RejectsTimestamp`; `TestDate_MarshalGQLWritesQuotedDate`; `TestDate_MarshalGQLZeroValueWritesNull`; `TestWorkoutGraphQLDailyLog_AuthNoCreateAndDateBinding/timestamp date variable fails before resolver` proves generated Date binding rejects timestamp variables before resolver execution; `bunx nx run api:codegen:atlas` is the generated schema compile gate. | COVERED | None. |
-| Generated sqlc and gqlgen artifacts stay current. | `TEST-W03-009`: `bunx nx run api:codegen && bunx nx run api:codegen:atlas`; handoff records both passed with `--skip-nx-cache`. | GATE | `Atlas-qb2.2.6` reruns final closure commands. |
-| API package and build gates prove generated artifacts are usable. | `TEST-W03-012`: `bunx nx test api && bunx nx build api`; handoff records both passed with `--skip-nx-cache`. | GATE | `Atlas-qb2.2.6` reruns final closure commands. |
-| Docker-backed repository tests prove committed migrations and sqlc queries against real Postgres. | `TEST-W03-011`; handoff says Docker-backed repository integration passed, migrations applied through `00085`, and 17 `TestWorkoutRepo_*` tests ran with no DB skip. | COVERED for handoff run; closure rerun required. | `Atlas-qb2.2.6` reruns and records exact output. |
+| Generated sqlc and gqlgen artifacts stay current. | `TEST-W03-009`: `bunx nx run api:codegen --skip-nx-cache` and `bunx nx run api:codegen:atlas --skip-nx-cache` passed in `.tasks/WAVE-03/COVERAGE_CLOSURE.md`; follow-up `git status --short --branch` showed no generated drift. | GATE PASSED | Closed by `Atlas-qb2.2.6`. |
+| API package and build gates prove generated artifacts are usable. | `TEST-W03-012`: `bunx nx test api --skip-nx-cache` and `bunx nx build api --skip-nx-cache` passed in `.tasks/WAVE-03/COVERAGE_CLOSURE.md`. | GATE PASSED | Closed by `Atlas-qb2.2.6`. |
+| Docker-backed repository tests prove committed migrations and sqlc queries against real Postgres. | `TEST-W03-001` and `TEST-W03-011` passed with `COVERAGE_GATE=1` in `.tasks/WAVE-03/COVERAGE_CLOSURE.md`; Docker reported Postgres/Redis healthy, goose current version `85`, and no repository skip/unavailable-service output. | COVERED / GATE PASSED | Closed by `Atlas-qb2.2.6`. |
 
 ## Verification Command Matrix
 
@@ -166,18 +166,15 @@ Generated-artifact replacement gates:
 | `Atlas-qb2.2.3` | W03 coverage: service behavior and conflict paths. | Closed by service tests for `dailyLog` no-create, `dailyLogs` date range, existing notes update, notes null clear, negative `expectedVersion >= 0` validation/no mutation, child stale `expectedVersion` conflicts, `AddWorkoutSet` parent workout exercise not-found/no mutation, exercise notes/null, set update values/null, set remove success, reorder success/version, insert-at-position/set-number success, and no last-write-wins paths. |
 | `Atlas-qb2.2.4` | W03 coverage: GraphQL resolver and API contract paths. | Closed by `TestWorkoutGraphQLSchema_OperationSignaturesAndNoWave04Placeholders`, `TestWorkoutGraphQLDailyLog_AuthNoCreateAndDateBinding`, `TestWorkoutGraphQLDailyLogs_RangeSuccessMapping`, `TestWorkoutGraphQLDailyLogs_InvalidRangePropagatesValidationError`, `TestWorkoutGraphQLMutations_ResultMappings`, focused resolver tests, and `bunx nx run api:codegen:atlas`. |
 | `Atlas-qb2.2.5` | W03 coverage: cross-wave regression and no-scope proof. | Closed by `.tasks/WAVE-03/REGRESSION_NO_SCOPE_PROOF.md`: focused WAVE-01/WAVE-02 regression checks passed; Docker-backed Exercise Library/workout snapshot repository compatibility passed; targeted static proof found no product implementation for `cardio_entries`, `CardioType`, `HeartRateZone`, `body_weight`, `bodyWeight`, legacy `WorkoutDay`, frontend/public web/web-admin changes, charts/e1RM, AI export, backup/import, starter templates, or automatic working weight progression. |
-| `Atlas-qb2.2.6` | W03 coverage: coverage epic closure commands. | Rerun `api:codegen`, `api:codegen:atlas`, WAVE-03 package tests, Docker repository tests, `bunx nx test api`, and `bunx nx build api`; record exact output and no-skip DB evidence. |
+| `Atlas-qb2.2.6` | W03 coverage: coverage epic closure commands. | Closed by `.tasks/WAVE-03/COVERAGE_CLOSURE.md`: `api:codegen`, `api:codegen:atlas`, focused W03 package tests, Docker migration/connectivity tests, Docker repository integration tests, `bunx nx test api`, and `bunx nx build api` passed; generated drift, Docker health, goose version `85`, and no-skip evidence recorded. |
 | `Atlas-qb2.3.1` | W03 QA: source traceability audit. | Use this matrix plus final command evidence to audit source-plan traceability after coverage beads close. |
 
 ## Current Blockers / Explicit Non-Blockers
 
-Remaining W03 coverage follow-ups:
+Remaining W03 coverage follow-ups: none for `Atlas-qb2.2` after `Atlas-qb2.2.6`.
 
-- `Atlas-qb2.2.6`: rerun closure commands for codegen, Atlas gqlgen, focused WAVE-03 package tests, Docker-backed repository tests, `bunx nx test api`, and `bunx nx build api` with exact output and no-skip DB evidence.
+Explicit non-blockers and residual notes for W03 coverage closure:
 
-Explicit non-blockers for W03 coverage matrix creation:
-
-- The W03 implementation handoff already records focused codegen, test, build, and Docker repository evidence; this artifact does not rerun heavy gates.
+- The initial coverage matrix was created before final heavy-gate reruns; `.tasks/WAVE-03/COVERAGE_CLOSURE.md` now records the final `Atlas-qb2.2.6` codegen, focused test, Docker repository, API test, and API build closure evidence.
 - `.tasks/WAVE-03/HANDOFF.md` records baseline GRACE lint issues after the in-scope W03 markup issue was fixed: `bunx @osovv/grace-cli lint --path .` still reported 32 baseline issues, 24 errors and 8 warnings, in WAVE-01/WAVE-02/generated/skills surfaces. Those are not W03 coverage matrix blockers.
 - The temporary Docker stack `atlas-w03-test` may remain running from handoff; it is an environment cleanup item, not a product/code blocker, unless it prevents deterministic reruns.
-- `Atlas-qb2.2.3` is a service-test coverage bead and edits `apps/api/internal/atlas/service/workout_service_test.go`; it does not edit production code, schema/API contracts, frontend code, generated files, `docs/*.xml`, Beads DB, git config, cardio/body-weight scope, or commits.
