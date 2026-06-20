@@ -140,7 +140,7 @@ Each follows the exact cardio pattern:
 
 ### NutritionTemplateRepository
 - Create (upsert), GetByID, GetByWeek, ListByRange, Update, Delete
-- `GetByWeek` returns template + items for a given weekStartDate
+- `GetByWeek` returns template header (items loaded separately by service via item repo)
 - `ListByRange` uses `week_start_date BETWEEN $2 AND $3`
 
 ### NutritionTemplateItemRepository
@@ -149,7 +149,7 @@ Each follows the exact cardio pattern:
 
 ### DailyNutritionOverrideRepository
 - Create, GetByID, GetByDate, ListByRange, Update, Delete
-- `GetByDate` returns override + items for a specific date
+- `GetByDate` returns override header (items loaded separately by service via override item repo)
 - `ListByRange` uses `date BETWEEN $2 AND $3`
 
 ### DailyNutritionOverrideItemRepository
@@ -183,7 +183,7 @@ Each follows the exact cardio pattern:
 
 ### DailyNutritionOverrideService
 - `Create`: validate date required, unique per user+date
-- `GetByID`, `GetByDate`, `ListByRange`
+- `GetByID`, `GetByDate`, `ListByRange` (all return header only; items assembled by macro service when needed)
 - `Update`: notes only, date immutable
 - `Delete`: cascade delete
 - `GetByDate`: returns override with items or nil (no error — absence means "use template")
