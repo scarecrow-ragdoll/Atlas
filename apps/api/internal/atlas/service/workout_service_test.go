@@ -14,17 +14,17 @@
 //   fakeExerciseRepo - ExerciseRepository fake used to prove exercise lookup and snapshot behavior.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.1 - Added GRACE MODULE_MAP summary for WAVE-03 service tests.
+//   LAST_CHANGE: 1.0.2 - Added WAVE-03 service coverage for summaries, conflicts, null clears, inserts, removals, and reorder success paths.
 // END_CHANGE_SUMMARY
 
 package service_test
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"testing"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -46,10 +46,12 @@ func ptrInt32(i int32) *int32 { return &i }
 
 type fakeExerciseRepo struct {
 	atlasPostgres.ExerciseRepository
-	getByIDFn func(ctx context.Context, userID string, id string) (*models.ExerciseRecord, error)
+	getByIDHits int
+	getByIDFn   func(ctx context.Context, userID string, id string) (*models.ExerciseRecord, error)
 }
 
 func (f *fakeExerciseRepo) GetByID(ctx context.Context, userID string, id string) (*models.ExerciseRecord, error) {
+	f.getByIDHits++
 	if f.getByIDFn == nil {
 		return nil, nil
 	}
@@ -59,15 +61,23 @@ func (f *fakeExerciseRepo) GetByID(ctx context.Context, userID string, id string
 type fakeWorkoutRepo struct {
 	atlasPostgres.WorkoutRepository
 
-	dailyLogs       map[string]*atlasPostgres.DailyLogAggregate
-	dateIndex       map[string]string
-	exerciseToLog   map[string]string
-	setToExercise   map[string]string
-	nextDailyLog    int
-	nextExercise    int
-	nextSet         int
-	getOrCreateHits int
-	lockExerciseHit int
+	dailyLogs         map[string]*atlasPostgres.DailyLogAggregate
+	dateIndex         map[string]string
+	exerciseToLog     map[string]string
+	setToExercise     map[string]string
+	summaryRecords    []atlasPostgres.DailyLogSummaryRecord
+	lastSummaryUserID string
+	lastSummaryFrom   models.Date
+	lastSummaryTo     models.Date
+	nextDailyLog      int
+	nextExercise      int
+	nextSet           int
+	listSummaryHits   int
+	getOrCreateHits   int
+	lockDateHit       int
+	lockExerciseHit   int
+	lockSetHit        int
+	mutationHits      int
 }
 
 func newFakeWorkoutRepo() *fakeWorkoutRepo {
@@ -158,13 +168,18 @@ func (f *fakeWorkoutRepo) GetDailyLogAggregate(ctx context.Context, userID strin
 }
 
 func (f *fakeWorkoutRepo) ListDailyLogSummaries(ctx context.Context, userID string, fromDate models.Date, toDate models.Date) ([]atlasPostgres.DailyLogSummaryRecord, error) {
-	return []atlasPostgres.DailyLogSummaryRecord{}, nil
+	f.listSummaryHits++
+	f.lastSummaryUserID = userID
+	f.lastSummaryFrom = fromDate
+	f.lastSummaryTo = toDate
+	return append([]atlasPostgres.DailyLogSummaryRecord(nil), f.summaryRecords...), nil
 }
 
 func (f *fakeWorkoutRepo) WithLockedDailyLogByDate(ctx context.Context, userID string, date models.Date, fn atlasPostgres.LockedDailyLogFunc) error {
+	f.lockDateHit++
 	id := f.dateIndex[dateKey(userID, date)]
 	if id == "" {
-		return errors.New("daily log not found")
+		return pgx.ErrNoRows
 	}
 	record := f.dailyLogs[id].DailyLog
 	return fn(ctx, &fakeWorkoutTx{repo: f}, &record)
@@ -174,17 +189,18 @@ func (f *fakeWorkoutRepo) WithLockedDailyLogByWorkoutExerciseID(ctx context.Cont
 	f.lockExerciseHit++
 	dailyLogID := f.exerciseToLog[workoutExerciseID]
 	if dailyLogID == "" {
-		return errors.New("workout exercise not found")
+		return pgx.ErrNoRows
 	}
 	record := f.dailyLogs[dailyLogID].DailyLog
 	return fn(ctx, &fakeWorkoutTx{repo: f}, &record)
 }
 
 func (f *fakeWorkoutRepo) WithLockedDailyLogByWorkoutSetID(ctx context.Context, userID string, workoutSetID string, fn atlasPostgres.LockedDailyLogFunc) error {
+	f.lockSetHit++
 	workoutExerciseID := f.setToExercise[workoutSetID]
 	dailyLogID := f.exerciseToLog[workoutExerciseID]
 	if dailyLogID == "" {
-		return errors.New("workout set not found")
+		return pgx.ErrNoRows
 	}
 	record := f.dailyLogs[dailyLogID].DailyLog
 	return fn(ctx, &fakeWorkoutTx{repo: f}, &record)
@@ -239,18 +255,21 @@ func (tx *fakeWorkoutTx) GetDailyLogAggregate(ctx context.Context, userID string
 }
 
 func (tx *fakeWorkoutTx) IncrementDailyLogVersion(ctx context.Context, userID string, dailyLogID string) (*atlasPostgres.DailyLogRecord, error) {
+	tx.repo.mutationHits++
 	tx.repo.dailyLogs[dailyLogID].DailyLog.Version++
 	record := tx.repo.dailyLogs[dailyLogID].DailyLog
 	return &record, nil
 }
 
 func (tx *fakeWorkoutTx) UpdateDailyLogNotes(ctx context.Context, userID string, dailyLogID string, notes *string) (*atlasPostgres.DailyLogRecord, error) {
+	tx.repo.mutationHits++
 	tx.repo.dailyLogs[dailyLogID].DailyLog.Notes = notes
 	record := tx.repo.dailyLogs[dailyLogID].DailyLog
 	return &record, nil
 }
 
 func (tx *fakeWorkoutTx) AddWorkoutExercise(ctx context.Context, userID string, dailyLogID string, input atlasPostgres.AddWorkoutExerciseInput) (*atlasPostgres.WorkoutExerciseRecord, error) {
+	tx.repo.mutationHits++
 	aggregate := tx.repo.dailyLogs[dailyLogID]
 	id := fmt.Sprintf("workout-exercise-%d", tx.repo.nextExercise)
 	tx.repo.nextExercise++
@@ -273,6 +292,7 @@ func (tx *fakeWorkoutTx) AddWorkoutExercise(ctx context.Context, userID string, 
 }
 
 func (tx *fakeWorkoutTx) UpdateWorkoutExercise(ctx context.Context, userID string, workoutExerciseID string, input atlasPostgres.UpdateWorkoutExerciseInput) (*atlasPostgres.WorkoutExerciseRecord, error) {
+	tx.repo.mutationHits++
 	dailyLogID := tx.repo.exerciseToLog[workoutExerciseID]
 	aggregate := tx.repo.dailyLogs[dailyLogID]
 	if input.Position != nil {
@@ -291,6 +311,7 @@ func (tx *fakeWorkoutTx) UpdateWorkoutExercise(ctx context.Context, userID strin
 }
 
 func (tx *fakeWorkoutTx) DeleteWorkoutExercise(ctx context.Context, userID string, workoutExerciseID string) (*atlasPostgres.WorkoutExerciseRecord, error) {
+	tx.repo.mutationHits++
 	dailyLogID := tx.repo.exerciseToLog[workoutExerciseID]
 	aggregate := tx.repo.dailyLogs[dailyLogID]
 	for i := range aggregate.WorkoutExercises {
@@ -308,11 +329,13 @@ func (tx *fakeWorkoutTx) DeleteWorkoutExercise(ctx context.Context, userID strin
 }
 
 func (tx *fakeWorkoutTx) ReorderWorkoutExercises(ctx context.Context, userID string, dailyLogID string, orderedIDs []string) error {
+	tx.repo.mutationHits++
 	reorderWorkoutExercises(tx.repo.dailyLogs[dailyLogID], orderedIDs)
 	return nil
 }
 
 func (tx *fakeWorkoutTx) AddWorkoutSet(ctx context.Context, userID string, workoutExerciseID string, input atlasPostgres.AddWorkoutSetInput) (*atlasPostgres.WorkoutSetRecord, error) {
+	tx.repo.mutationHits++
 	dailyLogID := tx.repo.exerciseToLog[workoutExerciseID]
 	exercise := findRepoWorkoutExercise(tx.repo.dailyLogs[dailyLogID], workoutExerciseID)
 	id := fmt.Sprintf("workout-set-%d", tx.repo.nextSet)
@@ -336,6 +359,7 @@ func (tx *fakeWorkoutTx) AddWorkoutSet(ctx context.Context, userID string, worko
 }
 
 func (tx *fakeWorkoutTx) UpdateWorkoutSet(ctx context.Context, userID string, workoutExerciseID string, workoutSetID string, input atlasPostgres.UpdateWorkoutSetInput) (*atlasPostgres.WorkoutSetRecord, error) {
+	tx.repo.mutationHits++
 	dailyLogID := tx.repo.exerciseToLog[workoutExerciseID]
 	exercise := findRepoWorkoutExercise(tx.repo.dailyLogs[dailyLogID], workoutExerciseID)
 	set := findRepoWorkoutSet(exercise, workoutSetID)
@@ -366,6 +390,7 @@ func (tx *fakeWorkoutTx) UpdateWorkoutSet(ctx context.Context, userID string, wo
 }
 
 func (tx *fakeWorkoutTx) DeleteWorkoutSet(ctx context.Context, userID string, workoutExerciseID string, workoutSetID string) (*atlasPostgres.WorkoutSetRecord, error) {
+	tx.repo.mutationHits++
 	dailyLogID := tx.repo.exerciseToLog[workoutExerciseID]
 	exercise := findRepoWorkoutExercise(tx.repo.dailyLogs[dailyLogID], workoutExerciseID)
 	for i := range exercise.Sets {
@@ -380,9 +405,85 @@ func (tx *fakeWorkoutTx) DeleteWorkoutSet(ctx context.Context, userID string, wo
 }
 
 func (tx *fakeWorkoutTx) ReorderWorkoutSets(ctx context.Context, userID string, workoutExerciseID string, orderedIDs []string) error {
+	tx.repo.mutationHits++
 	dailyLogID := tx.repo.exerciseToLog[workoutExerciseID]
 	reorderWorkoutSets(findRepoWorkoutExercise(tx.repo.dailyLogs[dailyLogID], workoutExerciseID), orderedIDs)
 	return nil
+}
+
+func TestWorkoutService_GetDailyLog_AbsentDateDoesNotCreateDailyLog(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	svc := service.NewWorkoutService(repo, &fakeExerciseRepo{})
+
+	log, err := svc.GetDailyLog(ctx, testUserID, testWorkoutDate)
+
+	require.NoError(t, err)
+	assert.Nil(t, log)
+	assert.Equal(t, 0, repo.getOrCreateHits)
+	assert.Empty(t, repo.dateIndex)
+	assert.Empty(t, repo.dailyLogs)
+}
+
+func TestWorkoutService_ListDailyLogSummaries_MapsRepositoryRecords(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	fromDate := models.MustDate("2026-06-18")
+	toDate := models.MustDate("2026-06-19")
+	repo.summaryRecords = []atlasPostgres.DailyLogSummaryRecord{
+		{
+			ID:                   "daily-log-1",
+			Date:                 fromDate,
+			Version:              2,
+			WorkoutExerciseCount: 1,
+			WorkoutSetCount:      3,
+			TotalVolume:          4200,
+			UpdatedAt:            "2026-06-18T12:00:00Z",
+		},
+		{
+			ID:                   "daily-log-2",
+			Date:                 toDate,
+			Version:              5,
+			WorkoutExerciseCount: 2,
+			WorkoutSetCount:      6,
+			TotalVolume:          8100,
+			UpdatedAt:            "2026-06-19T12:00:00Z",
+		},
+	}
+	svc := service.NewWorkoutService(repo, &fakeExerciseRepo{})
+
+	summaries, err := svc.ListDailyLogSummaries(ctx, testUserID, fromDate, toDate)
+
+	require.NoError(t, err)
+	require.Len(t, summaries, 2)
+	assert.Equal(t, "daily-log-1", summaries[0].ID)
+	assert.Equal(t, fromDate, summaries[0].Date)
+	assert.Equal(t, int32(2), summaries[0].Version)
+	assert.Equal(t, int32(1), summaries[0].WorkoutExerciseCount)
+	assert.Equal(t, int32(3), summaries[0].WorkoutSetCount)
+	assert.Equal(t, 4200.0, summaries[0].TotalVolume)
+	assert.Equal(t, "2026-06-18T12:00:00Z", summaries[0].UpdatedAt)
+	assert.Equal(t, "daily-log-2", summaries[1].ID)
+	assert.Equal(t, int32(5), summaries[1].Version)
+	assert.Equal(t, 1, repo.listSummaryHits)
+	assert.Equal(t, testUserID, repo.lastSummaryUserID)
+	assert.Equal(t, fromDate, repo.lastSummaryFrom)
+	assert.Equal(t, toDate, repo.lastSummaryTo)
+	assert.Empty(t, repo.dailyLogs)
+	assert.Empty(t, repo.dateIndex)
+}
+
+func TestWorkoutService_ListDailyLogSummaries_RejectsInvalidRangeWithoutRepoInteraction(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	repo.seedDailyLog(testWorkoutDate, 1)
+	svc := service.NewWorkoutService(repo, &fakeExerciseRepo{})
+
+	summaries, err := svc.ListDailyLogSummaries(ctx, testUserID, models.MustDate("2026-06-20"), models.MustDate("2026-06-19"))
+
+	require.Nil(t, summaries)
+	var validationErr *models.DailyLogValidationErr
+	require.ErrorAs(t, err, &validationErr)
+	assert.Equal(t, 0, repo.listSummaryHits)
+	assert.Equal(t, int32(1), repo.dailyLogs[testDailyLogID].DailyLog.Version)
+	assert.Len(t, repo.dailyLogs, 1)
 }
 
 func TestWorkoutService_UpdateNotes_CreatesDailyLogAtExpectedVersionZero(t *testing.T) {
@@ -399,6 +500,32 @@ func TestWorkoutService_UpdateNotes_CreatesDailyLogAtExpectedVersionZero(t *test
 	assert.NotNil(t, log.WorkoutExercises)
 	assert.Empty(t, log.WorkoutExercises)
 	assert.Equal(t, 1, repo.getOrCreateHits)
+}
+
+func TestWorkoutService_UpdateNotes_ExistingDailyLogUpdatesAndClearsNotes(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	aggregate := repo.seedDailyLog(testWorkoutDate, 4)
+	aggregate.DailyLog.Notes = ptrStr("old notes")
+	svc := service.NewWorkoutService(repo, &fakeExerciseRepo{})
+
+	updated, err := svc.UpdateDailyLogNotes(ctx, testUserID, testWorkoutDate, 4, ptrStr("new notes"))
+
+	require.NoError(t, err)
+	require.NotNil(t, updated)
+	assert.Equal(t, int32(5), updated.Version)
+	require.NotNil(t, updated.Notes)
+	assert.Equal(t, "new notes", *updated.Notes)
+	require.NotNil(t, repo.dailyLogs[testDailyLogID].DailyLog.Notes)
+	assert.Equal(t, "new notes", *repo.dailyLogs[testDailyLogID].DailyLog.Notes)
+
+	cleared, err := svc.UpdateDailyLogNotes(ctx, testUserID, testWorkoutDate, 5, nil)
+
+	require.NoError(t, err)
+	require.NotNil(t, cleared)
+	assert.Equal(t, int32(6), cleared.Version)
+	assert.Nil(t, cleared.Notes)
+	assert.Nil(t, repo.dailyLogs[testDailyLogID].DailyLog.Notes)
+	assert.Equal(t, 0, repo.getOrCreateHits)
 }
 
 func TestWorkoutService_UpdateNotes_AbsentDateWithNonZeroExpectedVersionDoesNotCreateDailyLog(t *testing.T) {
@@ -436,6 +563,85 @@ func TestWorkoutService_UpdateNotes_RejectsStaleVersion(t *testing.T) {
 	assert.Equal(t, int32(3), repo.dailyLogs[testDailyLogID].DailyLog.Version)
 	require.NotNil(t, repo.dailyLogs[testDailyLogID].DailyLog.Notes)
 	assert.Equal(t, "current notes", *repo.dailyLogs[testDailyLogID].DailyLog.Notes)
+}
+
+func TestWorkoutService_RejectsNegativeExpectedVersionBeforeRepositoryMutation(t *testing.T) {
+	cases := []struct {
+		name string
+		call func(svc service.WorkoutService) (*models.DailyLog, error)
+	}{
+		{
+			name: "update notes",
+			call: func(svc service.WorkoutService) (*models.DailyLog, error) {
+				return svc.UpdateDailyLogNotes(ctx, testUserID, testWorkoutDate, -1, ptrStr("blocked"))
+			},
+		},
+		{
+			name: "add exercise",
+			call: func(svc service.WorkoutService) (*models.DailyLog, error) {
+				return svc.AddWorkoutExercise(ctx, testUserID, testWorkoutDate, -1, models.AddWorkoutExerciseInput{
+					ExerciseID: testExerciseID,
+				})
+			},
+		},
+		{
+			name: "update exercise",
+			call: func(svc service.WorkoutService) (*models.DailyLog, error) {
+				return svc.UpdateWorkoutExercise(ctx, testUserID, testWorkoutExerciseID, -1, models.UpdateWorkoutExerciseInput{
+					Notes: ptrStr("blocked"),
+				})
+			},
+		},
+		{
+			name: "add set",
+			call: func(svc service.WorkoutService) (*models.DailyLog, error) {
+				return svc.AddWorkoutSet(ctx, testUserID, testWorkoutExerciseID, -1, models.AddWorkoutSetInput{
+					Weight: 100,
+					Reps:   5,
+				})
+			},
+		},
+		{
+			name: "update set",
+			call: func(svc service.WorkoutService) (*models.DailyLog, error) {
+				return svc.UpdateWorkoutSet(ctx, testUserID, testWorkoutSetID, -1, models.UpdateWorkoutSetInput{
+					Weight: ptrFloat64(105),
+				})
+			},
+		},
+		{
+			name: "reorder exercises",
+			call: func(svc service.WorkoutService) (*models.DailyLog, error) {
+				return svc.ReorderWorkoutExercises(ctx, testUserID, testWorkoutDate, -1, []string{testWorkoutExerciseID})
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			repo := newFakeWorkoutRepo()
+			aggregate := repo.seedDailyLog(testWorkoutDate, 2)
+			repo.seedWorkoutExercise(aggregate.DailyLog.ID, testWorkoutExerciseID, testExerciseID, 1, ptrFloat64(82.5))
+			repo.seedWorkoutSet(testWorkoutExerciseID, testWorkoutSetID, 1)
+			exercises := exerciseRepoWithRecord(ptrFloat64(90))
+			svc := service.NewWorkoutService(repo, exercises)
+
+			log, err := tc.call(svc)
+
+			require.Nil(t, log)
+			var validationErr *models.DailyLogValidationErr
+			require.ErrorAs(t, err, &validationErr)
+			assert.Equal(t, int32(2), repo.dailyLogs[testDailyLogID].DailyLog.Version)
+			assert.Equal(t, 0, repo.getOrCreateHits)
+			assert.Equal(t, 0, repo.lockDateHit)
+			assert.Equal(t, 0, repo.lockExerciseHit)
+			assert.Equal(t, 0, repo.lockSetHit)
+			assert.Equal(t, 0, repo.mutationHits)
+			assert.Equal(t, 0, exercises.getByIDHits)
+			assert.Equal(t, []string{testWorkoutExerciseID}, repoWorkoutExerciseIDs(repo.dailyLogs[testDailyLogID].WorkoutExercises))
+			assert.Equal(t, []string{testWorkoutSetID}, repoWorkoutSetIDs(repo.dailyLogs[testDailyLogID].WorkoutExercises[0].Sets))
+		})
+	}
 }
 
 func TestWorkoutService_AddExercise_RequiresExistingExercise(t *testing.T) {
@@ -534,6 +740,32 @@ func TestWorkoutService_AddExercise_AllowsDuplicateExerciseID(t *testing.T) {
 	assert.Equal(t, int32(2), second.WorkoutExercises[1].Position)
 }
 
+func TestWorkoutService_AddExercise_InsertsAtPositionAndReindexes(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	aggregate := repo.seedDailyLog(testWorkoutDate, 2)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, "workout-exercise-1", "exercise-1", 1, nil)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, "workout-exercise-2", "exercise-2", 2, nil)
+	repo.nextExercise = 3
+	svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(ptrFloat64(77.5)))
+
+	log, err := svc.AddWorkoutExercise(ctx, testUserID, testWorkoutDate, 2, models.AddWorkoutExerciseInput{
+		ExerciseID: "exercise-new",
+		Position:   ptrInt32(2),
+	})
+
+	require.NoError(t, err)
+	require.NotNil(t, log)
+	assert.Equal(t, int32(3), log.Version)
+	require.Len(t, log.WorkoutExercises, 3)
+	assert.Equal(t, []string{"workout-exercise-1", "workout-exercise-3", "workout-exercise-2"}, modelWorkoutExerciseIDs(log.WorkoutExercises))
+	assert.Equal(t, []int32{1, 2, 3}, []int32{
+		log.WorkoutExercises[0].Position,
+		log.WorkoutExercises[1].Position,
+		log.WorkoutExercises[2].Position,
+	})
+	assert.Equal(t, "exercise-new", log.WorkoutExercises[1].ExerciseID)
+}
+
 func TestWorkoutService_UpdateExercise_RejectsEmptyInputWithoutVersionChange(t *testing.T) {
 	repo := newFakeWorkoutRepo()
 	aggregate := repo.seedDailyLog(testWorkoutDate, 5)
@@ -567,6 +799,44 @@ func TestWorkoutService_UpdateExercise_RejectsSamePositionOnlyWithoutVersionChan
 	assert.Equal(t, int32(1), repo.dailyLogs[testDailyLogID].WorkoutExercises[0].Position)
 }
 
+func TestWorkoutService_UpdateExercise_UpdatesAndClearsNotesWithoutChangingSnapshot(t *testing.T) {
+	workingWeight := 82.5
+	repo := newFakeWorkoutRepo()
+	aggregate := repo.seedDailyLog(testWorkoutDate, 0)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, testWorkoutExerciseID, testExerciseID, 1, ptrFloat64(workingWeight))
+	exercises := exerciseRepoWithMutableWorkingWeight(&workingWeight)
+	svc := service.NewWorkoutService(repo, exercises)
+
+	workingWeight = 90
+	updated, err := svc.UpdateWorkoutExercise(ctx, testUserID, testWorkoutExerciseID, 0, models.UpdateWorkoutExerciseInput{
+		Notes: ptrStr("tempo paused reps"),
+	})
+
+	require.NoError(t, err)
+	require.NotNil(t, updated)
+	assert.Equal(t, int32(1), updated.Version)
+	require.Len(t, updated.WorkoutExercises, 1)
+	require.NotNil(t, updated.WorkoutExercises[0].Notes)
+	assert.Equal(t, "tempo paused reps", *updated.WorkoutExercises[0].Notes)
+	require.NotNil(t, updated.WorkoutExercises[0].WorkingWeightSnapshot)
+	assert.Equal(t, 82.5, *updated.WorkoutExercises[0].WorkingWeightSnapshot)
+	require.NotNil(t, updated.WorkoutExercises[0].Exercise)
+	require.NotNil(t, updated.WorkoutExercises[0].Exercise.WorkingWeight)
+	assert.Equal(t, 90.0, *updated.WorkoutExercises[0].Exercise.WorkingWeight)
+
+	cleared, err := svc.UpdateWorkoutExercise(ctx, testUserID, testWorkoutExerciseID, 1, models.UpdateWorkoutExerciseInput{
+		SetNotes: true,
+	})
+
+	require.NoError(t, err)
+	require.NotNil(t, cleared)
+	assert.Equal(t, int32(2), cleared.Version)
+	require.Len(t, cleared.WorkoutExercises, 1)
+	assert.Nil(t, cleared.WorkoutExercises[0].Notes)
+	require.NotNil(t, cleared.WorkoutExercises[0].WorkingWeightSnapshot)
+	assert.Equal(t, 82.5, *cleared.WorkoutExercises[0].WorkingWeightSnapshot)
+}
+
 func TestWorkoutService_RemoveExercise_KeepsEmptyDailyLog(t *testing.T) {
 	repo := newFakeWorkoutRepo()
 	aggregate := repo.seedDailyLog(testWorkoutDate, 1)
@@ -583,6 +853,100 @@ func TestWorkoutService_RemoveExercise_KeepsEmptyDailyLog(t *testing.T) {
 	assert.Empty(t, log.WorkoutExercises)
 	require.Contains(t, repo.dailyLogs, testDailyLogID)
 	assert.Empty(t, repo.dailyLogs[testDailyLogID].WorkoutExercises)
+}
+
+func TestWorkoutService_ChildMutationsRejectStaleVersionWithCurrentAggregateAndNoMutation(t *testing.T) {
+	cases := []struct {
+		name string
+		call func(svc service.WorkoutService) (*models.DailyLog, error)
+	}{
+		{
+			name: "add exercise",
+			call: func(svc service.WorkoutService) (*models.DailyLog, error) {
+				return svc.AddWorkoutExercise(ctx, testUserID, testWorkoutDate, 8, models.AddWorkoutExerciseInput{
+					ExerciseID: "exercise-new",
+				})
+			},
+		},
+		{
+			name: "update exercise",
+			call: func(svc service.WorkoutService) (*models.DailyLog, error) {
+				return svc.UpdateWorkoutExercise(ctx, testUserID, "workout-exercise-1", 8, models.UpdateWorkoutExerciseInput{
+					Notes: ptrStr("stale notes"),
+				})
+			},
+		},
+		{
+			name: "remove exercise",
+			call: func(svc service.WorkoutService) (*models.DailyLog, error) {
+				return svc.RemoveWorkoutExercise(ctx, testUserID, "workout-exercise-2", 8)
+			},
+		},
+		{
+			name: "reorder exercises",
+			call: func(svc service.WorkoutService) (*models.DailyLog, error) {
+				return svc.ReorderWorkoutExercises(ctx, testUserID, testWorkoutDate, 8, []string{"workout-exercise-2", "workout-exercise-1"})
+			},
+		},
+		{
+			name: "add set",
+			call: func(svc service.WorkoutService) (*models.DailyLog, error) {
+				return svc.AddWorkoutSet(ctx, testUserID, "workout-exercise-1", 8, models.AddWorkoutSetInput{
+					Weight: 100,
+					Reps:   5,
+				})
+			},
+		},
+		{
+			name: "update set",
+			call: func(svc service.WorkoutService) (*models.DailyLog, error) {
+				return svc.UpdateWorkoutSet(ctx, testUserID, "set-1", 8, models.UpdateWorkoutSetInput{
+					Weight: ptrFloat64(105),
+				})
+			},
+		},
+		{
+			name: "remove set",
+			call: func(svc service.WorkoutService) (*models.DailyLog, error) {
+				return svc.RemoveWorkoutSet(ctx, testUserID, "set-2", 8)
+			},
+		},
+		{
+			name: "reorder sets",
+			call: func(svc service.WorkoutService) (*models.DailyLog, error) {
+				return svc.ReorderWorkoutSets(ctx, testUserID, "workout-exercise-1", 8, []string{"set-2", "set-1"})
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			repo := newFakeWorkoutRepo()
+			aggregate := repo.seedDailyLog(testWorkoutDate, 9)
+			aggregate.DailyLog.Notes = ptrStr("current aggregate")
+			repo.seedWorkoutExercise(aggregate.DailyLog.ID, "workout-exercise-1", "exercise-1", 1, ptrFloat64(82.5))
+			repo.seedWorkoutExercise(aggregate.DailyLog.ID, "workout-exercise-2", "exercise-2", 2, nil)
+			repo.seedWorkoutSet("workout-exercise-1", "set-1", 1)
+			repo.seedWorkoutSet("workout-exercise-1", "set-2", 2)
+			before := cloneAggregate(repo.dailyLogs[testDailyLogID])
+			svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(ptrFloat64(90)))
+
+			log, err := tc.call(svc)
+
+			require.Nil(t, log)
+			var conflictErr *models.DailyLogConflictErr
+			require.ErrorAs(t, err, &conflictErr)
+			assert.Equal(t, int32(9), conflictErr.CurrentVersion)
+			require.NotNil(t, conflictErr.CurrentDailyLog)
+			assert.Equal(t, int32(9), conflictErr.CurrentDailyLog.Version)
+			require.NotNil(t, conflictErr.CurrentDailyLog.Notes)
+			assert.Equal(t, "current aggregate", *conflictErr.CurrentDailyLog.Notes)
+			assert.Equal(t, []string{"workout-exercise-1", "workout-exercise-2"}, modelWorkoutExerciseIDs(conflictErr.CurrentDailyLog.WorkoutExercises))
+			assert.Equal(t, []string{"set-1", "set-2"}, modelWorkoutSetIDs(conflictErr.CurrentDailyLog.WorkoutExercises[0].Sets))
+			assert.Equal(t, before, repo.dailyLogs[testDailyLogID])
+			assert.Equal(t, 0, repo.mutationHits)
+		})
+	}
 }
 
 func TestWorkoutService_AddSet_ValidatesWeightRepsRpeRir(t *testing.T) {
@@ -642,6 +1006,56 @@ func TestWorkoutService_AddSet_ValidatesWeightRepsRpeRir(t *testing.T) {
 	})
 }
 
+func TestWorkoutService_AddSet_MissingParentReturnsNotFoundWithoutMutation(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	aggregate := repo.seedDailyLog(testWorkoutDate, 3)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, testWorkoutExerciseID, testExerciseID, 1, nil)
+	svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(nil))
+
+	log, err := svc.AddWorkoutSet(ctx, testUserID, "missing-workout-exercise", 3, models.AddWorkoutSetInput{
+		Weight: 100,
+		Reps:   5,
+	})
+
+	require.Nil(t, log)
+	var notFoundErr *models.DailyLogNotFoundErr
+	require.ErrorAs(t, err, &notFoundErr)
+	assert.Equal(t, int32(3), repo.dailyLogs[testDailyLogID].DailyLog.Version)
+	assert.Equal(t, 0, repo.mutationHits)
+	assert.Empty(t, repo.dailyLogs[testDailyLogID].WorkoutExercises[0].Sets)
+}
+
+func TestWorkoutService_AddSet_InsertsAtSetNumberAndReindexes(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	aggregate := repo.seedDailyLog(testWorkoutDate, 3)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, testWorkoutExerciseID, testExerciseID, 1, nil)
+	repo.seedWorkoutSet(testWorkoutExerciseID, "set-1", 1)
+	repo.seedWorkoutSet(testWorkoutExerciseID, "set-2", 2)
+	svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(nil))
+
+	log, err := svc.AddWorkoutSet(ctx, testUserID, testWorkoutExerciseID, 3, models.AddWorkoutSetInput{
+		SetNumber: ptrInt32(2),
+		Weight:    125,
+		Reps:      3,
+		Notes:     ptrStr("top single"),
+	})
+
+	require.NoError(t, err)
+	require.NotNil(t, log)
+	assert.Equal(t, int32(4), log.Version)
+	require.Len(t, log.WorkoutExercises, 1)
+	require.Len(t, log.WorkoutExercises[0].Sets, 3)
+	assert.Equal(t, []string{"set-1", "workout-set-1", "set-2"}, modelWorkoutSetIDs(log.WorkoutExercises[0].Sets))
+	assert.Equal(t, []int32{1, 2, 3}, []int32{
+		log.WorkoutExercises[0].Sets[0].SetNumber,
+		log.WorkoutExercises[0].Sets[1].SetNumber,
+		log.WorkoutExercises[0].Sets[2].SetNumber,
+	})
+	assert.Equal(t, 125.0, log.WorkoutExercises[0].Sets[1].Weight)
+	require.NotNil(t, log.WorkoutExercises[0].Sets[1].Notes)
+	assert.Equal(t, "top single", *log.WorkoutExercises[0].Sets[1].Notes)
+}
+
 func TestWorkoutService_UpdateSet_RejectsEmptyInputWithoutVersionChange(t *testing.T) {
 	repo := newFakeWorkoutRepo()
 	aggregate := repo.seedDailyLog(testWorkoutDate, 7)
@@ -679,6 +1093,58 @@ func TestWorkoutService_UpdateSet_RejectsSameSetNumberOnlyWithoutVersionChange(t
 	assert.Equal(t, int32(1), repo.dailyLogs[testDailyLogID].WorkoutExercises[0].Sets[0].SetNumber)
 }
 
+func TestWorkoutService_UpdateSet_PersistsValuesAndClearsNullableFields(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	aggregate := repo.seedDailyLog(testWorkoutDate, 7)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, testWorkoutExerciseID, testExerciseID, 1, nil)
+	repo.seedWorkoutSet(testWorkoutExerciseID, testWorkoutSetID, 1)
+	svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(nil))
+
+	updated, err := svc.UpdateWorkoutSet(ctx, testUserID, testWorkoutSetID, 7, models.UpdateWorkoutSetInput{
+		Weight:   ptrFloat64(112.5),
+		Reps:     ptrInt32(8),
+		RPE:      ptrFloat64(8.5),
+		SetRPE:   true,
+		RIR:      ptrInt32(2),
+		SetRIR:   true,
+		Notes:    ptrStr("clean reps"),
+		SetNotes: true,
+	})
+
+	require.NoError(t, err)
+	require.NotNil(t, updated)
+	assert.Equal(t, int32(8), updated.Version)
+	require.Len(t, updated.WorkoutExercises, 1)
+	require.Len(t, updated.WorkoutExercises[0].Sets, 1)
+	set := updated.WorkoutExercises[0].Sets[0]
+	assert.Equal(t, 112.5, set.Weight)
+	assert.Equal(t, int32(8), set.Reps)
+	require.NotNil(t, set.RPE)
+	assert.Equal(t, 8.5, *set.RPE)
+	require.NotNil(t, set.RIR)
+	assert.Equal(t, int32(2), *set.RIR)
+	require.NotNil(t, set.Notes)
+	assert.Equal(t, "clean reps", *set.Notes)
+
+	cleared, err := svc.UpdateWorkoutSet(ctx, testUserID, testWorkoutSetID, 8, models.UpdateWorkoutSetInput{
+		SetRPE:   true,
+		SetRIR:   true,
+		SetNotes: true,
+	})
+
+	require.NoError(t, err)
+	require.NotNil(t, cleared)
+	assert.Equal(t, int32(9), cleared.Version)
+	require.Len(t, cleared.WorkoutExercises, 1)
+	require.Len(t, cleared.WorkoutExercises[0].Sets, 1)
+	clearedSet := cleared.WorkoutExercises[0].Sets[0]
+	assert.Equal(t, 112.5, clearedSet.Weight)
+	assert.Equal(t, int32(8), clearedSet.Reps)
+	assert.Nil(t, clearedSet.RPE)
+	assert.Nil(t, clearedSet.RIR)
+	assert.Nil(t, clearedSet.Notes)
+}
+
 func TestWorkoutService_UpdateSet_ReindexesWhenSetNumberChanges(t *testing.T) {
 	repo := newFakeWorkoutRepo()
 	aggregate := repo.seedDailyLog(testWorkoutDate, 7)
@@ -706,6 +1172,53 @@ func TestWorkoutService_UpdateSet_ReindexesWhenSetNumberChanges(t *testing.T) {
 		log.WorkoutExercises[0].Sets[0].SetNumber,
 		log.WorkoutExercises[0].Sets[1].SetNumber,
 		log.WorkoutExercises[0].Sets[2].SetNumber,
+	})
+}
+
+func TestWorkoutService_RemoveSet_RemovesOneSetAndReindexes(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	aggregate := repo.seedDailyLog(testWorkoutDate, 5)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, testWorkoutExerciseID, testExerciseID, 1, nil)
+	repo.seedWorkoutSet(testWorkoutExerciseID, "set-1", 1)
+	repo.seedWorkoutSet(testWorkoutExerciseID, "set-2", 2)
+	repo.seedWorkoutSet(testWorkoutExerciseID, "set-3", 3)
+	svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(nil))
+
+	log, err := svc.RemoveWorkoutSet(ctx, testUserID, "set-2", 5)
+
+	require.NoError(t, err)
+	require.NotNil(t, log)
+	assert.Equal(t, int32(6), log.Version)
+	require.Len(t, log.WorkoutExercises, 1)
+	require.Len(t, log.WorkoutExercises[0].Sets, 2)
+	assert.Equal(t, []string{"set-1", "set-3"}, modelWorkoutSetIDs(log.WorkoutExercises[0].Sets))
+	assert.Equal(t, []int32{1, 2}, []int32{
+		log.WorkoutExercises[0].Sets[0].SetNumber,
+		log.WorkoutExercises[0].Sets[1].SetNumber,
+	})
+	_, stillIndexed := repo.setToExercise["set-2"]
+	assert.False(t, stillIndexed)
+}
+
+func TestWorkoutService_ReorderExercises_SuccessIncrementsVersionAndReindexes(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	aggregate := repo.seedDailyLog(testWorkoutDate, 4)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, "workout-exercise-1", "exercise-1", 1, nil)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, "workout-exercise-2", "exercise-2", 2, nil)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, "workout-exercise-3", "exercise-3", 3, nil)
+	svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(nil))
+
+	log, err := svc.ReorderWorkoutExercises(ctx, testUserID, testWorkoutDate, 4, []string{"workout-exercise-3", "workout-exercise-1", "workout-exercise-2"})
+
+	require.NoError(t, err)
+	require.NotNil(t, log)
+	assert.Equal(t, int32(5), log.Version)
+	require.Len(t, log.WorkoutExercises, 3)
+	assert.Equal(t, []string{"workout-exercise-3", "workout-exercise-1", "workout-exercise-2"}, modelWorkoutExerciseIDs(log.WorkoutExercises))
+	assert.Equal(t, []int32{1, 2, 3}, []int32{
+		log.WorkoutExercises[0].Position,
+		log.WorkoutExercises[1].Position,
+		log.WorkoutExercises[2].Position,
 	})
 }
 
@@ -737,6 +1250,30 @@ func TestWorkoutService_ReorderExercises_RejectsMissingDuplicateOrForeignIDs(t *
 			assert.Equal(t, []string{"workout-exercise-1", "workout-exercise-2"}, repoWorkoutExerciseIDs(repo.dailyLogs[testDailyLogID].WorkoutExercises))
 		})
 	}
+}
+
+func TestWorkoutService_ReorderSets_SuccessIncrementsVersionAndReindexes(t *testing.T) {
+	repo := newFakeWorkoutRepo()
+	aggregate := repo.seedDailyLog(testWorkoutDate, 4)
+	repo.seedWorkoutExercise(aggregate.DailyLog.ID, testWorkoutExerciseID, testExerciseID, 1, nil)
+	repo.seedWorkoutSet(testWorkoutExerciseID, "set-1", 1)
+	repo.seedWorkoutSet(testWorkoutExerciseID, "set-2", 2)
+	repo.seedWorkoutSet(testWorkoutExerciseID, "set-3", 3)
+	svc := service.NewWorkoutService(repo, exerciseRepoWithRecord(nil))
+
+	log, err := svc.ReorderWorkoutSets(ctx, testUserID, testWorkoutExerciseID, 4, []string{"set-3", "set-1", "set-2"})
+
+	require.NoError(t, err)
+	require.NotNil(t, log)
+	assert.Equal(t, int32(5), log.Version)
+	require.Len(t, log.WorkoutExercises, 1)
+	require.Len(t, log.WorkoutExercises[0].Sets, 3)
+	assert.Equal(t, []string{"set-3", "set-1", "set-2"}, modelWorkoutSetIDs(log.WorkoutExercises[0].Sets))
+	assert.Equal(t, []int32{1, 2, 3}, []int32{
+		log.WorkoutExercises[0].Sets[0].SetNumber,
+		log.WorkoutExercises[0].Sets[1].SetNumber,
+		log.WorkoutExercises[0].Sets[2].SetNumber,
+	})
 }
 
 func TestWorkoutService_ReorderSets_RejectsMissingDuplicateOrForeignIDs(t *testing.T) {
@@ -788,6 +1325,28 @@ func exerciseRepoWithRecord(workingWeight *float64) *fakeExerciseRepo {
 	}
 }
 
+func exerciseRepoWithMutableWorkingWeight(workingWeight *float64) *fakeExerciseRepo {
+	return &fakeExerciseRepo{
+		getByIDFn: func(ctx context.Context, userID string, id string) (*models.ExerciseRecord, error) {
+			var snapshot *float64
+			if workingWeight != nil {
+				value := *workingWeight
+				snapshot = &value
+			}
+			return &models.ExerciseRecord{
+				ID:            id,
+				UserID:        userID,
+				Name:          "Bench Press",
+				MuscleGroups:  []string{"chest"},
+				WorkingWeight: snapshot,
+				IsActive:      true,
+				CreatedAt:     "2026-06-19T00:00:00Z",
+				UpdatedAt:     "2026-06-19T00:00:00Z",
+			}, nil
+		},
+	}
+}
+
 func dateKey(userID string, date models.Date) string {
 	return userID + "|" + date.String()
 }
@@ -802,7 +1361,9 @@ func cloneAggregate(in *atlasPostgres.DailyLogAggregate) *atlasPostgres.DailyLog
 	}
 	for i := range in.WorkoutExercises {
 		out.WorkoutExercises[i] = in.WorkoutExercises[i]
-		out.WorkoutExercises[i].Sets = append([]atlasPostgres.WorkoutSetRecord(nil), in.WorkoutExercises[i].Sets...)
+		if in.WorkoutExercises[i].Sets != nil {
+			out.WorkoutExercises[i].Sets = append([]atlasPostgres.WorkoutSetRecord{}, in.WorkoutExercises[i].Sets...)
+		}
 	}
 	return out
 }
@@ -900,6 +1461,22 @@ func repoWorkoutExerciseIDs(records []atlasPostgres.WorkoutExerciseRecord) []str
 }
 
 func repoWorkoutSetIDs(records []atlasPostgres.WorkoutSetRecord) []string {
+	out := make([]string, len(records))
+	for i := range records {
+		out[i] = records[i].ID
+	}
+	return out
+}
+
+func modelWorkoutExerciseIDs(records []models.WorkoutExercise) []string {
+	out := make([]string, len(records))
+	for i := range records {
+		out[i] = records[i].ID
+	}
+	return out
+}
+
+func modelWorkoutSetIDs(records []models.WorkoutSet) []string {
 	out := make([]string, len(records))
 	for i := range records {
 		out[i] = records[i].ID
