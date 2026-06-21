@@ -48,6 +48,7 @@ type ResolverRoot interface {
 	BodyWeightEntriesResult() BodyWeightEntriesResultResolver
 	BodyWeightEntry() BodyWeightEntryResolver
 	BodyWeightResult() BodyWeightResultResolver
+	BodyWeightTrendResult() BodyWeightTrendResultResolver
 	CardioEntriesResult() CardioEntriesResultResolver
 	CardioEntry() CardioEntryResolver
 	CardioEntryResult() CardioEntryResultResolver
@@ -58,7 +59,10 @@ type ResolverRoot interface {
 	DailyNutritionOverridesResult() DailyNutritionOverridesResultResolver
 	Exercise() ExerciseResolver
 	ExerciseMedia() ExerciseMediaResolver
+	ExerciseProgressResult() ExerciseProgressResultResolver
 	ExerciseResult() ExerciseResultResolver
+	MeasurementOverlayResult() MeasurementOverlayResultResolver
+	MeasurementTrendResult() MeasurementTrendResultResolver
 	Mutation() MutationResolver
 	NutritionMacrosResult() NutritionMacrosResultResolver
 	NutritionProduct() NutritionProductResolver
@@ -69,6 +73,7 @@ type ResolverRoot interface {
 	NutritionTemplateItemResult() NutritionTemplateItemResultResolver
 	NutritionTemplateResult() NutritionTemplateResultResolver
 	NutritionTemplatesResult() NutritionTemplatesResultResolver
+	NutritionWeeklyAveragesResult() NutritionWeeklyAveragesResultResolver
 	ProgressPhoto() ProgressPhotoResolver
 	ProgressPhotosResult() ProgressPhotosResultResolver
 	Query() QueryResolver
@@ -174,6 +179,18 @@ type ComplexityRoot struct {
 		ValidationError func(childComplexity int) int
 	}
 
+	BodyWeightSeriesPoint struct {
+		Date   func(childComplexity int) int
+		Source func(childComplexity int) int
+		Weight func(childComplexity int) int
+	}
+
+	BodyWeightTrendResult struct {
+		AuthError       func(childComplexity int) int
+		Series          func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
 	CardioAuthError struct {
 		Code    func(childComplexity int) int
 		Message func(childComplexity int) int
@@ -211,6 +228,26 @@ type ComplexityRoot struct {
 	}
 
 	CardioValidationError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	ChartAuthError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	ChartDataPoint struct {
+		Date  func(childComplexity int) int
+		Value func(childComplexity int) int
+	}
+
+	ChartNotFoundError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	ChartValidationError struct {
 		Code    func(childComplexity int) int
 		Message func(childComplexity int) int
 	}
@@ -287,10 +324,39 @@ type ComplexityRoot struct {
 		UserID     func(childComplexity int) int
 	}
 
+	ExerciseProgressResult struct {
+		AuthError       func(childComplexity int) int
+		DataPoints      func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
 	ExerciseResult struct {
 		AuthError       func(childComplexity int) int
 		Exercise        func(childComplexity int) int
 		NotFoundError   func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	MeasurementOverlayGroup struct {
+		DataPoints      func(childComplexity int) int
+		MeasurementType func(childComplexity int) int
+	}
+
+	MeasurementOverlayResult struct {
+		AuthError       func(childComplexity int) int
+		Groups          func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	MeasurementTrendPoint struct {
+		Date  func(childComplexity int) int
+		Side  func(childComplexity int) int
+		Value func(childComplexity int) int
+	}
+
+	MeasurementTrendResult struct {
+		AuthError       func(childComplexity int) int
+		DataPoints      func(childComplexity int) int
 		ValidationError func(childComplexity int) int
 	}
 
@@ -436,6 +502,20 @@ type ComplexityRoot struct {
 		Message func(childComplexity int) int
 	}
 
+	NutritionWeeklyAverage struct {
+		Calories      func(childComplexity int) int
+		Carbs         func(childComplexity int) int
+		Fat           func(childComplexity int) int
+		Protein       func(childComplexity int) int
+		WeekStartDate func(childComplexity int) int
+	}
+
+	NutritionWeeklyAveragesResult struct {
+		AuthError       func(childComplexity int) int
+		Averages        func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
 	PageInfo struct {
 		EndCursor   func(childComplexity int) int
 		HasNextPage func(childComplexity int) int
@@ -487,20 +567,25 @@ type ComplexityRoot struct {
 		BodyMeasurements             func(childComplexity int, checkInID string) int
 		BodyWeightEntries            func(childComplexity int, from models.Date, to models.Date) int
 		BodyWeightEntry              func(childComplexity int, id string) int
+		BodyWeightTrend              func(childComplexity int, from *models.Date, to *models.Date) int
 		CardioEntries                func(childComplexity int, date models.Date) int
 		CardioEntry                  func(childComplexity int, id string) int
 		DailyNutritionOverride       func(childComplexity int, id string) int
 		DailyNutritionOverrideByDate func(childComplexity int, date models.Date) int
 		DailyNutritionOverrides      func(childComplexity int, startDate models.Date, endDate models.Date) int
 		Exercise                     func(childComplexity int, id string) int
+		ExerciseProgress             func(childComplexity int, exerciseID string, from *models.Date, to *models.Date) int
 		Exercises                    func(childComplexity int, first *int, after *string, includeInactive *bool) int
 		LatestBodyWeight             func(childComplexity int) int
+		MeasurementOverlay           func(childComplexity int, measurementTypes []models.MeasurementType, from *models.Date, to *models.Date) int
+		MeasurementTrend             func(childComplexity int, measurementType models.MeasurementType, from *models.Date, to *models.Date) int
 		NutritionMacros              func(childComplexity int, weekStartDate models.Date, date *models.Date) int
 		NutritionProduct             func(childComplexity int, id string) int
 		NutritionProducts            func(childComplexity int) int
 		NutritionTemplate            func(childComplexity int, id string) int
 		NutritionTemplateCurrent     func(childComplexity int, weekStartDate models.Date) int
 		NutritionTemplates           func(childComplexity int, startDate models.Date, endDate models.Date) int
+		NutritionWeeklyAverages      func(childComplexity int, from *models.Date, to *models.Date) int
 		ProgressPhotos               func(childComplexity int, checkInID string) int
 		Settings                     func(childComplexity int) int
 		WeekFlags                    func(childComplexity int, weekStartDate models.Date) int
@@ -605,6 +690,10 @@ type BodyWeightResultResolver interface {
 	NotFoundError(ctx context.Context, obj *models.BodyWeightResult) (*models.BodyNotFoundErr, error)
 	AuthError(ctx context.Context, obj *models.BodyWeightResult) (*models.BodyAuthErr, error)
 }
+type BodyWeightTrendResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.BodyWeightTrendResult) (*models.ChartValidationErr, error)
+	AuthError(ctx context.Context, obj *models.BodyWeightTrendResult) (*models.ChartAuthErr, error)
+}
 type CardioEntriesResultResolver interface {
 	ValidationError(ctx context.Context, obj *models.CardioEntriesResult) (*models.CardioValidationErr, error)
 	AuthError(ctx context.Context, obj *models.CardioEntriesResult) (*models.CardioAuthErr, error)
@@ -649,10 +738,22 @@ type ExerciseResolver interface {
 type ExerciseMediaResolver interface {
 	CreatedAt(ctx context.Context, obj *models.ExerciseMedia) (*time.Time, error)
 }
+type ExerciseProgressResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.ExerciseProgressResult) (*models.ChartValidationErr, error)
+	AuthError(ctx context.Context, obj *models.ExerciseProgressResult) (*models.ChartAuthErr, error)
+}
 type ExerciseResultResolver interface {
 	ValidationError(ctx context.Context, obj *models.ExerciseResult) (*models.ValidationErr, error)
 	NotFoundError(ctx context.Context, obj *models.ExerciseResult) (*models.NotFoundErr, error)
 	AuthError(ctx context.Context, obj *models.ExerciseResult) (*models.AuthErr, error)
+}
+type MeasurementOverlayResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.MeasurementOverlayResult) (*models.ChartValidationErr, error)
+	AuthError(ctx context.Context, obj *models.MeasurementOverlayResult) (*models.ChartAuthErr, error)
+}
+type MeasurementTrendResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.MeasurementTrendResult) (*models.ChartValidationErr, error)
+	AuthError(ctx context.Context, obj *models.MeasurementTrendResult) (*models.ChartAuthErr, error)
 }
 type MutationResolver interface {
 	UpdateSettings(ctx context.Context, input models.SettingsInput) (*models.SettingsResult, error)
@@ -734,6 +835,10 @@ type NutritionTemplatesResultResolver interface {
 	ValidationError(ctx context.Context, obj *models.NutritionTemplatesResult) (*models.NutritionValidationErr, error)
 	AuthError(ctx context.Context, obj *models.NutritionTemplatesResult) (*models.NutritionAuthErr, error)
 }
+type NutritionWeeklyAveragesResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.NutritionWeeklyAveragesResult) (*models.ChartValidationErr, error)
+	AuthError(ctx context.Context, obj *models.NutritionWeeklyAveragesResult) (*models.ChartAuthErr, error)
+}
 type ProgressPhotoResolver interface {
 	CreatedAt(ctx context.Context, obj *models.ProgressPhoto) (*time.Time, error)
 	UpdatedAt(ctx context.Context, obj *models.ProgressPhoto) (*time.Time, error)
@@ -766,6 +871,11 @@ type QueryResolver interface {
 	DailyNutritionOverride(ctx context.Context, id string) (*models.DailyNutritionOverrideResult, error)
 	DailyNutritionOverrideByDate(ctx context.Context, date models.Date) (*models.DailyNutritionOverrideResult, error)
 	NutritionMacros(ctx context.Context, weekStartDate models.Date, date *models.Date) (*models.NutritionMacrosResult, error)
+	BodyWeightTrend(ctx context.Context, from *models.Date, to *models.Date) (*models.BodyWeightTrendResult, error)
+	MeasurementTrend(ctx context.Context, measurementType models.MeasurementType, from *models.Date, to *models.Date) (*models.MeasurementTrendResult, error)
+	MeasurementOverlay(ctx context.Context, measurementTypes []models.MeasurementType, from *models.Date, to *models.Date) (*models.MeasurementOverlayResult, error)
+	NutritionWeeklyAverages(ctx context.Context, from *models.Date, to *models.Date) (*models.NutritionWeeklyAveragesResult, error)
+	ExerciseProgress(ctx context.Context, exerciseID string, from *models.Date, to *models.Date) (*models.ExerciseProgressResult, error)
 }
 type WeekFlagResolver interface {
 	CreatedAt(ctx context.Context, obj *models.WeekFlag) (*time.Time, error)
@@ -1178,6 +1288,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.BodyWeightResult.ValidationError(childComplexity), true
 
+	case "BodyWeightSeriesPoint.date":
+		if e.complexity.BodyWeightSeriesPoint.Date == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightSeriesPoint.Date(childComplexity), true
+
+	case "BodyWeightSeriesPoint.source":
+		if e.complexity.BodyWeightSeriesPoint.Source == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightSeriesPoint.Source(childComplexity), true
+
+	case "BodyWeightSeriesPoint.weight":
+		if e.complexity.BodyWeightSeriesPoint.Weight == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightSeriesPoint.Weight(childComplexity), true
+
+	case "BodyWeightTrendResult.authError":
+		if e.complexity.BodyWeightTrendResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightTrendResult.AuthError(childComplexity), true
+
+	case "BodyWeightTrendResult.series":
+		if e.complexity.BodyWeightTrendResult.Series == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightTrendResult.Series(childComplexity), true
+
+	case "BodyWeightTrendResult.validationError":
+		if e.complexity.BodyWeightTrendResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.BodyWeightTrendResult.ValidationError(childComplexity), true
+
 	case "CardioAuthError.code":
 		if e.complexity.CardioAuthError.Code == nil {
 			break
@@ -1338,6 +1490,62 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CardioValidationError.Message(childComplexity), true
+
+	case "ChartAuthError.code":
+		if e.complexity.ChartAuthError.Code == nil {
+			break
+		}
+
+		return e.complexity.ChartAuthError.Code(childComplexity), true
+
+	case "ChartAuthError.message":
+		if e.complexity.ChartAuthError.Message == nil {
+			break
+		}
+
+		return e.complexity.ChartAuthError.Message(childComplexity), true
+
+	case "ChartDataPoint.date":
+		if e.complexity.ChartDataPoint.Date == nil {
+			break
+		}
+
+		return e.complexity.ChartDataPoint.Date(childComplexity), true
+
+	case "ChartDataPoint.value":
+		if e.complexity.ChartDataPoint.Value == nil {
+			break
+		}
+
+		return e.complexity.ChartDataPoint.Value(childComplexity), true
+
+	case "ChartNotFoundError.code":
+		if e.complexity.ChartNotFoundError.Code == nil {
+			break
+		}
+
+		return e.complexity.ChartNotFoundError.Code(childComplexity), true
+
+	case "ChartNotFoundError.message":
+		if e.complexity.ChartNotFoundError.Message == nil {
+			break
+		}
+
+		return e.complexity.ChartNotFoundError.Message(childComplexity), true
+
+	case "ChartValidationError.code":
+		if e.complexity.ChartValidationError.Code == nil {
+			break
+		}
+
+		return e.complexity.ChartValidationError.Code(childComplexity), true
+
+	case "ChartValidationError.message":
+		if e.complexity.ChartValidationError.Message == nil {
+			break
+		}
+
+		return e.complexity.ChartValidationError.Message(childComplexity), true
 
 	case "DailyNutritionOverride.createdAt":
 		if e.complexity.DailyNutritionOverride.CreatedAt == nil {
@@ -1675,6 +1883,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ExerciseMedia.UserID(childComplexity), true
 
+	case "ExerciseProgressResult.authError":
+		if e.complexity.ExerciseProgressResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.ExerciseProgressResult.AuthError(childComplexity), true
+
+	case "ExerciseProgressResult.dataPoints":
+		if e.complexity.ExerciseProgressResult.DataPoints == nil {
+			break
+		}
+
+		return e.complexity.ExerciseProgressResult.DataPoints(childComplexity), true
+
+	case "ExerciseProgressResult.validationError":
+		if e.complexity.ExerciseProgressResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.ExerciseProgressResult.ValidationError(childComplexity), true
+
 	case "ExerciseResult.authError":
 		if e.complexity.ExerciseResult.AuthError == nil {
 			break
@@ -1702,6 +1931,83 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ExerciseResult.ValidationError(childComplexity), true
+
+	case "MeasurementOverlayGroup.dataPoints":
+		if e.complexity.MeasurementOverlayGroup.DataPoints == nil {
+			break
+		}
+
+		return e.complexity.MeasurementOverlayGroup.DataPoints(childComplexity), true
+
+	case "MeasurementOverlayGroup.measurementType":
+		if e.complexity.MeasurementOverlayGroup.MeasurementType == nil {
+			break
+		}
+
+		return e.complexity.MeasurementOverlayGroup.MeasurementType(childComplexity), true
+
+	case "MeasurementOverlayResult.authError":
+		if e.complexity.MeasurementOverlayResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.MeasurementOverlayResult.AuthError(childComplexity), true
+
+	case "MeasurementOverlayResult.groups":
+		if e.complexity.MeasurementOverlayResult.Groups == nil {
+			break
+		}
+
+		return e.complexity.MeasurementOverlayResult.Groups(childComplexity), true
+
+	case "MeasurementOverlayResult.validationError":
+		if e.complexity.MeasurementOverlayResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.MeasurementOverlayResult.ValidationError(childComplexity), true
+
+	case "MeasurementTrendPoint.date":
+		if e.complexity.MeasurementTrendPoint.Date == nil {
+			break
+		}
+
+		return e.complexity.MeasurementTrendPoint.Date(childComplexity), true
+
+	case "MeasurementTrendPoint.side":
+		if e.complexity.MeasurementTrendPoint.Side == nil {
+			break
+		}
+
+		return e.complexity.MeasurementTrendPoint.Side(childComplexity), true
+
+	case "MeasurementTrendPoint.value":
+		if e.complexity.MeasurementTrendPoint.Value == nil {
+			break
+		}
+
+		return e.complexity.MeasurementTrendPoint.Value(childComplexity), true
+
+	case "MeasurementTrendResult.authError":
+		if e.complexity.MeasurementTrendResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.MeasurementTrendResult.AuthError(childComplexity), true
+
+	case "MeasurementTrendResult.dataPoints":
+		if e.complexity.MeasurementTrendResult.DataPoints == nil {
+			break
+		}
+
+		return e.complexity.MeasurementTrendResult.DataPoints(childComplexity), true
+
+	case "MeasurementTrendResult.validationError":
+		if e.complexity.MeasurementTrendResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.MeasurementTrendResult.ValidationError(childComplexity), true
 
 	case "Mutation.archiveExercise":
 		if e.complexity.Mutation.ArchiveExercise == nil {
@@ -2567,6 +2873,62 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.NutritionValidationError.Message(childComplexity), true
 
+	case "NutritionWeeklyAverage.calories":
+		if e.complexity.NutritionWeeklyAverage.Calories == nil {
+			break
+		}
+
+		return e.complexity.NutritionWeeklyAverage.Calories(childComplexity), true
+
+	case "NutritionWeeklyAverage.carbs":
+		if e.complexity.NutritionWeeklyAverage.Carbs == nil {
+			break
+		}
+
+		return e.complexity.NutritionWeeklyAverage.Carbs(childComplexity), true
+
+	case "NutritionWeeklyAverage.fat":
+		if e.complexity.NutritionWeeklyAverage.Fat == nil {
+			break
+		}
+
+		return e.complexity.NutritionWeeklyAverage.Fat(childComplexity), true
+
+	case "NutritionWeeklyAverage.protein":
+		if e.complexity.NutritionWeeklyAverage.Protein == nil {
+			break
+		}
+
+		return e.complexity.NutritionWeeklyAverage.Protein(childComplexity), true
+
+	case "NutritionWeeklyAverage.weekStartDate":
+		if e.complexity.NutritionWeeklyAverage.WeekStartDate == nil {
+			break
+		}
+
+		return e.complexity.NutritionWeeklyAverage.WeekStartDate(childComplexity), true
+
+	case "NutritionWeeklyAveragesResult.authError":
+		if e.complexity.NutritionWeeklyAveragesResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.NutritionWeeklyAveragesResult.AuthError(childComplexity), true
+
+	case "NutritionWeeklyAveragesResult.averages":
+		if e.complexity.NutritionWeeklyAveragesResult.Averages == nil {
+			break
+		}
+
+		return e.complexity.NutritionWeeklyAveragesResult.Averages(childComplexity), true
+
+	case "NutritionWeeklyAveragesResult.validationError":
+		if e.complexity.NutritionWeeklyAveragesResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.NutritionWeeklyAveragesResult.ValidationError(childComplexity), true
+
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
 			break
@@ -2800,6 +3162,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.BodyWeightEntry(childComplexity, args["id"].(string)), true
 
+	case "Query.bodyWeightTrend":
+		if e.complexity.Query.BodyWeightTrend == nil {
+			break
+		}
+
+		args, err := ec.field_Query_bodyWeightTrend_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.BodyWeightTrend(childComplexity, args["from"].(*models.Date), args["to"].(*models.Date)), true
+
 	case "Query.cardioEntries":
 		if e.complexity.Query.CardioEntries == nil {
 			break
@@ -2872,6 +3246,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Exercise(childComplexity, args["id"].(string)), true
 
+	case "Query.exerciseProgress":
+		if e.complexity.Query.ExerciseProgress == nil {
+			break
+		}
+
+		args, err := ec.field_Query_exerciseProgress_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ExerciseProgress(childComplexity, args["exerciseID"].(string), args["from"].(*models.Date), args["to"].(*models.Date)), true
+
 	case "Query.exercises":
 		if e.complexity.Query.Exercises == nil {
 			break
@@ -2890,6 +3276,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.LatestBodyWeight(childComplexity), true
+
+	case "Query.measurementOverlay":
+		if e.complexity.Query.MeasurementOverlay == nil {
+			break
+		}
+
+		args, err := ec.field_Query_measurementOverlay_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.MeasurementOverlay(childComplexity, args["measurementTypes"].([]models.MeasurementType), args["from"].(*models.Date), args["to"].(*models.Date)), true
+
+	case "Query.measurementTrend":
+		if e.complexity.Query.MeasurementTrend == nil {
+			break
+		}
+
+		args, err := ec.field_Query_measurementTrend_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.MeasurementTrend(childComplexity, args["measurementType"].(models.MeasurementType), args["from"].(*models.Date), args["to"].(*models.Date)), true
 
 	case "Query.nutritionMacros":
 		if e.complexity.Query.NutritionMacros == nil {
@@ -2957,6 +3367,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.NutritionTemplates(childComplexity, args["startDate"].(models.Date), args["endDate"].(models.Date)), true
+
+	case "Query.nutritionWeeklyAverages":
+		if e.complexity.Query.NutritionWeeklyAverages == nil {
+			break
+		}
+
+		args, err := ec.field_Query_nutritionWeeklyAverages_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.NutritionWeeklyAverages(childComplexity, args["from"].(*models.Date), args["to"].(*models.Date)), true
 
 	case "Query.progressPhotos":
 		if e.complexity.Query.ProgressPhotos == nil {
@@ -3558,6 +3980,87 @@ enum CardioErrorCode {
   AUTH_ERROR
   INTERNAL_ERROR
 }`, BuiltIn: false},
+	{Name: "../schema/charts.graphql", Input: `type ChartDataPoint {
+  date: Date!
+  value: Float!
+}
+
+type BodyWeightSeriesPoint {
+  date: Date!
+  weight: Float!
+  source: BodyWeightSource!
+}
+
+type MeasurementTrendPoint {
+  date: Date!
+  value: Float!
+  side: MeasurementSide
+}
+
+type MeasurementOverlayGroup {
+  measurementType: MeasurementType!
+  dataPoints: [MeasurementTrendPoint!]!
+}
+
+type NutritionWeeklyAverage {
+  weekStartDate: Date!
+  calories: Float!
+  protein: Float!
+  fat: Float!
+  carbs: Float!
+}
+
+type BodyWeightTrendResult {
+  series: [BodyWeightSeriesPoint!]!
+  validationError: ChartValidationError
+  authError: ChartAuthError
+}
+
+type MeasurementTrendResult {
+  dataPoints: [MeasurementTrendPoint!]!
+  validationError: ChartValidationError
+  authError: ChartAuthError
+}
+
+type MeasurementOverlayResult {
+  groups: [MeasurementOverlayGroup!]!
+  validationError: ChartValidationError
+  authError: ChartAuthError
+}
+
+type NutritionWeeklyAveragesResult {
+  averages: [NutritionWeeklyAverage!]!
+  validationError: ChartValidationError
+  authError: ChartAuthError
+}
+
+type ExerciseProgressResult {
+  dataPoints: [ChartDataPoint!]!
+  validationError: ChartValidationError
+  authError: ChartAuthError
+}
+
+type ChartValidationError {
+  message: String!
+  code: ChartErrorCode!
+}
+
+type ChartAuthError {
+  message: String!
+  code: ChartErrorCode!
+}
+
+type ChartNotFoundError {
+  message: String!
+  code: ChartErrorCode!
+}
+
+enum ChartErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}`, BuiltIn: false},
 	{Name: "../schema/exercises.graphql", Input: `type Exercise {
   id: ID!
   userId: ID!
@@ -3987,6 +4490,13 @@ type Query {
   dailyNutritionOverride(id: ID!): DailyNutritionOverrideResult!
   dailyNutritionOverrideByDate(date: Date!): DailyNutritionOverrideResult!
   nutritionMacros(weekStartDate: Date!, date: Date): NutritionMacrosResult!
+
+  # WAVE-06 Charts
+  bodyWeightTrend(from: Date, to: Date): BodyWeightTrendResult!
+  measurementTrend(measurementType: MeasurementType!, from: Date, to: Date): MeasurementTrendResult!
+  measurementOverlay(measurementTypes: [MeasurementType!]!, from: Date, to: Date): MeasurementOverlayResult!
+  nutritionWeeklyAverages(from: Date, to: Date): NutritionWeeklyAveragesResult!
+  exerciseProgress(exerciseID: ID!, from: Date, to: Date): ExerciseProgressResult!
 }
 
 type Mutation {
@@ -4913,6 +5423,30 @@ func (ec *executionContext) field_Query_bodyWeightEntry_args(ctx context.Context
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_bodyWeightTrend_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *models.Date
+	if tmp, ok := rawArgs["from"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
+		arg0, err = ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["from"] = arg0
+	var arg1 *models.Date
+	if tmp, ok := rawArgs["to"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("to"))
+		arg1, err = ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["to"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_cardioEntries_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -4997,6 +5531,39 @@ func (ec *executionContext) field_Query_dailyNutritionOverrides_args(ctx context
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_exerciseProgress_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["exerciseID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("exerciseID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["exerciseID"] = arg0
+	var arg1 *models.Date
+	if tmp, ok := rawArgs["from"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
+		arg1, err = ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["from"] = arg1
+	var arg2 *models.Date
+	if tmp, ok := rawArgs["to"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("to"))
+		arg2, err = ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["to"] = arg2
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_exercise_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -5042,6 +5609,72 @@ func (ec *executionContext) field_Query_exercises_args(ctx context.Context, rawA
 		}
 	}
 	args["includeInactive"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_measurementOverlay_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []models.MeasurementType
+	if tmp, ok := rawArgs["measurementTypes"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("measurementTypes"))
+		arg0, err = ec.unmarshalNMeasurementType2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementTypeᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["measurementTypes"] = arg0
+	var arg1 *models.Date
+	if tmp, ok := rawArgs["from"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
+		arg1, err = ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["from"] = arg1
+	var arg2 *models.Date
+	if tmp, ok := rawArgs["to"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("to"))
+		arg2, err = ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["to"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_measurementTrend_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.MeasurementType
+	if tmp, ok := rawArgs["measurementType"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("measurementType"))
+		arg0, err = ec.unmarshalNMeasurementType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementType(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["measurementType"] = arg0
+	var arg1 *models.Date
+	if tmp, ok := rawArgs["from"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
+		arg1, err = ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["from"] = arg1
+	var arg2 *models.Date
+	if tmp, ok := rawArgs["to"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("to"))
+		arg2, err = ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["to"] = arg2
 	return args, nil
 }
 
@@ -5135,6 +5768,30 @@ func (ec *executionContext) field_Query_nutritionTemplates_args(ctx context.Cont
 		}
 	}
 	args["endDate"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_nutritionWeeklyAverages_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *models.Date
+	if tmp, ok := rawArgs["from"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
+		arg0, err = ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["from"] = arg0
+	var arg1 *models.Date
+	if tmp, ok := rawArgs["to"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("to"))
+		arg1, err = ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["to"] = arg1
 	return args, nil
 }
 
@@ -7758,6 +8415,284 @@ func (ec *executionContext) fieldContext_BodyWeightResult_authError(_ context.Co
 	return fc, nil
 }
 
+func (ec *executionContext) _BodyWeightSeriesPoint_date(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightSeriesPoint) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightSeriesPoint_date(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Date, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Date)
+	fc.Result = res
+	return ec.marshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightSeriesPoint_date(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightSeriesPoint",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightSeriesPoint_weight(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightSeriesPoint) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightSeriesPoint_weight(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Weight, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightSeriesPoint_weight(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightSeriesPoint",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightSeriesPoint_source(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightSeriesPoint) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightSeriesPoint_source(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Source, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.BodyWeightSource)
+	fc.Result = res
+	return ec.marshalNBodyWeightSource2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightSource(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightSeriesPoint_source(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightSeriesPoint",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BodyWeightSource does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightTrendResult_series(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightTrendResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightTrendResult_series(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Series, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.BodyWeightSeriesPoint)
+	fc.Result = res
+	return ec.marshalNBodyWeightSeriesPoint2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightSeriesPointᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightTrendResult_series(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightTrendResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "date":
+				return ec.fieldContext_BodyWeightSeriesPoint_date(ctx, field)
+			case "weight":
+				return ec.fieldContext_BodyWeightSeriesPoint_weight(ctx, field)
+			case "source":
+				return ec.fieldContext_BodyWeightSeriesPoint_source(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyWeightSeriesPoint", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightTrendResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightTrendResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightTrendResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyWeightTrendResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.ChartValidationErr)
+	fc.Result = res
+	return ec.marshalOChartValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightTrendResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightTrendResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_ChartValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_ChartValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ChartValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BodyWeightTrendResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.BodyWeightTrendResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BodyWeightTrendResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.BodyWeightTrendResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.ChartAuthErr)
+	fc.Result = res
+	return ec.marshalOChartAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BodyWeightTrendResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BodyWeightTrendResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_ChartAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_ChartAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ChartAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _CardioAuthError_message(ctx context.Context, field graphql.CollectedField, obj *models.CardioAuthErr) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CardioAuthError_message(ctx, field)
 	if err != nil {
@@ -8812,6 +9747,358 @@ func (ec *executionContext) fieldContext_CardioValidationError_code(_ context.Co
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type CardioErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ChartAuthError_message(ctx context.Context, field graphql.CollectedField, obj *models.ChartAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ChartAuthError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ChartAuthError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ChartAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ChartAuthError_code(ctx context.Context, field graphql.CollectedField, obj *models.ChartAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ChartAuthError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.ChartErrorCode)
+	fc.Result = res
+	return ec.marshalNChartErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ChartAuthError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ChartAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ChartErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ChartDataPoint_date(ctx context.Context, field graphql.CollectedField, obj *models.ChartDataPoint) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ChartDataPoint_date(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Date, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Date)
+	fc.Result = res
+	return ec.marshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ChartDataPoint_date(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ChartDataPoint",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ChartDataPoint_value(ctx context.Context, field graphql.CollectedField, obj *models.ChartDataPoint) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ChartDataPoint_value(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ChartDataPoint_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ChartDataPoint",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ChartNotFoundError_message(ctx context.Context, field graphql.CollectedField, obj *models.ChartNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ChartNotFoundError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ChartNotFoundError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ChartNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ChartNotFoundError_code(ctx context.Context, field graphql.CollectedField, obj *models.ChartNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ChartNotFoundError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.ChartErrorCode)
+	fc.Result = res
+	return ec.marshalNChartErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ChartNotFoundError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ChartNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ChartErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ChartValidationError_message(ctx context.Context, field graphql.CollectedField, obj *models.ChartValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ChartValidationError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ChartValidationError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ChartValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ChartValidationError_code(ctx context.Context, field graphql.CollectedField, obj *models.ChartValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ChartValidationError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.ChartErrorCode)
+	fc.Result = res
+	return ec.marshalNChartErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ChartValidationError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ChartValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ChartErrorCode does not have child fields")
 		},
 	}
 	return fc, nil
@@ -11044,6 +12331,150 @@ func (ec *executionContext) fieldContext_ExerciseMedia_createdAt(_ context.Conte
 	return fc, nil
 }
 
+func (ec *executionContext) _ExerciseProgressResult_dataPoints(ctx context.Context, field graphql.CollectedField, obj *models.ExerciseProgressResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ExerciseProgressResult_dataPoints(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DataPoints, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.ChartDataPoint)
+	fc.Result = res
+	return ec.marshalNChartDataPoint2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartDataPointᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ExerciseProgressResult_dataPoints(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ExerciseProgressResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "date":
+				return ec.fieldContext_ChartDataPoint_date(ctx, field)
+			case "value":
+				return ec.fieldContext_ChartDataPoint_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ChartDataPoint", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ExerciseProgressResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.ExerciseProgressResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ExerciseProgressResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ExerciseProgressResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.ChartValidationErr)
+	fc.Result = res
+	return ec.marshalOChartValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ExerciseProgressResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ExerciseProgressResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_ChartValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_ChartValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ChartValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ExerciseProgressResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.ExerciseProgressResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ExerciseProgressResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ExerciseProgressResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.ChartAuthErr)
+	fc.Result = res
+	return ec.marshalOChartAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ExerciseProgressResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ExerciseProgressResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_ChartAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_ChartAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ChartAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _ExerciseResult_exercise(ctx context.Context, field graphql.CollectedField, obj *models.ExerciseResult) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_ExerciseResult_exercise(ctx, field)
 	if err != nil {
@@ -11245,6 +12676,521 @@ func (ec *executionContext) fieldContext_ExerciseResult_authError(_ context.Cont
 				return ec.fieldContext_AuthError_code(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MeasurementOverlayGroup_measurementType(ctx context.Context, field graphql.CollectedField, obj *models.MeasurementOverlayGroup) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MeasurementOverlayGroup_measurementType(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MeasurementType, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.MeasurementType)
+	fc.Result = res
+	return ec.marshalNMeasurementType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementType(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MeasurementOverlayGroup_measurementType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MeasurementOverlayGroup",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type MeasurementType does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MeasurementOverlayGroup_dataPoints(ctx context.Context, field graphql.CollectedField, obj *models.MeasurementOverlayGroup) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MeasurementOverlayGroup_dataPoints(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DataPoints, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.MeasurementTrendPoint)
+	fc.Result = res
+	return ec.marshalNMeasurementTrendPoint2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementTrendPointᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MeasurementOverlayGroup_dataPoints(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MeasurementOverlayGroup",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "date":
+				return ec.fieldContext_MeasurementTrendPoint_date(ctx, field)
+			case "value":
+				return ec.fieldContext_MeasurementTrendPoint_value(ctx, field)
+			case "side":
+				return ec.fieldContext_MeasurementTrendPoint_side(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type MeasurementTrendPoint", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MeasurementOverlayResult_groups(ctx context.Context, field graphql.CollectedField, obj *models.MeasurementOverlayResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MeasurementOverlayResult_groups(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Groups, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.MeasurementOverlayGroup)
+	fc.Result = res
+	return ec.marshalNMeasurementOverlayGroup2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementOverlayGroupᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MeasurementOverlayResult_groups(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MeasurementOverlayResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "measurementType":
+				return ec.fieldContext_MeasurementOverlayGroup_measurementType(ctx, field)
+			case "dataPoints":
+				return ec.fieldContext_MeasurementOverlayGroup_dataPoints(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type MeasurementOverlayGroup", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MeasurementOverlayResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.MeasurementOverlayResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MeasurementOverlayResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.MeasurementOverlayResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.ChartValidationErr)
+	fc.Result = res
+	return ec.marshalOChartValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MeasurementOverlayResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MeasurementOverlayResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_ChartValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_ChartValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ChartValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MeasurementOverlayResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.MeasurementOverlayResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MeasurementOverlayResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.MeasurementOverlayResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.ChartAuthErr)
+	fc.Result = res
+	return ec.marshalOChartAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MeasurementOverlayResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MeasurementOverlayResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_ChartAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_ChartAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ChartAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MeasurementTrendPoint_date(ctx context.Context, field graphql.CollectedField, obj *models.MeasurementTrendPoint) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MeasurementTrendPoint_date(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Date, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Date)
+	fc.Result = res
+	return ec.marshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MeasurementTrendPoint_date(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MeasurementTrendPoint",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MeasurementTrendPoint_value(ctx context.Context, field graphql.CollectedField, obj *models.MeasurementTrendPoint) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MeasurementTrendPoint_value(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MeasurementTrendPoint_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MeasurementTrendPoint",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MeasurementTrendPoint_side(ctx context.Context, field graphql.CollectedField, obj *models.MeasurementTrendPoint) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MeasurementTrendPoint_side(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Side, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.MeasurementSide)
+	fc.Result = res
+	return ec.marshalOMeasurementSide2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementSide(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MeasurementTrendPoint_side(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MeasurementTrendPoint",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type MeasurementSide does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MeasurementTrendResult_dataPoints(ctx context.Context, field graphql.CollectedField, obj *models.MeasurementTrendResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MeasurementTrendResult_dataPoints(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DataPoints, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.MeasurementTrendPoint)
+	fc.Result = res
+	return ec.marshalNMeasurementTrendPoint2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementTrendPointᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MeasurementTrendResult_dataPoints(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MeasurementTrendResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "date":
+				return ec.fieldContext_MeasurementTrendPoint_date(ctx, field)
+			case "value":
+				return ec.fieldContext_MeasurementTrendPoint_value(ctx, field)
+			case "side":
+				return ec.fieldContext_MeasurementTrendPoint_side(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type MeasurementTrendPoint", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MeasurementTrendResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.MeasurementTrendResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MeasurementTrendResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.MeasurementTrendResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.ChartValidationErr)
+	fc.Result = res
+	return ec.marshalOChartValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MeasurementTrendResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MeasurementTrendResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_ChartValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_ChartValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ChartValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MeasurementTrendResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.MeasurementTrendResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MeasurementTrendResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.MeasurementTrendResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.ChartAuthErr)
+	fc.Result = res
+	return ec.marshalOChartAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MeasurementTrendResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MeasurementTrendResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_ChartAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_ChartAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ChartAuthError", field.Name)
 		},
 	}
 	return fc, nil
@@ -16423,6 +18369,376 @@ func (ec *executionContext) fieldContext_NutritionValidationError_code(_ context
 	return fc, nil
 }
 
+func (ec *executionContext) _NutritionWeeklyAverage_weekStartDate(ctx context.Context, field graphql.CollectedField, obj *models.NutritionWeeklyAverage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionWeeklyAverage_weekStartDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WeekStartDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Date)
+	fc.Result = res
+	return ec.marshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionWeeklyAverage_weekStartDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionWeeklyAverage",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionWeeklyAverage_calories(ctx context.Context, field graphql.CollectedField, obj *models.NutritionWeeklyAverage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionWeeklyAverage_calories(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Calories, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionWeeklyAverage_calories(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionWeeklyAverage",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionWeeklyAverage_protein(ctx context.Context, field graphql.CollectedField, obj *models.NutritionWeeklyAverage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionWeeklyAverage_protein(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Protein, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionWeeklyAverage_protein(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionWeeklyAverage",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionWeeklyAverage_fat(ctx context.Context, field graphql.CollectedField, obj *models.NutritionWeeklyAverage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionWeeklyAverage_fat(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Fat, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionWeeklyAverage_fat(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionWeeklyAverage",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionWeeklyAverage_carbs(ctx context.Context, field graphql.CollectedField, obj *models.NutritionWeeklyAverage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionWeeklyAverage_carbs(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Carbs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionWeeklyAverage_carbs(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionWeeklyAverage",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionWeeklyAveragesResult_averages(ctx context.Context, field graphql.CollectedField, obj *models.NutritionWeeklyAveragesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionWeeklyAveragesResult_averages(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Averages, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.NutritionWeeklyAverage)
+	fc.Result = res
+	return ec.marshalNNutritionWeeklyAverage2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionWeeklyAverageᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionWeeklyAveragesResult_averages(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionWeeklyAveragesResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "weekStartDate":
+				return ec.fieldContext_NutritionWeeklyAverage_weekStartDate(ctx, field)
+			case "calories":
+				return ec.fieldContext_NutritionWeeklyAverage_calories(ctx, field)
+			case "protein":
+				return ec.fieldContext_NutritionWeeklyAverage_protein(ctx, field)
+			case "fat":
+				return ec.fieldContext_NutritionWeeklyAverage_fat(ctx, field)
+			case "carbs":
+				return ec.fieldContext_NutritionWeeklyAverage_carbs(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionWeeklyAverage", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionWeeklyAveragesResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionWeeklyAveragesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionWeeklyAveragesResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionWeeklyAveragesResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.ChartValidationErr)
+	fc.Result = res
+	return ec.marshalOChartValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionWeeklyAveragesResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionWeeklyAveragesResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_ChartValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_ChartValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ChartValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionWeeklyAveragesResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionWeeklyAveragesResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionWeeklyAveragesResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionWeeklyAveragesResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.ChartAuthErr)
+	fc.Result = res
+	return ec.marshalOChartAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionWeeklyAveragesResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionWeeklyAveragesResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_ChartAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_ChartAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ChartAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *models.PageInfo) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_hasNextPage(ctx, field)
 	if err != nil {
@@ -18906,6 +21222,321 @@ func (ec *executionContext) fieldContext_Query_nutritionMacros(ctx context.Conte
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_nutritionMacros_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_bodyWeightTrend(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_bodyWeightTrend(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().BodyWeightTrend(rctx, fc.Args["from"].(*models.Date), fc.Args["to"].(*models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.BodyWeightTrendResult)
+	fc.Result = res
+	return ec.marshalNBodyWeightTrendResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightTrendResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_bodyWeightTrend(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "series":
+				return ec.fieldContext_BodyWeightTrendResult_series(ctx, field)
+			case "validationError":
+				return ec.fieldContext_BodyWeightTrendResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_BodyWeightTrendResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BodyWeightTrendResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_bodyWeightTrend_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_measurementTrend(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_measurementTrend(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().MeasurementTrend(rctx, fc.Args["measurementType"].(models.MeasurementType), fc.Args["from"].(*models.Date), fc.Args["to"].(*models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.MeasurementTrendResult)
+	fc.Result = res
+	return ec.marshalNMeasurementTrendResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementTrendResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_measurementTrend(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dataPoints":
+				return ec.fieldContext_MeasurementTrendResult_dataPoints(ctx, field)
+			case "validationError":
+				return ec.fieldContext_MeasurementTrendResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_MeasurementTrendResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type MeasurementTrendResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_measurementTrend_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_measurementOverlay(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_measurementOverlay(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().MeasurementOverlay(rctx, fc.Args["measurementTypes"].([]models.MeasurementType), fc.Args["from"].(*models.Date), fc.Args["to"].(*models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.MeasurementOverlayResult)
+	fc.Result = res
+	return ec.marshalNMeasurementOverlayResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementOverlayResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_measurementOverlay(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "groups":
+				return ec.fieldContext_MeasurementOverlayResult_groups(ctx, field)
+			case "validationError":
+				return ec.fieldContext_MeasurementOverlayResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_MeasurementOverlayResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type MeasurementOverlayResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_measurementOverlay_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_nutritionWeeklyAverages(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_nutritionWeeklyAverages(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().NutritionWeeklyAverages(rctx, fc.Args["from"].(*models.Date), fc.Args["to"].(*models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionWeeklyAveragesResult)
+	fc.Result = res
+	return ec.marshalNNutritionWeeklyAveragesResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionWeeklyAveragesResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_nutritionWeeklyAverages(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "averages":
+				return ec.fieldContext_NutritionWeeklyAveragesResult_averages(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionWeeklyAveragesResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionWeeklyAveragesResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionWeeklyAveragesResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_nutritionWeeklyAverages_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_exerciseProgress(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_exerciseProgress(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ExerciseProgress(rctx, fc.Args["exerciseID"].(string), fc.Args["from"].(*models.Date), fc.Args["to"].(*models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.ExerciseProgressResult)
+	fc.Result = res
+	return ec.marshalNExerciseProgressResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐExerciseProgressResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_exerciseProgress(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dataPoints":
+				return ec.fieldContext_ExerciseProgressResult_dataPoints(ctx, field)
+			case "validationError":
+				return ec.fieldContext_ExerciseProgressResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_ExerciseProgressResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ExerciseProgressResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_exerciseProgress_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -24554,6 +27185,160 @@ func (ec *executionContext) _BodyWeightResult(ctx context.Context, sel ast.Selec
 	return out
 }
 
+var bodyWeightSeriesPointImplementors = []string{"BodyWeightSeriesPoint"}
+
+func (ec *executionContext) _BodyWeightSeriesPoint(ctx context.Context, sel ast.SelectionSet, obj *models.BodyWeightSeriesPoint) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bodyWeightSeriesPointImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BodyWeightSeriesPoint")
+		case "date":
+			out.Values[i] = ec._BodyWeightSeriesPoint_date(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "weight":
+			out.Values[i] = ec._BodyWeightSeriesPoint_weight(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "source":
+			out.Values[i] = ec._BodyWeightSeriesPoint_source(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var bodyWeightTrendResultImplementors = []string{"BodyWeightTrendResult"}
+
+func (ec *executionContext) _BodyWeightTrendResult(ctx context.Context, sel ast.SelectionSet, obj *models.BodyWeightTrendResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bodyWeightTrendResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BodyWeightTrendResult")
+		case "series":
+			out.Values[i] = ec._BodyWeightTrendResult_series(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyWeightTrendResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._BodyWeightTrendResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var cardioAuthErrorImplementors = []string{"CardioAuthError"}
 
 func (ec *executionContext) _CardioAuthError(ctx context.Context, sel ast.SelectionSet, obj *models.CardioAuthErr) graphql.Marshaler {
@@ -25037,6 +27822,182 @@ func (ec *executionContext) _CardioValidationError(ctx context.Context, sel ast.
 			}
 		case "code":
 			out.Values[i] = ec._CardioValidationError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var chartAuthErrorImplementors = []string{"ChartAuthError"}
+
+func (ec *executionContext) _ChartAuthError(ctx context.Context, sel ast.SelectionSet, obj *models.ChartAuthErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, chartAuthErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ChartAuthError")
+		case "message":
+			out.Values[i] = ec._ChartAuthError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._ChartAuthError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var chartDataPointImplementors = []string{"ChartDataPoint"}
+
+func (ec *executionContext) _ChartDataPoint(ctx context.Context, sel ast.SelectionSet, obj *models.ChartDataPoint) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, chartDataPointImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ChartDataPoint")
+		case "date":
+			out.Values[i] = ec._ChartDataPoint_date(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "value":
+			out.Values[i] = ec._ChartDataPoint_value(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var chartNotFoundErrorImplementors = []string{"ChartNotFoundError"}
+
+func (ec *executionContext) _ChartNotFoundError(ctx context.Context, sel ast.SelectionSet, obj *models.ChartNotFoundErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, chartNotFoundErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ChartNotFoundError")
+		case "message":
+			out.Values[i] = ec._ChartNotFoundError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._ChartNotFoundError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var chartValidationErrorImplementors = []string{"ChartValidationError"}
+
+func (ec *executionContext) _ChartValidationError(ctx context.Context, sel ast.SelectionSet, obj *models.ChartValidationErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, chartValidationErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ChartValidationError")
+		case "message":
+			out.Values[i] = ec._ChartValidationError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._ChartValidationError_code(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -26020,6 +28981,111 @@ func (ec *executionContext) _ExerciseMedia(ctx context.Context, sel ast.Selectio
 	return out
 }
 
+var exerciseProgressResultImplementors = []string{"ExerciseProgressResult"}
+
+func (ec *executionContext) _ExerciseProgressResult(ctx context.Context, sel ast.SelectionSet, obj *models.ExerciseProgressResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, exerciseProgressResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ExerciseProgressResult")
+		case "dataPoints":
+			out.Values[i] = ec._ExerciseProgressResult_dataPoints(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ExerciseProgressResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ExerciseProgressResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var exerciseResultImplementors = []string{"ExerciseResult"}
 
 func (ec *executionContext) _ExerciseResult(ctx context.Context, sel ast.SelectionSet, obj *models.ExerciseResult) graphql.Marshaler {
@@ -26109,6 +29175,306 @@ func (ec *executionContext) _ExerciseResult(ctx context.Context, sel ast.Selecti
 					}
 				}()
 				res = ec._ExerciseResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var measurementOverlayGroupImplementors = []string{"MeasurementOverlayGroup"}
+
+func (ec *executionContext) _MeasurementOverlayGroup(ctx context.Context, sel ast.SelectionSet, obj *models.MeasurementOverlayGroup) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, measurementOverlayGroupImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("MeasurementOverlayGroup")
+		case "measurementType":
+			out.Values[i] = ec._MeasurementOverlayGroup_measurementType(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "dataPoints":
+			out.Values[i] = ec._MeasurementOverlayGroup_dataPoints(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var measurementOverlayResultImplementors = []string{"MeasurementOverlayResult"}
+
+func (ec *executionContext) _MeasurementOverlayResult(ctx context.Context, sel ast.SelectionSet, obj *models.MeasurementOverlayResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, measurementOverlayResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("MeasurementOverlayResult")
+		case "groups":
+			out.Values[i] = ec._MeasurementOverlayResult_groups(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._MeasurementOverlayResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._MeasurementOverlayResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var measurementTrendPointImplementors = []string{"MeasurementTrendPoint"}
+
+func (ec *executionContext) _MeasurementTrendPoint(ctx context.Context, sel ast.SelectionSet, obj *models.MeasurementTrendPoint) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, measurementTrendPointImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("MeasurementTrendPoint")
+		case "date":
+			out.Values[i] = ec._MeasurementTrendPoint_date(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "value":
+			out.Values[i] = ec._MeasurementTrendPoint_value(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "side":
+			out.Values[i] = ec._MeasurementTrendPoint_side(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var measurementTrendResultImplementors = []string{"MeasurementTrendResult"}
+
+func (ec *executionContext) _MeasurementTrendResult(ctx context.Context, sel ast.SelectionSet, obj *models.MeasurementTrendResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, measurementTrendResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("MeasurementTrendResult")
+		case "dataPoints":
+			out.Values[i] = ec._MeasurementTrendResult_dataPoints(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._MeasurementTrendResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._MeasurementTrendResult_authError(ctx, field, obj)
 				return res
 			}
 
@@ -27842,6 +31208,170 @@ func (ec *executionContext) _NutritionValidationError(ctx context.Context, sel a
 	return out
 }
 
+var nutritionWeeklyAverageImplementors = []string{"NutritionWeeklyAverage"}
+
+func (ec *executionContext) _NutritionWeeklyAverage(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionWeeklyAverage) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionWeeklyAverageImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionWeeklyAverage")
+		case "weekStartDate":
+			out.Values[i] = ec._NutritionWeeklyAverage_weekStartDate(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "calories":
+			out.Values[i] = ec._NutritionWeeklyAverage_calories(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "protein":
+			out.Values[i] = ec._NutritionWeeklyAverage_protein(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "fat":
+			out.Values[i] = ec._NutritionWeeklyAverage_fat(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "carbs":
+			out.Values[i] = ec._NutritionWeeklyAverage_carbs(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionWeeklyAveragesResultImplementors = []string{"NutritionWeeklyAveragesResult"}
+
+func (ec *executionContext) _NutritionWeeklyAveragesResult(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionWeeklyAveragesResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionWeeklyAveragesResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionWeeklyAveragesResult")
+		case "averages":
+			out.Values[i] = ec._NutritionWeeklyAveragesResult_averages(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionWeeklyAveragesResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionWeeklyAveragesResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var pageInfoImplementors = []string{"PageInfo"}
 
 func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet, obj *models.PageInfo) graphql.Marshaler {
@@ -28811,6 +32341,116 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_nutritionMacros(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "bodyWeightTrend":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_bodyWeightTrend(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "measurementTrend":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_measurementTrend(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "measurementOverlay":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_measurementOverlay(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "nutritionWeeklyAverages":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_nutritionWeeklyAverages(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "exerciseProgress":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_exerciseProgress(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -30153,6 +33793,54 @@ func (ec *executionContext) marshalNBodyWeightResult2ᚖmonorepoᚑtemplateᚋap
 	return ec._BodyWeightResult(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNBodyWeightSeriesPoint2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightSeriesPoint(ctx context.Context, sel ast.SelectionSet, v models.BodyWeightSeriesPoint) graphql.Marshaler {
+	return ec._BodyWeightSeriesPoint(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBodyWeightSeriesPoint2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightSeriesPointᚄ(ctx context.Context, sel ast.SelectionSet, v []models.BodyWeightSeriesPoint) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNBodyWeightSeriesPoint2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightSeriesPoint(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) unmarshalNBodyWeightSource2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightSource(ctx context.Context, v interface{}) (models.BodyWeightSource, error) {
 	tmp, err := graphql.UnmarshalString(v)
 	res := models.BodyWeightSource(tmp)
@@ -30167,6 +33855,20 @@ func (ec *executionContext) marshalNBodyWeightSource2monorepoᚑtemplateᚋapps�
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNBodyWeightTrendResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightTrendResult(ctx context.Context, sel ast.SelectionSet, v models.BodyWeightTrendResult) graphql.Marshaler {
+	return ec._BodyWeightTrendResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBodyWeightTrendResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐBodyWeightTrendResult(ctx context.Context, sel ast.SelectionSet, v *models.BodyWeightTrendResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._BodyWeightTrendResult(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
@@ -30283,6 +33985,70 @@ func (ec *executionContext) unmarshalNCardioType2monorepoᚑtemplateᚋappsᚋap
 }
 
 func (ec *executionContext) marshalNCardioType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCardioType(ctx context.Context, sel ast.SelectionSet, v models.CardioType) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNChartDataPoint2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartDataPoint(ctx context.Context, sel ast.SelectionSet, v models.ChartDataPoint) graphql.Marshaler {
+	return ec._ChartDataPoint(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNChartDataPoint2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartDataPointᚄ(ctx context.Context, sel ast.SelectionSet, v []models.ChartDataPoint) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNChartDataPoint2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartDataPoint(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalNChartErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartErrorCode(ctx context.Context, v interface{}) (models.ChartErrorCode, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.ChartErrorCode(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNChartErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartErrorCode(ctx context.Context, sel ast.SelectionSet, v models.ChartErrorCode) graphql.Marshaler {
 	res := graphql.MarshalString(string(v))
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -30691,6 +34457,20 @@ func (ec *executionContext) marshalNExerciseMedia2ᚕmonorepoᚑtemplateᚋapps�
 	return ret
 }
 
+func (ec *executionContext) marshalNExerciseProgressResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐExerciseProgressResult(ctx context.Context, sel ast.SelectionSet, v models.ExerciseProgressResult) graphql.Marshaler {
+	return ec._ExerciseProgressResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNExerciseProgressResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐExerciseProgressResult(ctx context.Context, sel ast.SelectionSet, v *models.ExerciseProgressResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._ExerciseProgressResult(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNExerciseResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐExerciseResult(ctx context.Context, sel ast.SelectionSet, v models.ExerciseResult) graphql.Marshaler {
 	return ec._ExerciseResult(ctx, sel, &v)
 }
@@ -30780,6 +34560,130 @@ func (ec *executionContext) marshalNInt2int64(ctx context.Context, sel ast.Selec
 	return res
 }
 
+func (ec *executionContext) marshalNMeasurementOverlayGroup2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementOverlayGroup(ctx context.Context, sel ast.SelectionSet, v models.MeasurementOverlayGroup) graphql.Marshaler {
+	return ec._MeasurementOverlayGroup(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNMeasurementOverlayGroup2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementOverlayGroupᚄ(ctx context.Context, sel ast.SelectionSet, v []models.MeasurementOverlayGroup) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNMeasurementOverlayGroup2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementOverlayGroup(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNMeasurementOverlayResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementOverlayResult(ctx context.Context, sel ast.SelectionSet, v models.MeasurementOverlayResult) graphql.Marshaler {
+	return ec._MeasurementOverlayResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNMeasurementOverlayResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementOverlayResult(ctx context.Context, sel ast.SelectionSet, v *models.MeasurementOverlayResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._MeasurementOverlayResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNMeasurementTrendPoint2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementTrendPoint(ctx context.Context, sel ast.SelectionSet, v models.MeasurementTrendPoint) graphql.Marshaler {
+	return ec._MeasurementTrendPoint(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNMeasurementTrendPoint2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementTrendPointᚄ(ctx context.Context, sel ast.SelectionSet, v []models.MeasurementTrendPoint) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNMeasurementTrendPoint2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementTrendPoint(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNMeasurementTrendResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementTrendResult(ctx context.Context, sel ast.SelectionSet, v models.MeasurementTrendResult) graphql.Marshaler {
+	return ec._MeasurementTrendResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNMeasurementTrendResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementTrendResult(ctx context.Context, sel ast.SelectionSet, v *models.MeasurementTrendResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._MeasurementTrendResult(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNMeasurementType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementType(ctx context.Context, v interface{}) (models.MeasurementType, error) {
 	tmp, err := graphql.UnmarshalString(v)
 	res := models.MeasurementType(tmp)
@@ -30794,6 +34698,67 @@ func (ec *executionContext) marshalNMeasurementType2monorepoᚑtemplateᚋapps�
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNMeasurementType2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementTypeᚄ(ctx context.Context, v interface{}) ([]models.MeasurementType, error) {
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]models.MeasurementType, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNMeasurementType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementType(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNMeasurementType2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementTypeᚄ(ctx context.Context, sel ast.SelectionSet, v []models.MeasurementType) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNMeasurementType2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐMeasurementType(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalNNutritionErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionErrorCode(ctx context.Context, v interface{}) (models.NutritionErrorCode, error) {
@@ -31038,6 +35003,68 @@ func (ec *executionContext) marshalNNutritionTemplatesResult2ᚖmonorepoᚑtempl
 		return graphql.Null
 	}
 	return ec._NutritionTemplatesResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNNutritionWeeklyAverage2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionWeeklyAverage(ctx context.Context, sel ast.SelectionSet, v models.NutritionWeeklyAverage) graphql.Marshaler {
+	return ec._NutritionWeeklyAverage(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNutritionWeeklyAverage2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionWeeklyAverageᚄ(ctx context.Context, sel ast.SelectionSet, v []models.NutritionWeeklyAverage) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNNutritionWeeklyAverage2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionWeeklyAverage(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNNutritionWeeklyAveragesResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionWeeklyAveragesResult(ctx context.Context, sel ast.SelectionSet, v models.NutritionWeeklyAveragesResult) graphql.Marshaler {
+	return ec._NutritionWeeklyAveragesResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNutritionWeeklyAveragesResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionWeeklyAveragesResult(ctx context.Context, sel ast.SelectionSet, v *models.NutritionWeeklyAveragesResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._NutritionWeeklyAveragesResult(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNOperation2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐOperation(ctx context.Context, v interface{}) (models.Operation, error) {
@@ -31815,6 +35842,20 @@ func (ec *executionContext) marshalOCardioValidationError2ᚖmonorepoᚑtemplate
 		return graphql.Null
 	}
 	return ec._CardioValidationError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOChartAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartAuthErr(ctx context.Context, sel ast.SelectionSet, v *models.ChartAuthErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ChartAuthError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOChartValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐChartValidationErr(ctx context.Context, sel ast.SelectionSet, v *models.ChartValidationErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ChartValidationError(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalODailyNutritionOverride2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverride(ctx context.Context, sel ast.SelectionSet, v *models.DailyNutritionOverride) graphql.Marshaler {

@@ -87,3 +87,9 @@ atlas_pin_attempt:
 media:
   base_path: ./data/media
   max_upload_size: 314572800
+
+ai_export:
+  base_path: ./data/exports
+  max_range_days: 365
+  max_photos_in_export: 20
+  max_export_size_bytes: 104857600

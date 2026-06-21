@@ -29,6 +29,13 @@ type Query {
   # WAVE-04 Week Flags
   weekFlags(weekStartDate: Date!): WeekFlagsResult!
 
+  # WAVE-07 User Profile
+  userProfile: UserProfileResult!
+
+  # WAVE-07 AI Export
+  aiExport(id: ID!): AiExportResult!
+  aiExports: AiExportsResult!
+
   # WAVE-05 Nutrition
   nutritionProducts: NutritionProductsResult!
   nutritionProduct(id: ID!): NutritionProductResult!
@@ -39,6 +46,13 @@ type Query {
   dailyNutritionOverride(id: ID!): DailyNutritionOverrideResult!
   dailyNutritionOverrideByDate(date: Date!): DailyNutritionOverrideResult!
   nutritionMacros(weekStartDate: Date!, date: Date): NutritionMacrosResult!
+
+  # WAVE-06 Charts
+  bodyWeightTrend(from: Date, to: Date): BodyWeightTrendResult!
+  measurementTrend(measurementType: MeasurementType!, from: Date, to: Date): MeasurementTrendResult!
+  measurementOverlay(measurementTypes: [MeasurementType!]!, from: Date, to: Date): MeasurementOverlayResult!
+  nutritionWeeklyAverages(from: Date, to: Date): NutritionWeeklyAveragesResult!
+  exerciseProgress(exerciseID: ID!, from: Date, to: Date): ExerciseProgressResult!
 }
 
 type Mutation {
@@ -74,6 +88,14 @@ type Mutation {
   # WAVE-04 Week Flags
   createWeekFlag(input: CreateWeekFlagInput!): WeekFlagResult!
   deleteWeekFlag(id: ID!): WeekFlagResult!
+
+  # WAVE-07 User Profile
+  updateUserProfile(input: UserProfileInput!): UserProfileResult!
+
+  # WAVE-07 AI Export
+  createAiExportPrompt(input: CreateAiExportInput!): AiExportResult!
+  generateAiExport(id: ID!): AiExportResult!
+  deleteAiExport(id: ID!): AiExportResult!
 
   # WAVE-05 Nutrition
   createNutritionProduct(input: CreateProductInput!): NutritionProductResult!

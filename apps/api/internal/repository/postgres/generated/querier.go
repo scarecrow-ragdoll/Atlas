@@ -17,6 +17,7 @@ type Querier interface {
 	CountProgressPhotosByCheckIn(ctx context.Context, checkInID pgtype.UUID) (int64, error)
 	CountUsers(ctx context.Context) (int64, error)
 	CreateAdminUser(ctx context.Context, arg CreateAdminUserParams) (AdminUser, error)
+	CreateAiExport(ctx context.Context, arg CreateAiExportParams) (AiExport, error)
 	CreateAtlasSettings(ctx context.Context, userID pgtype.UUID) error
 	// FILE: apps/api/internal/repository/postgres/queries/body_check_ins.sql
 	// VERSION: 1.0.0
@@ -117,6 +118,7 @@ type Querier interface {
 	// END_CHANGE_SUMMARY
 	CreateProgressPhoto(ctx context.Context, arg CreateProgressPhotoParams) (ProgressPhoto, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error)
+	CreateUserProfile(ctx context.Context, arg CreateUserProfileParams) (UserProfile, error)
 	// FILE: apps/api/internal/repository/postgres/queries/week_flags.sql
 	// VERSION: 1.0.0
 	// START_MODULE_CONTRACT
@@ -131,6 +133,7 @@ type Querier interface {
 	//   LAST_CHANGE: 1.0.0 - Added week flag queries for WAVE-04.
 	// END_CHANGE_SUMMARY
 	CreateWeekFlag(ctx context.Context, arg CreateWeekFlagParams) (WeekFlag, error)
+	DeleteAiExport(ctx context.Context, arg DeleteAiExportParams) (AiExport, error)
 	DeleteBodyCheckIn(ctx context.Context, arg DeleteBodyCheckInParams) (BodyCheckIn, error)
 	DeleteBodyMeasurement(ctx context.Context, arg DeleteBodyMeasurementParams) (BodyMeasurement, error)
 	DeleteBodyWeightEntry(ctx context.Context, arg DeleteBodyWeightEntryParams) (BodyWeightEntry, error)
@@ -146,6 +149,7 @@ type Querier interface {
 	DeleteWeekFlag(ctx context.Context, arg DeleteWeekFlagParams) (WeekFlag, error)
 	GetAdminUserByEmail(ctx context.Context, lower string) (AdminUser, error)
 	GetAdminUserByID(ctx context.Context, id pgtype.UUID) (AdminUser, error)
+	GetAiExportByID(ctx context.Context, arg GetAiExportByIDParams) (AiExport, error)
 	GetAtlasDefaultUser(ctx context.Context) (AtlasUser, error)
 	// FILE: apps/api/internal/repository/postgres/queries/atlas_settings.sql
 	// VERSION: 1.0.1
@@ -191,13 +195,16 @@ type Querier interface {
 	GetNutritionTemplateItemByID(ctx context.Context, id pgtype.UUID) (NutritionTemplateItem, error)
 	GetProgressPhotoByID(ctx context.Context, arg GetProgressPhotoByIDParams) (ProgressPhoto, error)
 	GetUserByID(ctx context.Context, id pgtype.UUID) (GetUserByIDRow, error)
+	GetUserProfileByUserID(ctx context.Context, userID pgtype.UUID) (UserProfile, error)
 	GetWeekFlagByID(ctx context.Context, arg GetWeekFlagByIDParams) (WeekFlag, error)
 	InsertAtlasDefaultUser(ctx context.Context, displayName string) (pgtype.UUID, error)
 	LatestBodyWeightEntry(ctx context.Context, userID pgtype.UUID) (BodyWeightEntry, error)
 	ListActiveNutritionProducts(ctx context.Context, userID pgtype.UUID) ([]NutritionProduct, error)
+	ListAiExportsByUserID(ctx context.Context, userID pgtype.UUID) ([]AiExport, error)
 	ListAllExercises(ctx context.Context, arg ListAllExercisesParams) ([]Exercise, error)
 	ListBodyCheckInsByDateRange(ctx context.Context, arg ListBodyCheckInsByDateRangeParams) ([]BodyCheckIn, error)
 	ListBodyMeasurementsByCheckIn(ctx context.Context, arg ListBodyMeasurementsByCheckInParams) ([]BodyMeasurement, error)
+	ListBodyMeasurementsByUserTypeRange(ctx context.Context, arg ListBodyMeasurementsByUserTypeRangeParams) ([]ListBodyMeasurementsByUserTypeRangeRow, error)
 	ListBodyWeightEntriesByDateRange(ctx context.Context, arg ListBodyWeightEntriesByDateRangeParams) ([]BodyWeightEntry, error)
 	ListCardioEntriesByDailyLog(ctx context.Context, arg ListCardioEntriesByDailyLogParams) ([]CardioEntry, error)
 	ListDailyNutritionOverrideItemsByOverride(ctx context.Context, overrideID pgtype.UUID) ([]DailyNutritionOverrideItem, error)
@@ -208,10 +215,12 @@ type Querier interface {
 	ListNutritionTemplateItemsByTemplate(ctx context.Context, templateID pgtype.UUID) ([]NutritionTemplateItem, error)
 	ListNutritionTemplatesByRange(ctx context.Context, arg ListNutritionTemplatesByRangeParams) ([]NutritionTemplate, error)
 	ListProgressPhotosByCheckIn(ctx context.Context, arg ListProgressPhotosByCheckInParams) ([]ProgressPhoto, error)
+	ListStaleAiExports(ctx context.Context, dollar_1 pgtype.Interval) ([]AiExport, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]ListUsersRow, error)
 	ListWeekFlagsByWeekStart(ctx context.Context, arg ListWeekFlagsByWeekStartParams) ([]WeekFlag, error)
 	RestoreExercise(ctx context.Context, arg RestoreExerciseParams) (Exercise, error)
 	SoftDeleteNutritionProduct(ctx context.Context, arg SoftDeleteNutritionProductParams) (NutritionProduct, error)
+	UpdateAiExportFilePath(ctx context.Context, arg UpdateAiExportFilePathParams) (AiExport, error)
 	UpdateAtlasPinState(ctx context.Context, arg UpdateAtlasPinStateParams) (AtlasSetting, error)
 	UpdateBodyCheckIn(ctx context.Context, arg UpdateBodyCheckInParams) (BodyCheckIn, error)
 	UpdateBodyMeasurement(ctx context.Context, arg UpdateBodyMeasurementParams) (BodyMeasurement, error)
@@ -227,6 +236,7 @@ type Querier interface {
 	UpsertAtlasSettings(ctx context.Context, arg UpsertAtlasSettingsParams) (AtlasSetting, error)
 	UpsertDailyNutritionOverride(ctx context.Context, arg UpsertDailyNutritionOverrideParams) (DailyNutritionOverride, error)
 	UpsertNutritionTemplate(ctx context.Context, arg UpsertNutritionTemplateParams) (NutritionTemplate, error)
+	UpsertUserProfile(ctx context.Context, arg UpsertUserProfileParams) (UserProfile, error)
 }
 
 var _ Querier = (*Queries)(nil)

@@ -1,0 +1,54 @@
+type UserProfile {
+  id: ID!
+  userId: ID!
+  goal: String
+  height: Float
+  birthDate: Date
+  trainingExperience: String
+  currentTrainingSplit: String
+  preferredProgressionStyle: String
+  nutritionStrategy: String
+  persistentAiContext: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input UserProfileInput {
+  goal: String
+  height: Float
+  birthDate: Date
+  trainingExperience: String
+  currentTrainingSplit: String
+  preferredProgressionStyle: String
+  nutritionStrategy: String
+  persistentAiContext: String
+}
+
+type UserProfileResult {
+  profile: UserProfile
+  validationError: UserProfileValidationError
+  notFoundError: UserProfileNotFoundError
+  authError: UserProfileAuthError
+}
+
+type UserProfileValidationError {
+  message: String!
+  code: UserProfileErrorCode!
+}
+
+type UserProfileNotFoundError {
+  message: String!
+  code: UserProfileErrorCode!
+}
+
+type UserProfileAuthError {
+  message: String!
+  code: UserProfileErrorCode!
+}
+
+enum UserProfileErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}

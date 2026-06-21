@@ -244,3 +244,67 @@ models:
     model: monorepo-template/apps/api/internal/atlas/models.NutritionNotFoundErr
   NutritionAuthError:
     model: monorepo-template/apps/api/internal/atlas/models.NutritionAuthErr
+
+  # WAVE-06 Charts
+  ChartDataPoint:
+    model: monorepo-template/apps/api/internal/atlas/models.ChartDataPoint
+  BodyWeightSeriesPoint:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyWeightSeriesPoint
+  MeasurementTrendPoint:
+    model: monorepo-template/apps/api/internal/atlas/models.MeasurementTrendPoint
+  MeasurementOverlayGroup:
+    model: monorepo-template/apps/api/internal/atlas/models.MeasurementOverlayGroup
+  NutritionWeeklyAverage:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionWeeklyAverage
+  BodyWeightTrendResult:
+    model: monorepo-template/apps/api/internal/atlas/models.BodyWeightTrendResult
+  MeasurementTrendResult:
+    model: monorepo-template/apps/api/internal/atlas/models.MeasurementTrendResult
+  MeasurementOverlayResult:
+    model: monorepo-template/apps/api/internal/atlas/models.MeasurementOverlayResult
+  NutritionWeeklyAveragesResult:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionWeeklyAveragesResult
+  ExerciseProgressResult:
+    model: monorepo-template/apps/api/internal/atlas/models.ExerciseProgressResult
+  ChartValidationError:
+    model: monorepo-template/apps/api/internal/atlas/models.ChartValidationErr
+  ChartAuthError:
+    model: monorepo-template/apps/api/internal/atlas/models.ChartAuthErr
+  ChartNotFoundError:
+    model: monorepo-template/apps/api/internal/atlas/models.ChartNotFoundErr
+  ChartErrorCode:
+    model: monorepo-template/apps/api/internal/atlas/models.ChartErrorCode
+
+  # WAVE-07 User Profile
+  UserProfile:
+    model: monorepo-template/apps/api/internal/atlas/models.UserProfile
+  UserProfileInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UserProfileInput
+  UserProfileResult:
+    model: monorepo-template/apps/api/internal/atlas/models.UserProfileResult
+  UserProfileValidationError:
+    model: monorepo-template/apps/api/internal/atlas/models.UserProfileValidationErr
+  UserProfileNotFoundError:
+    model: monorepo-template/apps/api/internal/atlas/models.UserProfileNotFoundErr
+  UserProfileAuthError:
+    model: monorepo-template/apps/api/internal/atlas/models.UserProfileAuthErr
+  UserProfileErrorCode:
+    model: monorepo-template/apps/api/internal/atlas/models.UserProfileErrorCode
+
+  # WAVE-07 AI Export
+  AiExport:
+    model: monorepo-template/apps/api/internal/atlas/models.AiExport
+  CreateAiExportInput:
+    model: monorepo-template/apps/api/internal/atlas/models.CreateAiExportInput
+  AiExportResult:
+    model: monorepo-template/apps/api/internal/atlas/models.AiExportResult
+  AiExportsResult:
+    model: monorepo-template/apps/api/internal/atlas/models.AiExportsResult
+  AiExportValidationError:
+    model: monorepo-template/apps/api/internal/atlas/models.AiExportValidationErr
+  AiExportNotFoundError:
+    model: monorepo-template/apps/api/internal/atlas/models.AiExportNotFoundErr
+  AiExportAuthError:
+    model: monorepo-template/apps/api/internal/atlas/models.AiExportAuthErr
+  AiExportErrorCode:
+    model: monorepo-template/apps/api/internal/atlas/models.AiExportErrorCode

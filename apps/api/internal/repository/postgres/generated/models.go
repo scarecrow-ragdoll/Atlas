@@ -19,6 +19,22 @@ type AdminUser struct {
 	UpdatedAt    pgtype.Timestamptz
 }
 
+type AiExport struct {
+	ID                  pgtype.UUID
+	UserID              pgtype.UUID
+	DateRangeStart      pgtype.Date
+	DateRangeEnd        pgtype.Date
+	IncludePhotos       bool
+	IncludeNutrition    bool
+	IncludeCardio       bool
+	IncludeMeasurements bool
+	UserComment         pgtype.Text
+	GeneratedPrompt     string
+	ExportFilePath      pgtype.Text
+	CreatedAt           pgtype.Timestamptz
+	UpdatedAt           pgtype.Timestamptz
+}
+
 type AtlasSetting struct {
 	ID                   pgtype.UUID
 	UserID               pgtype.UUID
@@ -192,6 +208,21 @@ type User struct {
 	PasswordHash string
 	CreatedAt    pgtype.Timestamptz
 	UpdatedAt    pgtype.Timestamptz
+}
+
+type UserProfile struct {
+	ID                        pgtype.UUID
+	UserID                    pgtype.UUID
+	Goal                      pgtype.Text
+	Height                    pgtype.Float4
+	BirthDate                 pgtype.Date
+	TrainingExperience        pgtype.Text
+	CurrentTrainingSplit      pgtype.Text
+	PreferredProgressionStyle pgtype.Text
+	NutritionStrategy         pgtype.Text
+	PersistentAiContext       pgtype.Text
+	CreatedAt                 pgtype.Timestamptz
+	UpdatedAt                 pgtype.Timestamptz
 }
 
 type WeekFlag struct {

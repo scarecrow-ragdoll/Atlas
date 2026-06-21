@@ -1,0 +1,60 @@
+type AiExport {
+  id: ID!
+  userId: ID!
+  dateRangeStart: Date!
+  dateRangeEnd: Date!
+  includePhotos: Boolean!
+  includeNutrition: Boolean!
+  includeCardio: Boolean!
+  includeMeasurements: Boolean!
+  userComment: String
+  generatedPrompt: String!
+  exportFilePath: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input CreateAiExportInput {
+  dateRangeStart: Date!
+  dateRangeEnd: Date!
+  includePhotos: Boolean
+  includeNutrition: Boolean
+  includeCardio: Boolean
+  includeMeasurements: Boolean
+  userComment: String
+}
+
+type AiExportResult {
+  export: AiExport
+  validationError: AiExportValidationError
+  notFoundError: AiExportNotFoundError
+  authError: AiExportAuthError
+}
+
+type AiExportsResult {
+  exports: [AiExport!]!
+  validationError: AiExportValidationError
+  authError: AiExportAuthError
+}
+
+type AiExportValidationError {
+  message: String!
+  code: AiExportErrorCode!
+}
+
+type AiExportNotFoundError {
+  message: String!
+  code: AiExportErrorCode!
+}
+
+type AiExportAuthError {
+  message: String!
+  code: AiExportErrorCode!
+}
+
+enum AiExportErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}

@@ -33,6 +33,7 @@ var (
 type BootstrapService interface {
 	EnsureDefaultUser(ctx context.Context) (string, error)
 	EnsureDefaultSettings(ctx context.Context, userID string) error
+	EnsureDefaultUserProfile(ctx context.Context, userID string) error
 }
 
 type bootstrapService struct {
@@ -73,6 +74,21 @@ func (s *bootstrapService) EnsureDefaultSettings(ctx context.Context, userID str
 
 	if err := s.q.CreateAtlasSettings(ctx, uid); err != nil {
 		return fmt.Errorf("bootstrap_service.EnsureDefaultSettings: %w", err)
+	}
+
+	return nil
+}
+
+func (s *bootstrapService) EnsureDefaultUserProfile(ctx context.Context, userID string) error {
+	uid, err := uuidFromString(userID)
+	if err != nil {
+		return fmt.Errorf("bootstrap_service.EnsureDefaultUserProfile: %w", err)
+	}
+
+	if _, err := s.q.CreateUserProfile(ctx, generated.CreateUserProfileParams{
+		UserID: uid,
+	}); err != nil {
+		return nil
 	}
 
 	return nil

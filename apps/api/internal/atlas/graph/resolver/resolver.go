@@ -1,6 +1,7 @@
 package resolver
 
 import (
+	"monorepo-template/apps/api/internal/appconfig"
 	"monorepo-template/apps/api/internal/atlas/service"
 )
 
@@ -18,4 +19,9 @@ type Resolver struct {
 	NutritionTemplateItemService  service.NutritionTemplateItemService
 	DailyNutritionOverrideService service.DailyNutritionOverrideService
 	NutritionMacroService         service.NutritionMacroService
+	BodyChartService              service.BodyChartService
+	NutritionWeeklyAvgService     service.NutritionWeeklyAvgService
+	UserProfileService            service.UserProfileService
+	AiExportService               service.AiExportService
+	AiExportConfig                appconfig.AiExportConfig
 }

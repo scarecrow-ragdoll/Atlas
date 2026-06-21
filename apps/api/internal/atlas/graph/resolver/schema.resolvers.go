@@ -311,6 +311,31 @@ func (r *queryResolver) NutritionMacros(ctx context.Context, weekStartDate model
 	panic(fmt.Errorf("not implemented: NutritionMacros - nutritionMacros"))
 }
 
+// BodyWeightTrend is the resolver for the bodyWeightTrend field.
+func (r *queryResolver) BodyWeightTrend(ctx context.Context, from *models.Date, to *models.Date) (*models.BodyWeightTrendResult, error) {
+	return r.Resolver.GetBodyWeightTrend(ctx, from, to)
+}
+
+// MeasurementTrend is the resolver for the measurementTrend field.
+func (r *queryResolver) MeasurementTrend(ctx context.Context, measurementType models.MeasurementType, from *models.Date, to *models.Date) (*models.MeasurementTrendResult, error) {
+	return r.Resolver.GetMeasurementTrend(ctx, measurementType, from, to)
+}
+
+// MeasurementOverlay is the resolver for the measurementOverlay field.
+func (r *queryResolver) MeasurementOverlay(ctx context.Context, measurementTypes []models.MeasurementType, from *models.Date, to *models.Date) (*models.MeasurementOverlayResult, error) {
+	return r.Resolver.GetMeasurementOverlay(ctx, measurementTypes, from, to)
+}
+
+// NutritionWeeklyAverages is the resolver for the nutritionWeeklyAverages field.
+func (r *queryResolver) NutritionWeeklyAverages(ctx context.Context, from *models.Date, to *models.Date) (*models.NutritionWeeklyAveragesResult, error) {
+	return r.Resolver.GetNutritionWeeklyAverages(ctx, from, to)
+}
+
+// ExerciseProgress is the resolver for the exerciseProgress field.
+func (r *queryResolver) ExerciseProgress(ctx context.Context, exerciseID string, from *models.Date, to *models.Date) (*models.ExerciseProgressResult, error) {
+	return r.Resolver.GetExerciseProgress(ctx, exerciseID, from, to)
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 

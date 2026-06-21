@@ -55,6 +55,14 @@ type PaginationConfig struct {
 	MaxPageSize     int `mapstructure:"max_page_size"     validate:"gt=0"`
 }
 
+// AiExportConfig holds export generation settings for WAVE-07.
+type AiExportConfig struct {
+	BasePath          string `mapstructure:"base_path"`
+	MaxRangeDays      int    `mapstructure:"max_range_days"`
+	MaxPhotosInExport int    `mapstructure:"max_photos_in_export"`
+	MaxExportSizeBytes int64 `mapstructure:"max_export_size_bytes"`
+}
+
 // Config is the API service configuration.
 type Config struct {
 	Server       config.ServerConfig   `mapstructure:"server"`
@@ -68,6 +76,7 @@ type Config struct {
 	AtlasPinSession AtlasPinSessionConfig `mapstructure:"atlas_pin_session"`
 	AtlasPinAttempt AtlasPinAttemptConfig `mapstructure:"atlas_pin_attempt"`
 	Media           MediaConfig           `mapstructure:"media"`
+	AiExport        AiExportConfig        `mapstructure:"ai_export"`
 }
 
 // MediaConfig holds file storage settings for exercise media.

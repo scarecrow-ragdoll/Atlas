@@ -186,6 +186,9 @@ func main() {
 		l,
 	)
 
+	atlasBodyChartService := atlasService.NewBodyChartService(atlasBodyWeightRepo, atlasMeasurementRepo, l)
+	atlasNutritionWeeklyAvgService := atlasService.NewNutritionWeeklyAvgService(atlasNutritionMacroService)
+
 	atlasProgressPhotoHandler := healthHandler.NewProgressPhotoHandler(atlasPhotoRepo, atlasCheckInRepo, cfg.Media.BasePath)
 
 	l.Info("[Atlas][bootstrap] ensuring default user and settings")
@@ -197,6 +200,18 @@ func main() {
 		l.Fatal("[Atlas][bootstrap] failed to ensure default settings", zap.Error(err))
 	}
 	l.Info("[Atlas][bootstrap] default user ready", zap.String("user_id", atlasUserID))
+
+	// WAVE-07: User Profile + AiExport
+	atlasUserProfileRepo := atlasPostgres.NewUserProfileRepository(db.Pool)
+	atlasUserProfileService := atlasService.NewUserProfileService(atlasUserProfileRepo)
+	atlasAiExportRepo := atlasPostgres.NewAiExportRepository(db.Pool)
+	atlasAiExportDataProvider := atlasService.NewDefaultAiExportDataProvider()
+	atlasAiExportService := atlasService.NewAiExportService(atlasAiExportRepo, atlasUserProfileRepo, atlasAiExportDataProvider, l)
+
+	l.Info("[Atlas][bootstrap] ensuring default user profile")
+	if err := atlasBootstrapService.EnsureDefaultUserProfile(context.Background(), atlasUserID); err != nil {
+		l.Warn("[Atlas][bootstrap] failed to ensure default user profile", zap.Error(err))
+	}
 
 	atlasRes := &atlasResolver.Resolver{
 		SettingsService:      atlasSettingsService,
@@ -212,6 +227,11 @@ func main() {
 		NutritionTemplateItemService:  atlasNutritionTemplateItemService,
 		DailyNutritionOverrideService: atlasNutritionOverrideService,
 		NutritionMacroService:         atlasNutritionMacroService,
+		BodyChartService:              atlasBodyChartService,
+		NutritionWeeklyAvgService:     atlasNutritionWeeklyAvgService,
+		UserProfileService:            atlasUserProfileService,
+		AiExportService:               atlasAiExportService,
+		AiExportConfig:                cfg.AiExport,
 	}
 	atlasSrv := handler.NewDefaultServer(atlasGenerated.NewExecutableSchema(atlasGenerated.Config{Resolvers: atlasRes}))
 
@@ -291,6 +311,11 @@ func main() {
 		atlas.Post("/api/v1/progress-photos/upload", atlasProgressPhotoHandler.Upload)
 		atlas.Get("/api/v1/progress-photos/{id}", atlasProgressPhotoHandler.Download)
 		atlas.Delete("/api/v1/progress-photos/{id}", atlasProgressPhotoHandler.Delete)
+
+		atlasAiExportHandler := healthHandler.NewAiExportHandler(atlasAiExportService, atlasUserProfileService, cfg.AiExport.BasePath, cfg.AiExport.MaxRangeDays, cfg.AiExport.MaxExportSizeBytes)
+		atlas.Post("/api/ai-export/generate", atlasAiExportHandler.GenerateExport)
+		atlas.Get("/api/ai-export/download", atlasAiExportHandler.DownloadExport)
+		atlas.Get("/api/user-profile", atlasAiExportHandler.GetUserProfile)
 	})
 
 	httpServer := &http.Server{
