@@ -1,64 +1,75 @@
 # Run History
+
 ## Runs
-| Run ID | Date | Selected Wave | Status |
+
+| Run ID | Date | Action | Selected Wave |
 | --- | --- | --- | --- |
-| 20260619T120000Z | 2026-06-19 | WAVE-04: Cardio and Body Tracking | questions-open (DQ-W04-001) |
-| 20260618T222231Z | 2026-06-19 | WAVE-05: Nutrition | ready-for-dev (awaiting user approval) |
+| 20260621T085415Z | 2026-06-21 | detail-prd-wave initial run | WAVE-06 |
+| 20260621T170113Z | 2026-06-21 | detail-prd-wave run | WAVE-07 |
+
 ## Selected Wave History
-- WAVE-04: scaffolded 2026-06-19
-- WAVE-04: planner/reviewer loop cycle 1 — all 7 reviewers approved
-- WAVE-04: candidate synthesized and staged
-- WAVE-04: final fit review approved
-- WAVE-04: promoted to docs/prd-wave-details as questions-open (DQ-W04-001)
-- WAVE-05: scaffolded 2026-06-18
-- WAVE-05: planner/reviewer loop cycle 1 — 5/7 reviewers approved, 2 needs-revision (product-scope-and-ac, traceability-consistency)
-- WAVE-05: planner/reviewer loop cycle 2 — all 7 reviewers approved
-- WAVE-05: candidate synthesized and staged
-- WAVE-05: final fit review approved (attempt 1)
-- WAVE-05: promoted to docs/prd-wave-details as ready-for-dev (awaiting user approval)
+WAVE-06: scaffolded → planned (6 planners, 2 attempts for product-ac and testing-exit) → reviewed (7 reviewers, 3 with 2 attempts) → final fit approved → ready-for-dev awaiting user approval.
+WAVE-07: source-wave-gate passed → planned (6 planners, 1 attempt each) → reviewed (7 reviewers, all needs-revision on attempt 1) → final fit needs-revision (2 minor fixes applied) → questions-open awaiting owner decisions.
+
 ## Planner Cycles
-| Wave | Scope | Attempts | Status |
-| --- | --- | --- | --- |
-| WAVE-04 | product-ac | 1 | complete |
-| WAVE-04 | architecture-codebase | 1 | complete |
-| WAVE-04 | data-integration-ops | 1 | complete |
-| WAVE-04 | security-compliance | 1 | complete |
-| WAVE-04 | testing-exit | 1 | complete |
-| WAVE-04 | sequencing-fit | 1 | complete |
-| WAVE-05 | product-ac | 2 | complete |
-| WAVE-05 | architecture-codebase | 1 | complete |
-| WAVE-05 | data-integration-ops | 1 | complete |
-| WAVE-05 | security-compliance | 1 | complete |
-| WAVE-05 | testing-exit | 1 | complete |
-| WAVE-05 | sequencing-fit | 1 | complete |
+
+### WAVE-07
+| Planner | Attempts | Report |
+| --- | --- | --- |
+| product-ac | 1 | planner-product-ac-attempt-1.md |
+| architecture-codebase | 1 | planner-architecture-codebase-attempt-1.md |
+| data-integration-ops | 1 | planner-data-integration-ops-attempt-1.md |
+| security-compliance | 1 | planner-security-compliance-attempt-1.md |
+| testing-exit | 1 | planner-testing-exit-attempt-1.md |
+| sequencing-fit | 1 | planner-sequencing-fit-attempt-1.md |
+
+### WAVE-06
+| Planner | Attempts | Report |
+| --- | --- | --- |
+| product-ac | 2 | planner-product-ac-attempt-1.md, planner-product-ac-attempt-2.md |
+| architecture-codebase | 1 | planner-architecture-codebase-attempt-1.md |
+| data-integration-ops | 1 | planner-data-integration-ops-attempt-1.md |
+| security-compliance | 1 | planner-security-compliance-attempt-1.md |
+| testing-exit | 2 | planner-testing-exit-attempt-1.md, planner-testing-exit-attempt-2.md |
+| sequencing-fit | 1 | planner-sequencing-fit-attempt-1.md |
+
 ## Review Cycles
-| Wave | Perspective | Attempts | Status |
-| --- | --- | --- | --- |
-| WAVE-04 | product-scope-and-ac | 1 | approved |
-| WAVE-04 | architecture-codebase-fit | 1 | approved |
-| WAVE-04 | data-api-integration-ops | 1 | approved |
-| WAVE-04 | security-privacy-compliance | 1 | approved |
-| WAVE-04 | testing-exit-criteria | 1 | approved |
-| WAVE-04 | sequencing-other-wave-fit | 1 | approved |
-| WAVE-04 | traceability-consistency | 1 | approved |
-| WAVE-04 | final-wave-fit-review | 1 | approved |
-| WAVE-05 | product-scope-and-ac | 2 | approved |
-| WAVE-05 | architecture-codebase-fit | 1 | approved |
-| WAVE-05 | data-api-integration-ops | 1 | approved |
-| WAVE-05 | security-privacy-compliance | 1 | approved |
-| WAVE-05 | testing-exit-criteria | 1 | approved |
-| WAVE-05 | sequencing-other-wave-fit | 1 | approved |
-| WAVE-05 | traceability-consistency | 2 | approved |
-| WAVE-05 | final-wave-fit-review | 1 | approved |
+
+### WAVE-07
+| Reviewer | Attempts | Verdicts |
+| --- | --- | --- |
+| product-scope-and-ac | 1 | needs-revision |
+| architecture-codebase-fit | 1 | needs-revision |
+| data-api-integration-ops | 1 | needs-revision |
+| security-privacy-compliance | 1 | needs-revision |
+| testing-exit-criteria | 1 | needs-revision |
+| sequencing-other-wave-fit | 1 | needs-revision |
+| traceability-consistency | 1 | needs-revision |
+| final-wave-fit-review | 1 | needs-revision (fixed) |
+
+### WAVE-06
+| Reviewer | Attempts | Verdicts |
+| --- | --- | --- |
+| product-scope-and-ac | 2 | needs-revision → approved |
+| architecture-codebase-fit | 1 | approved |
+| data-api-integration-ops | 1 | approved |
+| security-privacy-compliance | 1 | approved |
+| testing-exit-criteria | 2 | needs-revision → approved |
+| sequencing-other-wave-fit | 1 | approved |
+| traceability-consistency | 2 | needs-revision → approved |
+| final-wave-fit-review | 1 | approved |
+
 ## Source Delta History
-- 2026-06-19: Initial WAVE-04 detail run. No source delta from prior detailed waves.
-- 2026-06-19: Initial WAVE-05 detail run. No source delta from prior detailed waves.
+- 2026-06-21: Initial run. Q-CHART-001 resolved (Epley formula). No prior detailed wave for WAVE-06.
+- 2026-06-21: WAVE-07 run. All 7 reviewers returned needs-revision; 16 revision items consolidated and resolved before promotion.
+
 ## Approval Gate History
-- 2026-06-19: WAVE-04 — source wave gate passed
-- 2026-06-19: WAVE-04 — all 7 reviewer perspectives approved (cycle 1)
-- 2026-06-19: WAVE-04 — final fit review approved
-- 2026-06-19: WAVE-04 — promoted as questions-open (DQ-W04-001 DailyLog deployment ordering)
-- 2026-06-19: WAVE-05 — source wave gate passed
-- 2026-06-19: WAVE-05 — all 7 reviewer perspectives approved (cycle 2)
-- 2026-06-19: WAVE-05 — final fit review approved (attempt 1)
-- 2026-06-19: WAVE-05 — promoted as ready-for-dev (awaiting user approval)
+| Date | Gate | Result |
+| --- | --- | --- |
+| 2026-06-18 | Source wave approval | user-approved (all waves) |
+| 2026-06-21 | Source wave gate (WAVE-06) | passed |
+| 2026-06-21 | Final fit review (WAVE-06) | approved |
+| 2026-06-21 | Source wave gate (WAVE-07) | passed |
+| 2026-06-21 | Final fit review (WAVE-07) | needs-revision (fixed, questions-open) |
+| 2026-06-21 | User approval (WAVE-06) | — (awaiting) |
+| 2026-06-21 | User approval (WAVE-07) | — (awaiting owner decisions first) |

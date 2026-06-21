@@ -39,6 +39,7 @@ type BodyMeasurementRepository interface {
 	Create(ctx context.Context, checkInID string, measurementType string, side *string, value float64) (*models.BodyMeasurementRecord, error)
 	GetByID(ctx context.Context, userID string, id string) (*models.BodyMeasurementRecord, error)
 	ListByCheckIn(ctx context.Context, userID string, checkInID string) ([]models.BodyMeasurementRecord, error)
+	ListByUserTypeRange(ctx context.Context, userID string, measurementType string, fromDate models.Date, toDate models.Date) ([]models.BodyMeasurementTrendRecord, error)
 	Update(ctx context.Context, userID string, id string, measurementType string, side *string, value float64) (*models.BodyMeasurementRecord, error)
 	Delete(ctx context.Context, userID string, id string) (*models.BodyMeasurementRecord, error)
 }
@@ -104,6 +105,38 @@ func (r *bodyMeasurementRepository) ListByCheckIn(ctx context.Context, userID st
 	out := make([]models.BodyMeasurementRecord, len(rows))
 	for i, row := range rows {
 		out[i] = *bodyMeasurementRecordFromRow(row)
+	}
+	return out, nil
+}
+
+func (r *bodyMeasurementRepository) ListByUserTypeRange(ctx context.Context, userID string, measurementType string, fromDate models.Date, toDate models.Date) ([]models.BodyMeasurementTrendRecord, error) {
+	uid, err := uuidFromString(userID)
+	if err != nil {
+		return nil, fmt.Errorf("body_measurement_repo.ListByUserTypeRange: %w", err)
+	}
+
+	rows, err := r.q.ListBodyMeasurementsByUserTypeRange(ctx, generated.ListBodyMeasurementsByUserTypeRangeParams{
+		UserID:          uid,
+		MeasurementType: measurementType,
+		Column3:         modelsToPGDate(fromDate),
+		Column4:         modelsToPGDate(toDate),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("body_measurement_repo.ListByUserTypeRange: %w", err)
+	}
+
+	out := make([]models.BodyMeasurementTrendRecord, len(rows))
+	for i, row := range rows {
+		out[i] = models.BodyMeasurementTrendRecord{
+			ID:              row.ID.String(),
+			CheckInID:       row.CheckInID.String(),
+			MeasurementType: row.MeasurementType,
+			Side:            textPtr(row.Side),
+			Value:           float64(row.Value),
+			Date:            dateFromPGDate(row.CheckInDate),
+			CreatedAt:       formatTimestamp(row.CreatedAt),
+			UpdatedAt:       formatTimestamp(row.UpdatedAt),
+		}
 	}
 	return out, nil
 }

@@ -1,0 +1,81 @@
+type ChartDataPoint {
+  date: Date!
+  value: Float!
+}
+
+type BodyWeightSeriesPoint {
+  date: Date!
+  weight: Float!
+  source: BodyWeightSource!
+}
+
+type MeasurementTrendPoint {
+  date: Date!
+  value: Float!
+  side: MeasurementSide
+}
+
+type MeasurementOverlayGroup {
+  measurementType: MeasurementType!
+  dataPoints: [MeasurementTrendPoint!]!
+}
+
+type NutritionWeeklyAverage {
+  weekStartDate: Date!
+  calories: Float!
+  protein: Float!
+  fat: Float!
+  carbs: Float!
+}
+
+type BodyWeightTrendResult {
+  series: [BodyWeightSeriesPoint!]!
+  validationError: ChartValidationError
+  authError: ChartAuthError
+}
+
+type MeasurementTrendResult {
+  dataPoints: [MeasurementTrendPoint!]!
+  validationError: ChartValidationError
+  authError: ChartAuthError
+}
+
+type MeasurementOverlayResult {
+  groups: [MeasurementOverlayGroup!]!
+  validationError: ChartValidationError
+  authError: ChartAuthError
+}
+
+type NutritionWeeklyAveragesResult {
+  averages: [NutritionWeeklyAverage!]!
+  validationError: ChartValidationError
+  authError: ChartAuthError
+}
+
+type ExerciseProgressResult {
+  dataPoints: [ChartDataPoint!]!
+  validationError: ChartValidationError
+  authError: ChartAuthError
+}
+
+type ChartValidationError {
+  message: String!
+  code: ChartErrorCode!
+}
+
+type ChartAuthError {
+  message: String!
+  code: ChartErrorCode!
+}
+
+type ChartNotFoundError {
+  message: String!
+  code: ChartErrorCode!
+}
+
+enum ChartErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}

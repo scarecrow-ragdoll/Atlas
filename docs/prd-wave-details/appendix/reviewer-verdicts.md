@@ -1,51 +1,40 @@
 # Reviewer Verdicts
+
 ## Current Wave
+
 | Wave | Perspective | Attempt | Verdict | Reviewer Report | Required Revisions | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| WAVE-05 | product-scope-and-ac | 2 | approved | review-product-scope-and-ac-attempt-2.md | none | 36 ACs cover all nutrition scope, edge cases documented |
-| WAVE-05 | architecture-codebase-fit | 1 | approved | review-architecture-codebase-fit-attempt-1.md | none | Codebase touchpoints well-documented, 8 slices, Atlas pattern B |
-| WAVE-05 | data-api-integration-ops | 1 | approved | review-data-api-integration-ops-attempt-1.md | none | Clean schema, macro calc service, no media needed |
-| WAVE-05 | security-privacy-compliance | 1 | approved | review-security-privacy-compliance-attempt-1.md | none | PIN auth, soft-delete, log privacy covered |
-| WAVE-05 | testing-exit-criteria | 1 | approved | review-testing-exit-criteria-attempt-1.md | none | 30 test obligations cover all AC and EC |
-| WAVE-05 | sequencing-other-wave-fit | 1 | approved | review-sequencing-other-wave-fit-attempt-1.md | none | Dependency order correct, WAVE-04 parallelizable |
-| WAVE-05 | traceability-consistency | 2 | approved | review-traceability-consistency-attempt-2.md | none | Source traceability documented, stable IDs used |
-| WAVE-04 | product-scope-and-ac | 1 | approved | review-product-scope-and-ac-attempt-1.md | none | 44 ACs cover all scope, edge cases documented |
-| WAVE-04 | architecture-codebase-fit | 1 | approved | review-architecture-codebase-fit-attempt-1.md | none | Codebase touchpoints well-documented, 8 slices |
-| WAVE-04 | data-api-integration-ops | 1 | approved | review-data-api-integration-ops-attempt-1.md | none | Data/API/ops coverage adequate, design decisions documented |
-| WAVE-04 | security-privacy-compliance | 1 | approved | review-security-privacy-compliance-attempt-1.md | none | Server-side MIME, PIN auth, log privacy covered |
-| WAVE-04 | testing-exit-criteria | 1 | approved | review-testing-exit-criteria-attempt-1.md | none | 30 test obligations cover all AC and EC |
-| WAVE-04 | sequencing-other-wave-fit | 1 | approved | review-sequencing-other-wave-fit-attempt-1.md | none | Dependency order correct, WAVE-03 DailyLog noted |
-| WAVE-04 | traceability-consistency | 1 | approved | review-traceability-consistency-attempt-1.md | none | Source traceability documented, stable IDs used |
+| WAVE-07 | product-scope-and-ac | 1 | needs-revision | review-product-scope-and-ac-attempt-1.md | R1: Add AC for prompt in response body. R2: Resolve UserProfile/Settings conflict. | AC coverage strong. |
+| WAVE-07 | architecture-codebase-fit | 1 | needs-revision | review-architecture-codebase-fit-attempt-1.md | Migration numbers, gqlgen config, display_name inconsistency. | Pattern fit approved. 3 issues. |
+| WAVE-07 | data-api-integration-ops | 1 | needs-revision | review-data-api-integration-ops-attempt-1.md | F1-F8: photo default, route design, storage path, cleanup, log markers. | 8 discrepancies between planners. |
+| WAVE-07 | security-privacy-compliance | 1 | needs-revision | review-security-privacy-compliance-attempt-1.md | GAP1-GAP4: temp-file, lifecycle, storage path, max size. | 10 ACs confirmed. 4 gaps. |
+| WAVE-07 | testing-exit-criteria | 1 | needs-revision | review-testing-exit-criteria-attempt-1.md | Date validation tests, ownership test, sync/async dependency. | 10 items pass. 4 need revision. |
+| WAVE-07 | sequencing-other-wave-fit | 1 | needs-revision | review-sequencing-other-wave-fit-attempt-1.md | R1: UserProfile duplicates Settings. R2: Week flag REST documentation. | R1 blocking. |
+| WAVE-07 | traceability-consistency | 1 | needs-revision | review-traceability-consistency-attempt-1.md | F1-F10: photo default, UserProfile, AC namespace, migration numbers, URL patterns. | 10 issues, 2 critical. |
+| WAVE-07 | final-wave-fit-review | 1 | needs-revision | final-wave-fit-review-attempt-1.md | R1: index.md status. R2: missing test rows. | 2 minor items; fixed before promotion. |
+
 ## Historical Waves
+
+### WAVE-06
 | Wave | Perspective | Attempt | Verdict | Reviewer Report | Required Revisions | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| WAVE-01 | product-scope-and-ac | 1 | approved | review-product-scope-and-ac-1.md | none | AC covers all foundation scope |
-| WAVE-01 | architecture-codebase-fit | 1 | approved | review-architecture-codebase-fit-1.md | none | Codebase fit well-documented |
-| WAVE-01 | data-api-integration-ops | 1 | approved | review-data-api-integration-ops-1.md | none | Data/API/ops coverage adequate |
-| WAVE-01 | security-privacy-compliance | 1 | approved | review-security-privacy-compliance-1.md | none | PIN bcrypt, Redis sessions, rate limiting noted as deferred |
-| WAVE-01 | testing-exit-criteria | 1 | approved | review-testing-exit-criteria-1.md | none | 12 test obligations cover all AC and EC |
-| WAVE-01 | sequencing-other-wave-fit | 1 | approved | review-sequencing-other-wave-fit-1.md | none | Dependency order correct, no collision |
-| WAVE-01 | traceability-consistency | 1 | approved | review-traceability-consistency-1.md | none | Source traceability documented per section |
-| WAVE-01 | final-wave-fit-review | 1 | approved | review-final-wave-fit-review-1.md | none | Package is ready-for-dev |
-| WAVE-02 | product-scope-and-ac | 1 | needs-revision | review-product-scope-and-ac-attempt-1.md | AC deduplication, exercise lifecycle boundary, media lifecycle edge cases | Revised in cycle 2 |
-| WAVE-02 | product-scope-and-ac | 2 | approved | review-product-scope-and-ac-attempt-2.md | none | 24 ACs cover all scope, edge cases documented |
-| WAVE-02 | architecture-codebase-fit | 1 | needs-revision | review-architecture-codebase-fit-attempt-1.md | WAVE-01 dependency contract explicit, codegen auto-discovery, resolver DI | Revised in cycle 2 |
-| WAVE-02 | architecture-codebase-fit | 2 | approved | review-architecture-codebase-fit-attempt-2.md | none | Codebase touchpoints well-documented |
-| WAVE-02 | data-api-integration-ops | 1 | needs-revision | review-data-api-integration-ops-attempt-1.md | pg_trgm removed, ON DELETE CASCADE changed to NO ACTION, GET endpoint added | Revised in cycle 2 |
-| WAVE-02 | data-api-integration-ops | 2 | approved | review-data-api-integration-ops-attempt-2.md | none | Data/API/ops coverage adequate |
-| WAVE-02 | security-privacy-compliance | 1 | needs-revision | review-security-privacy-compliance-attempt-1.md | MIME detection, PIN-disabled access, CORS, log privacy | Revised in cycle 2 |
-| WAVE-02 | security-privacy-compliance | 2 | approved | review-security-privacy-compliance-attempt-2.md | none | Server-side MIME, file validation, log privacy covered |
-| WAVE-02 | testing-exit-criteria | 1 | needs-revision | review-testing-exit-criteria-attempt-1.md | Round-trip test added, EC strength, fixture strategy | Revised in cycle 2 |
-| WAVE-02 | testing-exit-criteria | 2 | approved | review-testing-exit-criteria-attempt-2.md | none | 22 test obligations cover all AC and EC |
-| WAVE-02 | sequencing-other-wave-fit | 1 | needs-revision | review-sequencing-other-wave-fit-attempt-1.md | WAVE-01 block, allExercises interface, WAVE-06 data flow correction | Revised in cycle 2 |
-| WAVE-02 | sequencing-other-wave-fit | 2 | approved | review-sequencing-other-wave-fit-attempt-2.md | none | Dependency order correct, no collision |
-| WAVE-02 | traceability-consistency | 1 | needs-revision | review-traceability-consistency-attempt-1.md | Stable IDs, source traces, ledger consistency | Revised in cycle 2 |
-| WAVE-02 | traceability-consistency | 2 | approved | review-traceability-consistency-attempt-2.md | none | Source traceability documented |
-| WAVE-02 | final-wave-fit-review | 1 | approved | final-wave-fit-review-attempt-1.md | none | Package is ready-for-dev |
+| WAVE-06 | product-scope-and-ac | 1 | needs-revision | review-product-scope-and-ac-attempt-1.md | Split AC-W06-001, add empty-series AC, move default to DQ | Addressed in attempt 2 |
+| WAVE-06 | product-scope-and-ac | 2 | approved | review-product-scope-and-ac-attempt-2.md | none | All concerns addressed |
+| WAVE-06 | architecture-codebase-fit | 1 | approved | review-architecture-codebase-fit-attempt-1.md | none | 8 slices, pattern consistent with WAVE-04/05 |
+| WAVE-06 | data-api-integration-ops | 1 | approved | review-data-api-integration-ops-attempt-1.md | none | Clean schema, additive queries |
+| WAVE-06 | security-privacy-compliance | 1 | approved | review-security-privacy-compliance-attempt-1.md | none | PIN auth, log privacy covered |
+| WAVE-06 | testing-exit-criteria | 1 | needs-revision | review-testing-exit-criteria-attempt-1.md | Add empty-types test, document conditional tests | Addressed in attempt 2 |
+| WAVE-06 | testing-exit-criteria | 2 | approved | review-testing-exit-criteria-attempt-2.md | none | 22 tests, all AC/EC covered |
+| WAVE-06 | sequencing-other-wave-fit | 1 | approved | review-sequencing-other-wave-fit-attempt-1.md | none | WAVE-03 dependency correctly identified |
+| WAVE-06 | traceability-consistency | 1 | needs-revision | review-traceability-consistency-attempt-1.md | Add DQ-W06-004/005, consolidate AC refs | Addressed in attempt 2 |
+| WAVE-06 | traceability-consistency | 2 | approved | review-traceability-consistency-attempt-2.md | none | All concerns addressed |
+| WAVE-06 | final-wave-fit-review | 1 | approved | final-wave-fit-review-attempt-1.md | none | All 9 checks pass. Ready for user approval. |
+
 ## Final Fit Reviews
-| Wave | Attempt | Verdict | Candidate Package | Notes |
-| --- | --- | --- | --- | --- |
-| WAVE-05 | 1 | approved | .tasks/prd-wave-detail/20260618T222231Z/staging/prd-wave-details | All 9 checks pass. Ready for user approval. |
-| WAVE-04 | 1 | approved | .tasks/prd-wave-detail/20260619T120000Z/staging/prd-wave-details | All 8 criteria pass. 1 open owner-decision question (DQ-W04-001) blocks ready-for-dev. |
+| Wave | Attempt | Verdict | Notes |
+| --- | --- | --- | --- |
+| WAVE-06 | 1 | approved | All 9 checks pass. One-wave focus confirmed. Ready for user approval. |
+| WAVE-07 | 1 | needs-revision | 2 minor items; fixed before promotion. Questions-open package. |
+
 ## Rejected Findings
-None.
+None — all reviewer findings addressed in the candidate wave brief.
