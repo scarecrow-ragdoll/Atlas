@@ -208,6 +208,35 @@ func main() {
 	atlasAiExportDataProvider := atlasService.NewDefaultAiExportDataProvider()
 	atlasAiExportService := atlasService.NewAiExportService(atlasAiExportRepo, atlasUserProfileRepo, atlasAiExportDataProvider, l)
 
+	// WAVE-08: AiReview
+	atlasAiReviewRepo := atlasPostgres.NewAiReviewRepository(db.Pool)
+	atlasAiReviewService := atlasService.NewAiReviewService(atlasAiReviewRepo)
+
+	// WAVE-09: Backup Import/Export
+	atlasBackupArchiveRepo := atlasPostgres.NewBackupArchiveRepository(db.Pool)
+	atlasBackupExportService := atlasService.NewBackupExportService(
+		atlasBackupArchiveRepo,
+		atlasSettingsRepo,
+		atlasUserProfileRepo,
+		atlasExerciseRepo,
+		atlasCardioRepo,
+		atlasBodyWeightRepo,
+		atlasCheckInRepo,
+		atlasMeasurementRepo,
+		atlasPhotoRepo,
+		atlasNutritionProductRepo,
+		atlasNutritionTemplateRepo,
+		atlasNutritionTemplateItemRepo,
+		atlasNutritionOverrideRepo,
+		atlasNutritionOverrideItemRepo,
+		atlasWeekFlagRepo,
+		atlasAiExportRepo,
+		atlasAiReviewService,
+		atlasDailyLogRepo,
+		l,
+	)
+	atlasBackupImportService := atlasService.NewBackupImportService()
+
 	l.Info("[Atlas][bootstrap] ensuring default user profile")
 	if err := atlasBootstrapService.EnsureDefaultUserProfile(context.Background(), atlasUserID); err != nil {
 		l.Warn("[Atlas][bootstrap] failed to ensure default user profile", zap.Error(err))
@@ -231,6 +260,9 @@ func main() {
 		NutritionWeeklyAvgService:     atlasNutritionWeeklyAvgService,
 		UserProfileService:            atlasUserProfileService,
 		AiExportService:               atlasAiExportService,
+		AiReviewService:                atlasAiReviewService,
+		BackupExportService:           atlasBackupExportService,
+		BackupImportService:           atlasBackupImportService,
 		AiExportConfig:                cfg.AiExport,
 	}
 	atlasSrv := handler.NewDefaultServer(atlasGenerated.NewExecutableSchema(atlasGenerated.Config{Resolvers: atlasRes}))
@@ -316,6 +348,12 @@ func main() {
 		atlas.Post("/api/ai-export/generate", atlasAiExportHandler.GenerateExport)
 		atlas.Get("/api/ai-export/download", atlasAiExportHandler.DownloadExport)
 		atlas.Get("/api/user-profile", atlasAiExportHandler.GetUserProfile)
+
+		atlasBackupHandler := healthHandler.NewBackupHandler(atlasBackupExportService, atlasBackupImportService, cfg.Backup.BasePath, cfg.Backup.MaxExportSizeBytes, cfg.Backup.MaxImportSizeBytes)
+		atlas.Post("/api/backup/export", atlasBackupHandler.GenerateExport)
+		atlas.Get("/api/backup/download", atlasBackupHandler.DownloadExport)
+		atlas.Post("/api/backup/import/validate", atlasBackupHandler.ImportValidate)
+		atlas.Post("/api/backup/import/confirm", atlasBackupHandler.ImportConfirm)
 	})
 
 	httpServer := &http.Server{

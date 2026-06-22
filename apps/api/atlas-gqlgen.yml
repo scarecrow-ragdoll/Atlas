@@ -308,3 +308,23 @@ models:
     model: monorepo-template/apps/api/internal/atlas/models.AiExportAuthErr
   AiExportErrorCode:
     model: monorepo-template/apps/api/internal/atlas/models.AiExportErrorCode
+
+  # WAVE-08 AI Review
+  AiReview:
+    model: monorepo-template/apps/api/internal/atlas/models.AiReview
+  CreateAiReviewInput:
+    model: monorepo-template/apps/api/internal/atlas/models.CreateAiReviewInput
+  UpdateAiReviewInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateAiReviewInput
+  AiReviewResult:
+    model: monorepo-template/apps/api/internal/atlas/models.AiReviewResult
+  AiReviewsResult:
+    model: monorepo-template/apps/api/internal/atlas/models.AiReviewsResult
+  AiReviewValidationError:
+    model: monorepo-template/apps/api/internal/atlas/models.AiReviewValidationErr
+  AiReviewNotFoundError:
+    model: monorepo-template/apps/api/internal/atlas/models.AiReviewNotFoundErr
+  AiReviewAuthError:
+    model: monorepo-template/apps/api/internal/atlas/models.AiReviewAuthErr
+  AiReviewErrorCode:
+    model: monorepo-template/apps/api/internal/atlas/models.AiReviewErrorCode

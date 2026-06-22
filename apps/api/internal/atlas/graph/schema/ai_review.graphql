@@ -1,0 +1,62 @@
+type AiReview {
+  id: ID!
+  userId: ID!
+  dateRangeStart: Date!
+  dateRangeEnd: Date!
+  aiResponseText: String!
+  userNotes: String
+  plannedActions: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input CreateAiReviewInput {
+  dateRangeStart: Date!
+  dateRangeEnd: Date!
+  aiResponseText: String!
+  userNotes: String
+  plannedActions: String
+}
+
+input UpdateAiReviewInput {
+  dateRangeStart: Date
+  dateRangeEnd: Date
+  aiResponseText: String
+  userNotes: String
+  plannedActions: String
+}
+
+type AiReviewResult {
+  review: AiReview
+  validationError: AiReviewValidationError
+  notFoundError: AiReviewNotFoundError
+  authError: AiReviewAuthError
+}
+
+type AiReviewsResult {
+  reviews: [AiReview!]!
+  validationError: AiReviewValidationError
+  authError: AiReviewAuthError
+}
+
+type AiReviewValidationError {
+  message: String!
+  code: AiReviewErrorCode!
+}
+
+type AiReviewNotFoundError {
+  message: String!
+  code: AiReviewErrorCode!
+}
+
+type AiReviewAuthError {
+  message: String!
+  code: AiReviewErrorCode!
+}
+
+enum AiReviewErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}

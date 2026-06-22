@@ -23,5 +23,8 @@ type Resolver struct {
 	NutritionWeeklyAvgService     service.NutritionWeeklyAvgService
 	UserProfileService            service.UserProfileService
 	AiExportService               service.AiExportService
+	AiReviewService               service.AiReviewService
+	BackupExportService           service.BackupExportService
+	BackupImportService           service.BackupImportService
 	AiExportConfig                appconfig.AiExportConfig
 }

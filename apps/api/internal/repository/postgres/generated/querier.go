@@ -18,7 +18,22 @@ type Querier interface {
 	CountUsers(ctx context.Context) (int64, error)
 	CreateAdminUser(ctx context.Context, arg CreateAdminUserParams) (AdminUser, error)
 	CreateAiExport(ctx context.Context, arg CreateAiExportParams) (AiExport, error)
+	// FILE: apps/api/internal/repository/postgres/queries/ai_reviews.sql
+	// VERSION: 1.0.0
+	// START_MODULE_CONTRACT
+	//   PURPOSE: Define sqlc queries for the ai_reviews table in WAVE-08.
+	//   SCOPE: AiReview CRUD, list by user ID, list by user ID and date range, user-scoped access.
+	//   DEPENDS: ai_reviews table (00093_ai_reviews.sql).
+	//   LINKS: M-API / V-M-API / WAVE-08.
+	//   ROLE: CONFIG
+	//   MAP_MODE: SUMMARY
+	// END_MODULE_CONTRACT
+	// START_CHANGE_SUMMARY
+	//   LAST_CHANGE: 1.0.0 - Added AiReview queries for WAVE-08.
+	// END_CHANGE_SUMMARY
+	CreateAiReview(ctx context.Context, arg CreateAiReviewParams) (AiReview, error)
 	CreateAtlasSettings(ctx context.Context, userID pgtype.UUID) error
+	CreateBackupArchive(ctx context.Context, arg CreateBackupArchiveParams) (BackupArchive, error)
 	// FILE: apps/api/internal/repository/postgres/queries/body_check_ins.sql
 	// VERSION: 1.0.0
 	// START_MODULE_CONTRACT
@@ -134,6 +149,7 @@ type Querier interface {
 	// END_CHANGE_SUMMARY
 	CreateWeekFlag(ctx context.Context, arg CreateWeekFlagParams) (WeekFlag, error)
 	DeleteAiExport(ctx context.Context, arg DeleteAiExportParams) (AiExport, error)
+	DeleteAiReview(ctx context.Context, arg DeleteAiReviewParams) (AiReview, error)
 	DeleteBodyCheckIn(ctx context.Context, arg DeleteBodyCheckInParams) (BodyCheckIn, error)
 	DeleteBodyMeasurement(ctx context.Context, arg DeleteBodyMeasurementParams) (BodyMeasurement, error)
 	DeleteBodyWeightEntry(ctx context.Context, arg DeleteBodyWeightEntryParams) (BodyWeightEntry, error)
@@ -150,6 +166,7 @@ type Querier interface {
 	GetAdminUserByEmail(ctx context.Context, lower string) (AdminUser, error)
 	GetAdminUserByID(ctx context.Context, id pgtype.UUID) (AdminUser, error)
 	GetAiExportByID(ctx context.Context, arg GetAiExportByIDParams) (AiExport, error)
+	GetAiReviewByID(ctx context.Context, arg GetAiReviewByIDParams) (AiReview, error)
 	GetAtlasDefaultUser(ctx context.Context) (AtlasUser, error)
 	// FILE: apps/api/internal/repository/postgres/queries/atlas_settings.sql
 	// VERSION: 1.0.1
@@ -165,6 +182,7 @@ type Querier interface {
 	//   LAST_CHANGE: 1.0.1 - Removed ON CONFLICT DO NOTHING from user upsert since atlas_users has no unique constraint on display_name.
 	// END_CHANGE_SUMMARY
 	GetAtlasSettingsByUserID(ctx context.Context, userID pgtype.UUID) (AtlasSetting, error)
+	GetBackupArchiveByID(ctx context.Context, arg GetBackupArchiveByIDParams) (BackupArchive, error)
 	GetBodyCheckInByID(ctx context.Context, arg GetBodyCheckInByIDParams) (BodyCheckIn, error)
 	GetBodyMeasurementByID(ctx context.Context, arg GetBodyMeasurementByIDParams) (BodyMeasurement, error)
 	GetBodyWeightEntryByID(ctx context.Context, arg GetBodyWeightEntryByIDParams) (BodyWeightEntry, error)
@@ -201,6 +219,8 @@ type Querier interface {
 	LatestBodyWeightEntry(ctx context.Context, userID pgtype.UUID) (BodyWeightEntry, error)
 	ListActiveNutritionProducts(ctx context.Context, userID pgtype.UUID) ([]NutritionProduct, error)
 	ListAiExportsByUserID(ctx context.Context, userID pgtype.UUID) ([]AiExport, error)
+	ListAiReviewsByUserID(ctx context.Context, userID pgtype.UUID) ([]AiReview, error)
+	ListAiReviewsByUserIDAndDateRange(ctx context.Context, arg ListAiReviewsByUserIDAndDateRangeParams) ([]AiReview, error)
 	ListAllExercises(ctx context.Context, arg ListAllExercisesParams) ([]Exercise, error)
 	ListBodyCheckInsByDateRange(ctx context.Context, arg ListBodyCheckInsByDateRangeParams) ([]BodyCheckIn, error)
 	ListBodyMeasurementsByCheckIn(ctx context.Context, arg ListBodyMeasurementsByCheckInParams) ([]BodyMeasurement, error)
@@ -221,7 +241,9 @@ type Querier interface {
 	RestoreExercise(ctx context.Context, arg RestoreExerciseParams) (Exercise, error)
 	SoftDeleteNutritionProduct(ctx context.Context, arg SoftDeleteNutritionProductParams) (NutritionProduct, error)
 	UpdateAiExportFilePath(ctx context.Context, arg UpdateAiExportFilePathParams) (AiExport, error)
+	UpdateAiReview(ctx context.Context, arg UpdateAiReviewParams) (AiReview, error)
 	UpdateAtlasPinState(ctx context.Context, arg UpdateAtlasPinStateParams) (AtlasSetting, error)
+	UpdateBackupArchiveFilePath(ctx context.Context, arg UpdateBackupArchiveFilePathParams) (BackupArchive, error)
 	UpdateBodyCheckIn(ctx context.Context, arg UpdateBodyCheckInParams) (BodyCheckIn, error)
 	UpdateBodyMeasurement(ctx context.Context, arg UpdateBodyMeasurementParams) (BodyMeasurement, error)
 	UpdateBodyWeightEntry(ctx context.Context, arg UpdateBodyWeightEntryParams) (BodyWeightEntry, error)

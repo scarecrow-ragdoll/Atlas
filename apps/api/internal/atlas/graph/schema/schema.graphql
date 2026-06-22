@@ -36,6 +36,10 @@ type Query {
   aiExport(id: ID!): AiExportResult!
   aiExports: AiExportsResult!
 
+  # WAVE-08 AI Review
+  aiReview(id: ID!): AiReviewResult!
+  aiReviews(dateRangeStart: Date, dateRangeEnd: Date): AiReviewsResult!
+
   # WAVE-05 Nutrition
   nutritionProducts: NutritionProductsResult!
   nutritionProduct(id: ID!): NutritionProductResult!
@@ -96,6 +100,11 @@ type Mutation {
   createAiExportPrompt(input: CreateAiExportInput!): AiExportResult!
   generateAiExport(id: ID!): AiExportResult!
   deleteAiExport(id: ID!): AiExportResult!
+
+  # WAVE-08 AI Review
+  createAiReview(input: CreateAiReviewInput!): AiReviewResult!
+  updateAiReview(id: ID!, input: UpdateAiReviewInput!): AiReviewResult!
+  deleteAiReview(id: ID!): AiReviewResult!
 
   # WAVE-05 Nutrition
   createNutritionProduct(input: CreateProductInput!): NutritionProductResult!

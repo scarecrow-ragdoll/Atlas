@@ -35,6 +35,18 @@ type AiExport struct {
 	UpdatedAt           pgtype.Timestamptz
 }
 
+type AiReview struct {
+	ID             pgtype.UUID
+	UserID         pgtype.UUID
+	DateRangeStart pgtype.Date
+	DateRangeEnd   pgtype.Date
+	AiResponseText string
+	UserNotes      pgtype.Text
+	PlannedActions pgtype.Text
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+}
+
 type AtlasSetting struct {
 	ID                   pgtype.UUID
 	UserID               pgtype.UUID
@@ -51,6 +63,17 @@ type AtlasUser struct {
 	DisplayName string
 	CreatedAt   pgtype.Timestamptz
 	UpdatedAt   pgtype.Timestamptz
+}
+
+type BackupArchive struct {
+	ID           pgtype.UUID
+	UserID       pgtype.UUID
+	IncludeMedia bool
+	SizeBytes    int64
+	EntityCounts []byte
+	ArchivePath  pgtype.Text
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
 }
 
 type BodyCheckIn struct {

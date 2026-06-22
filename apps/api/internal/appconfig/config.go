@@ -63,6 +63,13 @@ type AiExportConfig struct {
 	MaxExportSizeBytes int64 `mapstructure:"max_export_size_bytes"`
 }
 
+// BackupConfig holds backup export/import settings for WAVE-09.
+type BackupConfig struct {
+	BasePath            string `mapstructure:"base_path"`
+	MaxExportSizeBytes  int64  `mapstructure:"max_export_size_bytes"`
+	MaxImportSizeBytes  int64  `mapstructure:"max_import_size_bytes"`
+}
+
 // Config is the API service configuration.
 type Config struct {
 	Server       config.ServerConfig   `mapstructure:"server"`
@@ -77,6 +84,7 @@ type Config struct {
 	AtlasPinAttempt AtlasPinAttemptConfig `mapstructure:"atlas_pin_attempt"`
 	Media           MediaConfig           `mapstructure:"media"`
 	AiExport        AiExportConfig        `mapstructure:"ai_export"`
+	Backup          BackupConfig          `mapstructure:"backup"`
 }
 
 // MediaConfig holds file storage settings for exercise media.
