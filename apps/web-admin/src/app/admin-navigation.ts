@@ -1,5 +1,5 @@
 // FILE: apps/web-admin/src/app/admin-navigation.ts
-// VERSION: 1.1.0
+// VERSION: 1.2.0
 // START_MODULE_CONTRACT
 //   PURPOSE: Own static web-admin shell navigation metadata and active route resolution.
 //   SCOPE: Defines template-native sidebar groups, disabled placeholders, breadcrumbs, user/team placeholders, and route matching; excludes shared UI rendering.
@@ -16,7 +16,7 @@
 //   resolveAdminShellState - Derive active navigation and breadcrumbs from a pathname.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.1.0 - Added the Atlas nutrition product library route to shell navigation.
+//   LAST_CHANGE: 1.2.0 - Pointed Atlas nutrition navigation to the factual daily food log route.
 // END_CHANGE_SUMMARY
 
 import {
@@ -86,11 +86,16 @@ export const adminNavigationGroups: AdminNavigationGroup[] = [
       {
         id: 'atlas-nutrition',
         label: 'Nutrition',
-        href: '/atlas/nutrition/products',
+        href: '/atlas/nutrition',
         icon: UtensilsIcon,
         match: (pathname) =>
-          pathname === '/atlas/nutrition/products' || pathname.startsWith('/atlas/nutrition/'),
+          pathname === '/atlas/nutrition' || pathname.startsWith('/atlas/nutrition/'),
         children: [
+          {
+            id: 'atlas-nutrition-daily-log',
+            label: 'Daily Log',
+            href: '/atlas/nutrition',
+          },
           {
             id: 'atlas-nutrition-products',
             label: 'Product Library',
@@ -147,8 +152,14 @@ function buildBreadcrumbs(pathname: string): AdminBreadcrumbItem[] {
   if (pathname === '/ui-kit') {
     return [{ label: 'UI Kit' }];
   }
-  if (pathname.startsWith('/atlas/nutrition/')) {
+  if (pathname === '/atlas/nutrition') {
+    return [{ label: 'Nutrition' }];
+  }
+  if (pathname === '/atlas/nutrition/products') {
     return [{ label: 'Nutrition' }, { label: 'Product Library' }];
+  }
+  if (pathname.startsWith('/atlas/nutrition/')) {
+    return [{ label: 'Nutrition' }];
   }
   return [{ label: 'Overview' }];
 }

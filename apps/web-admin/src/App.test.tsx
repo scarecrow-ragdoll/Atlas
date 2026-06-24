@@ -1,5 +1,5 @@
 // FILE: apps/web-admin/src/App.test.tsx
-// VERSION: 1.1.1
+// VERSION: 1.2.0
 // START_MODULE_CONTRACT
 //   PURPOSE: Verify the web-admin Vite route table and auth guard at the app boundary.
 //   SCOPE: Covers protected home, users, UI-kit, login redirect, and no protected-content flash behavior through browser history; excludes page-level create/detail edge cases.
@@ -12,7 +12,7 @@
 //   web-admin routes tests - Prove the Vite admin app exposes home, users, and UI-kit routes.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.1.1 - Added shell logout navigation coverage for protected routes.
+//   LAST_CHANGE: 1.2.0 - Added Atlas factual nutrition route and legacy override route coverage.
 // END_CHANGE_SUMMARY
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -21,7 +21,11 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import App from './App';
 
 const requestMock = vi.hoisted(() => vi.fn());
+const getAtlasDailyNutritionLogMock = vi.hoisted(() => vi.fn());
 const listAtlasNutritionProductsMock = vi.hoisted(() => vi.fn());
+const addAtlasDailyNutritionEntryMock = vi.hoisted(() => vi.fn());
+const updateAtlasDailyNutritionEntryMock = vi.hoisted(() => vi.fn());
+const deleteAtlasDailyNutritionEntryMock = vi.hoisted(() => vi.fn());
 const originalMatchMedia = window.matchMedia;
 const currentAdmin = {
   id: 'admin-1',
@@ -67,10 +71,14 @@ vi.mock('@shared/api/graphql-client', () => ({
 }));
 
 vi.mock('./pages/atlas/nutrition-api', () => ({
+  addAtlasDailyNutritionEntry: addAtlasDailyNutritionEntryMock,
   archiveAtlasNutritionProduct: vi.fn(),
   createAtlasNutritionProduct: vi.fn(),
+  deleteAtlasDailyNutritionEntry: deleteAtlasDailyNutritionEntryMock,
+  getAtlasDailyNutritionLog: getAtlasDailyNutritionLogMock,
   listAtlasNutritionProducts: listAtlasNutritionProductsMock,
   restoreAtlasNutritionProduct: vi.fn(),
+  updateAtlasDailyNutritionEntry: updateAtlasDailyNutritionEntryMock,
   updateAtlasNutritionProduct: vi.fn(),
 }));
 
@@ -105,7 +113,11 @@ afterEach(() => {
   cleanup();
   requestMock.mockClear();
   requestMock.mockImplementation(mockGraphQLResponse);
+  getAtlasDailyNutritionLogMock.mockReset();
   listAtlasNutritionProductsMock.mockReset();
+  addAtlasDailyNutritionEntryMock.mockReset();
+  updateAtlasDailyNutritionEntryMock.mockReset();
+  deleteAtlasDailyNutritionEntryMock.mockReset();
   document.documentElement.classList.remove('dark');
   document.cookie = 'sidebar_state=; path=/; max-age=0';
   window.localStorage.clear();
@@ -170,9 +182,83 @@ describe('web-admin routes', () => {
     expect(await screen.findByText('Rice')).toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: 'Nutrition' })[0]).toHaveAttribute(
       'href',
-      '/atlas/nutrition/products',
+      '/atlas/nutrition',
     );
     expect(listAtlasNutritionProductsMock).toHaveBeenCalledWith({ includeArchived: true });
+  });
+
+  it('renders the Atlas nutrition daily log route through the browser router', async () => {
+    getAtlasDailyNutritionLogMock.mockResolvedValue({
+      id: 'log-1',
+      userId: 'user-1',
+      date: '2026-06-24',
+      notes: null,
+      totals: { calories: 325, protein: 6.8, fat: 0.8, carbs: 70 },
+      entries: [
+        {
+          id: 'entry-1',
+          dailyLogId: 'log-1',
+          productId: 'product-1',
+          productNameSnapshot: 'Rice',
+          caloriesPer100gSnapshot: 130,
+          proteinPer100gSnapshot: 2.7,
+          fatPer100gSnapshot: 0.3,
+          carbsPer100gSnapshot: 28,
+          amountGrams: 250,
+          mealLabel: 'Lunch',
+          notes: 'Steamed',
+          position: 0,
+          macros: { calories: 325, protein: 6.8, fat: 0.8, carbs: 70 },
+          createdAt: '2026-06-24T00:00:00Z',
+          updatedAt: '2026-06-24T00:00:00Z',
+        },
+      ],
+      createdAt: '2026-06-24T00:00:00Z',
+      updatedAt: '2026-06-24T00:00:00Z',
+    });
+    listAtlasNutritionProductsMock.mockResolvedValue([
+      {
+        id: 'product-1',
+        userId: 'user-1',
+        name: 'Rice',
+        caloriesPer100g: 130,
+        proteinPer100g: 2.7,
+        fatPer100g: 0.3,
+        carbsPer100g: 28,
+        notes: 'Base carbs',
+        isActive: true,
+        createdAt: '2026-06-24T00:00:00Z',
+        updatedAt: '2026-06-24T00:00:00Z',
+      },
+    ]);
+
+    renderApp('/atlas/nutrition');
+
+    expect(await screen.findByRole('heading', { name: 'Nutrition' })).toBeInTheDocument();
+    expect(await screen.findByText('Rice')).toBeInTheDocument();
+    expect(screen.getByText('325 kcal')).toBeInTheDocument();
+    expect(getAtlasDailyNutritionLogMock).toHaveBeenCalled();
+    expect(listAtlasNutritionProductsMock).toHaveBeenCalledWith();
+  });
+
+  it('redirects the legacy daily override route to the factual nutrition route', async () => {
+    getAtlasDailyNutritionLogMock.mockResolvedValue({
+      id: 'log-1',
+      userId: 'user-1',
+      date: '2026-06-24',
+      notes: null,
+      totals: { calories: 0, protein: 0, fat: 0, carbs: 0 },
+      entries: [],
+      createdAt: '2026-06-24T00:00:00Z',
+      updatedAt: '2026-06-24T00:00:00Z',
+    });
+    listAtlasNutritionProductsMock.mockResolvedValue([]);
+
+    renderApp('/atlas/nutrition/overrides/new');
+
+    expect(await screen.findByRole('heading', { name: 'Nutrition' })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/atlas/nutrition');
+    expect(screen.queryByText(/Daily Override/i)).not.toBeInTheDocument();
   });
 
   it('toggles and persists the admin theme from the app shell', async () => {

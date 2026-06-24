@@ -1,5 +1,5 @@
 // FILE: apps/web-admin/src/app/admin-navigation.test.ts
-// VERSION: 1.0.0
+// VERSION: 1.1.0
 // START_MODULE_CONTRACT
 //   PURPOSE: Verify web-admin app-owned navigation metadata and shell state resolution.
 //   SCOPE: Covers route groups, active matching, breadcrumbs, disabled placeholders, and placeholder shell data; excludes rendering.
@@ -12,7 +12,7 @@
 //   admin navigation tests - Prove metadata is deterministic and app-owned for the shell.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.1 - Added trailing-path normalization coverage for shell route state.
+//   LAST_CHANGE: 1.1.0 - Added Atlas nutrition daily-log navigation coverage.
 // END_CHANGE_SUMMARY
 
 import { describe, expect, it } from 'vitest';
@@ -68,9 +68,25 @@ describe('admin navigation metadata', () => {
   });
 
   it('marks Atlas nutrition routes active and returns nutrition breadcrumbs', () => {
+    const dailyState = resolveAdminShellState('/atlas/nutrition');
     const state = resolveAdminShellState('/atlas/nutrition/products');
+    const dailyNutritionItem = dailyState.navigation[0].items.find(
+      (item) => item.id === 'atlas-nutrition',
+    );
     const nutritionItem = state.navigation[0].items.find((item) => item.id === 'atlas-nutrition');
 
+    expect(dailyNutritionItem?.isActive).toBe(true);
+    expect(dailyNutritionItem?.href).toBe('/atlas/nutrition');
+    expect(
+      dailyNutritionItem?.children?.find((child) => child.id === 'atlas-nutrition-daily-log'),
+    ).toEqual(
+      expect.objectContaining({
+        href: '/atlas/nutrition',
+        isActive: true,
+        label: 'Daily Log',
+      }),
+    );
+    expect(dailyState.breadcrumbs).toEqual([{ label: 'Nutrition' }]);
     expect(nutritionItem?.isActive).toBe(true);
     expect(
       nutritionItem?.children?.find((child) => child.id === 'atlas-nutrition-products'),
