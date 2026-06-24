@@ -271,6 +271,10 @@ func (r *Resolver) CreateNutritionTemplateItem(ctx context.Context, input models
 			return &models.NutritionTemplateItemResult{
 				ValidationErr: &models.NutritionValidationErr{Message: "template not found", Code: models.NutritionErrorValidation},
 			}, nil
+		case errors.Is(err, atlasService.ErrProductNotFound):
+			return &models.NutritionTemplateItemResult{
+				NotFoundErr: &models.NutritionNotFoundErr{Message: "product not found", Code: models.NutritionErrorNotFound},
+			}, nil
 		default:
 			return nil, nil
 		}

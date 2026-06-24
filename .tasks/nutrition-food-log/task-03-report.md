@@ -115,3 +115,57 @@ Task 3 commit `61e6404` was created with `--no-verify` after scoped checks passe
 - `apps/api/cmd/server/main.go`: updated constructor wiring to pass `atlasNutritionProductRepo` into `NewNutritionTemplateItemService`.
 - `docs/knowledge-graph.xml`: synchronized nutrition product/template item service annotations.
 - `docs/verification-plan.xml`: added `apps/api/internal/atlas/service/nutrition_template_item_service_test.go` to `V-M-API-NUTRITION`.
+
+## Quality Follow-Up: Resolver Product Not Found Mapping
+
+Finding:
+
+- `NutritionTemplateItemService.Create` can return `ErrProductNotFound` for cross-user or archived products, but `CreateNutritionTemplateItem` did not map that sentinel to a typed GraphQL union result.
+- Before the fix, this error path fell through to `return nil, nil`, which risks an untyped GraphQL non-null result error.
+
+RED command:
+
+```bash
+cd apps/api && go test ./internal/atlas/graph/resolver -run TestCreateNutritionTemplateItem_ProductNotFoundMapsToTypedUnion -count=1
+```
+
+RED result:
+
+```text
+--- FAIL: TestCreateNutritionTemplateItem_ProductNotFoundMapsToTypedUnion
+    nutrition_test.go:53: Expected value not to be nil.
+FAIL monorepo-template/apps/api/internal/atlas/graph/resolver
+```
+
+Fix:
+
+- Added `apps/api/internal/atlas/graph/resolver/nutrition_test.go` to prove `ErrProductNotFound` maps to `NutritionTemplateItemResult.NotFoundErr`.
+- Updated `apps/api/internal/atlas/graph/resolver/nutrition.go` so `CreateNutritionTemplateItem` returns `NotFoundErr{Message: "product not found", Code: NOT_FOUND}`.
+- Added the new resolver test file to `docs/verification-plan.xml` under `V-M-API-NUTRITION`.
+
+GREEN commands:
+
+```bash
+cd apps/api && go test ./internal/atlas/graph/resolver -run TestCreateNutritionTemplateItem_ProductNotFoundMapsToTypedUnion -count=1
+ok monorepo-template/apps/api/internal/atlas/graph/resolver 0.833s
+```
+
+```bash
+cd apps/api && go test ./internal/atlas/service -run "TestNutritionProductService|TestNutritionTemplateItemService" -count=1
+ok monorepo-template/apps/api/internal/atlas/service 0.498s
+```
+
+```bash
+cd apps/api && go test ./cmd/server -run '^$' -count=1
+? monorepo-template/apps/api/cmd/server [no test files]
+```
+
+```bash
+xmllint --noout docs/verification-plan.xml
+# passed with no output
+```
+
+```bash
+git diff --check 5b39b259874d25a65aa56878464c398c2337d6c0..HEAD
+# passed with no output
+```

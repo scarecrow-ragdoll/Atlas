@@ -527,6 +527,7 @@
         <file>apps/api/internal/atlas/service/nutrition_macro_service_test.go</file>
         <file>apps/api/internal/atlas/service/nutrition_override_service_test.go</file>
         <file>apps/api/internal/atlas/service/daily_nutrition_log_service_test.go</file>
+        <file>apps/api/internal/atlas/graph/resolver/nutrition_test.go</file>
         <file>apps/api/internal/atlas/repository/postgres/nutrition_migration_test.go</file>
       </test-files>
       <module-checks>
