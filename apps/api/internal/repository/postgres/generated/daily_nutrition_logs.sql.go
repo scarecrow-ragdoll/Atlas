@@ -74,19 +74,13 @@ func (q *Queries) CreateDailyNutritionEntry(ctx context.Context, arg CreateDaily
 
 const createDailyNutritionLog = `-- name: CreateDailyNutritionLog :one
 
-WITH inserted AS (
-  INSERT INTO daily_nutrition_logs (user_id, date, notes)
-  VALUES ($1, $2, $3)
-  ON CONFLICT (user_id, date) DO NOTHING
-  RETURNING id, user_id, date, notes, created_at, updated_at
-)
-SELECT id, user_id, date, notes, created_at, updated_at
-FROM inserted
-UNION ALL
-SELECT id, user_id, date, notes, created_at, updated_at
-FROM daily_nutrition_logs
-WHERE user_id = $1 AND date = $2
-LIMIT 1
+INSERT INTO daily_nutrition_logs (user_id, date, notes)
+VALUES ($1, $2, $3)
+ON CONFLICT (user_id, date)
+DO UPDATE SET
+  notes = daily_nutrition_logs.notes,
+  updated_at = daily_nutrition_logs.updated_at
+RETURNING id, user_id, date, notes, created_at, updated_at
 `
 
 type CreateDailyNutritionLogParams struct {
@@ -95,17 +89,8 @@ type CreateDailyNutritionLogParams struct {
 	Notes  pgtype.Text
 }
 
-type CreateDailyNutritionLogRow struct {
-	ID        pgtype.UUID
-	UserID    pgtype.UUID
-	Date      pgtype.Date
-	Notes     pgtype.Text
-	CreatedAt pgtype.Timestamptz
-	UpdatedAt pgtype.Timestamptz
-}
-
 // FILE: apps/api/internal/repository/postgres/queries/daily_nutrition_logs.sql
-// VERSION: 1.0.1
+// VERSION: 1.0.2
 // START_MODULE_CONTRACT
 //
 //	PURPOSE: sqlc queries for factual daily nutrition logs and entries.
@@ -126,12 +111,12 @@ type CreateDailyNutritionLogRow struct {
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
 //
-//	LAST_CHANGE: 1.0.1 - Hardened entry snapshots, list ownership, and log get-or-create conflict semantics.
+//	LAST_CHANGE: 1.0.2 - Made daily log get-or-create race-safe while preserving existing notes and updated_at.
 //
 // END_CHANGE_SUMMARY
-func (q *Queries) CreateDailyNutritionLog(ctx context.Context, arg CreateDailyNutritionLogParams) (CreateDailyNutritionLogRow, error) {
+func (q *Queries) CreateDailyNutritionLog(ctx context.Context, arg CreateDailyNutritionLogParams) (DailyNutritionLog, error) {
 	row := q.db.QueryRow(ctx, createDailyNutritionLog, arg.UserID, arg.Date, arg.Notes)
-	var i CreateDailyNutritionLogRow
+	var i DailyNutritionLog
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,

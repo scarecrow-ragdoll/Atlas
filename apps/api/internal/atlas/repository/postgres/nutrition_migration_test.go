@@ -9,7 +9,7 @@
 //   MAP_MODE: SUMMARY
 // END_MODULE_CONTRACT
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.2 - Added factual daily nutrition snapshot source, list ownership, conflict, and macro constraint coverage.
+//   LAST_CHANGE: 1.0.3 - Added concurrent first-write get-or-create race coverage.
 // END_CHANGE_SUMMARY
 
 package postgres_test
@@ -186,6 +186,82 @@ func TestDailyNutritionRepository_GetOrCreateIsUniqueAndListsByRange(t *testing.
 	require.Len(t, logs, 2)
 	require.Equal(t, firstLog.ID, logs[0].ID)
 	require.Equal(t, secondLog.ID, logs[1].ID)
+}
+
+func TestDailyNutritionRepository_GetOrCreateConcurrentFirstWriteReturnsExistingLog(t *testing.T) {
+	pool := nutritionMigrationTestPool(t)
+	truncateDailyNutritionTables(t, pool)
+	ctx := context.Background()
+	q := generated.New(pool)
+
+	userID := seedNutritionMigrationUser(t, pool, "daily nutrition concurrent user")
+	userUUID := testUUID(t, userID)
+	targetDate := testDate(2026, time.June, 26)
+
+	tx, err := pool.Begin(ctx)
+	require.NoError(t, err)
+	committed := false
+	defer func() {
+		if !committed {
+			_ = tx.Rollback(context.Background())
+		}
+	}()
+
+	var firstID pgtype.UUID
+	var firstNotes pgtype.Text
+	var firstUpdatedAt pgtype.Timestamptz
+	err = tx.QueryRow(ctx, `
+		INSERT INTO daily_nutrition_logs (user_id, date, notes)
+		VALUES ($1, $2, 'first writer')
+		RETURNING id, notes, updated_at
+	`, userUUID, targetDate).Scan(&firstID, &firstNotes, &firstUpdatedAt)
+	require.NoError(t, err)
+
+	type createResult struct {
+		id        pgtype.UUID
+		notes     pgtype.Text
+		updatedAt pgtype.Timestamptz
+		err       error
+	}
+
+	resultCh := make(chan createResult, 1)
+	createCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	go func() {
+		log, err := q.CreateDailyNutritionLog(createCtx, generated.CreateDailyNutritionLogParams{
+			UserID: userUUID,
+			Date:   targetDate,
+			Notes:  pgtype.Text{String: "second writer", Valid: true},
+		})
+		resultCh <- createResult{
+			id:        log.ID,
+			notes:     log.Notes,
+			updatedAt: log.UpdatedAt,
+			err:       err,
+		}
+	}()
+
+	select {
+	case result := <-resultCh:
+		require.Failf(t, "concurrent create returned before first writer committed", "err=%v id=%v", result.err, result.id)
+	case <-time.After(200 * time.Millisecond):
+	}
+
+	err = tx.Commit(ctx)
+	require.NoError(t, err)
+	committed = true
+
+	select {
+	case result := <-resultCh:
+		require.NoError(t, result.err)
+		require.Equal(t, firstID, result.id)
+		require.True(t, result.notes.Valid)
+		require.Equal(t, firstNotes.String, result.notes.String)
+		require.True(t, result.updatedAt.Valid)
+		require.True(t, firstUpdatedAt.Time.Equal(result.updatedAt.Time))
+	case <-time.After(2 * time.Second):
+		t.Fatal("timed out waiting for concurrent daily nutrition log create")
+	}
 }
 
 func TestDailyNutritionRepository_EntryCRUDPreservesSnapshotsAndOwnership(t *testing.T) {

@@ -93,7 +93,7 @@ type Querier interface {
 	CreateDailyLog(ctx context.Context, arg CreateDailyLogParams) (DailyLog, error)
 	CreateDailyNutritionEntry(ctx context.Context, arg CreateDailyNutritionEntryParams) (DailyNutritionEntry, error)
 	// FILE: apps/api/internal/repository/postgres/queries/daily_nutrition_logs.sql
-	// VERSION: 1.0.1
+	// VERSION: 1.0.2
 	// START_MODULE_CONTRACT
 	//   PURPOSE: sqlc queries for factual daily nutrition logs and entries.
 	//   SCOPE: User-scoped log load/upsert, entry CRUD with parent and product ownership checks, and date-range export reads.
@@ -109,9 +109,9 @@ type Querier interface {
 	//   UpdateDailyNutritionEntry/DeleteDailyNutritionEntry - Mutates entries through parent log ownership checks.
 	// END_MODULE_MAP
 	// START_CHANGE_SUMMARY
-	//   LAST_CHANGE: 1.0.1 - Hardened entry snapshots, list ownership, and log get-or-create conflict semantics.
+	//   LAST_CHANGE: 1.0.2 - Made daily log get-or-create race-safe while preserving existing notes and updated_at.
 	// END_CHANGE_SUMMARY
-	CreateDailyNutritionLog(ctx context.Context, arg CreateDailyNutritionLogParams) (CreateDailyNutritionLogRow, error)
+	CreateDailyNutritionLog(ctx context.Context, arg CreateDailyNutritionLogParams) (DailyNutritionLog, error)
 	CreateDailyNutritionOverrideItem(ctx context.Context, arg CreateDailyNutritionOverrideItemParams) (DailyNutritionOverrideItem, error)
 	// FILE: apps/api/internal/repository/postgres/queries/exercises.sql
 	// VERSION: 1.0.0

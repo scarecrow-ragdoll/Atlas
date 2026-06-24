@@ -1,5 +1,5 @@
 -- FILE: apps/api/internal/repository/postgres/queries/daily_nutrition_logs.sql
--- VERSION: 1.0.1
+-- VERSION: 1.0.2
 -- START_MODULE_CONTRACT
 --   PURPOSE: sqlc queries for factual daily nutrition logs and entries.
 --   SCOPE: User-scoped log load/upsert, entry CRUD with parent and product ownership checks, and date-range export reads.
@@ -15,23 +15,17 @@
 --   UpdateDailyNutritionEntry/DeleteDailyNutritionEntry - Mutates entries through parent log ownership checks.
 -- END_MODULE_MAP
 -- START_CHANGE_SUMMARY
---   LAST_CHANGE: 1.0.1 - Hardened entry snapshots, list ownership, and log get-or-create conflict semantics.
+--   LAST_CHANGE: 1.0.2 - Made daily log get-or-create race-safe while preserving existing notes and updated_at.
 -- END_CHANGE_SUMMARY
 
 -- name: CreateDailyNutritionLog :one
-WITH inserted AS (
-  INSERT INTO daily_nutrition_logs (user_id, date, notes)
-  VALUES (sqlc.arg(user_id), sqlc.arg(date), sqlc.arg(notes))
-  ON CONFLICT (user_id, date) DO NOTHING
-  RETURNING id, user_id, date, notes, created_at, updated_at
-)
-SELECT id, user_id, date, notes, created_at, updated_at
-FROM inserted
-UNION ALL
-SELECT id, user_id, date, notes, created_at, updated_at
-FROM daily_nutrition_logs
-WHERE user_id = sqlc.arg(user_id) AND date = sqlc.arg(date)
-LIMIT 1;
+INSERT INTO daily_nutrition_logs (user_id, date, notes)
+VALUES (sqlc.arg(user_id), sqlc.arg(date), sqlc.arg(notes))
+ON CONFLICT (user_id, date)
+DO UPDATE SET
+  notes = daily_nutrition_logs.notes,
+  updated_at = daily_nutrition_logs.updated_at
+RETURNING id, user_id, date, notes, created_at, updated_at;
 
 -- name: GetDailyNutritionLogByDate :one
 SELECT id, user_id, date, notes, created_at, updated_at
