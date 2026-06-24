@@ -41,7 +41,7 @@ Covered daily factual food-log get/add/update/delete, active/all product listing
 
 - Command: `cd apps/web-admin && bun run test -- src/pages/atlas/nutrition-api.test.ts`
 - Result: PASS.
-- Evidence: `src/pages/atlas/nutrition-api.test.ts` passed; 11 tests passed, 1 test file passed.
+- Evidence: `src/pages/atlas/nutrition-api.test.ts` passed; 10 tests passed, 1 test file passed.
 
 ### Review Fix
 
@@ -50,6 +50,14 @@ Covered daily factual food-log get/add/update/delete, active/all product listing
 - Command: `cd apps/web-admin && bun run test -- src/pages/atlas/nutrition-api.test.ts`
 - Result: PASS.
 - Evidence: `src/pages/atlas/nutrition-api.test.ts` passed; 11 tests passed, 1 test file passed.
+
+### Quality Review Fix
+
+- Finding: quality review requested tests for Atlas endpoint derivation, credentialed client construction, and stricter raw GraphQL document field coverage.
+- Fix: added coverage for `/graphql` to `/graphql/atlas` URL derivation, `VITE_ATLAS_GRAPHQL_API_URL` override trimming, `credentials: 'include'`, and essential selected fields for daily entries, products, template items, and weekly apply results.
+- Command: `cd apps/web-admin && bun run test -- src/pages/atlas/nutrition-api.test.ts`
+- Result: PASS.
+- Evidence: `src/pages/atlas/nutrition-api.test.ts` passed; 13 tests passed, 1 test file passed.
 
 ### Typecheck
 

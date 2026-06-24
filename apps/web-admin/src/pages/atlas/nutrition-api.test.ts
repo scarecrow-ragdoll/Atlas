@@ -29,9 +29,11 @@ import {
   AtlasNutritionApiError,
   addAtlasDailyNutritionEntry,
   applyAtlasNutritionTemplateToWeek,
+  createAtlasNutritionGraphQLClient,
   createAtlasNutritionTemplateItem,
   deleteAtlasDailyNutritionEntry,
   deleteAtlasNutritionTemplateItem,
+  getAtlasGraphQLApiUrl,
   getAtlasDailyNutritionLog,
   listAtlasNutritionProducts,
   restoreAtlasNutritionProduct,
@@ -93,9 +95,45 @@ const templateItem = {
   updatedAt: '2026-06-24T10:00:00Z',
 };
 
+function expectDocumentToContainFields(document: string, fields: string[]) {
+  for (const field of fields) {
+    expect(document).toContain(field);
+  }
+}
+
 describe('Atlas nutrition API adapter', () => {
   beforeEach(() => {
     requestMock.mockReset();
+    graphQLClientMock.mockClear();
+    vi.unstubAllEnvs();
+  });
+
+  it('derives the Atlas GraphQL endpoint from admin config and explicit env overrides', () => {
+    vi.stubEnv('VITE_ATLAS_GRAPHQL_API_URL', '');
+
+    expect(getAtlasGraphQLApiUrl('http://localhost:8090/graphql')).toBe(
+      'http://localhost:8090/graphql/atlas',
+    );
+    expect(getAtlasGraphQLApiUrl('http://localhost:8090/graphql///')).toBe(
+      'http://localhost:8090/graphql/atlas',
+    );
+    expect(getAtlasGraphQLApiUrl('http://localhost:8090/api')).toBe(
+      'http://localhost:8090/api/graphql/atlas',
+    );
+
+    vi.stubEnv('VITE_ATLAS_GRAPHQL_API_URL', ' https://atlas.test/graphql/atlas/// ');
+
+    expect(getAtlasGraphQLApiUrl('http://localhost:8090/graphql')).toBe(
+      'https://atlas.test/graphql/atlas',
+    );
+  });
+
+  it('creates a credentialed Atlas GraphQL client', () => {
+    createAtlasNutritionGraphQLClient('https://atlas.test/graphql/atlas');
+
+    expect(graphQLClientMock).toHaveBeenCalledWith('https://atlas.test/graphql/atlas', {
+      credentials: 'include',
+    });
   });
 
   it('loads a factual daily nutrition log with entry snapshots and totals', async () => {
@@ -110,6 +148,16 @@ describe('Atlas nutrition API adapter', () => {
     expect(requestMock).toHaveBeenCalledWith(expect.stringContaining('dailyNutritionLog'), {
       date: '2026-06-24',
     });
+    expectDocumentToContainFields(requestMock.mock.calls[0][0], [
+      'productNameSnapshot',
+      'caloriesPer100gSnapshot',
+      'proteinPer100gSnapshot',
+      'fatPer100gSnapshot',
+      'carbsPer100gSnapshot',
+      'amountGrams',
+      'macros',
+      'totals',
+    ]);
     expect(result.entries[0].productNameSnapshot).toBe('Rice');
     expect(result.entries[0].macros.calories).toBe(325);
     expect(result.totals.calories).toBe(325);
@@ -201,6 +249,13 @@ describe('Atlas nutrition API adapter', () => {
       expect.stringContaining('nutritionProducts'),
       {},
     );
+    expectDocumentToContainFields(requestMock.mock.calls[0][0], [
+      'caloriesPer100g',
+      'proteinPer100g',
+      'fatPer100g',
+      'carbsPer100g',
+      'isActive',
+    ]);
     expect(requestMock.mock.calls[0][0]).not.toContain('nutritionProductsAll');
     expect(requestMock).toHaveBeenNthCalledWith(
       2,
@@ -250,6 +305,15 @@ describe('Atlas nutrition API adapter', () => {
         mode: 'SEED_EMPTY_DAYS',
       },
     );
+    expectDocumentToContainFields(requestMock.mock.calls[0][0], [
+      'weekStartDate',
+      'weekEndDate',
+      'mode',
+      'date',
+      'status',
+      'entryCount',
+      'reason',
+    ]);
     expect(result.mode).toBe('SEED_EMPTY_DAYS');
     expect(result.dates).toEqual([
       { date: '2026-06-22', status: 'created', entryCount: 2, reason: null },
@@ -296,16 +360,37 @@ describe('Atlas nutrition API adapter', () => {
       expect.stringContaining('createNutritionTemplateItem'),
       { input: createInput },
     );
+    expectDocumentToContainFields(requestMock.mock.calls[0][0], [
+      'templateId',
+      'productId',
+      'amountGrams',
+      'mealLabel',
+      'notes',
+    ]);
     expect(requestMock).toHaveBeenNthCalledWith(
       2,
       expect.stringContaining('updateNutritionTemplateItem'),
       { id: 'item-1', input: updateInput },
     );
+    expectDocumentToContainFields(requestMock.mock.calls[1][0], [
+      'templateId',
+      'productId',
+      'amountGrams',
+      'mealLabel',
+      'notes',
+    ]);
     expect(requestMock).toHaveBeenNthCalledWith(
       3,
       expect.stringContaining('deleteNutritionTemplateItem'),
       { id: 'item-1' },
     );
+    expectDocumentToContainFields(requestMock.mock.calls[2][0], [
+      'templateId',
+      'productId',
+      'amountGrams',
+      'mealLabel',
+      'notes',
+    ]);
     expect(created.productId).toBe('product-1');
     expect(updated.amountGrams).toBe(300);
     expect(deleted.id).toBe('item-1');
