@@ -1,5 +1,5 @@
 // FILE: apps/web-admin/src/app/admin-navigation.ts
-// VERSION: 1.2.0
+// VERSION: 1.3.0
 // START_MODULE_CONTRACT
 //   PURPOSE: Own static web-admin shell navigation metadata and active route resolution.
 //   SCOPE: Defines template-native sidebar groups, disabled placeholders, breadcrumbs, user/team placeholders, and route matching; excludes shared UI rendering.
@@ -16,7 +16,7 @@
 //   resolveAdminShellState - Derive active navigation and breadcrumbs from a pathname.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.2.0 - Pointed Atlas nutrition navigation to the factual daily food log route.
+//   LAST_CHANGE: 1.3.0 - Added Weekly Plan child navigation for the editable nutrition template route.
 // END_CHANGE_SUMMARY
 
 import {
@@ -97,6 +97,11 @@ export const adminNavigationGroups: AdminNavigationGroup[] = [
             href: '/atlas/nutrition',
           },
           {
+            id: 'atlas-nutrition-template',
+            label: 'Weekly Plan',
+            href: '/atlas/nutrition/template',
+          },
+          {
             id: 'atlas-nutrition-products',
             label: 'Product Library',
             href: '/atlas/nutrition/products',
@@ -157,6 +162,9 @@ function buildBreadcrumbs(pathname: string): AdminBreadcrumbItem[] {
   }
   if (pathname === '/atlas/nutrition/products') {
     return [{ label: 'Nutrition' }, { label: 'Product Library' }];
+  }
+  if (pathname === '/atlas/nutrition/template') {
+    return [{ label: 'Nutrition' }, { label: 'Weekly Plan' }];
   }
   if (pathname.startsWith('/atlas/nutrition/')) {
     return [{ label: 'Nutrition' }];

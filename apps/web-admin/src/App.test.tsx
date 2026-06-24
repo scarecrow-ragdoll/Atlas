@@ -1,5 +1,5 @@
 // FILE: apps/web-admin/src/App.test.tsx
-// VERSION: 1.2.0
+// VERSION: 1.3.0
 // START_MODULE_CONTRACT
 //   PURPOSE: Verify the web-admin Vite route table and auth guard at the app boundary.
 //   SCOPE: Covers protected home, users, UI-kit, login redirect, and no protected-content flash behavior through browser history; excludes page-level create/detail edge cases.
@@ -12,7 +12,7 @@
 //   web-admin routes tests - Prove the Vite admin app exposes home, users, and UI-kit routes.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.2.0 - Added Atlas factual nutrition route and legacy override route coverage.
+//   LAST_CHANGE: 1.3.0 - Added Atlas weekly nutrition template route coverage.
 // END_CHANGE_SUMMARY
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -22,9 +22,16 @@ import App from './App';
 
 const requestMock = vi.hoisted(() => vi.fn());
 const getAtlasDailyNutritionLogMock = vi.hoisted(() => vi.fn());
+const getAtlasNutritionTemplateCurrentMock = vi.hoisted(() => vi.fn());
 const listAtlasNutritionProductsMock = vi.hoisted(() => vi.fn());
 const addAtlasDailyNutritionEntryMock = vi.hoisted(() => vi.fn());
+const applyAtlasNutritionTemplateToWeekMock = vi.hoisted(() => vi.fn());
+const createAtlasNutritionTemplateMock = vi.hoisted(() => vi.fn());
+const createAtlasNutritionTemplateItemMock = vi.hoisted(() => vi.fn());
+const deleteAtlasNutritionTemplateItemMock = vi.hoisted(() => vi.fn());
 const updateAtlasDailyNutritionEntryMock = vi.hoisted(() => vi.fn());
+const updateAtlasNutritionTemplateMock = vi.hoisted(() => vi.fn());
+const updateAtlasNutritionTemplateItemMock = vi.hoisted(() => vi.fn());
 const deleteAtlasDailyNutritionEntryMock = vi.hoisted(() => vi.fn());
 const originalMatchMedia = window.matchMedia;
 const currentAdmin = {
@@ -72,13 +79,31 @@ vi.mock('@shared/api/graphql-client', () => ({
 
 vi.mock('./pages/atlas/nutrition-api', () => ({
   addAtlasDailyNutritionEntry: addAtlasDailyNutritionEntryMock,
+  applyAtlasNutritionTemplateToWeek: applyAtlasNutritionTemplateToWeekMock,
   archiveAtlasNutritionProduct: vi.fn(),
+  AtlasNutritionApiError: class MockAtlasNutritionApiError extends Error {
+    readonly code: string;
+    readonly type: string;
+
+    constructor(message: string, code: string, type: string) {
+      super(message);
+      this.name = 'AtlasNutritionApiError';
+      this.code = code;
+      this.type = type;
+    }
+  },
   createAtlasNutritionProduct: vi.fn(),
+  createAtlasNutritionTemplate: createAtlasNutritionTemplateMock,
+  createAtlasNutritionTemplateItem: createAtlasNutritionTemplateItemMock,
   deleteAtlasDailyNutritionEntry: deleteAtlasDailyNutritionEntryMock,
+  deleteAtlasNutritionTemplateItem: deleteAtlasNutritionTemplateItemMock,
   getAtlasDailyNutritionLog: getAtlasDailyNutritionLogMock,
+  getAtlasNutritionTemplateCurrent: getAtlasNutritionTemplateCurrentMock,
   listAtlasNutritionProducts: listAtlasNutritionProductsMock,
   restoreAtlasNutritionProduct: vi.fn(),
   updateAtlasDailyNutritionEntry: updateAtlasDailyNutritionEntryMock,
+  updateAtlasNutritionTemplate: updateAtlasNutritionTemplateMock,
+  updateAtlasNutritionTemplateItem: updateAtlasNutritionTemplateItemMock,
   updateAtlasNutritionProduct: vi.fn(),
 }));
 
@@ -114,9 +139,16 @@ afterEach(() => {
   requestMock.mockClear();
   requestMock.mockImplementation(mockGraphQLResponse);
   getAtlasDailyNutritionLogMock.mockReset();
+  getAtlasNutritionTemplateCurrentMock.mockReset();
   listAtlasNutritionProductsMock.mockReset();
   addAtlasDailyNutritionEntryMock.mockReset();
+  applyAtlasNutritionTemplateToWeekMock.mockReset();
+  createAtlasNutritionTemplateMock.mockReset();
+  createAtlasNutritionTemplateItemMock.mockReset();
+  deleteAtlasNutritionTemplateItemMock.mockReset();
   updateAtlasDailyNutritionEntryMock.mockReset();
+  updateAtlasNutritionTemplateMock.mockReset();
+  updateAtlasNutritionTemplateItemMock.mockReset();
   deleteAtlasDailyNutritionEntryMock.mockReset();
   document.documentElement.classList.remove('dark');
   document.cookie = 'sidebar_state=; path=/; max-age=0';
@@ -238,6 +270,56 @@ describe('web-admin routes', () => {
     expect(await screen.findByText('Rice')).toBeInTheDocument();
     expect(screen.getByText('325 kcal')).toBeInTheDocument();
     expect(getAtlasDailyNutritionLogMock).toHaveBeenCalled();
+    expect(listAtlasNutritionProductsMock).toHaveBeenCalledWith();
+  });
+
+  it('renders the Atlas weekly nutrition template route through the browser router', async () => {
+    getAtlasNutritionTemplateCurrentMock.mockResolvedValue({
+      id: 'template-1',
+      userId: 'user-1',
+      weekStartDate: '2026-06-22',
+      title: 'Base week',
+      notes: null,
+      items: [
+        {
+          id: 'item-1',
+          templateId: 'template-1',
+          productId: 'product-1',
+          amountGrams: 250,
+          mealLabel: 'Lunch',
+          notes: null,
+          createdAt: '2026-06-24T00:00:00Z',
+          updatedAt: '2026-06-24T00:00:00Z',
+        },
+      ],
+      createdAt: '2026-06-24T00:00:00Z',
+      updatedAt: '2026-06-24T00:00:00Z',
+    });
+    listAtlasNutritionProductsMock.mockResolvedValue([
+      {
+        id: 'product-1',
+        userId: 'user-1',
+        name: 'Rice',
+        caloriesPer100g: 130,
+        proteinPer100g: 2.7,
+        fatPer100g: 0.3,
+        carbsPer100g: 28,
+        notes: 'Base carbs',
+        isActive: true,
+        createdAt: '2026-06-24T00:00:00Z',
+        updatedAt: '2026-06-24T00:00:00Z',
+      },
+    ]);
+
+    renderApp('/atlas/nutrition/template');
+
+    expect(await screen.findByRole('heading', { name: 'Weekly Plan' })).toBeInTheDocument();
+    expect(await screen.findByText('Rice')).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: 'Nutrition' })[0]).toHaveAttribute(
+      'href',
+      '/atlas/nutrition',
+    );
+    expect(getAtlasNutritionTemplateCurrentMock).toHaveBeenCalled();
     expect(listAtlasNutritionProductsMock).toHaveBeenCalledWith();
   });
 

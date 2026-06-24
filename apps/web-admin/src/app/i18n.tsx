@@ -1,5 +1,5 @@
 // FILE: apps/web-admin/src/app/i18n.tsx
-// VERSION: 1.1.0
+// VERSION: 1.2.0
 // START_MODULE_CONTRACT
 //   PURPOSE: Provide lightweight EN/RU translation state for Atlas web-admin pages.
 //   SCOPE: Owns local language persistence, document language sync, translation lookup, and provider/hook exports; excludes server-side locale negotiation and settings-page UI.
@@ -14,7 +14,7 @@
 //   LANGUAGE_STORAGE_KEY - LocalStorage key for the selected Atlas language.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.1.0 - Added factual daily nutrition log translations.
+//   LAST_CHANGE: 1.2.0 - Added weekly nutrition template editor translations.
 // END_CHANGE_SUMMARY
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
@@ -27,6 +27,9 @@ type TranslationKey =
   | 'nutrition.actions'
   | 'nutrition.active'
   | 'nutrition.addFood'
+  | 'nutrition.addPlannedEntry'
+  | 'nutrition.applyResult'
+  | 'nutrition.applyToWeek'
   | 'nutrition.archiveProduct'
   | 'nutrition.archived'
   | 'nutrition.cancelEdit'
@@ -37,6 +40,7 @@ type TranslationKey =
   | 'nutrition.caloriesPer100g'
   | 'nutrition.chooseProduct'
   | 'nutrition.createProduct'
+  | 'nutrition.createdCount'
   | 'nutrition.dailyLogDescription'
   | 'nutrition.deleteEntry'
   | 'nutrition.editProduct'
@@ -44,7 +48,10 @@ type TranslationKey =
   | 'nutrition.emptyDayTitle'
   | 'nutrition.emptyProductLibrary'
   | 'nutrition.emptyProductLibraryDescription'
+  | 'nutrition.emptyWeeklyPlanDescription'
+  | 'nutrition.emptyWeeklyPlanTitle'
   | 'nutrition.entries'
+  | 'nutrition.entryCount'
   | 'nutrition.entryDeleted'
   | 'nutrition.entryUpdated'
   | 'nutrition.entryAdded'
@@ -57,15 +64,19 @@ type TranslationKey =
   | 'nutrition.includeArchived'
   | 'nutrition.loadNutritionError'
   | 'nutrition.loadProductsError'
+  | 'nutrition.loadWeeklyPlanError'
   | 'nutrition.loadingNutrition'
   | 'nutrition.loadingProducts'
+  | 'nutrition.loadingWeeklyPlan'
   | 'nutrition.macroValidationError'
   | 'nutrition.manageProducts'
   | 'nutrition.mealLabel'
   | 'nutrition.nameValidationError'
   | 'nutrition.nextDay'
+  | 'nutrition.nextWeek'
   | 'nutrition.notes'
   | 'nutrition.previousDay'
+  | 'nutrition.previousWeek'
   | 'nutrition.product'
   | 'nutrition.productArchived'
   | 'nutrition.productCreated'
@@ -79,20 +90,34 @@ type TranslationKey =
   | 'nutrition.proteinPer100g'
   | 'nutrition.restoreProduct'
   | 'nutrition.retry'
+  | 'nutrition.saveBeforeApply'
   | 'nutrition.saveProduct'
   | 'nutrition.saveEntry'
+  | 'nutrition.saveTemplate'
   | 'nutrition.searchProducts'
   | 'nutrition.selectProduct'
+  | 'nutrition.skippedCount'
   | 'nutrition.status'
+  | 'nutrition.templateApplied'
+  | 'nutrition.templateNotes'
+  | 'nutrition.templateSaved'
+  | 'nutrition.templateTitle'
   | 'nutrition.title'
   | 'nutrition.today'
-  | 'nutrition.updateProduct';
+  | 'nutrition.updateProduct'
+  | 'nutrition.weeklyPlan'
+  | 'nutrition.weeklyPlanDescription'
+  | 'nutrition.weeklyTotals'
+  | 'nutrition.weekOf';
 
 const translations: Record<Language, Record<TranslationKey, string>> = {
   en: {
     'nutrition.actions': 'Actions',
     'nutrition.active': 'Active',
     'nutrition.addFood': 'Add food',
+    'nutrition.addPlannedEntry': 'Add planned entry',
+    'nutrition.applyResult': 'Apply result',
+    'nutrition.applyToWeek': 'Apply to Week',
     'nutrition.archiveProduct': 'Archive',
     'nutrition.archived': 'Archived',
     'nutrition.cancelEdit': 'Cancel edit',
@@ -103,6 +128,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.caloriesPer100g': 'Calories per 100g',
     'nutrition.chooseProduct': 'Choose a product',
     'nutrition.createProduct': 'Create product',
+    'nutrition.createdCount': 'created',
     'nutrition.dailyLogDescription':
       'Log products and grams eaten on the selected day. Totals are calculated from product snapshots.',
     'nutrition.deleteEntry': 'Delete',
@@ -112,7 +138,11 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.emptyDayTitle': 'No food entries yet',
     'nutrition.emptyProductLibrary': 'No products yet',
     'nutrition.emptyProductLibraryDescription': 'Create your first product to use it in food logs.',
+    'nutrition.emptyWeeklyPlanDescription':
+      'Save a title or add planned entries to create the weekly template for this week.',
+    'nutrition.emptyWeeklyPlanTitle': 'No weekly plan yet',
     'nutrition.entries': 'Food entries',
+    'nutrition.entryCount': 'entries',
     'nutrition.entryDeleted': 'Food entry deleted',
     'nutrition.entryUpdated': 'Food entry updated',
     'nutrition.entryAdded': 'Food entry added',
@@ -125,15 +155,19 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.includeArchived': 'Include archived',
     'nutrition.loadNutritionError': 'Failed to load nutrition data',
     'nutrition.loadProductsError': 'Failed to load products',
+    'nutrition.loadWeeklyPlanError': 'Failed to load weekly plan',
     'nutrition.loadingNutrition': 'Loading nutrition data',
     'nutrition.loadingProducts': 'Loading products',
+    'nutrition.loadingWeeklyPlan': 'Loading weekly plan',
     'nutrition.macroValidationError': 'Macro values must be zero or greater',
     'nutrition.manageProducts': 'Manage products',
     'nutrition.mealLabel': 'Meal label',
     'nutrition.nameValidationError': 'Product name is required',
     'nutrition.nextDay': 'Next day',
+    'nutrition.nextWeek': 'Next week',
     'nutrition.notes': 'Notes',
     'nutrition.previousDay': 'Previous day',
+    'nutrition.previousWeek': 'Previous week',
     'nutrition.product': 'Product',
     'nutrition.productArchived': 'Product archived',
     'nutrition.productCreated': 'Product created',
@@ -148,19 +182,34 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.proteinPer100g': 'Protein per 100g',
     'nutrition.restoreProduct': 'Restore',
     'nutrition.retry': 'Retry',
+    'nutrition.saveBeforeApply': 'Save the weekly template before applying it to days',
     'nutrition.saveEntry': 'Save',
     'nutrition.saveProduct': 'Save product',
+    'nutrition.saveTemplate': 'Save Template',
     'nutrition.searchProducts': 'Search products',
     'nutrition.selectProduct': 'Select product',
+    'nutrition.skippedCount': 'skipped',
     'nutrition.status': 'Status',
+    'nutrition.templateApplied': 'Template applied to week',
+    'nutrition.templateNotes': 'Template notes',
+    'nutrition.templateSaved': 'Template saved',
+    'nutrition.templateTitle': 'Template title',
     'nutrition.title': 'Nutrition',
     'nutrition.today': 'Today',
     'nutrition.updateProduct': 'Update product',
+    'nutrition.weeklyPlan': 'Weekly Plan',
+    'nutrition.weeklyPlanDescription':
+      'Plan reusable meals for a week. Saving edits the template only; applying seeds empty factual days.',
+    'nutrition.weeklyTotals': 'Weekly totals',
+    'nutrition.weekOf': 'Week of',
   },
   ru: {
     'nutrition.actions': 'Действия',
     'nutrition.active': 'Активные',
     'nutrition.addFood': 'Добавить продукт',
+    'nutrition.addPlannedEntry': 'Добавить плановую запись',
+    'nutrition.applyResult': 'Результат применения',
+    'nutrition.applyToWeek': 'Применить к неделе',
     'nutrition.archiveProduct': 'Архивировать',
     'nutrition.archived': 'Архивные',
     'nutrition.cancelEdit': 'Отменить редактирование',
@@ -171,6 +220,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.caloriesPer100g': 'Калории на 100 г',
     'nutrition.chooseProduct': 'Выберите продукт',
     'nutrition.createProduct': 'Создать продукт',
+    'nutrition.createdCount': 'создано',
     'nutrition.dailyLogDescription':
       'Записывайте продукты и граммы за выбранный день. Итоги считаются по снимкам КБЖУ продуктов.',
     'nutrition.deleteEntry': 'Удалить',
@@ -181,7 +231,11 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.emptyProductLibrary': 'Продуктов пока нет',
     'nutrition.emptyProductLibraryDescription':
       'Создайте первый продукт, чтобы использовать его в дневнике питания.',
+    'nutrition.emptyWeeklyPlanDescription':
+      'Сохраните название или добавьте плановые записи, чтобы создать недельный шаблон.',
+    'nutrition.emptyWeeklyPlanTitle': 'Недельного плана пока нет',
     'nutrition.entries': 'Записи питания',
+    'nutrition.entryCount': 'записей',
     'nutrition.entryDeleted': 'Запись питания удалена',
     'nutrition.entryUpdated': 'Запись питания обновлена',
     'nutrition.entryAdded': 'Запись питания добавлена',
@@ -194,15 +248,19 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.includeArchived': 'Включая архивные',
     'nutrition.loadNutritionError': 'Не удалось загрузить данные питания',
     'nutrition.loadProductsError': 'Не удалось загрузить продукты',
+    'nutrition.loadWeeklyPlanError': 'Не удалось загрузить недельный план',
     'nutrition.loadingNutrition': 'Загрузка данных питания',
     'nutrition.loadingProducts': 'Загрузка продуктов',
+    'nutrition.loadingWeeklyPlan': 'Загрузка недельного плана',
     'nutrition.macroValidationError': 'Значения КБЖУ должны быть не меньше нуля',
     'nutrition.manageProducts': 'Управлять продуктами',
     'nutrition.mealLabel': 'Прием пищи',
     'nutrition.nameValidationError': 'Название продукта обязательно',
     'nutrition.nextDay': 'Следующий день',
+    'nutrition.nextWeek': 'Следующая неделя',
     'nutrition.notes': 'Заметки',
     'nutrition.previousDay': 'Предыдущий день',
+    'nutrition.previousWeek': 'Предыдущая неделя',
     'nutrition.product': 'Продукт',
     'nutrition.productArchived': 'Продукт архивирован',
     'nutrition.productCreated': 'Продукт создан',
@@ -217,14 +275,26 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.proteinPer100g': 'Белки на 100 г',
     'nutrition.restoreProduct': 'Восстановить',
     'nutrition.retry': 'Повторить',
+    'nutrition.saveBeforeApply': 'Сначала сохраните недельный шаблон',
     'nutrition.saveEntry': 'Сохранить',
     'nutrition.saveProduct': 'Сохранить продукт',
+    'nutrition.saveTemplate': 'Сохранить шаблон',
     'nutrition.searchProducts': 'Поиск продуктов',
     'nutrition.selectProduct': 'Выберите продукт',
+    'nutrition.skippedCount': 'пропущено',
     'nutrition.status': 'Статус',
+    'nutrition.templateApplied': 'Шаблон применен к неделе',
+    'nutrition.templateNotes': 'Заметки шаблона',
+    'nutrition.templateSaved': 'Шаблон сохранен',
+    'nutrition.templateTitle': 'Название шаблона',
     'nutrition.title': 'Питание',
     'nutrition.today': 'Сегодня',
     'nutrition.updateProduct': 'Обновить продукт',
+    'nutrition.weeklyPlan': 'Недельный план',
+    'nutrition.weeklyPlanDescription':
+      'Планируйте повторяемые приемы пищи на неделю. Сохранение меняет только шаблон; применение заполняет пустые фактические дни.',
+    'nutrition.weeklyTotals': 'Итоги недели',
+    'nutrition.weekOf': 'Неделя от',
   },
 };
 

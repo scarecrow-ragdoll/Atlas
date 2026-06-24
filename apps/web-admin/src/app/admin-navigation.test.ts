@@ -12,7 +12,7 @@
 //   admin navigation tests - Prove metadata is deterministic and app-owned for the shell.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.1.0 - Added Atlas nutrition daily-log navigation coverage.
+//   LAST_CHANGE: 1.2.0 - Added Atlas weekly nutrition template navigation coverage.
 // END_CHANGE_SUMMARY
 
 import { describe, expect, it } from 'vitest';
@@ -70,10 +70,14 @@ describe('admin navigation metadata', () => {
   it('marks Atlas nutrition routes active and returns nutrition breadcrumbs', () => {
     const dailyState = resolveAdminShellState('/atlas/nutrition');
     const state = resolveAdminShellState('/atlas/nutrition/products');
+    const templateState = resolveAdminShellState('/atlas/nutrition/template');
     const dailyNutritionItem = dailyState.navigation[0].items.find(
       (item) => item.id === 'atlas-nutrition',
     );
     const nutritionItem = state.navigation[0].items.find((item) => item.id === 'atlas-nutrition');
+    const templateNutritionItem = templateState.navigation[0].items.find(
+      (item) => item.id === 'atlas-nutrition',
+    );
 
     expect(dailyNutritionItem?.isActive).toBe(true);
     expect(dailyNutritionItem?.href).toBe('/atlas/nutrition');
@@ -98,6 +102,17 @@ describe('admin navigation metadata', () => {
       }),
     );
     expect(state.breadcrumbs).toEqual([{ label: 'Nutrition' }, { label: 'Product Library' }]);
+    expect(templateNutritionItem?.isActive).toBe(true);
+    expect(
+      templateNutritionItem?.children?.find((child) => child.id === 'atlas-nutrition-template'),
+    ).toEqual(
+      expect.objectContaining({
+        href: '/atlas/nutrition/template',
+        isActive: true,
+        label: 'Weekly Plan',
+      }),
+    );
+    expect(templateState.breadcrumbs).toEqual([{ label: 'Nutrition' }, { label: 'Weekly Plan' }]);
   });
 
   it('provides template-native user and team placeholders', () => {

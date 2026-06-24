@@ -1,5 +1,5 @@
 /* FILE: apps/web-admin/src/styles/atlas.css */
-/* VERSION: 1.1.0 */
+/* VERSION: 1.2.0 */
 /* START_MODULE_CONTRACT */
 /*   PURPOSE: Provide small reusable Atlas page layout helpers for web-admin routes. */
 /*   SCOPE: Defines scoped Atlas filter/form/table helper classes used by factual nutrition pages; excludes global theme tokens and generated OpenDesign CSS. */
@@ -11,9 +11,10 @@
 /* START_MODULE_MAP */
 /*   atlas-product-library - Scoped helpers for product library filters, form grid, and table actions. */
 /*   atlas-nutrition-log - Scoped helpers for daily nutrition date controls, summary cards, and entry forms. */
+/*   atlas-weekly-template - Scoped helpers for weekly nutrition template header and item editor. */
 /* END_MODULE_MAP */
 /* START_CHANGE_SUMMARY */
-/*   LAST_CHANGE: 1.1.0 - Added scoped factual daily nutrition log layout helpers. */
+/*   LAST_CHANGE: 1.2.0 - Added scoped weekly nutrition template editor layout helpers. */
 /* END_CHANGE_SUMMARY */
 
 .atlas-product-library {
@@ -21,6 +22,10 @@
 }
 
 .atlas-nutrition-log {
+  gap: 1.5rem;
+}
+
+.atlas-weekly-template {
   gap: 1.5rem;
 }
 
@@ -66,6 +71,11 @@
 }
 
 .atlas-entry-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.atlas-template-header-grid {
   display: grid;
   gap: 1rem;
 }
@@ -122,14 +132,16 @@
   }
 
   .atlas-form-grid,
-  .atlas-entry-form {
+  .atlas-entry-form,
+  .atlas-template-header-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1280px) {
   .atlas-form-grid,
-  .atlas-entry-form {
+  .atlas-entry-form,
+  .atlas-template-header-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
