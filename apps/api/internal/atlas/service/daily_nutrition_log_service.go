@@ -1,5 +1,5 @@
 // FILE: apps/api/internal/atlas/service/daily_nutrition_log_service.go
-// VERSION: 1.0.1
+// VERSION: 1.0.2
 // START_MODULE_CONTRACT
 //   PURPOSE: Implement factual DailyNutritionLogService with product snapshot entry CRUD and snapshot-based aggregate totals.
 //   SCOPE: GetByDate get-or-create, range listing, notes update, entry add/update/delete validation, product existence/active checks for new entries, and user-scoped aggregate reloads.
@@ -15,7 +15,7 @@
 //   AddEntry/UpdateEntry/DeleteEntry - Entry mutations returning refreshed snapshot totals where possible.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.1 - Reload parent daily log metadata for entry update/delete aggregate responses.
+//   LAST_CHANGE: 1.0.2 - Treat entry updates as full replacements for amount and position.
 // END_CHANGE_SUMMARY
 
 package service
@@ -148,7 +148,7 @@ func (s *dailyNutritionLogService) AddEntry(ctx context.Context, userID string, 
 
 func (s *dailyNutritionLogService) UpdateEntry(ctx context.Context, userID string, id string, input models.UpdateDailyNutritionEntryInput) (*models.DailyNutritionLog, error) {
 	s.logger.Info("[DailyNutritionEntry][update]")
-	if input.AmountGrams == nil || *input.AmountGrams <= 0 {
+	if input.AmountGrams <= 0 {
 		return nil, ErrDailyNutritionAmountInvalid
 	}
 

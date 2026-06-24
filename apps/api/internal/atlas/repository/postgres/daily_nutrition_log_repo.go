@@ -1,5 +1,5 @@
 // FILE: apps/api/internal/atlas/repository/postgres/daily_nutrition_log_repo.go
-// VERSION: 1.0.1
+// VERSION: 1.0.2
 // START_MODULE_CONTRACT
 //   PURPOSE: Implement DailyNutritionLogRepository using sqlc-generated factual daily nutrition log and entry queries.
 //   SCOPE: Get-or-create, get by ID, get by date, range list, notes update, entry add/list/update/delete. All reads and mutations are user-scoped; ListEntries requires both userID and dailyLogID.
@@ -15,7 +15,7 @@
 //   AddEntry/ListEntries/UpdateEntry/DeleteEntry - User-scoped entry operations.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.1 - Added user-scoped GetByID so entry mutations can return full parent log metadata.
+//   LAST_CHANGE: 1.0.2 - Mapped entry update amount and position as explicit full-replacement values.
 // END_CHANGE_SUMMARY
 
 package postgres
@@ -208,9 +208,6 @@ func (r *dailyNutritionLogRepository) ListEntries(ctx context.Context, userID st
 }
 
 func (r *dailyNutritionLogRepository) UpdateEntry(ctx context.Context, userID string, id string, input models.UpdateDailyNutritionEntryInput) (*models.DailyNutritionEntryRecord, error) {
-	if input.AmountGrams == nil {
-		return nil, fmt.Errorf("daily_nutrition_log_repo.UpdateEntry: amountGrams is required")
-	}
 	uid, eid, err := parseTwoUUIDs(userID, id)
 	if err != nil {
 		return nil, fmt.Errorf("daily_nutrition_log_repo.UpdateEntry: %w", err)
@@ -220,19 +217,14 @@ func (r *dailyNutritionLogRepository) UpdateEntry(ctx context.Context, userID st
 		return nil, fmt.Errorf("daily_nutrition_log_repo.UpdateEntry: %w", err)
 	}
 
-	position := int32(0)
-	if input.Position != nil {
-		position = *input.Position
-	}
-
 	row, err := r.q.UpdateDailyNutritionEntry(ctx, generated.UpdateDailyNutritionEntryParams{
 		ID:          eid,
 		UserID:      uid,
 		DailyLogID:  lid,
-		AmountGrams: float32(*input.AmountGrams),
+		AmountGrams: float32(input.AmountGrams),
 		MealLabel:   nullableText(input.MealLabel),
 		Notes:       nullableText(input.Notes),
-		Position:    position,
+		Position:    input.Position,
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

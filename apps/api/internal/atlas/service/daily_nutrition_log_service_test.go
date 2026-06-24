@@ -283,11 +283,16 @@ func TestDailyNutritionLogService_DeleteEntryRequiresOwnedParentLog(t *testing.T
 
 func TestDailyNutritionLogService_UpdateEntryPreservesSnapshotsAndReloadsParentMetadata(t *testing.T) {
 	updatedAmount := 75.0
+	updatedPosition := int32(4)
 	svc := newDailyNutritionService(&mockDailyNutritionLogRepo{
 		updateEntryFn: func(ctx context.Context, userID string, id string, input models.UpdateDailyNutritionEntryInput) (*models.DailyNutritionEntryRecord, error) {
 			assert.Equal(t, testUserID, userID)
 			assert.Equal(t, dailyNutritionEntryID, id)
 			assert.Equal(t, dailyNutritionLogID, input.DailyLogID)
+			assert.Equal(t, updatedAmount, input.AmountGrams)
+			assert.Nil(t, input.MealLabel)
+			assert.Nil(t, input.Notes)
+			assert.Equal(t, updatedPosition, input.Position)
 			return dailyNutritionEntryRecord(updatedAmount), nil
 		},
 		getByIDFn: func(ctx context.Context, userID string, id string) (*models.DailyNutritionLogRecord, error) {
@@ -304,9 +309,10 @@ func TestDailyNutritionLogService_UpdateEntryPreservesSnapshotsAndReloadsParentM
 
 	log, err := svc.UpdateEntry(ctx, testUserID, dailyNutritionEntryID, models.UpdateDailyNutritionEntryInput{
 		DailyLogID:  dailyNutritionLogID,
-		AmountGrams: &updatedAmount,
-		MealLabel:   ptrStr("Dinner"),
-		Notes:       ptrStr("still grilled"),
+		AmountGrams: updatedAmount,
+		MealLabel:   nil,
+		Notes:       nil,
+		Position:    updatedPosition,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, log)
@@ -328,7 +334,7 @@ func TestDailyNutritionLogService_UpdateEntryRejectsNonPositiveAmount(t *testing
 
 	log, err := svc.UpdateEntry(ctx, testUserID, dailyNutritionEntryID, models.UpdateDailyNutritionEntryInput{
 		DailyLogID:  dailyNutritionLogID,
-		AmountGrams: ptrFloat64(0),
+		AmountGrams: 0,
 	})
 	assert.ErrorIs(t, err, service.ErrDailyNutritionAmountInvalid)
 	assert.Nil(t, log)

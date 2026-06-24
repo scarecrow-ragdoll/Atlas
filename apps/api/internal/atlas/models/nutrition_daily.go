@@ -1,5 +1,5 @@
 // FILE: apps/api/internal/atlas/models/nutrition_daily.go
-// VERSION: 1.0.0
+// VERSION: 1.0.1
 // START_MODULE_CONTRACT
 //   PURPOSE: Define factual daily nutrition log models, entry snapshots, inputs, result wrappers, and macro-total converters.
 //   SCOPE: DailyNutritionLogRecord, DailyNutritionEntryRecord, public daily log/entry models, add/update inputs, repository create input, and snapshot-based total calculations; excludes legacy template and override types.
@@ -23,7 +23,7 @@
 //   DailyNutritionEntryMacros/DailyNutritionTotalsFromEntries - Snapshot-based macro calculations.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.0 - Added Task 2 factual daily nutrition log model surface.
+//   LAST_CHANGE: 1.0.1 - Made daily nutrition entry update input an explicit full-replacement contract.
 // END_CHANGE_SUMMARY
 
 package models
@@ -97,11 +97,11 @@ type AddDailyNutritionEntryInput struct {
 }
 
 type UpdateDailyNutritionEntryInput struct {
-	DailyLogID  string   `json:"dailyLogId"`
-	AmountGrams *float64 `json:"amountGrams"`
-	MealLabel   *string  `json:"mealLabel"`
-	Notes       *string  `json:"notes"`
-	Position    *int32   `json:"position"`
+	DailyLogID  string  `json:"dailyLogId"`
+	AmountGrams float64 `json:"amountGrams"`
+	MealLabel   *string `json:"mealLabel"`
+	Notes       *string `json:"notes"`
+	Position    int32   `json:"position"`
 }
 
 type CreateDailyNutritionEntryRecordInput struct {
