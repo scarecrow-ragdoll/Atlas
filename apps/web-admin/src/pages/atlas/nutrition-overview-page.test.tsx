@@ -13,7 +13,7 @@
 // END_MODULE_MAP
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { I18nProvider, type Language } from '../../app/i18n';
@@ -147,8 +147,27 @@ function renderNutritionPage(language: Language = 'en') {
   );
 }
 
+function createDeferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((promiseResolve, promiseReject) => {
+    resolve = promiseResolve;
+    reject = promiseReject;
+  });
+
+  return { promise, reject, resolve };
+}
+
 function getEntryRow(productName: string) {
   return screen.getByText(productName).closest('tr') as HTMLTableRowElement;
+}
+
+async function chooseProduct(productName: RegExp) {
+  if (!HTMLElement.prototype.scrollIntoView) {
+    HTMLElement.prototype.scrollIntoView = vi.fn();
+  }
+  fireEvent.keyDown(await screen.findByLabelText('Product'), { key: 'ArrowDown' });
+  fireEvent.click(await screen.findByRole('option', { name: productName }));
 }
 
 describe('NutritionOverviewPage', () => {
@@ -175,7 +194,7 @@ describe('NutritionOverviewPage', () => {
     expect(await screen.findByRole('heading', { name: 'Nutrition' })).toBeInTheDocument();
     expect(screen.getByText('Wednesday, June 24, 2026')).toBeInTheDocument();
 
-    fireEvent.change(await screen.findByLabelText('Product'), { target: { value: 'product-1' } });
+    await chooseProduct(/Rice/);
     fireEvent.change(screen.getByLabelText('Grams'), { target: { value: '250' } });
     fireEvent.click(screen.getByRole('button', { name: 'Add food' }));
 
@@ -292,6 +311,18 @@ describe('NutritionOverviewPage', () => {
     expect(getDailyLogMock).toHaveBeenCalledTimes(2);
   });
 
+  it('does not render the food form while products fail to load', async () => {
+    getDailyLogMock.mockResolvedValue(makeDailyLog());
+    listProductsMock.mockRejectedValueOnce(new Error('Products unavailable'));
+
+    renderNutritionPage();
+
+    expect(await screen.findByText('Failed to load nutrition data')).toBeInTheDocument();
+    expect(screen.getByText('Products unavailable')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Add food' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Food entries' })).not.toBeInTheDocument();
+  });
+
   it('validates missing product and non-positive grams before adding food', async () => {
     listProductsMock.mockResolvedValue([makeProduct()]);
     getDailyLogMock.mockResolvedValue(makeDailyLog());
@@ -304,12 +335,44 @@ describe('NutritionOverviewPage', () => {
     expect(await screen.findByText('Choose a product')).toBeInTheDocument();
     expect(addEntryMock).not.toHaveBeenCalled();
 
-    fireEvent.change(screen.getByLabelText('Product'), { target: { value: 'product-1' } });
+    await chooseProduct(/Rice/);
     fireEvent.change(screen.getByLabelText('Grams'), { target: { value: '0' } });
     fireEvent.click(screen.getByRole('button', { name: 'Add food' }));
 
     expect(await screen.findByText('Grams must be greater than 0')).toBeInTheDocument();
     expect(addEntryMock).not.toHaveBeenCalled();
+  });
+
+  it('does not show stale mutation success after switching dates before add resolves', async () => {
+    const addEntryDeferred = createDeferred<AtlasDailyNutritionLog>();
+    listProductsMock.mockResolvedValue([makeProduct({ id: 'product-1', name: 'Rice' })]);
+    getDailyLogMock
+      .mockResolvedValueOnce(makeDailyLog({ date: '2026-06-24' }))
+      .mockResolvedValueOnce(makeDailyLog({ date: '2026-06-25' }));
+    addEntryMock.mockReturnValue(addEntryDeferred.promise);
+
+    renderNutritionPage();
+
+    await chooseProduct(/Rice/);
+    fireEvent.change(screen.getByLabelText('Grams'), { target: { value: '250' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add food' }));
+    await waitFor(() => expect(addEntryMock).toHaveBeenCalledTimes(1));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Next day' }));
+    expect(await screen.findByText('Thursday, June 25, 2026')).toBeInTheDocument();
+
+    await act(async () => {
+      addEntryDeferred.resolve(
+        makeDailyLog({
+          date: '2026-06-24',
+          totals: { calories: 325, protein: 6.75, fat: 0.75, carbs: 70 },
+          entries: [makeEntry({ productNameSnapshot: 'Rice', amountGrams: 250 })],
+        }),
+      );
+      await addEntryDeferred.promise;
+    });
+
+    expect(screen.queryByText('Food entry added')).not.toBeInTheDocument();
   });
 
   it('shows API validation and not-found errors in the relevant action area', async () => {
@@ -326,7 +389,7 @@ describe('NutritionOverviewPage', () => {
     renderNutritionPage();
     expect(await screen.findByText('Rice')).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText('Product'), { target: { value: 'product-1' } });
+    await chooseProduct(/Rice/);
     fireEvent.change(screen.getByLabelText('Grams'), { target: { value: '100' } });
     fireEvent.click(screen.getByRole('button', { name: 'Add food' }));
 

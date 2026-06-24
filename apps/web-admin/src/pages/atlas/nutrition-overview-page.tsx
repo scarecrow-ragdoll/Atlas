@@ -45,6 +45,11 @@ import {
   CardTitle,
   Input,
   Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Skeleton,
   Table,
   TableBody,
@@ -65,6 +70,13 @@ type EntryFormState = {
 type NutritionOverviewPageProps = {
   initialDate?: string;
 };
+
+type SuccessMessage = {
+  date: string;
+  message: string;
+};
+
+const productPlaceholderValue = '__select_product__';
 
 const emptyEntryForm: EntryFormState = {
   productId: '',
@@ -160,7 +172,7 @@ export default function NutritionOverviewPage({ initialDate }: NutritionOverview
   const [selectedDate, setSelectedDate] = useState(initialDate ?? getTodayDateString());
   const [form, setForm] = useState<EntryFormState>(emptyEntryForm);
   const [formError, setFormError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<SuccessMessage | null>(null);
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<EntryFormState>(emptyEntryForm);
   const [rowError, setRowError] = useState<{ entryId: string; message: string } | null>(null);
@@ -179,6 +191,10 @@ export default function NutritionOverviewPage({ initialDate }: NutritionOverview
   const totals = dailyLog?.totals ?? zeroMacros;
   const products = productsQuery.data ?? [];
   const selectedDateLabel = formatLongDate(selectedDate, language);
+  const hasLoadError = dailyLogQuery.isError || productsQuery.isError;
+  const isLoading = dailyLogQuery.isLoading || productsQuery.isLoading;
+  const visibleSuccessMessage =
+    successMessage?.date === selectedDate ? successMessage.message : null;
 
   const summaryCards = useMemo(
     () => [
@@ -204,7 +220,7 @@ export default function NutritionOverviewPage({ initialDate }: NutritionOverview
 
   function mutationSuccess(log: AtlasDailyNutritionLog, message: string) {
     setDailyLogCache(log);
-    setSuccessMessage(message);
+    setSuccessMessage({ date: log.date, message });
     setFormError(null);
     setRowError(null);
   }
@@ -347,20 +363,27 @@ export default function NutritionOverviewPage({ initialDate }: NutritionOverview
           <div className="atlas-entry-form">
             <div className="space-y-2">
               <Label htmlFor="nutrition-product">{t('nutrition.product')}</Label>
-              <select
-                className="atlas-native-control"
+              <Select
                 disabled={productsQuery.isLoading}
-                id="nutrition-product"
-                onChange={(event) => updateForm('productId', event.target.value)}
-                value={form.productId}
+                onValueChange={(value) =>
+                  updateForm('productId', value === productPlaceholderValue ? '' : value)
+                }
+                value={form.productId || productPlaceholderValue}
               >
-                <option value="">{t('nutrition.selectProduct')}</option>
-                {products.map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {product.name} ({formatCalories(product.caloriesPer100g)} / 100 g)
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger aria-label={t('nutrition.product')} id="nutrition-product">
+                  <SelectValue placeholder={t('nutrition.selectProduct')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={productPlaceholderValue}>
+                    {t('nutrition.selectProduct')}
+                  </SelectItem>
+                  {products.map((product) => (
+                    <SelectItem key={product.id} value={product.id}>
+                      {product.name} ({formatCalories(product.caloriesPer100g)} / 100 g)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="nutrition-grams">{t('nutrition.grams')}</Label>
@@ -575,13 +598,13 @@ export default function NutritionOverviewPage({ initialDate }: NutritionOverview
 
       {renderSummaryCards()}
 
-      {successMessage ? (
+      {visibleSuccessMessage ? (
         <Alert>
-          <AlertTitle>{successMessage}</AlertTitle>
+          <AlertTitle>{visibleSuccessMessage}</AlertTitle>
         </Alert>
       ) : null}
 
-      {dailyLogQuery.isLoading || productsQuery.isLoading ? (
+      {isLoading ? (
         <Card aria-label={t('nutrition.loadingNutrition')} role="status">
           <CardHeader>
             <CardTitle>{t('nutrition.loadingNutrition')}</CardTitle>
@@ -595,7 +618,7 @@ export default function NutritionOverviewPage({ initialDate }: NutritionOverview
         </Card>
       ) : null}
 
-      {dailyLogQuery.isError || productsQuery.isError ? (
+      {hasLoadError ? (
         <Alert variant="destructive">
           <AlertTitle>{t('nutrition.loadNutritionError')}</AlertTitle>
           <AlertDescription className="space-y-3">
@@ -619,7 +642,7 @@ export default function NutritionOverviewPage({ initialDate }: NutritionOverview
         </Alert>
       ) : null}
 
-      {!dailyLogQuery.isLoading && !productsQuery.isLoading && !dailyLogQuery.isError ? (
+      {!isLoading && !hasLoadError ? (
         <>
           {renderEntryForm()}
           <AdminSection

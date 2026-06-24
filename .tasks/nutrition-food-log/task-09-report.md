@@ -53,9 +53,24 @@ Replaced legacy daily override UI by routing `/atlas/nutrition/overrides/new` to
 
 ## Focused Verification
 
+### Review Fixes
+
+- Spec review: APPROVED with no blocking findings.
+- Quality review requested fixes for product-list load errors, stale mutation success after switching dates, and native product picker usage.
+- Added regression coverage:
+  - product-list load error hides the add-food form and entries table;
+  - pending add mutation resolving after a date switch does not show a stale success message on the newly selected date.
+- Updated `/atlas/nutrition` to gate working content on both day and product load errors, scope success messages to the returned DailyLog date, and use the approved `@shared/ui` Select primitives for product selection.
+- RED evidence: `cd apps/web-admin && bun run test -- src/pages/atlas/nutrition-overview-page.test.tsx` failed with the two new regressions before production fixes.
+- GREEN evidence: `cd apps/web-admin && bun run test -- src/pages/atlas/nutrition-overview-page.test.tsx` passed 12 tests after fixes.
+
+- Command: `cd apps/web-admin && bun run test -- src/pages/atlas/nutrition-overview-page.test.tsx src/App.test.tsx src/app/admin-navigation.test.ts src/app/i18n.test.tsx`
+- Result: PASS.
+- Evidence: 29 tests passed across 4 web-admin test files.
+
 - Command: `cd apps/web-admin && bun run test -- src/pages/atlas/nutrition-overview-page.test.tsx src/App.test.tsx src/pages/atlas/nutrition-api.test.ts src/pages/atlas/product-library-page.test.tsx src/app/admin-navigation.test.ts src/app/i18n.test.tsx`
 - Result: PASS.
-- Evidence: 48 tests passed across 6 web-admin test files.
+- Evidence: 50 tests passed across 6 web-admin test files.
 
 - Command: `cd apps/web-admin && bun run typecheck`
 - Result: PASS.
