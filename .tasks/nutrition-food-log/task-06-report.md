@@ -83,6 +83,20 @@ Result: PASS with no output.
 - No GraphQL schema or AI export payload wiring was added; Task 11 can consume the new service/model metadata.
 - Unresolved resolution intentionally returns diagnostic metadata and legacy macro totals without exposing synthetic entries on the daily log.
 
+## Quality Review Fix
+
+Code quality review found that legacy `REPLACE` removed previous same-product override `ADD` entries instead of only replacing the template-derived contribution. A RED regression test was added:
+
+```bash
+cd apps/api && go test ./internal/atlas/service -run TestDailyNutritionLegacyResolver_PreservesSameProductAddBeforeReplace -count=1
+```
+
+The test failed with `expected: "resolved", actual: "unresolved"`, then passed after `REPLACE` was changed to remove only `legacy:template:*` entries while preserving earlier `legacy:override:*` additions. The full focused Task 6 suite passed again:
+
+```bash
+cd apps/api && go test ./internal/atlas/service -run "TestDailyNutritionLegacyResolver|TestDailyNutritionLogService" -count=1
+```
+
 ## Pre-commit Blockers
 
 - `go-lint`: `golangci-lint: command not found`.

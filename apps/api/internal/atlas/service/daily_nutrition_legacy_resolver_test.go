@@ -195,6 +195,53 @@ func TestDailyNutritionLegacyResolver_ResolvesRepeatedSameProductTemplateRows(t 
 	assert.InDelta(t, 300, day.Totals.Calories, 0.001)
 }
 
+func TestDailyNutritionLegacyResolver_PreservesSameProductAddBeforeReplace(t *testing.T) {
+	resolver := newLegacyResolver(
+		&mockNutritionTemplateRepo{
+			getByWeekFn: func(ctx context.Context, userID string, weekStartDate string) (*models.NutritionTemplateRecord, error) {
+				return legacyTemplateRecord(), nil
+			},
+		},
+		&mockNutritionTemplateItemRepo{
+			listByTemplateFn: func(ctx context.Context, templateID string) ([]models.NutritionTemplateItemRecord, error) {
+				return []models.NutritionTemplateItemRecord{
+					{ID: "base-chicken", TemplateID: legacyTemplateID, ProductID: legacyChickenID, AmountGrams: 100, MealLabel: ptrStr("Lunch")},
+				}, nil
+			},
+		},
+		&mockNutritionOverrideRepo{
+			getByDateFn: func(ctx context.Context, userID string, date string) (*models.DailyNutritionOverrideRecord, error) {
+				return legacyOverrideRecord(), nil
+			},
+		},
+		&mockNutritionOverrideItemRepo{
+			listByOverrideFn: func(ctx context.Context, overrideID string) ([]models.DailyNutritionOverrideItemRecord, error) {
+				return []models.DailyNutritionOverrideItemRecord{
+					{ID: "add-chicken", OverrideID: legacyOverrideID, ProductID: legacyChickenID, AmountGrams: 50, Operation: string(models.OperationAdd), MealLabel: ptrStr("Snack")},
+					{ID: "replace-chicken", OverrideID: legacyOverrideID, ProductID: legacyChickenID, AmountGrams: 150, Operation: string(models.OperationReplace), MealLabel: ptrStr("Dinner")},
+				}, nil
+			},
+		},
+		legacyProductRepo(t),
+	)
+
+	day, err := resolver.Resolve(ctx, testUserID, models.MustDate("2026-06-24"))
+	require.NoError(t, err)
+	require.NotNil(t, day)
+	assert.Equal(t, models.LegacyResolutionResolved, day.Status)
+	require.Len(t, day.ResolvedEntries, 2)
+	assert.InDelta(t, 200, day.Totals.Calories, 0.001)
+	assert.InDelta(t, day.LegacyTotals.Calories, day.Totals.Calories, 0.001)
+
+	var totalChickenGrams float64
+	for _, entry := range day.ResolvedEntries {
+		if entry.ProductID == legacyChickenID {
+			totalChickenGrams += entry.AmountGrams
+		}
+	}
+	assert.InDelta(t, 200, totalChickenGrams, 0.001)
+}
+
 func TestDailyNutritionLegacyResolver_ResolvesAddWithoutTemplate(t *testing.T) {
 	resolver := newLegacyResolver(
 		&mockNutritionTemplateRepo{

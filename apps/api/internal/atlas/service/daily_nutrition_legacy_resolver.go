@@ -24,6 +24,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"strings"
 
 	"monorepo-template/apps/api/internal/atlas/models"
 	"monorepo-template/apps/api/internal/atlas/repository/postgres"
@@ -179,7 +180,7 @@ func (r *dailyNutritionLegacyResolver) Resolve(ctx context.Context, userID strin
 			if templateMissing {
 				continue
 			}
-			entries = removeLegacyProductEntries(entries, item.ProductID)
+			entries = removeLegacyTemplateProductEntries(entries, item.ProductID)
 			entries = append(entries, legacyEntryFromProduct("legacy:override:"+item.ID, product, item.AmountGrams, item.MealLabel, item.Notes))
 		default:
 			reasons.add("ambiguous legacy operation")
@@ -363,10 +364,10 @@ func subtractLegacyEntryAmount(entries []models.DailyNutritionEntry, productID s
 	return out
 }
 
-func removeLegacyProductEntries(entries []models.DailyNutritionEntry, productID string) []models.DailyNutritionEntry {
+func removeLegacyTemplateProductEntries(entries []models.DailyNutritionEntry, productID string) []models.DailyNutritionEntry {
 	out := make([]models.DailyNutritionEntry, 0, len(entries))
 	for _, entry := range entries {
-		if entry.ProductID != productID {
+		if entry.ProductID != productID || !strings.HasPrefix(entry.ID, "legacy:template:") {
 			out = append(out, entry)
 		}
 	}
