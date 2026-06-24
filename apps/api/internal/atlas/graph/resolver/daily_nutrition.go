@@ -97,16 +97,17 @@ func (r *Resolver) ApplyNutritionTemplateToWeek(ctx context.Context, templateID 
 	userID := middleware.GetAtlasUserID(ctx)
 	if userID == "" {
 		return &models.NutritionTemplateApplyResult{
+			Mode:    mode,
 			AuthErr: &models.NutritionAuthErr{Message: "unauthorized", Code: models.NutritionErrorAuth},
 		}, nil
 	}
 
 	result, err := r.NutritionTemplateApplyService.ApplyToWeek(ctx, userID, templateID, mode)
 	if err != nil {
-		return nutritionTemplateApplyResultFromError(err), nil
+		return nutritionTemplateApplyResultFromError(mode, err), nil
 	}
 	if result == nil {
-		return &models.NutritionTemplateApplyResult{}, nil
+		return &models.NutritionTemplateApplyResult{Mode: mode}, nil
 	}
 	return result, nil
 }
@@ -138,18 +139,21 @@ func dailyNutritionResultFromError(err error) *models.DailyNutritionLogResult {
 	}
 }
 
-func nutritionTemplateApplyResultFromError(err error) *models.NutritionTemplateApplyResult {
+func nutritionTemplateApplyResultFromError(mode models.NutritionTemplateApplyMode, err error) *models.NutritionTemplateApplyResult {
 	switch {
 	case errors.Is(err, atlasService.ErrNutritionTemplateApplyModeUnsupported):
 		return &models.NutritionTemplateApplyResult{
+			Mode:          mode,
 			ValidationErr: &models.NutritionValidationErr{Message: err.Error(), Code: models.NutritionErrorValidation},
 		}
 	case errors.Is(err, atlasService.ErrTemplateNotFound):
 		return &models.NutritionTemplateApplyResult{
+			Mode:        mode,
 			NotFoundErr: &models.NutritionNotFoundErr{Message: "template not found", Code: models.NutritionErrorNotFound},
 		}
 	default:
 		return &models.NutritionTemplateApplyResult{
+			Mode:          mode,
 			ValidationErr: &models.NutritionValidationErr{Message: err.Error(), Code: models.NutritionErrorInternal},
 		}
 	}

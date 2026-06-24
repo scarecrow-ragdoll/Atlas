@@ -79,6 +79,20 @@ Results:
 - API build: passed
 - XML validation for updated docs: passed
 
+## Quality Review Fix
+
+Code quality review found that `applyNutritionTemplateToWeek` auth/error results could serialize an empty GraphQL enum when clients selected `mode`. A RED regression test was added:
+
+```bash
+cd apps/api && go test ./internal/atlas/graph/resolver -run TestNutritionGraphQL_ApplyTemplateToWeekAuthErrorKeepsValidMode -count=1
+```
+
+The test failed with `expected: "SEED_EMPTY_DAYS", actual: ""`, then passed after the resolver preserved the input mode on auth/error/empty apply results. The full focused GraphQL suite also passed again:
+
+```bash
+cd apps/api && go test ./internal/atlas/graph/resolver -run "TestDailyNutritionGraphQL|TestNutritionGraphQL" -count=1
+```
+
 ## Known Gaps
 
 - No backend schema changes were made in this task.

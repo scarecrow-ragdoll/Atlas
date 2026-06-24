@@ -14,6 +14,7 @@
 //   TestNutritionGraphQL_NutritionProductsDelegatesExecutableSchema - Proves existing nutrition root queries delegate instead of panicking.
 //   TestNutritionGraphQL_ProductAllAndRestoreUseProductManagementService - Proves archived products are listed and restore delegates to the product service.
 //   TestNutritionGraphQL_ApplyTemplateToWeekReturnsDateStatuses - Proves applyNutritionTemplateToWeek maps enum input/output and per-date statuses.
+//   TestNutritionGraphQL_ApplyTemplateToWeekAuthErrorKeepsValidMode - Proves error results do not serialize an invalid empty enum.
 // END_MODULE_MAP
 
 package resolver_test
@@ -393,6 +394,44 @@ func TestNutritionGraphQL_ApplyTemplateToWeekReturnsDateStatuses(t *testing.T) {
 	require.NotNil(t, response.ApplyNutritionTemplateToWeek.Dates[1].Reason)
 	assert.Equal(t, "day has entries", *response.ApplyNutritionTemplateToWeek.Dates[1].Reason)
 	assert.Nil(t, response.ApplyNutritionTemplateToWeek.ValidationError)
+}
+
+func TestNutritionGraphQL_ApplyTemplateToWeekAuthErrorKeepsValidMode(t *testing.T) {
+	res := &resolver.Resolver{}
+	setResolverServiceIfPresent(t, res, "NutritionTemplateApplyService", &nutritionTemplateApplyGraphQLService{
+		applyFn: func(ctx context.Context, userID string, templateID string, mode models.NutritionTemplateApplyMode) (*models.NutritionTemplateApplyResult, error) {
+			t.Fatalf("template apply service must not be called without an Atlas user")
+			return nil, nil
+		},
+	})
+
+	var response struct {
+		ApplyNutritionTemplateToWeek struct {
+			Mode      string `json:"mode"`
+			AuthError *struct {
+				Code string `json:"code"`
+			} `json:"authError"`
+		} `json:"applyNutritionTemplateToWeek"`
+	}
+
+	query := `mutation($templateId: ID!, $mode: NutritionTemplateApplyMode!) {
+		applyNutritionTemplateToWeek(templateId: $templateId, mode: $mode) {
+			mode
+			authError { code }
+		}
+	}`
+
+	err := atlasGraphQLClient(t, res, "").Post(
+		query,
+		&response,
+		client.Var("templateId", "template-1"),
+		client.Var("mode", "SEED_EMPTY_DAYS"),
+	)
+
+	require.NoError(t, err)
+	assert.Equal(t, "SEED_EMPTY_DAYS", response.ApplyNutritionTemplateToWeek.Mode)
+	require.NotNil(t, response.ApplyNutritionTemplateToWeek.AuthError)
+	assert.Equal(t, "AUTH_ERROR", response.ApplyNutritionTemplateToWeek.AuthError.Code)
 }
 
 func atlasGraphQLClient(t *testing.T, res *resolver.Resolver, userID string) *client.Client {
