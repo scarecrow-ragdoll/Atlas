@@ -21,6 +21,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import App from './App';
 
 const requestMock = vi.hoisted(() => vi.fn());
+const listAtlasNutritionProductsMock = vi.hoisted(() => vi.fn());
 const originalMatchMedia = window.matchMedia;
 const currentAdmin = {
   id: 'admin-1',
@@ -65,6 +66,14 @@ vi.mock('@shared/api/graphql-client', () => ({
   },
 }));
 
+vi.mock('./pages/atlas/nutrition-api', () => ({
+  archiveAtlasNutritionProduct: vi.fn(),
+  createAtlasNutritionProduct: vi.fn(),
+  listAtlasNutritionProducts: listAtlasNutritionProductsMock,
+  restoreAtlasNutritionProduct: vi.fn(),
+  updateAtlasNutritionProduct: vi.fn(),
+}));
+
 beforeAll(() => {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
     matches: false,
@@ -96,6 +105,7 @@ afterEach(() => {
   cleanup();
   requestMock.mockClear();
   requestMock.mockImplementation(mockGraphQLResponse);
+  listAtlasNutritionProductsMock.mockReset();
   document.documentElement.classList.remove('dark');
   document.cookie = 'sidebar_state=; path=/; max-age=0';
   window.localStorage.clear();
@@ -135,6 +145,34 @@ describe('web-admin routes', () => {
 
     expect(await screen.findByRole('heading', { name: 'UI Kit' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Actions' })).toBeInTheDocument();
+  });
+
+  it('renders the Atlas nutrition products route through the browser router', async () => {
+    listAtlasNutritionProductsMock.mockResolvedValue([
+      {
+        id: 'product-1',
+        userId: 'user-1',
+        name: 'Rice',
+        caloriesPer100g: 130,
+        proteinPer100g: 2.7,
+        fatPer100g: 0.3,
+        carbsPer100g: 28,
+        notes: 'Base carbs',
+        isActive: true,
+        createdAt: '2026-06-24T00:00:00Z',
+        updatedAt: '2026-06-24T00:00:00Z',
+      },
+    ]);
+
+    renderApp('/atlas/nutrition/products');
+
+    expect(await screen.findByRole('heading', { name: 'Product Library' })).toBeInTheDocument();
+    expect(await screen.findByText('Rice')).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: 'Nutrition' })[0]).toHaveAttribute(
+      'href',
+      '/atlas/nutrition/products',
+    );
+    expect(listAtlasNutritionProductsMock).toHaveBeenCalledWith({ includeArchived: true });
   });
 
   it('toggles and persists the admin theme from the app shell', async () => {

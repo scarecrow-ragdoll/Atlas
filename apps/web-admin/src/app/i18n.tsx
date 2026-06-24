@@ -143,12 +143,24 @@ type I18nContextValue = {
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 function readStoredLanguage(): Language {
-  if (typeof window === 'undefined' || !window.localStorage) {
+  if (typeof window === 'undefined') {
     return 'en';
   }
 
-  const storedLanguage = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
-  return storedLanguage === 'ru' ? 'ru' : 'en';
+  try {
+    const storedLanguage = window.localStorage?.getItem(LANGUAGE_STORAGE_KEY);
+    return storedLanguage === 'ru' ? 'ru' : 'en';
+  } catch {
+    return 'en';
+  }
+}
+
+function persistLanguage(language: Language) {
+  try {
+    window.localStorage?.setItem(LANGUAGE_STORAGE_KEY, language);
+  } catch {
+    // Storage may be unavailable in private or restricted browser contexts.
+  }
 }
 
 // START_CONTRACT: I18nProvider
@@ -169,7 +181,7 @@ export function I18nProvider({
 
   useEffect(() => {
     document.documentElement.lang = language;
-    window.localStorage?.setItem(LANGUAGE_STORAGE_KEY, language);
+    persistLanguage(language);
   }, [language]);
 
   const value = useMemo<I18nContextValue>(

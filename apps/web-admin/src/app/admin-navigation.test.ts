@@ -67,6 +67,23 @@ describe('admin navigation metadata', () => {
     ]);
   });
 
+  it('marks Atlas nutrition routes active and returns nutrition breadcrumbs', () => {
+    const state = resolveAdminShellState('/atlas/nutrition/products');
+    const nutritionItem = state.navigation[0].items.find((item) => item.id === 'atlas-nutrition');
+
+    expect(nutritionItem?.isActive).toBe(true);
+    expect(
+      nutritionItem?.children?.find((child) => child.id === 'atlas-nutrition-products'),
+    ).toEqual(
+      expect.objectContaining({
+        href: '/atlas/nutrition/products',
+        isActive: true,
+        label: 'Product Library',
+      }),
+    );
+    expect(state.breadcrumbs).toEqual([{ label: 'Nutrition' }, { label: 'Product Library' }]);
+  });
+
   it('provides template-native user and team placeholders', () => {
     expect(adminShellUser).toEqual({
       name: 'Developer',

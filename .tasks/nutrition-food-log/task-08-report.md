@@ -88,11 +88,28 @@ Added lightweight Atlas EN/RU i18n under `apps/web-admin/src/app/i18n.tsx`, mini
 - Result: PASS.
 - Evidence: 21 tests passed across Product Library and nutrition API adapter tests.
 
+- Finding: quality review requested explicit route/navigation regression coverage for `/atlas/nutrition/products`.
+- Fix: added App route smoke coverage with mocked nutrition API data and `resolveAdminShellState('/atlas/nutrition/products')` assertions for active Navigation child and breadcrumbs.
+- Command: `cd apps/web-admin && bun run test -- src/App.test.tsx src/app/admin-navigation.test.ts`
+- Result: PASS.
+- Evidence: 14 tests passed across App and admin navigation tests.
+
+- Finding: quality review requested i18n storage hardening for restricted browser/test environments.
+- Fix: guarded i18n storage reads/writes and Vitest setup storage detection with `try/catch`, plus added a storage-throw regression test.
+- Command: `cd apps/web-admin && bun run test -- src/app/i18n.test.tsx`
+- Result: PASS.
+- Evidence: `src/app/i18n.test.tsx` passed; 1 test passed.
+
+- Command: `cd apps/web-admin && bun run test -- src/pages/atlas/product-library-page.test.tsx src/pages/atlas/nutrition-api.test.ts src/App.test.tsx src/app/admin-navigation.test.ts src/app/i18n.test.tsx`
+- Result: PASS.
+- Evidence: 36 tests passed across 5 focused web-admin test files.
+
 ## Changed Files
 
 - `apps/web-admin/src/pages/atlas/product-library-page.tsx`
 - `apps/web-admin/src/pages/atlas/product-library-page.test.tsx`
 - `apps/web-admin/src/app/i18n.tsx`
+- `apps/web-admin/src/app/i18n.test.tsx`
 - `apps/web-admin/src/styles/atlas.css`
 - `apps/web-admin/vitest.setup.ts`
 - `apps/web-admin/src/App.tsx`

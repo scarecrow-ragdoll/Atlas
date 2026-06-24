@@ -45,7 +45,15 @@ class InMemoryStorage implements Storage {
   }
 }
 
-if (typeof window !== 'undefined' && !window.localStorage) {
+function canUseLocalStorage() {
+  try {
+    return typeof window !== 'undefined' && Boolean(window.localStorage);
+  } catch {
+    return false;
+  }
+}
+
+if (typeof window !== 'undefined' && !canUseLocalStorage()) {
   const localStorageFallback = new InMemoryStorage();
 
   Object.defineProperty(window, 'localStorage', {
