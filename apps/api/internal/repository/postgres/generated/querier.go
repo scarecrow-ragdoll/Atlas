@@ -93,7 +93,7 @@ type Querier interface {
 	CreateDailyLog(ctx context.Context, arg CreateDailyLogParams) (DailyLog, error)
 	CreateDailyNutritionEntry(ctx context.Context, arg CreateDailyNutritionEntryParams) (DailyNutritionEntry, error)
 	// FILE: apps/api/internal/repository/postgres/queries/daily_nutrition_logs.sql
-	// VERSION: 1.0.0
+	// VERSION: 1.0.1
 	// START_MODULE_CONTRACT
 	//   PURPOSE: sqlc queries for factual daily nutrition logs and entries.
 	//   SCOPE: User-scoped log load/upsert, entry CRUD with parent and product ownership checks, and date-range export reads.
@@ -105,9 +105,13 @@ type Querier interface {
 	// START_MODULE_MAP
 	//   CreateDailyNutritionLog - Gets or creates one user/date factual nutrition log.
 	//   CreateDailyNutritionEntry - Creates a product snapshot entry only when log and product belong to the same user.
+	//   ListDailyNutritionEntriesByLog - Lists entries only through parent log ownership.
 	//   UpdateDailyNutritionEntry/DeleteDailyNutritionEntry - Mutates entries through parent log ownership checks.
 	// END_MODULE_MAP
-	CreateDailyNutritionLog(ctx context.Context, arg CreateDailyNutritionLogParams) (DailyNutritionLog, error)
+	// START_CHANGE_SUMMARY
+	//   LAST_CHANGE: 1.0.1 - Hardened entry snapshots, list ownership, and log get-or-create conflict semantics.
+	// END_CHANGE_SUMMARY
+	CreateDailyNutritionLog(ctx context.Context, arg CreateDailyNutritionLogParams) (CreateDailyNutritionLogRow, error)
 	CreateDailyNutritionOverrideItem(ctx context.Context, arg CreateDailyNutritionOverrideItemParams) (DailyNutritionOverrideItem, error)
 	// FILE: apps/api/internal/repository/postgres/queries/exercises.sql
 	// VERSION: 1.0.0
@@ -267,7 +271,7 @@ type Querier interface {
 	ListBodyMeasurementsByUserTypeRange(ctx context.Context, arg ListBodyMeasurementsByUserTypeRangeParams) ([]ListBodyMeasurementsByUserTypeRangeRow, error)
 	ListBodyWeightEntriesByDateRange(ctx context.Context, arg ListBodyWeightEntriesByDateRangeParams) ([]BodyWeightEntry, error)
 	ListCardioEntriesByDailyLog(ctx context.Context, arg ListCardioEntriesByDailyLogParams) ([]CardioEntry, error)
-	ListDailyNutritionEntriesByLog(ctx context.Context, dailyLogID pgtype.UUID) ([]DailyNutritionEntry, error)
+	ListDailyNutritionEntriesByLog(ctx context.Context, arg ListDailyNutritionEntriesByLogParams) ([]DailyNutritionEntry, error)
 	ListDailyNutritionLogsByRange(ctx context.Context, arg ListDailyNutritionLogsByRangeParams) ([]DailyNutritionLog, error)
 	ListDailyNutritionOverrideItemsByOverride(ctx context.Context, overrideID pgtype.UUID) ([]DailyNutritionOverrideItem, error)
 	ListDailyNutritionOverridesByRange(ctx context.Context, arg ListDailyNutritionOverridesByRangeParams) ([]DailyNutritionOverride, error)

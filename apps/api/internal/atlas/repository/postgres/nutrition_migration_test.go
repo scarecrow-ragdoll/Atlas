@@ -9,7 +9,7 @@
 //   MAP_MODE: SUMMARY
 // END_MODULE_CONTRACT
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.1 - Added factual daily nutrition migration constraint coverage.
+//   LAST_CHANGE: 1.0.2 - Added factual daily nutrition snapshot source, list ownership, conflict, and macro constraint coverage.
 // END_CHANGE_SUMMARY
 
 package postgres_test
@@ -46,8 +46,6 @@ func TestWave05NutritionMigration_Smoke(t *testing.T) {
 }
 
 func TestDailyNutritionMigrationHasSnapshotAndAmountConstraints(t *testing.T) {
-	t.Setenv("INTEGRATION_TESTS", "1")
-
 	pool := nutritionMigrationTestPool(t)
 	ctx := context.Background()
 	truncateDailyNutritionTables(t, pool)
@@ -105,11 +103,46 @@ func TestDailyNutritionMigrationHasSnapshotAndAmountConstraints(t *testing.T) {
 		VALUES ($1, $2, 'Invalid amount', 10, 1, 1, 1, 0)
 	`, logID, productID)
 	requirePgConstraint(t, err, "daily_nutrition_entries_amount_grams_check")
+
+	for _, tc := range []struct {
+		name       string
+		column     string
+		constraint string
+	}{
+		{name: "calories", column: "calories_per_100g_snapshot", constraint: "daily_nutrition_entries_calories_per_100g_snapshot_check"},
+		{name: "protein", column: "protein_per_100g_snapshot", constraint: "daily_nutrition_entries_protein_per_100g_snapshot_check"},
+		{name: "fat", column: "fat_per_100g_snapshot", constraint: "daily_nutrition_entries_fat_per_100g_snapshot_check"},
+		{name: "carbs", column: "carbs_per_100g_snapshot", constraint: "daily_nutrition_entries_carbs_per_100g_snapshot_check"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err = pool.Exec(ctx, `
+				INSERT INTO daily_nutrition_entries (
+					daily_log_id,
+					product_id,
+					product_name_snapshot,
+					calories_per_100g_snapshot,
+					protein_per_100g_snapshot,
+					fat_per_100g_snapshot,
+					carbs_per_100g_snapshot,
+					amount_grams
+				)
+				VALUES (
+					$1,
+					$2,
+					'Invalid macro',
+					CASE WHEN $3 = 'calories_per_100g_snapshot' THEN -1 ELSE 10 END,
+					CASE WHEN $3 = 'protein_per_100g_snapshot' THEN -1 ELSE 1 END,
+					CASE WHEN $3 = 'fat_per_100g_snapshot' THEN -1 ELSE 1 END,
+					CASE WHEN $3 = 'carbs_per_100g_snapshot' THEN -1 ELSE 1 END,
+					100
+				)
+			`, logID, productID, tc.column)
+			requirePgConstraint(t, err, tc.constraint)
+		})
+	}
 }
 
 func TestDailyNutritionRepository_GetOrCreateIsUniqueAndListsByRange(t *testing.T) {
-	t.Setenv("INTEGRATION_TESTS", "1")
-
 	pool := nutritionMigrationTestPool(t)
 	truncateDailyNutritionTables(t, pool)
 	ctx := context.Background()
@@ -123,7 +156,7 @@ func TestDailyNutritionRepository_GetOrCreateIsUniqueAndListsByRange(t *testing.
 	firstLog, err := q.CreateDailyNutritionLog(ctx, generated.CreateDailyNutritionLogParams{
 		UserID: userUUID,
 		Date:   firstDate,
-		Notes:  pgtype.Text{String: "first write", Valid: true},
+		Notes:  pgtype.Text{},
 	})
 	require.NoError(t, err)
 
@@ -134,6 +167,8 @@ func TestDailyNutritionRepository_GetOrCreateIsUniqueAndListsByRange(t *testing.
 	})
 	require.NoError(t, err)
 	require.Equal(t, firstLog.ID, duplicateLog.ID)
+	require.False(t, duplicateLog.Notes.Valid, "get-or-create conflict path must not update existing notes")
+	require.Equal(t, firstLog.UpdatedAt, duplicateLog.UpdatedAt)
 
 	secondLog, err := q.CreateDailyNutritionLog(ctx, generated.CreateDailyNutritionLogParams{
 		UserID: userUUID,
@@ -154,8 +189,6 @@ func TestDailyNutritionRepository_GetOrCreateIsUniqueAndListsByRange(t *testing.
 }
 
 func TestDailyNutritionRepository_EntryCRUDPreservesSnapshotsAndOwnership(t *testing.T) {
-	t.Setenv("INTEGRATION_TESTS", "1")
-
 	pool := nutritionMigrationTestPool(t)
 	truncateDailyNutritionTables(t, pool)
 	ctx := context.Background()
@@ -175,21 +208,20 @@ func TestDailyNutritionRepository_EntryCRUDPreservesSnapshotsAndOwnership(t *tes
 	require.NoError(t, err)
 
 	entry, err := q.CreateDailyNutritionEntry(ctx, generated.CreateDailyNutritionEntryParams{
-		DailyLogID:              log.ID,
-		ProductID:               testUUID(t, productID),
-		ProductNameSnapshot:     "Greek yogurt snapshot",
-		CaloriesPer100gSnapshot: 59,
-		ProteinPer100gSnapshot:  10.2,
-		FatPer100gSnapshot:      0.4,
-		CarbsPer100gSnapshot:    3.6,
-		AmountGrams:             150,
-		MealLabel:               pgtype.Text{String: "breakfast", Valid: true},
-		Notes:                   pgtype.Text{String: "with berries", Valid: true},
-		Position:                1,
-		UserID:                  userAUUID,
+		DailyLogID:  log.ID,
+		ProductID:   testUUID(t, productID),
+		AmountGrams: 150,
+		MealLabel:   pgtype.Text{String: "breakfast", Valid: true},
+		Notes:       pgtype.Text{String: "with berries", Valid: true},
+		Position:    1,
+		UserID:      userAUUID,
 	})
 	require.NoError(t, err)
-	require.Equal(t, "Greek yogurt snapshot", entry.ProductNameSnapshot)
+	require.Equal(t, "Greek yogurt source", entry.ProductNameSnapshot)
+	require.Equal(t, float32(59), entry.CaloriesPer100gSnapshot)
+	require.Equal(t, float32(10.2), entry.ProteinPer100gSnapshot)
+	require.Equal(t, float32(0.4), entry.FatPer100gSnapshot)
+	require.Equal(t, float32(3.6), entry.CarbsPer100gSnapshot)
 
 	_, err = q.UpdateDailyNutritionEntry(ctx, generated.UpdateDailyNutritionEntryParams{
 		ID:          entry.ID,
@@ -218,7 +250,7 @@ func TestDailyNutritionRepository_EntryCRUDPreservesSnapshotsAndOwnership(t *tes
 		Position:    2,
 	})
 	require.NoError(t, err)
-	require.Equal(t, "Greek yogurt snapshot", updated.ProductNameSnapshot)
+	require.Equal(t, "Greek yogurt source", updated.ProductNameSnapshot)
 	require.Equal(t, float32(59), updated.CaloriesPer100gSnapshot)
 	require.Equal(t, float32(10.2), updated.ProteinPer100gSnapshot)
 	require.Equal(t, float32(0.4), updated.FatPer100gSnapshot)
@@ -234,9 +266,53 @@ func TestDailyNutritionRepository_EntryCRUDPreservesSnapshotsAndOwnership(t *tes
 	require.Equal(t, entry.ID, deleted.ID)
 }
 
-func TestDailyNutritionRepository_RejectsCrossUserProductAttachment(t *testing.T) {
-	t.Setenv("INTEGRATION_TESTS", "1")
+func TestDailyNutritionRepository_ListEntriesByLogIsUserScoped(t *testing.T) {
+	pool := nutritionMigrationTestPool(t)
+	truncateDailyNutritionTables(t, pool)
+	ctx := context.Background()
+	q := generated.New(pool)
 
+	userAID := seedNutritionMigrationUser(t, pool, "daily nutrition list user A")
+	userBID := seedNutritionMigrationUser(t, pool, "daily nutrition list user B")
+	productID := seedNutritionMigrationProduct(t, pool, userAID)
+	userAUUID := testUUID(t, userAID)
+	userBUUID := testUUID(t, userBID)
+
+	log, err := q.CreateDailyNutritionLog(ctx, generated.CreateDailyNutritionLogParams{
+		UserID: userAUUID,
+		Date:   testDate(2026, time.June, 24),
+		Notes:  pgtype.Text{},
+	})
+	require.NoError(t, err)
+
+	entry, err := q.CreateDailyNutritionEntry(ctx, generated.CreateDailyNutritionEntryParams{
+		DailyLogID:  log.ID,
+		ProductID:   testUUID(t, productID),
+		AmountGrams: 150,
+		MealLabel:   pgtype.Text{String: "breakfast", Valid: true},
+		Notes:       pgtype.Text{},
+		Position:    1,
+		UserID:      userAUUID,
+	})
+	require.NoError(t, err)
+
+	entries, err := q.ListDailyNutritionEntriesByLog(ctx, generated.ListDailyNutritionEntriesByLogParams{
+		DailyLogID: log.ID,
+		UserID:     userAUUID,
+	})
+	require.NoError(t, err)
+	require.Len(t, entries, 1)
+	require.Equal(t, entry.ID, entries[0].ID)
+
+	entries, err = q.ListDailyNutritionEntriesByLog(ctx, generated.ListDailyNutritionEntriesByLogParams{
+		DailyLogID: log.ID,
+		UserID:     userBUUID,
+	})
+	require.NoError(t, err)
+	require.Empty(t, entries)
+}
+
+func TestDailyNutritionRepository_RejectsCrossUserProductAttachment(t *testing.T) {
 	pool := nutritionMigrationTestPool(t)
 	truncateDailyNutritionTables(t, pool)
 	ctx := context.Background()
@@ -255,18 +331,13 @@ func TestDailyNutritionRepository_RejectsCrossUserProductAttachment(t *testing.T
 	require.NoError(t, err)
 
 	_, err = q.CreateDailyNutritionEntry(ctx, generated.CreateDailyNutritionEntryParams{
-		DailyLogID:              log.ID,
-		ProductID:               testUUID(t, userBProductID),
-		ProductNameSnapshot:     "Other user product",
-		CaloriesPer100gSnapshot: 100,
-		ProteinPer100gSnapshot:  10,
-		FatPer100gSnapshot:      2,
-		CarbsPer100gSnapshot:    5,
-		AmountGrams:             100,
-		MealLabel:               pgtype.Text{},
-		Notes:                   pgtype.Text{},
-		Position:                0,
-		UserID:                  userAUUID,
+		DailyLogID:  log.ID,
+		ProductID:   testUUID(t, userBProductID),
+		AmountGrams: 100,
+		MealLabel:   pgtype.Text{},
+		Notes:       pgtype.Text{},
+		Position:    0,
+		UserID:      userAUUID,
 	})
 	require.ErrorIs(t, err, pgx.ErrNoRows)
 

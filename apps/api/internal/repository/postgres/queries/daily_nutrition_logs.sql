@@ -1,5 +1,5 @@
 -- FILE: apps/api/internal/repository/postgres/queries/daily_nutrition_logs.sql
--- VERSION: 1.0.0
+-- VERSION: 1.0.1
 -- START_MODULE_CONTRACT
 --   PURPOSE: sqlc queries for factual daily nutrition logs and entries.
 --   SCOPE: User-scoped log load/upsert, entry CRUD with parent and product ownership checks, and date-range export reads.
@@ -11,15 +11,27 @@
 -- START_MODULE_MAP
 --   CreateDailyNutritionLog - Gets or creates one user/date factual nutrition log.
 --   CreateDailyNutritionEntry - Creates a product snapshot entry only when log and product belong to the same user.
+--   ListDailyNutritionEntriesByLog - Lists entries only through parent log ownership.
 --   UpdateDailyNutritionEntry/DeleteDailyNutritionEntry - Mutates entries through parent log ownership checks.
 -- END_MODULE_MAP
+-- START_CHANGE_SUMMARY
+--   LAST_CHANGE: 1.0.1 - Hardened entry snapshots, list ownership, and log get-or-create conflict semantics.
+-- END_CHANGE_SUMMARY
 
 -- name: CreateDailyNutritionLog :one
-INSERT INTO daily_nutrition_logs (user_id, date, notes)
-VALUES (sqlc.arg(user_id), sqlc.arg(date), sqlc.arg(notes))
-ON CONFLICT (user_id, date)
-DO UPDATE SET notes = COALESCE(daily_nutrition_logs.notes, EXCLUDED.notes)
-RETURNING id, user_id, date, notes, created_at, updated_at;
+WITH inserted AS (
+  INSERT INTO daily_nutrition_logs (user_id, date, notes)
+  VALUES (sqlc.arg(user_id), sqlc.arg(date), sqlc.arg(notes))
+  ON CONFLICT (user_id, date) DO NOTHING
+  RETURNING id, user_id, date, notes, created_at, updated_at
+)
+SELECT id, user_id, date, notes, created_at, updated_at
+FROM inserted
+UNION ALL
+SELECT id, user_id, date, notes, created_at, updated_at
+FROM daily_nutrition_logs
+WHERE user_id = sqlc.arg(user_id) AND date = sqlc.arg(date)
+LIMIT 1;
 
 -- name: GetDailyNutritionLogByDate :one
 SELECT id, user_id, date, notes, created_at, updated_at
@@ -47,29 +59,27 @@ INSERT INTO daily_nutrition_entries (
   amount_grams, meal_label, notes, position
 )
 SELECT
-  sqlc.arg(daily_log_id), sqlc.arg(product_id), sqlc.arg(product_name_snapshot),
-  sqlc.arg(calories_per_100g_snapshot), sqlc.arg(protein_per_100g_snapshot),
-  sqlc.arg(fat_per_100g_snapshot), sqlc.arg(carbs_per_100g_snapshot),
+  l.id, p.id, p.name,
+  p.calories_per_100g, p.protein_per_100g,
+  p.fat_per_100g, p.carbs_per_100g,
   sqlc.arg(amount_grams), sqlc.arg(meal_label), sqlc.arg(notes), sqlc.arg(position)
-WHERE EXISTS (
-  SELECT 1
-  FROM daily_nutrition_logs l
-  JOIN nutrition_product p ON p.id = sqlc.arg(product_id) AND p.user_id = l.user_id
-  WHERE l.id = sqlc.arg(daily_log_id) AND l.user_id = sqlc.arg(user_id)
-)
+FROM daily_nutrition_logs l
+JOIN nutrition_product p ON p.id = sqlc.arg(product_id) AND p.user_id = l.user_id
+WHERE l.id = sqlc.arg(daily_log_id) AND l.user_id = sqlc.arg(user_id)
 RETURNING id, daily_log_id, product_id, product_name_snapshot,
   calories_per_100g_snapshot, protein_per_100g_snapshot,
   fat_per_100g_snapshot, carbs_per_100g_snapshot,
   amount_grams, meal_label, notes, position, created_at, updated_at;
 
 -- name: ListDailyNutritionEntriesByLog :many
-SELECT id, daily_log_id, product_id, product_name_snapshot,
-  calories_per_100g_snapshot, protein_per_100g_snapshot,
-  fat_per_100g_snapshot, carbs_per_100g_snapshot,
-  amount_grams, meal_label, notes, position, created_at, updated_at
-FROM daily_nutrition_entries
-WHERE daily_log_id = sqlc.arg(daily_log_id)
-ORDER BY position ASC, created_at ASC;
+SELECT e.id, e.daily_log_id, e.product_id, e.product_name_snapshot,
+  e.calories_per_100g_snapshot, e.protein_per_100g_snapshot,
+  e.fat_per_100g_snapshot, e.carbs_per_100g_snapshot,
+  e.amount_grams, e.meal_label, e.notes, e.position, e.created_at, e.updated_at
+FROM daily_nutrition_entries e
+JOIN daily_nutrition_logs l ON l.id = e.daily_log_id
+WHERE e.daily_log_id = sqlc.arg(daily_log_id) AND l.user_id = sqlc.arg(user_id)
+ORDER BY e.position ASC, e.created_at ASC;
 
 -- name: UpdateDailyNutritionEntry :one
 UPDATE daily_nutrition_entries e

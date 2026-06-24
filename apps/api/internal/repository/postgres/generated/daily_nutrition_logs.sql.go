@@ -19,16 +19,13 @@ INSERT INTO daily_nutrition_entries (
   amount_grams, meal_label, notes, position
 )
 SELECT
-  $1, $2, $3,
-  $4, $5,
-  $6, $7,
-  $8, $9, $10, $11
-WHERE EXISTS (
-  SELECT 1
-  FROM daily_nutrition_logs l
-  JOIN nutrition_product p ON p.id = $2 AND p.user_id = l.user_id
-  WHERE l.id = $1 AND l.user_id = $12
-)
+  l.id, p.id, p.name,
+  p.calories_per_100g, p.protein_per_100g,
+  p.fat_per_100g, p.carbs_per_100g,
+  $1, $2, $3, $4
+FROM daily_nutrition_logs l
+JOIN nutrition_product p ON p.id = $5 AND p.user_id = l.user_id
+WHERE l.id = $6 AND l.user_id = $7
 RETURNING id, daily_log_id, product_id, product_name_snapshot,
   calories_per_100g_snapshot, protein_per_100g_snapshot,
   fat_per_100g_snapshot, carbs_per_100g_snapshot,
@@ -36,33 +33,23 @@ RETURNING id, daily_log_id, product_id, product_name_snapshot,
 `
 
 type CreateDailyNutritionEntryParams struct {
-	DailyLogID              pgtype.UUID
-	ProductID               pgtype.UUID
-	ProductNameSnapshot     string
-	CaloriesPer100gSnapshot float32
-	ProteinPer100gSnapshot  float32
-	FatPer100gSnapshot      float32
-	CarbsPer100gSnapshot    float32
-	AmountGrams             float32
-	MealLabel               pgtype.Text
-	Notes                   pgtype.Text
-	Position                int32
-	UserID                  pgtype.UUID
+	AmountGrams float32
+	MealLabel   pgtype.Text
+	Notes       pgtype.Text
+	Position    int32
+	ProductID   pgtype.UUID
+	DailyLogID  pgtype.UUID
+	UserID      pgtype.UUID
 }
 
 func (q *Queries) CreateDailyNutritionEntry(ctx context.Context, arg CreateDailyNutritionEntryParams) (DailyNutritionEntry, error) {
 	row := q.db.QueryRow(ctx, createDailyNutritionEntry,
-		arg.DailyLogID,
-		arg.ProductID,
-		arg.ProductNameSnapshot,
-		arg.CaloriesPer100gSnapshot,
-		arg.ProteinPer100gSnapshot,
-		arg.FatPer100gSnapshot,
-		arg.CarbsPer100gSnapshot,
 		arg.AmountGrams,
 		arg.MealLabel,
 		arg.Notes,
 		arg.Position,
+		arg.ProductID,
+		arg.DailyLogID,
 		arg.UserID,
 	)
 	var i DailyNutritionEntry
@@ -87,11 +74,19 @@ func (q *Queries) CreateDailyNutritionEntry(ctx context.Context, arg CreateDaily
 
 const createDailyNutritionLog = `-- name: CreateDailyNutritionLog :one
 
-INSERT INTO daily_nutrition_logs (user_id, date, notes)
-VALUES ($1, $2, $3)
-ON CONFLICT (user_id, date)
-DO UPDATE SET notes = COALESCE(daily_nutrition_logs.notes, EXCLUDED.notes)
-RETURNING id, user_id, date, notes, created_at, updated_at
+WITH inserted AS (
+  INSERT INTO daily_nutrition_logs (user_id, date, notes)
+  VALUES ($1, $2, $3)
+  ON CONFLICT (user_id, date) DO NOTHING
+  RETURNING id, user_id, date, notes, created_at, updated_at
+)
+SELECT id, user_id, date, notes, created_at, updated_at
+FROM inserted
+UNION ALL
+SELECT id, user_id, date, notes, created_at, updated_at
+FROM daily_nutrition_logs
+WHERE user_id = $1 AND date = $2
+LIMIT 1
 `
 
 type CreateDailyNutritionLogParams struct {
@@ -100,8 +95,17 @@ type CreateDailyNutritionLogParams struct {
 	Notes  pgtype.Text
 }
 
+type CreateDailyNutritionLogRow struct {
+	ID        pgtype.UUID
+	UserID    pgtype.UUID
+	Date      pgtype.Date
+	Notes     pgtype.Text
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+}
+
 // FILE: apps/api/internal/repository/postgres/queries/daily_nutrition_logs.sql
-// VERSION: 1.0.0
+// VERSION: 1.0.1
 // START_MODULE_CONTRACT
 //
 //	PURPOSE: sqlc queries for factual daily nutrition logs and entries.
@@ -116,12 +120,18 @@ type CreateDailyNutritionLogParams struct {
 //
 //	CreateDailyNutritionLog - Gets or creates one user/date factual nutrition log.
 //	CreateDailyNutritionEntry - Creates a product snapshot entry only when log and product belong to the same user.
+//	ListDailyNutritionEntriesByLog - Lists entries only through parent log ownership.
 //	UpdateDailyNutritionEntry/DeleteDailyNutritionEntry - Mutates entries through parent log ownership checks.
 //
 // END_MODULE_MAP
-func (q *Queries) CreateDailyNutritionLog(ctx context.Context, arg CreateDailyNutritionLogParams) (DailyNutritionLog, error) {
+// START_CHANGE_SUMMARY
+//
+//	LAST_CHANGE: 1.0.1 - Hardened entry snapshots, list ownership, and log get-or-create conflict semantics.
+//
+// END_CHANGE_SUMMARY
+func (q *Queries) CreateDailyNutritionLog(ctx context.Context, arg CreateDailyNutritionLogParams) (CreateDailyNutritionLogRow, error) {
 	row := q.db.QueryRow(ctx, createDailyNutritionLog, arg.UserID, arg.Date, arg.Notes)
-	var i DailyNutritionLog
+	var i CreateDailyNutritionLogRow
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
@@ -199,17 +209,23 @@ func (q *Queries) GetDailyNutritionLogByDate(ctx context.Context, arg GetDailyNu
 }
 
 const listDailyNutritionEntriesByLog = `-- name: ListDailyNutritionEntriesByLog :many
-SELECT id, daily_log_id, product_id, product_name_snapshot,
-  calories_per_100g_snapshot, protein_per_100g_snapshot,
-  fat_per_100g_snapshot, carbs_per_100g_snapshot,
-  amount_grams, meal_label, notes, position, created_at, updated_at
-FROM daily_nutrition_entries
-WHERE daily_log_id = $1
-ORDER BY position ASC, created_at ASC
+SELECT e.id, e.daily_log_id, e.product_id, e.product_name_snapshot,
+  e.calories_per_100g_snapshot, e.protein_per_100g_snapshot,
+  e.fat_per_100g_snapshot, e.carbs_per_100g_snapshot,
+  e.amount_grams, e.meal_label, e.notes, e.position, e.created_at, e.updated_at
+FROM daily_nutrition_entries e
+JOIN daily_nutrition_logs l ON l.id = e.daily_log_id
+WHERE e.daily_log_id = $1 AND l.user_id = $2
+ORDER BY e.position ASC, e.created_at ASC
 `
 
-func (q *Queries) ListDailyNutritionEntriesByLog(ctx context.Context, dailyLogID pgtype.UUID) ([]DailyNutritionEntry, error) {
-	rows, err := q.db.Query(ctx, listDailyNutritionEntriesByLog, dailyLogID)
+type ListDailyNutritionEntriesByLogParams struct {
+	DailyLogID pgtype.UUID
+	UserID     pgtype.UUID
+}
+
+func (q *Queries) ListDailyNutritionEntriesByLog(ctx context.Context, arg ListDailyNutritionEntriesByLogParams) ([]DailyNutritionEntry, error) {
+	rows, err := q.db.Query(ctx, listDailyNutritionEntriesByLog, arg.DailyLogID, arg.UserID)
 	if err != nil {
 		return nil, err
 	}
