@@ -350,6 +350,7 @@
         <export-routes PURPOSE="Expose Vite React Router routes, provider wiring, and app shell." />
         <export-generated-client PURPOSE="Expose generated GraphQL operation types and cookie credential transport." />
         <export-admin-auth-operations PURPOSE="Expose loginAdmin, logoutAdmin, CurrentAdmin, and createAdmin operation documents for generated types." />
+        <export-AtlasNutritionApiAdapter PURPOSE="Expose raw /graphql/atlas nutrition adapter functions, local TypeScript result types, and normalized typed result errors without changing admin GraphQL client semantics." />
         <export-AdminAuthFrontend PURPOSE="Expose CurrentAdmin-backed auth provider, login page, protected route layout, safe return-to handling, and sidebar logout for the web-admin app." />
         <export-LoginRoute PURPOSE="Render `/login` outside the sidebar shell and authenticate through cookie-backed `loginAdmin`." />
         <export-ProtectedRoutes PURPOSE="Protect all non-login admin routes through `CurrentAdmin` before rendering the global admin shell." />
@@ -361,6 +362,8 @@
         <source>apps/web-admin</source>
         <source>apps/web-admin/src/shared/api/graphql-client.ts</source>
         <source>apps/web-admin/src/entities/admin-auth</source>
+        <source>apps/web-admin/src/pages/atlas/nutrition-api.ts</source>
+        <source>apps/web-admin/src/pages/atlas/nutrition-api.test.ts</source>
         <source>apps/web-admin/src/app/protected-admin-layout.tsx</source>
         <source>apps/web-admin/src/pages/login-page.tsx</source>
         <source>apps/web-admin/src/shared/ui</source>

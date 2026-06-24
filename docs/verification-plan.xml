@@ -383,6 +383,8 @@
         <file>apps/web-admin/src/pages/ui-kit-page.test.tsx</file>
         <file>apps/web-admin/src/pages/users-page.tsx</file>
         <file>apps/web-admin/src/pages/user-detail-page.tsx</file>
+        <file>apps/web-admin/src/pages/atlas/nutrition-api.ts</file>
+        <file>apps/web-admin/src/pages/atlas/nutrition-api.test.ts</file>
         <file>apps/web-admin/src/entities/admin-auth</file>
         <file>apps/web-admin/src/shared/ui</file>
         <file>apps/web-admin/src/shared/ui/hooks/use-mobile.ts</file>
@@ -419,6 +421,8 @@
         <check-frontend-auth-5>bunx nx lint web-admin</check-frontend-auth-5>
         <check-frontend-auth-6>bunx nx build web-admin</check-frontend-auth-6>
         <check-frontend-auth-7>bunx nx run web-admin:e2e</check-frontend-auth-7>
+        <check-atlas-nutrition-api-1>cd apps/web-admin &amp;&amp; bun run test -- src/pages/atlas/nutrition-api.test.ts</check-atlas-nutrition-api-1>
+        <check-atlas-nutrition-api-2>cd apps/web-admin &amp;&amp; bun run typecheck</check-atlas-nutrition-api-2>
       </module-checks>
       <scenarios>
         <scenario-1 kind="success">Vite web-admin app renders the adapted sidebar-07 shell, admin user flow, and /ui-kit reference route with generated GraphQL types, React Router routes, approved @shared/ui components, and cookie credential transport.</scenario-1>
@@ -428,6 +432,8 @@
         <scenario-frontend-auth-2 kind="success">Login through `/login` with the seeded e2e admin forces a fresh `me` check even after a cached anonymous response and returns to the safe requested route, preserving search and hash when present.</scenario-frontend-auth-2>
         <scenario-frontend-auth-3 kind="failure">Unsafe `from` values including absolute URLs, protocol-relative URLs, malformed paths, `/login`, and login loops fall back to `/`.</scenario-frontend-auth-3>
         <scenario-frontend-auth-4 kind="success">Sidebar logout calls `logoutAdmin`, disables while pending, clears frontend auth state and protected query caches, returns to `/login`, and protected routes redirect again after logout.</scenario-frontend-auth-4>
+        <scenario-atlas-nutrition-api-1 kind="success">Atlas nutrition adapter sends credentialed raw GraphQL documents to /graphql/atlas for daily food logs, product lists, product restore, template item CRUD, and weekly template apply without importing generated admin GraphQL types.</scenario-atlas-nutrition-api-1>
+        <scenario-atlas-nutrition-api-2 kind="failure">Atlas nutrition adapter normalizes validation, not-found, and auth result envelopes into typed frontend errors with message, code, and displayable error type.</scenario-atlas-nutrition-api-2>
       </scenarios>
       <required-trace-assertions>
         <assertion-1>Schema changes must not leave stale generated web-admin client types.</assertion-1>
@@ -447,6 +453,7 @@
         <assertion-15>Sidebar logout tests must prove pending disabled state, backend logout call, protected-query cleanup, and return to `/login`.</assertion-15>
         <assertion-16>Web-admin e2e must prove logout revokes browser access by opening a fresh page after logout and observing protected route redirect.</assertion-16>
         <assertion-17>GRACE docs must not reference the removed aggregate admin-auth operation document.</assertion-17>
+        <assertion-18>Atlas nutrition adapter must derive /graphql/atlas from the admin GraphQL endpoint or VITE_ATLAS_GRAPHQL_API_URL, include browser credentials, and leave the admin GraphQL client semantics unchanged.</assertion-18>
       </required-trace-assertions>
       <wave-follow-up>Run Playwright e2e for UI flow changes.</wave-follow-up>
       <phase-follow-up>Run full web-admin test, typecheck, build, and e2e gate.</phase-follow-up>

@@ -152,6 +152,7 @@
       <path>apps/web-admin/src/app/protected-admin-layout.tsx</path>
       <path>apps/web-admin/src/app/admin-navigation.ts</path>
       <path>apps/web-admin/src/pages/login-page.tsx</path>
+      <path>apps/web-admin/src/pages/atlas/nutrition-api.ts</path>
       <path>apps/web-admin/src/shared/ui</path>
       <path>apps/web-admin/src/shared/ui/layout/admin-app-shell.tsx</path>
       <path>apps/web-admin/src/shared/ui/primitives/sidebar.tsx</path>
@@ -166,6 +167,7 @@
         <export-AdminAuthFrontend PURPOSE="CurrentAdmin-backed auth provider, auth GraphQL helpers, safe return-to parsing, and shell user mapping." />
         <export-ProtectedAdminLayout PURPOSE="Protects every non-login web-admin route before rendering the sidebar shell." />
         <export-LoginPage PURPOSE="Public login form for backend cookie-backed admin sessions." />
+        <export-AtlasNutritionApiAdapter PURPOSE="Raw credentialed /graphql/atlas adapter for factual daily food logs, product catalog, weekly template item operations, template apply, and typed result-error normalization without admin GraphQL codegen." />
         <export-SidebarLogout PURPOSE="Sidebar user-menu logout action that revokes the backend session, disables while pending, clears protected frontend query caches, and returns to login." />
         <export-UiKit PURPOSE="Approved Radix Rhea @shared/ui primitive, sidebar-07 shell, theme toggle, and layout surface for admin pages with zinc/sidebar base tokens and indigo theme accents." />
         <export-UiKitReferenceRoute PURPOSE="Visible /ui-kit route demonstrating approved admin components." />
@@ -374,6 +376,7 @@
     <CrossLink from="M-WEB-ADMIN" to="M-GRAPHQL-SCHEMA" relation="generates client types from admin GraphQL contract" />
     <CrossLink from="M-WEB-ADMIN" to="M-API" relation="sends credentialed admin GraphQL requests with session cookies" />
     <CrossLink from="M-WEB-ADMIN" to="M-API" relation="authenticates through cookie-backed loginAdmin, reads me through CurrentAdmin, and revokes sessions through logoutAdmin" />
+    <CrossLink from="M-WEB-ADMIN" to="M-API-NUTRITION" relation="sends credentialed Atlas nutrition GraphQL requests to /graphql/atlas through raw local adapter documents" />
     <CrossLink from="M-WEB" to="M-API" relation="uses public REST users API" />
     <CrossLink from="M-BOT" to="M-GO-CONFIG" relation="uses shared config package" />
     <CrossLink from="M-BOT" to="M-GO-LOGGER" relation="uses shared logger package" />
