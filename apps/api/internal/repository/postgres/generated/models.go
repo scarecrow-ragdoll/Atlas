@@ -130,6 +130,32 @@ type DailyLog struct {
 	UpdatedAt pgtype.Timestamptz
 }
 
+type DailyNutritionEntry struct {
+	ID                      pgtype.UUID
+	DailyLogID              pgtype.UUID
+	ProductID               pgtype.UUID
+	ProductNameSnapshot     string
+	CaloriesPer100gSnapshot float32
+	ProteinPer100gSnapshot  float32
+	FatPer100gSnapshot      float32
+	CarbsPer100gSnapshot    float32
+	AmountGrams             float32
+	MealLabel               pgtype.Text
+	Notes                   pgtype.Text
+	Position                int32
+	CreatedAt               pgtype.Timestamptz
+	UpdatedAt               pgtype.Timestamptz
+}
+
+type DailyNutritionLog struct {
+	ID        pgtype.UUID
+	UserID    pgtype.UUID
+	Date      pgtype.Date
+	Notes     pgtype.Text
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+}
+
 type DailyNutritionOverride struct {
 	ID        pgtype.UUID
 	UserID    pgtype.UUID

@@ -29,16 +29,21 @@ type CreateNutritionProductParams struct {
 }
 
 // FILE: apps/api/internal/repository/postgres/queries/nutrition_products.sql
-// VERSION: 1.0.0
+// VERSION: 1.0.1
 // START_MODULE_CONTRACT
 //
 //	PURPOSE: sqlc CRUD queries for nutrition_product table.
-//	SCOPE: Create, GetByID, ListActive, Update, SoftDelete, GetByIDIncludeInactive. All user-scoped.
+//	SCOPE: Create, GetByID, ListActive, ListAll, Update, SoftDelete, Restore, GetByIDIncludeInactive. All user-scoped.
 //	DEPENDS: 00090_nutrition_tables.sql migration.
 //	ROLE: SCRIPT
 //	MAP_MODE: LOCALS
 //
 // END_MODULE_CONTRACT
+// START_CHANGE_SUMMARY
+//
+//	LAST_CHANGE: 1.0.1 - Added all-product listing and restore query for factual nutrition product management.
+//
+// END_CHANGE_SUMMARY
 func (q *Queries) CreateNutritionProduct(ctx context.Context, arg CreateNutritionProductParams) (NutritionProduct, error) {
 	row := q.db.QueryRow(ctx, createNutritionProduct,
 		arg.UserID,
@@ -165,6 +170,76 @@ func (q *Queries) ListActiveNutritionProducts(ctx context.Context, userID pgtype
 		return nil, err
 	}
 	return items, nil
+}
+
+const listNutritionProductsAll = `-- name: ListNutritionProductsAll :many
+SELECT id, user_id, name, calories_per_100g, protein_per_100g, fat_per_100g, carbs_per_100g, notes, is_active, created_at, updated_at
+FROM nutrition_product
+WHERE user_id = $1
+ORDER BY is_active DESC, name ASC
+`
+
+func (q *Queries) ListNutritionProductsAll(ctx context.Context, userID pgtype.UUID) ([]NutritionProduct, error) {
+	rows, err := q.db.Query(ctx, listNutritionProductsAll, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []NutritionProduct
+	for rows.Next() {
+		var i NutritionProduct
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Name,
+			&i.CaloriesPer100g,
+			&i.ProteinPer100g,
+			&i.FatPer100g,
+			&i.CarbsPer100g,
+			&i.Notes,
+			&i.IsActive,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const restoreNutritionProduct = `-- name: RestoreNutritionProduct :one
+UPDATE nutrition_product
+SET is_active = true, updated_at = now()
+WHERE id = $1 AND user_id = $2
+RETURNING id, user_id, name, calories_per_100g, protein_per_100g, fat_per_100g, carbs_per_100g, notes, is_active, created_at, updated_at
+`
+
+type RestoreNutritionProductParams struct {
+	ID     pgtype.UUID
+	UserID pgtype.UUID
+}
+
+func (q *Queries) RestoreNutritionProduct(ctx context.Context, arg RestoreNutritionProductParams) (NutritionProduct, error) {
+	row := q.db.QueryRow(ctx, restoreNutritionProduct, arg.ID, arg.UserID)
+	var i NutritionProduct
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.CaloriesPer100g,
+		&i.ProteinPer100g,
+		&i.FatPer100g,
+		&i.CarbsPer100g,
+		&i.Notes,
+		&i.IsActive,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const softDeleteNutritionProduct = `-- name: SoftDeleteNutritionProduct :one

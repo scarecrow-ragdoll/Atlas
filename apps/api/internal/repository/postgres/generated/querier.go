@@ -91,6 +91,23 @@ type Querier interface {
 	// END_CHANGE_SUMMARY
 	CreateCardioEntry(ctx context.Context, arg CreateCardioEntryParams) (CardioEntry, error)
 	CreateDailyLog(ctx context.Context, arg CreateDailyLogParams) (DailyLog, error)
+	CreateDailyNutritionEntry(ctx context.Context, arg CreateDailyNutritionEntryParams) (DailyNutritionEntry, error)
+	// FILE: apps/api/internal/repository/postgres/queries/daily_nutrition_logs.sql
+	// VERSION: 1.0.0
+	// START_MODULE_CONTRACT
+	//   PURPOSE: sqlc queries for factual daily nutrition logs and entries.
+	//   SCOPE: User-scoped log load/upsert, entry CRUD with parent and product ownership checks, and date-range export reads.
+	//   DEPENDS: 00096_daily_nutrition_logs.sql.
+	//   LINKS: M-API-NUTRITION / V-M-API / V-M-API-NUTRITION
+	//   ROLE: SCRIPT
+	//   MAP_MODE: LOCALS
+	// END_MODULE_CONTRACT
+	// START_MODULE_MAP
+	//   CreateDailyNutritionLog - Gets or creates one user/date factual nutrition log.
+	//   CreateDailyNutritionEntry - Creates a product snapshot entry only when log and product belong to the same user.
+	//   UpdateDailyNutritionEntry/DeleteDailyNutritionEntry - Mutates entries through parent log ownership checks.
+	// END_MODULE_MAP
+	CreateDailyNutritionLog(ctx context.Context, arg CreateDailyNutritionLogParams) (DailyNutritionLog, error)
 	CreateDailyNutritionOverrideItem(ctx context.Context, arg CreateDailyNutritionOverrideItemParams) (DailyNutritionOverrideItem, error)
 	// FILE: apps/api/internal/repository/postgres/queries/exercises.sql
 	// VERSION: 1.0.0
@@ -108,15 +125,35 @@ type Querier interface {
 	CreateExercise(ctx context.Context, arg CreateExerciseParams) (Exercise, error)
 	CreateExerciseMedia(ctx context.Context, arg CreateExerciseMediaParams) (ExerciseMedium, error)
 	// FILE: apps/api/internal/repository/postgres/queries/nutrition_products.sql
-	// VERSION: 1.0.0
+	// VERSION: 1.0.1
 	// START_MODULE_CONTRACT
 	//   PURPOSE: sqlc CRUD queries for nutrition_product table.
-	//   SCOPE: Create, GetByID, ListActive, Update, SoftDelete, GetByIDIncludeInactive. All user-scoped.
+	//   SCOPE: Create, GetByID, ListActive, ListAll, Update, SoftDelete, Restore, GetByIDIncludeInactive. All user-scoped.
 	//   DEPENDS: 00090_nutrition_tables.sql migration.
 	//   ROLE: SCRIPT
 	//   MAP_MODE: LOCALS
 	// END_MODULE_CONTRACT
+	// START_CHANGE_SUMMARY
+	//   LAST_CHANGE: 1.0.1 - Added all-product listing and restore query for factual nutrition product management.
+	// END_CHANGE_SUMMARY
 	CreateNutritionProduct(ctx context.Context, arg CreateNutritionProductParams) (NutritionProduct, error)
+	// FILE: apps/api/internal/repository/postgres/queries/nutrition_template_items.sql
+	// VERSION: 1.0.0
+	// START_MODULE_CONTRACT
+	//   PURPOSE: sqlc queries for nutrition_template_item table.
+	//   SCOPE: Template item CRUD plus user-scoped item lookup variants for repository ownership checks.
+	//   DEPENDS: 00090_nutrition_tables.sql migration.
+	//   LINKS: M-API-NUTRITION / V-M-API-NUTRITION
+	//   ROLE: SCRIPT
+	//   MAP_MODE: LOCALS
+	// END_MODULE_CONTRACT
+	// START_MODULE_MAP
+	//   CreateNutritionTemplateItem - Creates one template-owned nutrition item.
+	//   GetNutritionTemplateItemByIDForUser - Loads one item only through its parent template owner.
+	// END_MODULE_MAP
+	// START_CHANGE_SUMMARY
+	//   LAST_CHANGE: 1.0.0 - Added file-local GRACE contract and user-scoped template item lookup.
+	// END_CHANGE_SUMMARY
 	CreateNutritionTemplateItem(ctx context.Context, arg CreateNutritionTemplateItemParams) (NutritionTemplateItem, error)
 	// FILE: apps/api/internal/repository/postgres/queries/progress_photos.sql
 	// VERSION: 1.0.0
@@ -155,6 +192,7 @@ type Querier interface {
 	DeleteBodyWeightEntry(ctx context.Context, arg DeleteBodyWeightEntryParams) (BodyWeightEntry, error)
 	DeleteCardioEntry(ctx context.Context, arg DeleteCardioEntryParams) (CardioEntry, error)
 	DeleteDailyLog(ctx context.Context, arg DeleteDailyLogParams) (DailyLog, error)
+	DeleteDailyNutritionEntry(ctx context.Context, arg DeleteDailyNutritionEntryParams) (DailyNutritionEntry, error)
 	DeleteDailyNutritionOverride(ctx context.Context, arg DeleteDailyNutritionOverrideParams) (DailyNutritionOverride, error)
 	DeleteDailyNutritionOverrideItem(ctx context.Context, id pgtype.UUID) (DailyNutritionOverrideItem, error)
 	DeleteExerciseMedia(ctx context.Context, arg DeleteExerciseMediaParams) (ExerciseMedium, error)
@@ -201,6 +239,7 @@ type Querier interface {
 	//   LAST_CHANGE: 1.0.0 - Added daily_log queries for WAVE-04 cardio support.
 	// END_CHANGE_SUMMARY
 	GetDailyLogByDate(ctx context.Context, arg GetDailyLogByDateParams) (DailyLog, error)
+	GetDailyNutritionLogByDate(ctx context.Context, arg GetDailyNutritionLogByDateParams) (DailyNutritionLog, error)
 	GetDailyNutritionOverrideByDate(ctx context.Context, arg GetDailyNutritionOverrideByDateParams) (DailyNutritionOverride, error)
 	GetDailyNutritionOverrideByID(ctx context.Context, arg GetDailyNutritionOverrideByIDParams) (DailyNutritionOverride, error)
 	GetDailyNutritionOverrideItemByID(ctx context.Context, id pgtype.UUID) (DailyNutritionOverrideItem, error)
@@ -211,6 +250,7 @@ type Querier interface {
 	GetNutritionTemplateByID(ctx context.Context, arg GetNutritionTemplateByIDParams) (NutritionTemplate, error)
 	GetNutritionTemplateByWeek(ctx context.Context, arg GetNutritionTemplateByWeekParams) (NutritionTemplate, error)
 	GetNutritionTemplateItemByID(ctx context.Context, id pgtype.UUID) (NutritionTemplateItem, error)
+	GetNutritionTemplateItemByIDForUser(ctx context.Context, arg GetNutritionTemplateItemByIDForUserParams) (NutritionTemplateItem, error)
 	GetProgressPhotoByID(ctx context.Context, arg GetProgressPhotoByIDParams) (ProgressPhoto, error)
 	GetUserByID(ctx context.Context, id pgtype.UUID) (GetUserByIDRow, error)
 	GetUserProfileByUserID(ctx context.Context, userID pgtype.UUID) (UserProfile, error)
@@ -227,11 +267,14 @@ type Querier interface {
 	ListBodyMeasurementsByUserTypeRange(ctx context.Context, arg ListBodyMeasurementsByUserTypeRangeParams) ([]ListBodyMeasurementsByUserTypeRangeRow, error)
 	ListBodyWeightEntriesByDateRange(ctx context.Context, arg ListBodyWeightEntriesByDateRangeParams) ([]BodyWeightEntry, error)
 	ListCardioEntriesByDailyLog(ctx context.Context, arg ListCardioEntriesByDailyLogParams) ([]CardioEntry, error)
+	ListDailyNutritionEntriesByLog(ctx context.Context, dailyLogID pgtype.UUID) ([]DailyNutritionEntry, error)
+	ListDailyNutritionLogsByRange(ctx context.Context, arg ListDailyNutritionLogsByRangeParams) ([]DailyNutritionLog, error)
 	ListDailyNutritionOverrideItemsByOverride(ctx context.Context, overrideID pgtype.UUID) ([]DailyNutritionOverrideItem, error)
 	ListDailyNutritionOverridesByRange(ctx context.Context, arg ListDailyNutritionOverridesByRangeParams) ([]DailyNutritionOverride, error)
 	ListExerciseMediaByExercise(ctx context.Context, arg ListExerciseMediaByExerciseParams) ([]ExerciseMedium, error)
 	ListExercises(ctx context.Context, arg ListExercisesParams) ([]Exercise, error)
 	ListExercisesCursor(ctx context.Context, arg ListExercisesCursorParams) ([]Exercise, error)
+	ListNutritionProductsAll(ctx context.Context, userID pgtype.UUID) ([]NutritionProduct, error)
 	ListNutritionTemplateItemsByTemplate(ctx context.Context, templateID pgtype.UUID) ([]NutritionTemplateItem, error)
 	ListNutritionTemplatesByRange(ctx context.Context, arg ListNutritionTemplatesByRangeParams) ([]NutritionTemplate, error)
 	ListProgressPhotosByCheckIn(ctx context.Context, arg ListProgressPhotosByCheckInParams) ([]ProgressPhoto, error)
@@ -239,6 +282,7 @@ type Querier interface {
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]ListUsersRow, error)
 	ListWeekFlagsByWeekStart(ctx context.Context, arg ListWeekFlagsByWeekStartParams) ([]WeekFlag, error)
 	RestoreExercise(ctx context.Context, arg RestoreExerciseParams) (Exercise, error)
+	RestoreNutritionProduct(ctx context.Context, arg RestoreNutritionProductParams) (NutritionProduct, error)
 	SoftDeleteNutritionProduct(ctx context.Context, arg SoftDeleteNutritionProductParams) (NutritionProduct, error)
 	UpdateAiExportFilePath(ctx context.Context, arg UpdateAiExportFilePathParams) (AiExport, error)
 	UpdateAiReview(ctx context.Context, arg UpdateAiReviewParams) (AiReview, error)
@@ -248,6 +292,8 @@ type Querier interface {
 	UpdateBodyMeasurement(ctx context.Context, arg UpdateBodyMeasurementParams) (BodyMeasurement, error)
 	UpdateBodyWeightEntry(ctx context.Context, arg UpdateBodyWeightEntryParams) (BodyWeightEntry, error)
 	UpdateCardioEntry(ctx context.Context, arg UpdateCardioEntryParams) (CardioEntry, error)
+	UpdateDailyNutritionEntry(ctx context.Context, arg UpdateDailyNutritionEntryParams) (DailyNutritionEntry, error)
+	UpdateDailyNutritionLogNotes(ctx context.Context, arg UpdateDailyNutritionLogNotesParams) (DailyNutritionLog, error)
 	UpdateDailyNutritionOverride(ctx context.Context, arg UpdateDailyNutritionOverrideParams) (DailyNutritionOverride, error)
 	UpdateDailyNutritionOverrideItem(ctx context.Context, arg UpdateDailyNutritionOverrideItemParams) (DailyNutritionOverrideItem, error)
 	UpdateExercise(ctx context.Context, arg UpdateExerciseParams) (Exercise, error)
