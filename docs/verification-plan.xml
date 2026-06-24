@@ -423,6 +423,8 @@
         <check-frontend-auth-7>bunx nx run web-admin:e2e</check-frontend-auth-7>
         <check-atlas-nutrition-api-1>cd apps/web-admin &amp;&amp; bun run test -- src/pages/atlas/nutrition-api.test.ts</check-atlas-nutrition-api-1>
         <check-atlas-nutrition-api-2>cd apps/web-admin &amp;&amp; bun run typecheck</check-atlas-nutrition-api-2>
+        <check-atlas-product-library-1>cd apps/web-admin &amp;&amp; bun run test -- src/pages/atlas/product-library-page.test.tsx src/pages/atlas/nutrition-api.test.ts</check-atlas-product-library-1>
+        <check-atlas-product-library-2>cd apps/web-admin &amp;&amp; bun run typecheck</check-atlas-product-library-2>
       </module-checks>
       <scenarios>
         <scenario-1 kind="success">Vite web-admin app renders the adapted sidebar-07 shell, admin user flow, and /ui-kit reference route with generated GraphQL types, React Router routes, approved @shared/ui components, and cookie credential transport.</scenario-1>
@@ -434,6 +436,8 @@
         <scenario-frontend-auth-4 kind="success">Sidebar logout calls `logoutAdmin`, disables while pending, clears frontend auth state and protected query caches, returns to `/login`, and protected routes redirect again after logout.</scenario-frontend-auth-4>
         <scenario-atlas-nutrition-api-1 kind="success">Atlas nutrition adapter sends credentialed raw GraphQL documents to /graphql/atlas for daily food logs, product lists, product restore, template item CRUD, and weekly template apply without importing generated admin GraphQL types.</scenario-atlas-nutrition-api-1>
         <scenario-atlas-nutrition-api-2 kind="failure">Atlas nutrition adapter normalizes validation, not-found, and auth result envelopes into typed frontend errors with message, code, and displayable error type.</scenario-atlas-nutrition-api-2>
+        <scenario-atlas-product-library-1 kind="success">`/atlas/nutrition/products` renders a real product catalog from the Atlas nutrition API, supports create/edit/archive/restore, and hides reference/mock placeholder states.</scenario-atlas-product-library-1>
+        <scenario-atlas-product-library-2 kind="failure">Product Library validation catches missing names and negative macro values locally, while API validation errors remain visible in the form.</scenario-atlas-product-library-2>
       </scenarios>
       <required-trace-assertions>
         <assertion-1>Schema changes must not leave stale generated web-admin client types.</assertion-1>

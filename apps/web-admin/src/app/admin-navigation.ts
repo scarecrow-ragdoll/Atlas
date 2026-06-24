@@ -1,5 +1,5 @@
 // FILE: apps/web-admin/src/app/admin-navigation.ts
-// VERSION: 1.0.0
+// VERSION: 1.1.0
 // START_MODULE_CONTRACT
 //   PURPOSE: Own static web-admin shell navigation metadata and active route resolution.
 //   SCOPE: Defines template-native sidebar groups, disabled placeholders, breadcrumbs, user/team placeholders, and route matching; excludes shared UI rendering.
@@ -16,13 +16,14 @@
 //   resolveAdminShellState - Derive active navigation and breadcrumbs from a pathname.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.1 - Let the UI-kit route use href-based active matching.
+//   LAST_CHANGE: 1.1.0 - Added the Atlas nutrition product library route to shell navigation.
 // END_CHANGE_SUMMARY
 
 import {
   BookOpenIcon,
   DatabaseIcon,
   HomeIcon,
+  UtensilsIcon,
   SettingsIcon,
   UsersIcon,
   WrenchIcon,
@@ -82,6 +83,21 @@ export const adminNavigationGroups: AdminNavigationGroup[] = [
         href: '/ui-kit',
         icon: WrenchIcon,
       },
+      {
+        id: 'atlas-nutrition',
+        label: 'Nutrition',
+        href: '/atlas/nutrition/products',
+        icon: UtensilsIcon,
+        match: (pathname) =>
+          pathname === '/atlas/nutrition/products' || pathname.startsWith('/atlas/nutrition/'),
+        children: [
+          {
+            id: 'atlas-nutrition-products',
+            label: 'Product Library',
+            href: '/atlas/nutrition/products',
+          },
+        ],
+      },
     ],
   },
 ];
@@ -130,6 +146,9 @@ function buildBreadcrumbs(pathname: string): AdminBreadcrumbItem[] {
   }
   if (pathname === '/ui-kit') {
     return [{ label: 'UI Kit' }];
+  }
+  if (pathname.startsWith('/atlas/nutrition/')) {
+    return [{ label: 'Nutrition' }, { label: 'Product Library' }];
   }
   return [{ label: 'Overview' }];
 }

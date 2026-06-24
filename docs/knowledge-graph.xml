@@ -153,6 +153,9 @@
       <path>apps/web-admin/src/app/admin-navigation.ts</path>
       <path>apps/web-admin/src/pages/login-page.tsx</path>
       <path>apps/web-admin/src/pages/atlas/nutrition-api.ts</path>
+      <path>apps/web-admin/src/pages/atlas/product-library-page.tsx</path>
+      <path>apps/web-admin/src/app/i18n.tsx</path>
+      <path>apps/web-admin/src/styles/atlas.css</path>
       <path>apps/web-admin/src/shared/ui</path>
       <path>apps/web-admin/src/shared/ui/layout/admin-app-shell.tsx</path>
       <path>apps/web-admin/src/shared/ui/primitives/sidebar.tsx</path>
@@ -168,6 +171,8 @@
         <export-ProtectedAdminLayout PURPOSE="Protects every non-login web-admin route before rendering the sidebar shell." />
         <export-LoginPage PURPOSE="Public login form for backend cookie-backed admin sessions." />
         <export-AtlasNutritionApiAdapter PURPOSE="Raw credentialed /graphql/atlas adapter for factual daily food logs, product catalog, weekly template item operations, template apply, and typed result-error normalization without admin GraphQL codegen." />
+        <export-AtlasProductLibraryPage PURPOSE="API-backed `/atlas/nutrition/products` route for private nutrition products with active/archived filtering, form validation, and create/update/archive/restore mutations." />
+        <export-AtlasI18n PURPOSE="Lightweight EN/RU translation provider used by Atlas web-admin nutrition pages." />
         <export-SidebarLogout PURPOSE="Sidebar user-menu logout action that revokes the backend session, disables while pending, clears protected frontend query caches, and returns to login." />
         <export-UiKit PURPOSE="Approved Radix Rhea @shared/ui primitive, sidebar-07 shell, theme toggle, and layout surface for admin pages with zinc/sidebar base tokens and indigo theme accents." />
         <export-UiKitReferenceRoute PURPOSE="Visible /ui-kit route demonstrating approved admin components." />

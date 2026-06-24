@@ -1,0 +1,64 @@
+/* FILE: apps/web-admin/src/styles/atlas.css */
+/* VERSION: 1.0.0 */
+/* START_MODULE_CONTRACT */
+/*   PURPOSE: Provide small reusable Atlas page layout helpers for web-admin routes. */
+/*   SCOPE: Defines scoped Atlas filter/form/table helper classes used by factual nutrition pages; excludes global theme tokens and generated OpenDesign CSS. */
+/*   DEPENDS: apps/web-admin/src/styles.css. */
+/*   LINKS: M-WEB-ADMIN / V-M-WEB-ADMIN. */
+/*   ROLE: RUNTIME */
+/*   MAP_MODE: SUMMARY */
+/* END_MODULE_CONTRACT */
+/* START_MODULE_MAP */
+/*   atlas-product-library - Scoped helpers for product library filters, form grid, and table actions. */
+/* END_MODULE_MAP */
+
+.atlas-product-library {
+  gap: 1.5rem;
+}
+
+.atlas-filter-bar {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.atlas-form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.atlas-segmented-filter {
+  display: inline-flex;
+  gap: 0.5rem;
+}
+
+.atlas-table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.atlas-macro-cell {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+@media (min-width: 768px) {
+  .atlas-filter-bar {
+    align-items: flex-end;
+    flex-direction: row;
+  }
+
+  .atlas-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .atlas-form-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
