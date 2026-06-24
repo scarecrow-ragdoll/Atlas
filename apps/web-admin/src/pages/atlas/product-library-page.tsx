@@ -319,7 +319,7 @@ export default function ProductLibraryPage() {
             <TableHead className="atlas-macro-cell">{t('nutrition.carbsPer100g')}</TableHead>
             <TableHead>{t('nutrition.notes')}</TableHead>
             <TableHead>{t('nutrition.status')}</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="text-right">{t('nutrition.actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

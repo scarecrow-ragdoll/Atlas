@@ -21,6 +21,7 @@ export const LANGUAGE_STORAGE_KEY = 'atlas-language';
 export type Language = 'en' | 'ru';
 
 type TranslationKey =
+  | 'nutrition.actions'
   | 'nutrition.active'
   | 'nutrition.archiveProduct'
   | 'nutrition.archived'
@@ -57,6 +58,7 @@ type TranslationKey =
 
 const translations: Record<Language, Record<TranslationKey, string>> = {
   en: {
+    'nutrition.actions': 'Actions',
     'nutrition.active': 'Active',
     'nutrition.archiveProduct': 'Archive',
     'nutrition.archived': 'Archived',
@@ -93,6 +95,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.updateProduct': 'Update product',
   },
   ru: {
+    'nutrition.actions': 'Действия',
     'nutrition.active': 'Активные',
     'nutrition.archiveProduct': 'Архивировать',
     'nutrition.archived': 'Архивные',

@@ -48,7 +48,7 @@ Added lightweight Atlas EN/RU i18n under `apps/web-admin/src/app/i18n.tsx`, mini
 
 - Command: `cd apps/web-admin && bun run test -- src/pages/atlas/product-library-page.test.tsx src/pages/atlas/nutrition-api.test.ts`
 - Result: PASS.
-- Evidence: 20 tests passed across Product Library and nutrition API adapter tests.
+- Evidence: 21 tests passed across Product Library and nutrition API adapter tests.
 
 - Command: `cd apps/web-admin && bun run typecheck`
 - Result: PASS.
@@ -74,11 +74,19 @@ Added lightweight Atlas EN/RU i18n under `apps/web-admin/src/app/i18n.tsx`, mini
 - Result: BLOCKED by local tooling.
 - Evidence: `zsh:1: command not found: grace`.
 
-## Additional Check
+## Review Fixes
 
-- Command: `cd apps/web-admin && bun run test -- src/App.test.tsx src/app/admin-navigation.test.ts`
-- Result: PARTIAL / BLOCKED.
-- Evidence: `src/app/admin-navigation.test.ts` passed 4 tests. `src/App.test.tsx` failed because `ThemeToggle` and the existing App test assume `window.localStorage` exists in Bun/jsdom (`theme-toggle.tsx:43`, `App.test.tsx:101`). This is outside Task 8's page scope and was not changed here.
+- Finding: the app boundary test was blocked by Bun/jsdom not exposing `window.localStorage`, while the shared shell `ThemeToggle` and `App.test.tsx` use it.
+- Fix: added an in-memory localStorage fallback to `apps/web-admin/vitest.setup.ts` for test environments that do not expose Storage.
+- Command: `cd apps/web-admin && bun run test -- src/App.test.tsx`
+- Result: PASS.
+- Evidence: `src/App.test.tsx` passed; 8 tests passed, 1 test file passed.
+
+- Finding: spec review noted a hardcoded English `Actions` table heading.
+- Fix: added `nutrition.actions` EN/RU translations and a Russian Product Library label regression test.
+- Command: `cd apps/web-admin && bun run test -- src/pages/atlas/product-library-page.test.tsx src/pages/atlas/nutrition-api.test.ts`
+- Result: PASS.
+- Evidence: 21 tests passed across Product Library and nutrition API adapter tests.
 
 ## Changed Files
 
@@ -86,6 +94,7 @@ Added lightweight Atlas EN/RU i18n under `apps/web-admin/src/app/i18n.tsx`, mini
 - `apps/web-admin/src/pages/atlas/product-library-page.test.tsx`
 - `apps/web-admin/src/app/i18n.tsx`
 - `apps/web-admin/src/styles/atlas.css`
+- `apps/web-admin/vitest.setup.ts`
 - `apps/web-admin/src/App.tsx`
 - `apps/web-admin/src/app/admin-navigation.ts`
 - `docs/development-plan.xml`
@@ -96,5 +105,4 @@ Added lightweight Atlas EN/RU i18n under `apps/web-admin/src/app/i18n.tsx`, mini
 
 - The branch-local source plan file is still absent from the worktree; Task 8 used the main checkout plan and the controller-provided task text as source of truth.
 - `grace lint --path .` could not be run because the `grace` binary is not installed in this shell.
-- `src/App.test.tsx` remains blocked by an existing `window.localStorage` assumption in the app shell theme test path under the current Bun/jsdom environment. The Product Library route itself is covered by focused page tests and passes build/typecheck/lint.
 - Product Library does not implement daily food-log entry editing or weekly nutrition templates by design; those are later tasks.

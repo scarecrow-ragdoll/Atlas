@@ -16,7 +16,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { I18nProvider } from '../../app/i18n';
+import { I18nProvider, type Language } from '../../app/i18n';
 import {
   archiveAtlasNutritionProduct,
   AtlasNutritionApiError,
@@ -75,14 +75,14 @@ function makeProduct(overrides: Partial<AtlasNutritionProduct> = {}): AtlasNutri
   };
 }
 
-function renderProductLibraryPage() {
+function renderProductLibraryPage(language: Language = 'en') {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <I18nProvider initialLanguage="en">
+      <I18nProvider initialLanguage={language}>
         <MemoryRouter>
           <ProductLibraryPage />
         </MemoryRouter>
@@ -287,5 +287,18 @@ describe('ProductLibraryPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save product' }));
 
     expect(await screen.findByText('Product name already exists')).toBeInTheDocument();
+  });
+
+  it('renders Russian product library labels when Russian is selected', async () => {
+    listProductsMock.mockResolvedValue([makeProduct({ id: 'p1', name: 'Rice' })]);
+
+    renderProductLibraryPage('ru');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Библиотека продуктов' }),
+    ).toBeInTheDocument();
+    expect(await screen.findByText('Rice')).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Действия' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Архивировать' })).toBeInTheDocument();
   });
 });
