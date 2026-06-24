@@ -2,14 +2,14 @@
 // VERSION: 1.0.0
 // START_MODULE_CONTRACT
 //   PURPOSE: Unit tests for applying weekly nutrition templates into factual daily food logs.
-//   SCOPE: seed_empty_days creation, idempotency, legacy-date skips, retry atomicity, concurrency, and unsupported-mode validation.
+//   SCOPE: seed_empty_days creation, idempotency, legacy-date skips, product conflict skips, empty-template creation, retry atomicity, concurrency, and unsupported-mode validation.
 //   DEPENDS: apps/api/internal/atlas/service, apps/api/internal/atlas/repository/postgres interfaces, apps/api/internal/atlas/models.
 //   LINKS: M-API-NUTRITION / V-M-API-NUTRITION.
 //   ROLE: TEST
 //   MAP_MODE: SUMMARY
 // END_MODULE_CONTRACT
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.0 - Added Task 4 RED tests for weekly template seed_empty_days apply behavior.
+//   LAST_CHANGE: 1.0.1 - Added quality-review coverage for product-conflict and empty-template apply semantics.
 // END_CHANGE_SUMMARY
 
 package service_test
@@ -149,6 +149,18 @@ func (r *partialFailureDailyRepo) entryCount(date string) int {
 }
 
 func newTemplateApplyService(dailyRepo atlasPostgres.DailyNutritionLogRepository, legacy service.DailyNutritionLegacyResolver) service.NutritionTemplateApplyService {
+	return newTemplateApplyServiceWithItemsAndProducts(dailyRepo, legacy, applyTemplateItems, map[string]*models.NutritionProductRecord{
+		applyProductChicken: {ID: applyProductChicken, UserID: testUserID, Name: "Chicken", IsActive: true},
+		applyProductRice:    {ID: applyProductRice, UserID: testUserID, Name: "Rice", IsActive: true},
+	})
+}
+
+func newTemplateApplyServiceWithItemsAndProducts(
+	dailyRepo atlasPostgres.DailyNutritionLogRepository,
+	legacy service.DailyNutritionLegacyResolver,
+	items []models.NutritionTemplateItemRecord,
+	products map[string]*models.NutritionProductRecord,
+) service.NutritionTemplateApplyService {
 	return service.NewNutritionTemplateApplyService(
 		&mockNutritionTemplateRepo{
 			getByIDFn: func(ctx context.Context, userID string, id string) (*models.NutritionTemplateRecord, error) {
@@ -157,17 +169,32 @@ func newTemplateApplyService(dailyRepo atlasPostgres.DailyNutritionLogRepository
 		},
 		&mockNutritionTemplateItemRepo{
 			listByTemplateFn: func(ctx context.Context, templateID string) ([]models.NutritionTemplateItemRecord, error) {
-				return applyTemplateItems, nil
+				return items, nil
 			},
 		},
-		&mockTemplateApplyProductRepo{products: map[string]*models.NutritionProductRecord{
-			applyProductChicken: {ID: applyProductChicken, UserID: testUserID, Name: "Chicken", IsActive: true},
-			applyProductRice:    {ID: applyProductRice, UserID: testUserID, Name: "Rice", IsActive: true},
-		}},
+		&mockTemplateApplyProductRepo{products: products},
 		dailyRepo,
 		legacy,
 		zap.NewNop(),
 	)
+}
+
+func assertTemplateApplyProductConflict(t *testing.T, result *models.NutritionTemplateApplyResult, dailyRepo *memorySeedDailyRepo) {
+	t.Helper()
+
+	require.NotNil(t, result)
+	assert.Len(t, result.Dates, 7)
+	assert.Equal(t, 0, result.CreatedCount())
+	assert.Equal(t, 0, result.SkippedCount())
+	assert.Equal(t, 7, result.ConflictCount())
+	assert.Equal(t, 0, dailyRepo.calls)
+	assert.Equal(t, 0, dailyRepo.totalEntryCount())
+	for _, date := range result.Dates {
+		assert.Equal(t, models.ApplyDateConflict, date.Status)
+		assert.Equal(t, int32(0), date.EntryCount)
+		require.NotNil(t, date.Reason)
+		assert.Equal(t, "template product missing or inactive", *date.Reason)
+	}
 }
 
 func TestNutritionTemplateApplyService_SeedEmptyDaysCreatesSevenEmptyDates(t *testing.T) {
@@ -235,6 +262,67 @@ func TestNutritionTemplateApplyService_SkipsLegacyOnlyDatesUntilCutover(t *testi
 	require.NotNil(t, legacyDate.Reason)
 	assert.Equal(t, models.ApplyDateSkipped, legacyDate.Status)
 	assert.Equal(t, "legacy nutrition exists; migrate or review before seeding", *legacyDate.Reason)
+}
+
+func TestNutritionTemplateApplyService_MissingProductReturnsConflictsWithoutSeeding(t *testing.T) {
+	dailyRepo := newMemorySeedDailyRepo()
+	svc := newTemplateApplyServiceWithItemsAndProducts(
+		dailyRepo,
+		&mockTemplateApplyLegacyResolver{legacyDates: map[string]bool{}},
+		applyTemplateItems,
+		map[string]*models.NutritionProductRecord{
+			applyProductChicken: {ID: applyProductChicken, UserID: testUserID, Name: "Chicken", IsActive: true},
+		},
+	)
+
+	result, err := svc.ApplyToWeek(ctx, testUserID, testID, models.ApplyModeSeedEmptyDays)
+
+	require.NoError(t, err)
+	assertTemplateApplyProductConflict(t, result, dailyRepo)
+}
+
+func TestNutritionTemplateApplyService_InactiveProductReturnsConflictsWithoutSeeding(t *testing.T) {
+	dailyRepo := newMemorySeedDailyRepo()
+	svc := newTemplateApplyServiceWithItemsAndProducts(
+		dailyRepo,
+		&mockTemplateApplyLegacyResolver{legacyDates: map[string]bool{}},
+		applyTemplateItems,
+		map[string]*models.NutritionProductRecord{
+			applyProductChicken: {ID: applyProductChicken, UserID: testUserID, Name: "Chicken", IsActive: true},
+			applyProductRice:    {ID: applyProductRice, UserID: testUserID, Name: "Rice", IsActive: false},
+		},
+	)
+
+	result, err := svc.ApplyToWeek(ctx, testUserID, testID, models.ApplyModeSeedEmptyDays)
+
+	require.NoError(t, err)
+	assertTemplateApplyProductConflict(t, result, dailyRepo)
+}
+
+func TestNutritionTemplateApplyService_EmptyTemplateCreatesSevenEmptyDates(t *testing.T) {
+	dailyRepo := newMemorySeedDailyRepo()
+	svc := newTemplateApplyServiceWithItemsAndProducts(
+		dailyRepo,
+		&mockTemplateApplyLegacyResolver{legacyDates: map[string]bool{}},
+		[]models.NutritionTemplateItemRecord{},
+		map[string]*models.NutritionProductRecord{},
+	)
+
+	result, err := svc.ApplyToWeek(ctx, testUserID, testID, models.ApplyModeSeedEmptyDays)
+
+	require.NoError(t, err)
+	require.NotNil(t, result)
+	assert.Len(t, result.Dates, 7)
+	assert.Equal(t, 7, result.CreatedCount())
+	assert.Equal(t, 0, result.SkippedCount())
+	assert.Equal(t, 0, result.ConflictCount())
+	assert.Equal(t, 7, dailyRepo.calls)
+	assert.Equal(t, 0, dailyRepo.totalEntryCount())
+	for _, date := range result.Dates {
+		assert.Equal(t, models.ApplyDateCreated, date.Status)
+		assert.Equal(t, int32(0), date.EntryCount)
+		assert.Nil(t, date.Reason)
+	}
 }
 
 func TestNutritionTemplateApplyService_RetryAfterPartialFailureDoesNotPreserveIncompleteSeed(t *testing.T) {
