@@ -41,7 +41,15 @@ Covered daily factual food-log get/add/update/delete, active/all product listing
 
 - Command: `cd apps/web-admin && bun run test -- src/pages/atlas/nutrition-api.test.ts`
 - Result: PASS.
-- Evidence: `src/pages/atlas/nutrition-api.test.ts` passed; 10 tests passed, 1 test file passed.
+- Evidence: `src/pages/atlas/nutrition-api.test.ts` passed; 11 tests passed, 1 test file passed.
+
+### Review Fix
+
+- Finding: spec review requested explicit template item create/update/delete adapter coverage.
+- Fix: added focused assertions for `createAtlasNutritionTemplateItem`, `updateAtlasNutritionTemplateItem`, and `deleteAtlasNutritionTemplateItem` request documents, variables, and result unwrap behavior.
+- Command: `cd apps/web-admin && bun run test -- src/pages/atlas/nutrition-api.test.ts`
+- Result: PASS.
+- Evidence: `src/pages/atlas/nutrition-api.test.ts` passed; 11 tests passed, 1 test file passed.
 
 ### Typecheck
 

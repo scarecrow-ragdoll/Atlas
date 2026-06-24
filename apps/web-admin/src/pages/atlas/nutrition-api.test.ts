@@ -29,11 +29,14 @@ import {
   AtlasNutritionApiError,
   addAtlasDailyNutritionEntry,
   applyAtlasNutritionTemplateToWeek,
+  createAtlasNutritionTemplateItem,
   deleteAtlasDailyNutritionEntry,
+  deleteAtlasNutritionTemplateItem,
   getAtlasDailyNutritionLog,
   listAtlasNutritionProducts,
   restoreAtlasNutritionProduct,
   updateAtlasDailyNutritionEntry,
+  updateAtlasNutritionTemplateItem,
 } from './nutrition-api';
 
 const riceProduct = {
@@ -75,6 +78,17 @@ const dailyLog = {
       updatedAt: '2026-06-24T10:00:00Z',
     },
   ],
+  createdAt: '2026-06-24T10:00:00Z',
+  updatedAt: '2026-06-24T10:00:00Z',
+};
+
+const templateItem = {
+  id: 'item-1',
+  templateId: 'template-1',
+  productId: 'product-1',
+  amountGrams: 250,
+  mealLabel: 'Lunch',
+  notes: 'planned rice',
   createdAt: '2026-06-24T10:00:00Z',
   updatedAt: '2026-06-24T10:00:00Z',
 };
@@ -241,6 +255,60 @@ describe('Atlas nutrition API adapter', () => {
       { date: '2026-06-22', status: 'created', entryCount: 2, reason: null },
       { date: '2026-06-23', status: 'skipped', entryCount: 1, reason: 'day has entries' },
     ]);
+  });
+
+  it('creates, updates, and deletes weekly template product rows', async () => {
+    const createInput = {
+      templateId: 'template-1',
+      productId: 'product-1',
+      amountGrams: 250,
+      mealLabel: 'Lunch',
+      notes: 'planned rice',
+    };
+    const updateInput = {
+      amountGrams: 300,
+      mealLabel: 'Dinner',
+      notes: null,
+    };
+    requestMock
+      .mockResolvedValueOnce({
+        createNutritionTemplateItem: {
+          nutritionTemplateItem: templateItem,
+        },
+      })
+      .mockResolvedValueOnce({
+        updateNutritionTemplateItem: {
+          nutritionTemplateItem: { ...templateItem, ...updateInput },
+        },
+      })
+      .mockResolvedValueOnce({
+        deleteNutritionTemplateItem: {
+          nutritionTemplateItem: { ...templateItem, ...updateInput },
+        },
+      });
+
+    const created = await createAtlasNutritionTemplateItem(createInput);
+    const updated = await updateAtlasNutritionTemplateItem('item-1', updateInput);
+    const deleted = await deleteAtlasNutritionTemplateItem('item-1');
+
+    expect(requestMock).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('createNutritionTemplateItem'),
+      { input: createInput },
+    );
+    expect(requestMock).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('updateNutritionTemplateItem'),
+      { id: 'item-1', input: updateInput },
+    );
+    expect(requestMock).toHaveBeenNthCalledWith(
+      3,
+      expect.stringContaining('deleteNutritionTemplateItem'),
+      { id: 'item-1' },
+    );
+    expect(created.productId).toBe('product-1');
+    expect(updated.amountGrams).toBe(300);
+    expect(deleted.id).toBe('item-1');
   });
 
   it.each([
