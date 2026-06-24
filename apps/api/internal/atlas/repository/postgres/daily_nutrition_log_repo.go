@@ -1,8 +1,8 @@
 // FILE: apps/api/internal/atlas/repository/postgres/daily_nutrition_log_repo.go
-// VERSION: 1.0.0
+// VERSION: 1.0.1
 // START_MODULE_CONTRACT
 //   PURPOSE: Implement DailyNutritionLogRepository using sqlc-generated factual daily nutrition log and entry queries.
-//   SCOPE: Get-or-create, get by date, range list, notes update, entry add/list/update/delete. All reads and mutations are user-scoped; ListEntries requires both userID and dailyLogID.
+//   SCOPE: Get-or-create, get by ID, get by date, range list, notes update, entry add/list/update/delete. All reads and mutations are user-scoped; ListEntries requires both userID and dailyLogID.
 //   DEPENDS: sqlc generated daily_nutrition_logs queries, atlas/models for records and inputs.
 //   LINKS: M-API-NUTRITION / V-M-API-NUTRITION.
 //   ROLE: RUNTIME
@@ -11,11 +11,11 @@
 // START_MODULE_MAP
 //   DailyNutritionLogRepository - Interface for factual daily nutrition logs and entries.
 //   NewDailyNutritionLogRepository - Creates a sqlc-backed daily nutrition repository.
-//   GetOrCreate/GetByDate/ListByRange/UpdateNotes - Daily log operations.
+//   GetOrCreate/GetByID/GetByDate/ListByRange/UpdateNotes - Daily log operations.
 //   AddEntry/ListEntries/UpdateEntry/DeleteEntry - User-scoped entry operations.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.0 - Added Task 2 repository adapter preserving user-scoped ListEntries.
+//   LAST_CHANGE: 1.0.1 - Added user-scoped GetByID so entry mutations can return full parent log metadata.
 // END_CHANGE_SUMMARY
 
 package postgres
@@ -34,6 +34,7 @@ import (
 
 type DailyNutritionLogRepository interface {
 	GetOrCreate(ctx context.Context, userID string, date models.Date, notes *string) (*models.DailyNutritionLogRecord, error)
+	GetByID(ctx context.Context, userID string, id string) (*models.DailyNutritionLogRecord, error)
 	GetByDate(ctx context.Context, userID string, date models.Date) (*models.DailyNutritionLogRecord, error)
 	ListByRange(ctx context.Context, userID string, from, to models.Date) ([]models.DailyNutritionLogRecord, error)
 	UpdateNotes(ctx context.Context, userID string, id string, notes *string) (*models.DailyNutritionLogRecord, error)
@@ -44,11 +45,12 @@ type DailyNutritionLogRepository interface {
 }
 
 type dailyNutritionLogRepository struct {
-	q *generated.Queries
+	q    *generated.Queries
+	pool *pgxpool.Pool
 }
 
 func NewDailyNutritionLogRepository(pool *pgxpool.Pool) DailyNutritionLogRepository {
-	return &dailyNutritionLogRepository{q: generated.New(pool)}
+	return &dailyNutritionLogRepository{q: generated.New(pool), pool: pool}
 }
 
 func (r *dailyNutritionLogRepository) GetOrCreate(ctx context.Context, userID string, date models.Date, notes *string) (*models.DailyNutritionLogRecord, error) {
@@ -64,6 +66,29 @@ func (r *dailyNutritionLogRepository) GetOrCreate(ctx context.Context, userID st
 	})
 	if err != nil {
 		return nil, fmt.Errorf("daily_nutrition_log_repo.GetOrCreate: %w", err)
+	}
+
+	return dailyNutritionLogRecordFromRow(row), nil
+}
+
+func (r *dailyNutritionLogRepository) GetByID(ctx context.Context, userID string, id string) (*models.DailyNutritionLogRecord, error) {
+	uid, lid, err := parseTwoUUIDs(userID, id)
+	if err != nil {
+		return nil, fmt.Errorf("daily_nutrition_log_repo.GetByID: %w", err)
+	}
+
+	row := generated.DailyNutritionLog{}
+	err = r.pool.QueryRow(ctx, `
+SELECT id, user_id, date, notes, created_at, updated_at
+FROM daily_nutrition_logs
+WHERE id = $1 AND user_id = $2
+LIMIT 1
+`, lid, uid).Scan(&row.ID, &row.UserID, &row.Date, &row.Notes, &row.CreatedAt, &row.UpdatedAt)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("daily_nutrition_log_repo.GetByID: %w", err)
 	}
 
 	return dailyNutritionLogRecordFromRow(row), nil

@@ -1,5 +1,5 @@
 // FILE: apps/api/internal/atlas/service/daily_nutrition_log_service.go
-// VERSION: 1.0.0
+// VERSION: 1.0.1
 // START_MODULE_CONTRACT
 //   PURPOSE: Implement factual DailyNutritionLogService with product snapshot entry CRUD and snapshot-based aggregate totals.
 //   SCOPE: GetByDate get-or-create, range listing, notes update, entry add/update/delete validation, product existence/active checks for new entries, and user-scoped aggregate reloads.
@@ -15,7 +15,7 @@
 //   AddEntry/UpdateEntry/DeleteEntry - Entry mutations returning refreshed snapshot totals where possible.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.0 - Added Task 2 factual daily nutrition service.
+//   LAST_CHANGE: 1.0.1 - Reload parent daily log metadata for entry update/delete aggregate responses.
 // END_CHANGE_SUMMARY
 
 package service
@@ -188,12 +188,12 @@ func (s *dailyNutritionLogService) loadAggregate(ctx context.Context, userID str
 }
 
 func (s *dailyNutritionLogService) loadEntryAggregate(ctx context.Context, userID string, entry *models.DailyNutritionEntryRecord) (*models.DailyNutritionLog, error) {
-	entries, err := s.repo.ListEntries(ctx, userID, entry.DailyLogID)
+	parent, err := s.repo.GetByID(ctx, userID, entry.DailyLogID)
 	if err != nil {
 		return nil, fmt.Errorf("daily_nutrition_log_service.loadEntryAggregate: %w", err)
 	}
-	return models.DailyNutritionLogFromRecord(&models.DailyNutritionLogRecord{
-		ID:     entry.DailyLogID,
-		UserID: userID,
-	}, models.DailyNutritionEntriesFromRecords(entries)), nil
+	if parent == nil {
+		return nil, ErrDailyNutritionLogNotFound
+	}
+	return s.loadAggregate(ctx, userID, parent)
 }

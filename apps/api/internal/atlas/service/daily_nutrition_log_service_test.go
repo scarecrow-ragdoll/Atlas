@@ -30,6 +30,7 @@ import (
 type mockDailyNutritionLogRepo struct {
 	atlasPostgres.DailyNutritionLogRepository
 	getOrCreateFn func(ctx context.Context, userID string, date models.Date, notes *string) (*models.DailyNutritionLogRecord, error)
+	getByIDFn     func(ctx context.Context, userID string, id string) (*models.DailyNutritionLogRecord, error)
 	getByDateFn   func(ctx context.Context, userID string, date models.Date) (*models.DailyNutritionLogRecord, error)
 	listByRangeFn func(ctx context.Context, userID string, from, to models.Date) ([]models.DailyNutritionLogRecord, error)
 	updateNotesFn func(ctx context.Context, userID string, id string, notes *string) (*models.DailyNutritionLogRecord, error)
@@ -41,6 +42,9 @@ type mockDailyNutritionLogRepo struct {
 
 func (m *mockDailyNutritionLogRepo) GetOrCreate(ctx context.Context, userID string, date models.Date, notes *string) (*models.DailyNutritionLogRecord, error) {
 	return m.getOrCreateFn(ctx, userID, date, notes)
+}
+func (m *mockDailyNutritionLogRepo) GetByID(ctx context.Context, userID string, id string) (*models.DailyNutritionLogRecord, error) {
+	return m.getByIDFn(ctx, userID, id)
 }
 func (m *mockDailyNutritionLogRepo) GetByDate(ctx context.Context, userID string, date models.Date) (*models.DailyNutritionLogRecord, error) {
 	return m.getByDateFn(ctx, userID, date)
@@ -277,6 +281,48 @@ func TestDailyNutritionLogService_DeleteEntryRequiresOwnedParentLog(t *testing.T
 	assert.Nil(t, log)
 }
 
+func TestDailyNutritionLogService_UpdateEntryPreservesSnapshotsAndReloadsParentMetadata(t *testing.T) {
+	updatedAmount := 75.0
+	svc := newDailyNutritionService(&mockDailyNutritionLogRepo{
+		updateEntryFn: func(ctx context.Context, userID string, id string, input models.UpdateDailyNutritionEntryInput) (*models.DailyNutritionEntryRecord, error) {
+			assert.Equal(t, testUserID, userID)
+			assert.Equal(t, dailyNutritionEntryID, id)
+			assert.Equal(t, dailyNutritionLogID, input.DailyLogID)
+			return dailyNutritionEntryRecord(updatedAmount), nil
+		},
+		getByIDFn: func(ctx context.Context, userID string, id string) (*models.DailyNutritionLogRecord, error) {
+			assert.Equal(t, testUserID, userID)
+			assert.Equal(t, dailyNutritionLogID, id)
+			return dailyNutritionLogRecord(), nil
+		},
+		listEntriesFn: func(ctx context.Context, userID string, dailyLogID string) ([]models.DailyNutritionEntryRecord, error) {
+			assert.Equal(t, testUserID, userID)
+			assert.Equal(t, dailyNutritionLogID, dailyLogID)
+			return []models.DailyNutritionEntryRecord{*dailyNutritionEntryRecord(updatedAmount)}, nil
+		},
+	}, &mockDailyNutritionProductService{})
+
+	log, err := svc.UpdateEntry(ctx, testUserID, dailyNutritionEntryID, models.UpdateDailyNutritionEntryInput{
+		DailyLogID:  dailyNutritionLogID,
+		AmountGrams: &updatedAmount,
+		MealLabel:   ptrStr("Dinner"),
+		Notes:       ptrStr("still grilled"),
+	})
+	require.NoError(t, err)
+	require.NotNil(t, log)
+	require.Len(t, log.Entries, 1)
+	assert.Equal(t, "2026-06-24", log.Date)
+	require.NotNil(t, log.Notes)
+	assert.Equal(t, "training day", *log.Notes)
+	assert.Equal(t, "2026-06-24T00:00:00Z", log.CreatedAt)
+	assert.Equal(t, "2026-06-24T00:00:00Z", log.UpdatedAt)
+	assert.Equal(t, "Chicken Breast", log.Entries[0].ProductNameSnapshot)
+	assert.Equal(t, 123.75, log.Totals.Calories)
+	assert.Equal(t, 23.25, log.Totals.Protein)
+	assert.Equal(t, 2.7, log.Totals.Fat)
+	assert.Equal(t, 0.0, log.Totals.Carbs)
+}
+
 func TestDailyNutritionLogService_UpdateEntryRejectsNonPositiveAmount(t *testing.T) {
 	svc := newDailyNutritionService(&mockDailyNutritionLogRepo{}, &mockDailyNutritionProductService{})
 
@@ -286,4 +332,38 @@ func TestDailyNutritionLogService_UpdateEntryRejectsNonPositiveAmount(t *testing
 	})
 	assert.ErrorIs(t, err, service.ErrDailyNutritionAmountInvalid)
 	assert.Nil(t, log)
+}
+
+func TestDailyNutritionLogService_DeleteEntryReturnsParentMetadataAndRemainingTotals(t *testing.T) {
+	svc := newDailyNutritionService(&mockDailyNutritionLogRepo{
+		deleteEntryFn: func(ctx context.Context, userID string, id string) (*models.DailyNutritionEntryRecord, error) {
+			assert.Equal(t, testUserID, userID)
+			assert.Equal(t, dailyNutritionEntryID, id)
+			return dailyNutritionEntryRecord(75), nil
+		},
+		getByIDFn: func(ctx context.Context, userID string, id string) (*models.DailyNutritionLogRecord, error) {
+			assert.Equal(t, testUserID, userID)
+			assert.Equal(t, dailyNutritionLogID, id)
+			return dailyNutritionLogRecord(), nil
+		},
+		listEntriesFn: func(ctx context.Context, userID string, dailyLogID string) ([]models.DailyNutritionEntryRecord, error) {
+			assert.Equal(t, testUserID, userID)
+			assert.Equal(t, dailyNutritionLogID, dailyLogID)
+			return []models.DailyNutritionEntryRecord{*dailyNutritionEntryRecord(25)}, nil
+		},
+	}, &mockDailyNutritionProductService{})
+
+	log, err := svc.DeleteEntry(ctx, testUserID, dailyNutritionEntryID)
+	require.NoError(t, err)
+	require.NotNil(t, log)
+	require.Len(t, log.Entries, 1)
+	assert.Equal(t, "2026-06-24", log.Date)
+	require.NotNil(t, log.Notes)
+	assert.Equal(t, "training day", *log.Notes)
+	assert.Equal(t, "2026-06-24T00:00:00Z", log.CreatedAt)
+	assert.Equal(t, "2026-06-24T00:00:00Z", log.UpdatedAt)
+	assert.Equal(t, 41.25, log.Totals.Calories)
+	assert.Equal(t, 7.75, log.Totals.Protein)
+	assert.Equal(t, 0.9, log.Totals.Fat)
+	assert.Equal(t, 0.0, log.Totals.Carbs)
 }
