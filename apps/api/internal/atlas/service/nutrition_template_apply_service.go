@@ -9,13 +9,12 @@
 //   MAP_MODE: EXPORTS
 // END_MODULE_CONTRACT
 // START_MODULE_MAP
-//   DailyNutritionLegacyResolver - Interface for detecting pre-cutover legacy daily nutrition data.
-//   NewDailyNutritionLegacyResolver - Creates the concrete resolver used by GraphQL wiring.
 //   NutritionTemplateApplyService - Interface for applying one weekly template to one week.
 //   NewNutritionTemplateApplyService - Creates the dedicated apply service without expanding template CRUD.
 //   ApplyToWeek - Applies supported weekly-template modes and returns per-date outcomes.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Moved legacy resolver implementation to daily_nutrition_legacy_resolver.go for Task 6 resolution metadata.
 //   LAST_CHANGE: 1.0.0 - Added Task 4 seed_empty_days template apply service and legacy resolver.
 // END_CHANGE_SUMMARY
 
@@ -37,35 +36,6 @@ const legacyNutritionSeedSkipReason = "legacy nutrition exists; migrate or revie
 var (
 	ErrNutritionTemplateApplyModeUnsupported = errors.New("nutrition template apply mode is unsupported")
 )
-
-type DailyNutritionLegacyResolver interface {
-	HasLegacyNutrition(ctx context.Context, userID string, date models.Date) (bool, error)
-}
-
-type dailyNutritionLegacyResolver struct {
-	overrideRepo postgres.DailyNutritionOverrideRepository
-}
-
-func NewDailyNutritionLegacyResolver(
-	_ postgres.NutritionTemplateRepository,
-	_ postgres.NutritionTemplateItemRepository,
-	overrideRepo postgres.DailyNutritionOverrideRepository,
-	_ postgres.DailyNutritionOverrideItemRepository,
-	_ postgres.NutritionProductRepository,
-) DailyNutritionLegacyResolver {
-	return &dailyNutritionLegacyResolver{overrideRepo: overrideRepo}
-}
-
-func (r *dailyNutritionLegacyResolver) HasLegacyNutrition(ctx context.Context, userID string, date models.Date) (bool, error) {
-	if r == nil || r.overrideRepo == nil {
-		return false, nil
-	}
-	record, err := r.overrideRepo.GetByDate(ctx, userID, date.String())
-	if err != nil {
-		return false, fmt.Errorf("daily_nutrition_legacy_resolver.HasLegacyNutrition: %w", err)
-	}
-	return record != nil, nil
-}
 
 type NutritionTemplateApplyService interface {
 	ApplyToWeek(ctx context.Context, userID string, templateID string, mode models.NutritionTemplateApplyMode) (*models.NutritionTemplateApplyResult, error)

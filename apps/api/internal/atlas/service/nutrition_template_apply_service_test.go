@@ -9,6 +9,7 @@
 //   MAP_MODE: SUMMARY
 // END_MODULE_CONTRACT
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.2 - Kept legacy resolver mock aligned with Task 6 Resolve contract.
 //   LAST_CHANGE: 1.0.1 - Added quality-review coverage for product-conflict and empty-template apply semantics.
 // END_CHANGE_SUMMARY
 
@@ -66,6 +67,10 @@ type mockTemplateApplyLegacyResolver struct {
 
 func (m *mockTemplateApplyLegacyResolver) HasLegacyNutrition(ctx context.Context, userID string, date models.Date) (bool, error) {
 	return m.legacyDates[date.String()], nil
+}
+
+func (m *mockTemplateApplyLegacyResolver) Resolve(ctx context.Context, userID string, date models.Date) (*models.DailyNutritionLegacyResolution, error) {
+	return nil, nil
 }
 
 type memorySeedDailyRepo struct {

@@ -1,8 +1,8 @@
 // FILE: apps/api/internal/atlas/models/nutrition_daily.go
 // VERSION: 1.0.1
 // START_MODULE_CONTRACT
-//   PURPOSE: Define factual daily nutrition log models, entry snapshots, inputs, result wrappers, weekly-template apply results, and macro-total converters.
-//   SCOPE: DailyNutritionLogRecord, DailyNutritionEntryRecord, public daily log/entry models, add/update inputs, repository create/seed inputs, template apply results, and snapshot-based total calculations; excludes legacy template and override types.
+//   PURPOSE: Define factual daily nutrition log models, entry snapshots, inputs, result wrappers, weekly-template apply results, legacy resolution metadata, and macro-total converters.
+//   SCOPE: DailyNutritionLogRecord, DailyNutritionEntryRecord, public daily log/entry models, add/update inputs, repository create/seed inputs, template apply results, legacy resolution metadata for export compatibility, and snapshot-based total calculations.
 //   DEPENDS: apps/api/internal/atlas/models/nutrition.go NutritionMacros and nutrition error result types.
 //   LINKS: M-API-NUTRITION / V-M-API-NUTRITION.
 //   ROLE: RUNTIME
@@ -12,7 +12,8 @@
 //   DailyNutritionLogRecord - DB record type for factual daily nutrition logs.
 //   DailyNutritionEntryRecord - DB record type for product snapshot food-log entries.
 //   DailyNutritionEntry - Public factual food-log entry with snapshot macros.
-//   DailyNutritionLog - Public factual daily log aggregate with entries and totals.
+//   DailyNutritionLegacyResolutionStatus/DailyNutritionLegacyOperation/DailyNutritionLegacyResolution - Legacy override diagnostics and deterministic conversion payload.
+//   DailyNutritionLog - Public factual daily log aggregate with entries, totals, and optional legacy resolution metadata.
 //   UpdateDailyNutritionLogNotesInput - Notes update input for a daily log.
 //   AddDailyNutritionEntryInput - Service input for adding a product snapshot entry by date.
 //   UpdateDailyNutritionEntryInput - Service/repository input for updating factual entry fields.
@@ -25,6 +26,7 @@
 //   DailyNutritionEntryMacros/DailyNutritionTotalsFromEntries - Snapshot-based macro calculations.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.4 - Added legacy override resolution metadata for daily food-log export compatibility.
 //   LAST_CHANGE: 1.0.3 - Added GraphQL union-style error fields to NutritionTemplateApplyResult.
 //   LAST_CHANGE: 1.0.2 - Added weekly template apply result models and atomic daily seed input/result types.
 // END_CHANGE_SUMMARY
@@ -75,15 +77,47 @@ type DailyNutritionEntry struct {
 	UpdatedAt               string          `json:"updatedAt"`
 }
 
+type DailyNutritionLegacyResolutionStatus string
+
+const (
+	LegacyResolutionResolved   DailyNutritionLegacyResolutionStatus = "resolved"
+	LegacyResolutionUnresolved DailyNutritionLegacyResolutionStatus = "unresolved"
+)
+
+type DailyNutritionLegacyOperation struct {
+	ID          string  `json:"id"`
+	OverrideID  string  `json:"overrideId"`
+	ProductID   string  `json:"productId"`
+	AmountGrams float64 `json:"amountGrams"`
+	Operation   string  `json:"operation"`
+	MealLabel   *string `json:"mealLabel"`
+	Notes       *string `json:"notes"`
+	CreatedAt   string  `json:"createdAt"`
+	UpdatedAt   string  `json:"updatedAt"`
+}
+
+type DailyNutritionLegacyResolution struct {
+	Status            DailyNutritionLegacyResolutionStatus `json:"legacyResolutionStatus"`
+	Date              string                               `json:"date"`
+	WeekStartDate     string                               `json:"weekStartDate"`
+	SourceOverrideID  string                               `json:"sourceOverrideId"`
+	ResolvedEntries   []DailyNutritionEntry                `json:"resolvedEntries"`
+	Totals            NutritionMacros                      `json:"totals"`
+	LegacyTotals      NutritionMacros                      `json:"legacyTotals"`
+	RawOperations     []DailyNutritionLegacyOperation      `json:"rawOperations"`
+	UnresolvedReasons []string                             `json:"unresolvedReasons"`
+}
+
 type DailyNutritionLog struct {
-	ID        string                `json:"id"`
-	UserID    string                `json:"userId"`
-	Date      string                `json:"date"`
-	Notes     *string               `json:"notes"`
-	Entries   []DailyNutritionEntry `json:"entries"`
-	Totals    NutritionMacros       `json:"totals"`
-	CreatedAt string                `json:"createdAt"`
-	UpdatedAt string                `json:"updatedAt"`
+	ID               string                          `json:"id"`
+	UserID           string                          `json:"userId"`
+	Date             string                          `json:"date"`
+	Notes            *string                         `json:"notes"`
+	Entries          []DailyNutritionEntry           `json:"entries"`
+	Totals           NutritionMacros                 `json:"totals"`
+	LegacyResolution *DailyNutritionLegacyResolution `json:"legacyResolution"`
+	CreatedAt        string                          `json:"createdAt"`
+	UpdatedAt        string                          `json:"updatedAt"`
 }
 
 type UpdateDailyNutritionLogNotesInput struct {

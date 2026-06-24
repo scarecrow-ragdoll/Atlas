@@ -1,20 +1,21 @@
 // FILE: apps/api/internal/atlas/service/daily_nutrition_log_service.go
 // VERSION: 1.0.2
 // START_MODULE_CONTRACT
-//   PURPOSE: Implement factual DailyNutritionLogService with product snapshot entry CRUD and snapshot-based aggregate totals.
-//   SCOPE: GetByDate get-or-create, range listing, notes update, entry add/update/delete validation, product existence/active checks for new entries, and user-scoped aggregate reloads.
-//   DEPENDS: postgres.DailyNutritionLogRepository, NutritionProductService, apps/api/internal/atlas/models, zap.
+//   PURPOSE: Implement factual DailyNutritionLogService with product snapshot entry CRUD, snapshot-based aggregate totals, and legacy read compatibility metadata.
+//   SCOPE: GetByDate get-or-create, range listing, notes update, entry add/update/delete validation, product existence/active checks for new entries, user-scoped aggregate reloads, and legacy override metadata when factual entries are absent.
+//   DEPENDS: postgres.DailyNutritionLogRepository, NutritionProductService, DailyNutritionLegacyResolver, apps/api/internal/atlas/models, zap.
 //   LINKS: M-API-NUTRITION / V-M-API-NUTRITION.
 //   ROLE: RUNTIME
 //   MAP_MODE: EXPORTS
 // END_MODULE_CONTRACT
 // START_MODULE_MAP
 //   DailyNutritionLogService - Interface for factual daily nutrition log operations.
-//   NewDailyNutritionLogService - Creates a service with repository, product service, and logger dependencies.
+//   NewDailyNutritionLogService/NewDailyNutritionLogServiceWithLegacyResolver - Creates a service with repository, product service, optional legacy resolver, and logger dependencies.
 //   GetByDate/ListByRange/UpdateNotes - Daily log aggregate operations.
 //   AddEntry/UpdateEntry/DeleteEntry - Entry mutations returning refreshed snapshot totals where possible.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.3 - Added legacy override read compatibility when factual daily entries are absent.
 //   LAST_CHANGE: 1.0.2 - Treat entry updates as full replacements for amount and position.
 // END_CHANGE_SUMMARY
 
@@ -51,14 +52,19 @@ type DailyNutritionLogService interface {
 type dailyNutritionLogService struct {
 	repo           postgres.DailyNutritionLogRepository
 	productService NutritionProductService
+	legacyResolver DailyNutritionLegacyResolver
 	logger         *zap.Logger
 }
 
 func NewDailyNutritionLogService(repo postgres.DailyNutritionLogRepository, productService NutritionProductService, logger *zap.Logger) DailyNutritionLogService {
+	return NewDailyNutritionLogServiceWithLegacyResolver(repo, productService, nil, logger)
+}
+
+func NewDailyNutritionLogServiceWithLegacyResolver(repo postgres.DailyNutritionLogRepository, productService NutritionProductService, legacyResolver DailyNutritionLegacyResolver, logger *zap.Logger) DailyNutritionLogService {
 	if logger == nil {
 		logger = zap.NewNop()
 	}
-	return &dailyNutritionLogService{repo: repo, productService: productService, logger: logger}
+	return &dailyNutritionLogService{repo: repo, productService: productService, legacyResolver: legacyResolver, logger: logger}
 }
 
 func (s *dailyNutritionLogService) GetByDate(ctx context.Context, userID string, date models.Date) (*models.DailyNutritionLog, error) {
@@ -184,7 +190,34 @@ func (s *dailyNutritionLogService) loadAggregate(ctx context.Context, userID str
 	if err != nil {
 		return nil, fmt.Errorf("daily_nutrition_log_service.loadAggregate: %w", err)
 	}
-	return models.DailyNutritionLogFromRecord(record, models.DailyNutritionEntriesFromRecords(entries)), nil
+	log := models.DailyNutritionLogFromRecord(record, models.DailyNutritionEntriesFromRecords(entries))
+	if len(log.Entries) > 0 || s.legacyResolver == nil {
+		return log, nil
+	}
+	resolution, err := s.legacyResolver.Resolve(ctx, userID, record.Date)
+	if err != nil {
+		return nil, fmt.Errorf("daily_nutrition_log_service.loadAggregate: %w", err)
+	}
+	if resolution == nil {
+		return log, nil
+	}
+	log.LegacyResolution = resolution
+	if resolution.Status != models.LegacyResolutionResolved {
+		return log, nil
+	}
+
+	resolvedEntries := make([]models.DailyNutritionEntry, len(resolution.ResolvedEntries))
+	for i, entry := range resolution.ResolvedEntries {
+		entry.DailyLogID = record.ID
+		entry.Position = int32(i)
+		entry.Macros = models.DailyNutritionEntryMacros(entry)
+		resolvedEntries[i] = entry
+	}
+	log.Entries = resolvedEntries
+	log.Totals = models.DailyNutritionTotalsFromEntries(resolvedEntries)
+	log.LegacyResolution.ResolvedEntries = resolvedEntries
+	log.LegacyResolution.Totals = log.Totals
+	return log, nil
 }
 
 func (s *dailyNutritionLogService) loadEntryAggregate(ctx context.Context, userID string, entry *models.DailyNutritionEntryRecord) (*models.DailyNutritionLog, error) {

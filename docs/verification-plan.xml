@@ -524,6 +524,7 @@
         <file>apps/api/internal/atlas/service/nutrition_product_service_test.go</file>
         <file>apps/api/internal/atlas/service/nutrition_template_service_test.go</file>
         <file>apps/api/internal/atlas/service/nutrition_template_apply_service_test.go</file>
+        <file>apps/api/internal/atlas/service/daily_nutrition_legacy_resolver_test.go</file>
         <file>apps/api/internal/atlas/service/nutrition_template_item_service_test.go</file>
         <file>apps/api/internal/atlas/service/nutrition_macro_service_test.go</file>
         <file>apps/api/internal/atlas/service/nutrition_override_service_test.go</file>
@@ -533,7 +534,7 @@
         <file>apps/api/internal/atlas/repository/postgres/nutrition_migration_test.go</file>
       </test-files>
       <module-checks>
-        <check-1>cd apps/api &amp;&amp; go test -run "TestNutrition|TestOverride|TestDailyNutritionLogService" ./internal/atlas/service/ -count=1</check-1>
+        <check-1>cd apps/api &amp;&amp; go test -run "TestNutrition|TestOverride|TestDailyNutritionLegacyResolver|TestDailyNutritionLogService" ./internal/atlas/service/ -count=1</check-1>
         <check-1a>cd apps/api &amp;&amp; go test ./internal/atlas/service -run TestNutritionTemplateApplyService -count=1</check-1a>
         <check-2>cd apps/api &amp;&amp; INTEGRATION_TESTS=1 go test -run "TestWave05|TestDailyNutritionMigration|TestDailyNutritionRepository" ./internal/atlas/repository/postgres/ -count=1</check-2>
         <check-3>bunx nx run api:codegen</check-3>
@@ -548,6 +549,7 @@
         <scenario-3 kind="success">NutritionMacroService calculates KJBJU from template items with override ADD/SUBTRACT/REPLACE operations.</scenario-3>
         <scenario-4 kind="success">DailyNutritionOverride service manages date-scoped overrides with isolated item CRUD.</scenario-4>
         <scenario-5 kind="success">DailyNutritionLog service get-or-creates date-scoped factual logs, snapshots product macros into entries, and returns snapshot-based totals.</scenario-5>
+        <scenario-5b kind="success">DailyNutritionLegacyResolver resolves deterministic legacy daily overrides into factual-style entries and exposes unresolved raw-operation diagnostics for export compatibility.</scenario-5b>
         <scenario-5a kind="success">Atlas GraphQL exposes factual daily nutrition log queries and mutations, all-product listing, product restore, and weekly template apply results through executable schema resolvers.</scenario-5a>
         <scenario-6 kind="success">WAVE-05 and factual daily nutrition migrations apply without errors against test PostgreSQL.</scenario-6>
         <scenario-7 kind="failure">Empty or negative macro values, missing names, zero amounts, and invalid operations return deterministic validation errors.</scenario-7>

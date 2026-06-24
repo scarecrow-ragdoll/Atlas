@@ -9,6 +9,7 @@
 //   MAP_MODE: SUMMARY
 // END_MODULE_CONTRACT
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Added Task 6 RED coverage for legacy override read compatibility.
 //   LAST_CHANGE: 1.0.0 - Added Task 2 RED tests for factual daily nutrition logs.
 // END_CHANGE_SUMMARY
 
@@ -77,6 +78,20 @@ func (m *mockDailyNutritionProductService) GetByID(ctx context.Context, userID s
 	return m.getByIDFn(ctx, userID, id)
 }
 
+type mockDailyNutritionLegacyResolver struct {
+	service.DailyNutritionLegacyResolver
+	hasLegacyNutritionFn func(ctx context.Context, userID string, date models.Date) (bool, error)
+	resolveFn            func(ctx context.Context, userID string, date models.Date) (*models.DailyNutritionLegacyResolution, error)
+}
+
+func (m *mockDailyNutritionLegacyResolver) HasLegacyNutrition(ctx context.Context, userID string, date models.Date) (bool, error) {
+	return m.hasLegacyNutritionFn(ctx, userID, date)
+}
+
+func (m *mockDailyNutritionLegacyResolver) Resolve(ctx context.Context, userID string, date models.Date) (*models.DailyNutritionLegacyResolution, error) {
+	return m.resolveFn(ctx, userID, date)
+}
+
 var (
 	dailyNutritionDate      = models.MustDate("2026-06-24")
 	dailyNutritionLogID     = "111e8400-e29b-41d4-a716-446655440000"
@@ -86,6 +101,14 @@ var (
 
 func newDailyNutritionService(repo *mockDailyNutritionLogRepo, productSvc *mockDailyNutritionProductService) service.DailyNutritionLogService {
 	return service.NewDailyNutritionLogService(repo, productSvc, zap.NewNop())
+}
+
+func newDailyNutritionServiceWithLegacy(
+	repo *mockDailyNutritionLogRepo,
+	productSvc *mockDailyNutritionProductService,
+	legacyResolver service.DailyNutritionLegacyResolver,
+) service.DailyNutritionLogService {
+	return service.NewDailyNutritionLogServiceWithLegacyResolver(repo, productSvc, legacyResolver, zap.NewNop())
 }
 
 func dailyNutritionLogRecord() *models.DailyNutritionLogRecord {
@@ -152,6 +175,113 @@ func TestDailyNutritionLogService_GetByDateCreatesEmptyLogWithZeroTotals(t *test
 	require.NotNil(t, log)
 	assert.Empty(t, log.Entries)
 	assert.Equal(t, models.NutritionMacros{}, log.Totals)
+}
+
+func TestDailyNutritionLogService_GetByDateAttachesResolvedLegacyWhenFactualEntriesEmpty(t *testing.T) {
+	legacyEntry := models.DailyNutritionEntry{
+		ID:                      "legacy:add-yogurt",
+		ProductID:               dailyNutritionProductID,
+		ProductNameSnapshot:     "Yogurt",
+		CaloriesPer100gSnapshot: 200,
+		ProteinPer100gSnapshot:  20,
+		FatPer100gSnapshot:      4,
+		CarbsPer100gSnapshot:    12,
+		AmountGrams:             100,
+		Position:                0,
+	}
+	legacyEntry.Macros = models.DailyNutritionEntryMacros(legacyEntry)
+
+	svc := newDailyNutritionServiceWithLegacy(&mockDailyNutritionLogRepo{
+		getOrCreateFn: func(ctx context.Context, userID string, date models.Date, notes *string) (*models.DailyNutritionLogRecord, error) {
+			return dailyNutritionLogRecord(), nil
+		},
+		listEntriesFn: func(ctx context.Context, userID string, dailyLogID string) ([]models.DailyNutritionEntryRecord, error) {
+			return []models.DailyNutritionEntryRecord{}, nil
+		},
+	}, &mockDailyNutritionProductService{}, &mockDailyNutritionLegacyResolver{
+		resolveFn: func(ctx context.Context, userID string, date models.Date) (*models.DailyNutritionLegacyResolution, error) {
+			assert.Equal(t, testUserID, userID)
+			assert.Equal(t, "2026-06-24", date.String())
+			return &models.DailyNutritionLegacyResolution{
+				Status:           models.LegacyResolutionResolved,
+				Date:             date.String(),
+				SourceOverrideID: legacyOverrideID,
+				ResolvedEntries:  []models.DailyNutritionEntry{legacyEntry},
+				Totals:           legacyEntry.Macros,
+				LegacyTotals:     legacyEntry.Macros,
+				RawOperations: []models.DailyNutritionLegacyOperation{
+					{ID: "legacy-op-1", ProductID: dailyNutritionProductID, AmountGrams: 100, Operation: string(models.OperationAdd)},
+				},
+			}, nil
+		},
+	})
+
+	log, err := svc.GetByDate(ctx, testUserID, dailyNutritionDate)
+	require.NoError(t, err)
+	require.NotNil(t, log)
+	require.NotNil(t, log.LegacyResolution)
+	assert.Equal(t, models.LegacyResolutionResolved, log.LegacyResolution.Status)
+	require.Len(t, log.Entries, 1)
+	assert.Equal(t, "Yogurt", log.Entries[0].ProductNameSnapshot)
+	assert.Equal(t, dailyNutritionLogID, log.Entries[0].DailyLogID)
+	assert.InDelta(t, 200, log.Totals.Calories, 0.001)
+}
+
+func TestDailyNutritionLogService_GetByDateKeepsUnresolvedLegacyAsDiagnostics(t *testing.T) {
+	svc := newDailyNutritionServiceWithLegacy(&mockDailyNutritionLogRepo{
+		getOrCreateFn: func(ctx context.Context, userID string, date models.Date, notes *string) (*models.DailyNutritionLogRecord, error) {
+			return dailyNutritionLogRecord(), nil
+		},
+		listEntriesFn: func(ctx context.Context, userID string, dailyLogID string) ([]models.DailyNutritionEntryRecord, error) {
+			return []models.DailyNutritionEntryRecord{}, nil
+		},
+	}, &mockDailyNutritionProductService{}, &mockDailyNutritionLegacyResolver{
+		resolveFn: func(ctx context.Context, userID string, date models.Date) (*models.DailyNutritionLegacyResolution, error) {
+			return &models.DailyNutritionLegacyResolution{
+				Status:           models.LegacyResolutionUnresolved,
+				Date:             date.String(),
+				SourceOverrideID: legacyOverrideID,
+				LegacyTotals:     models.NutritionMacros{Calories: -50},
+				RawOperations: []models.DailyNutritionLegacyOperation{
+					{ID: "legacy-op-1", ProductID: dailyNutritionProductID, AmountGrams: 500, Operation: string(models.OperationSubtract)},
+				},
+				UnresolvedReasons: []string{"subtract exceeds base amount"},
+			}, nil
+		},
+	})
+
+	log, err := svc.GetByDate(ctx, testUserID, dailyNutritionDate)
+	require.NoError(t, err)
+	require.NotNil(t, log)
+	require.NotNil(t, log.LegacyResolution)
+	assert.Equal(t, models.LegacyResolutionUnresolved, log.LegacyResolution.Status)
+	assert.Empty(t, log.Entries)
+	assert.Equal(t, models.NutritionMacros{}, log.Totals)
+	assert.InDelta(t, -50, log.LegacyResolution.LegacyTotals.Calories, 0.001)
+	assert.NotEmpty(t, log.LegacyResolution.RawOperations)
+}
+
+func TestDailyNutritionLogService_GetByDateExplicitFactualEntriesWinOverLegacyResolver(t *testing.T) {
+	svc := newDailyNutritionServiceWithLegacy(&mockDailyNutritionLogRepo{
+		getOrCreateFn: func(ctx context.Context, userID string, date models.Date, notes *string) (*models.DailyNutritionLogRecord, error) {
+			return dailyNutritionLogRecord(), nil
+		},
+		listEntriesFn: func(ctx context.Context, userID string, dailyLogID string) ([]models.DailyNutritionEntryRecord, error) {
+			return []models.DailyNutritionEntryRecord{*dailyNutritionEntryRecord(100)}, nil
+		},
+	}, &mockDailyNutritionProductService{}, &mockDailyNutritionLegacyResolver{
+		resolveFn: func(ctx context.Context, userID string, date models.Date) (*models.DailyNutritionLegacyResolution, error) {
+			t.Fatal("explicit factual entries must win without resolving legacy overrides")
+			return nil, nil
+		},
+	})
+
+	log, err := svc.GetByDate(ctx, testUserID, dailyNutritionDate)
+	require.NoError(t, err)
+	require.NotNil(t, log)
+	require.Len(t, log.Entries, 1)
+	assert.Nil(t, log.LegacyResolution)
+	assert.InDelta(t, 165, log.Totals.Calories, 0.001)
 }
 
 func TestDailyNutritionLogService_AddEntrySnapshotsProductAndCalculatesTotals(t *testing.T) {

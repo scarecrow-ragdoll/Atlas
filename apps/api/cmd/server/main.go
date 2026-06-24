@@ -13,6 +13,7 @@
 //   optionalEnvFile - Returns a local .env path only when present.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.3 - Wired DailyNutritionLogService to the legacy override resolver for Task 6 read compatibility.
 //   LAST_CHANGE: 1.0.2 - Wired factual daily nutrition log and template-apply services into the Atlas GraphQL server.
 // END_CHANGE_SUMMARY
 
@@ -178,13 +179,18 @@ func main() {
 	atlasNutritionTemplateService := atlasService.NewNutritionTemplateService(atlasNutritionTemplateRepo, atlasNutritionTemplateItemRepo, l)
 	atlasNutritionTemplateItemService := atlasService.NewNutritionTemplateItemService(atlasNutritionTemplateItemRepo, atlasNutritionTemplateRepo, atlasNutritionProductRepo, l)
 	atlasNutritionOverrideService := atlasService.NewNutritionOverrideService(atlasNutritionOverrideRepo, atlasNutritionOverrideItemRepo, l)
-	atlasDailyNutritionLogService := atlasService.NewDailyNutritionLogService(atlasDailyNutritionLogRepo, atlasNutritionProductService, l)
 	atlasDailyNutritionLegacyResolver := atlasService.NewDailyNutritionLegacyResolver(
 		atlasNutritionTemplateRepo,
 		atlasNutritionTemplateItemRepo,
 		atlasNutritionOverrideRepo,
 		atlasNutritionOverrideItemRepo,
 		atlasNutritionProductRepo,
+	)
+	atlasDailyNutritionLogService := atlasService.NewDailyNutritionLogServiceWithLegacyResolver(
+		atlasDailyNutritionLogRepo,
+		atlasNutritionProductService,
+		atlasDailyNutritionLegacyResolver,
+		l,
 	)
 	atlasNutritionTemplateApplyService := atlasService.NewNutritionTemplateApplyService(
 		atlasNutritionTemplateRepo,
