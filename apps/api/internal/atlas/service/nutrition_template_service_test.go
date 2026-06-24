@@ -25,12 +25,12 @@ import (
 
 type mockNutritionTemplateRepo struct {
 	atlasPostgres.NutritionTemplateRepository
-	upsertFn     func(ctx context.Context, userID string, weekStartDate string, title, notes *string) (*models.NutritionTemplateRecord, error)
-	getByIDFn    func(ctx context.Context, userID string, id string) (*models.NutritionTemplateRecord, error)
-	getByWeekFn  func(ctx context.Context, userID string, weekStartDate string) (*models.NutritionTemplateRecord, error)
+	upsertFn      func(ctx context.Context, userID string, weekStartDate string, title, notes *string) (*models.NutritionTemplateRecord, error)
+	getByIDFn     func(ctx context.Context, userID string, id string) (*models.NutritionTemplateRecord, error)
+	getByWeekFn   func(ctx context.Context, userID string, weekStartDate string) (*models.NutritionTemplateRecord, error)
 	listByRangeFn func(ctx context.Context, userID string, startDate, endDate string) ([]models.NutritionTemplateRecord, error)
-	updateFn     func(ctx context.Context, userID string, id string, title, notes *string) (*models.NutritionTemplateRecord, error)
-	deleteFn     func(ctx context.Context, userID string, id string) (*models.NutritionTemplateRecord, error)
+	updateFn      func(ctx context.Context, userID string, id string, title, notes *string) (*models.NutritionTemplateRecord, error)
+	deleteFn      func(ctx context.Context, userID string, id string) (*models.NutritionTemplateRecord, error)
 }
 
 func (m *mockNutritionTemplateRepo) Upsert(ctx context.Context, userID string, weekStartDate string, title, notes *string) (*models.NutritionTemplateRecord, error) {
@@ -55,10 +55,26 @@ func (m *mockNutritionTemplateRepo) Delete(ctx context.Context, userID string, i
 type mockNutritionTemplateItemRepo struct {
 	atlasPostgres.NutritionTemplateItemRepository
 	listByTemplateFn func(ctx context.Context, templateID string) ([]models.NutritionTemplateItemRecord, error)
+	createFn         func(ctx context.Context, templateID string, productID string, amountGrams float64, mealLabel, notes *string) (*models.NutritionTemplateItemRecord, error)
+	getByIDForUserFn func(ctx context.Context, userID string, id string) (*models.NutritionTemplateItemRecord, error)
+	updateFn         func(ctx context.Context, id string, amountGrams float64, mealLabel, notes *string) (*models.NutritionTemplateItemRecord, error)
+	deleteFn         func(ctx context.Context, id string) (*models.NutritionTemplateItemRecord, error)
 }
 
+func (m *mockNutritionTemplateItemRepo) Create(ctx context.Context, templateID string, productID string, amountGrams float64, mealLabel, notes *string) (*models.NutritionTemplateItemRecord, error) {
+	return m.createFn(ctx, templateID, productID, amountGrams, mealLabel, notes)
+}
+func (m *mockNutritionTemplateItemRepo) GetByIDForUser(ctx context.Context, userID string, id string) (*models.NutritionTemplateItemRecord, error) {
+	return m.getByIDForUserFn(ctx, userID, id)
+}
 func (m *mockNutritionTemplateItemRepo) ListByTemplate(ctx context.Context, templateID string) ([]models.NutritionTemplateItemRecord, error) {
 	return m.listByTemplateFn(ctx, templateID)
+}
+func (m *mockNutritionTemplateItemRepo) Update(ctx context.Context, id string, amountGrams float64, mealLabel, notes *string) (*models.NutritionTemplateItemRecord, error) {
+	return m.updateFn(ctx, id, amountGrams, mealLabel, notes)
+}
+func (m *mockNutritionTemplateItemRepo) Delete(ctx context.Context, id string) (*models.NutritionTemplateItemRecord, error) {
+	return m.deleteFn(ctx, id)
 }
 
 var tmplTestRecord = &models.NutritionTemplateRecord{

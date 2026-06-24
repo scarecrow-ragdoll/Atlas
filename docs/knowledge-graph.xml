@@ -231,9 +231,9 @@
       <depends>M-API</depends>
       <verification-ref>V-M-API-NUTRITION</verification-ref>
       <annotations>
-        <export-NutritionProductService PURPOSE="Product CRUD with soft-delete, name validation, macro non-negative check." />
+        <export-NutritionProductService PURPOSE="Product CRUD with active/all listing, soft-delete, restore, name validation, macro non-negative check." />
         <export-NutritionTemplateService PURPOSE="Weekly template upsert with cascading item loading." />
-        <export-NutritionTemplateItemService PURPOSE="Template item CRUD with template ownership check." />
+        <export-NutritionTemplateItemService PURPOSE="Template item CRUD with parent-template and active-product ownership checks." />
         <export-DailyNutritionOverrideService PURPOSE="Daily override upsert with isolated item CRUD." />
         <export-DailyNutritionLogService PURPOSE="Factual daily nutrition get-or-create, entry CRUD, product snapshots, and snapshot-based totals." />
         <export-NutritionMacroService PURPOSE="KJBJU calculation per RULE-010/RULE-011 with ADD/SUBTRACT/REPLACE operations." />

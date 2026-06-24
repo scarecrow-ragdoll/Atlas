@@ -1,12 +1,15 @@
 // FILE: apps/api/internal/atlas/service/nutrition_template_item_service.go
 // VERSION: 1.0.0
 // START_MODULE_CONTRACT
-//   PURPOSE: Implement NutritionTemplateItemService with validation for amountGrams > 0 and template ownership check.
-//   SCOPE: Create, Update, Delete. Create validates template exists and belongs to user. Update validates amountGrams > 0. Log markers: [NutritionTemplateItem][create|update|delete].
-//   DEPENDS: postgres.NutritionTemplateItemRepository, postgres.NutritionTemplateRepository, models.
+//   PURPOSE: Implement NutritionTemplateItemService with validation and ownership checks for template item mutations.
+//   SCOPE: Create, Update, Delete. Create validates template and active product belong to user. Update/Delete validate item through parent template ownership. Update validates amountGrams > 0. Log markers: [NutritionTemplateItem][create|update|delete].
+//   DEPENDS: postgres.NutritionTemplateItemRepository, postgres.NutritionTemplateRepository, postgres.NutritionProductRepository, models.
 //   ROLE: RUNTIME
 //   MAP_MODE: EXPORTS
 // END_MODULE_CONTRACT
+// START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Hardened product ownership on create and parent-template ownership on update/delete.
+// END_CHANGE_SUMMARY
 
 package service
 
@@ -32,13 +35,19 @@ type NutritionTemplateItemService interface {
 }
 
 type nutritionTemplateItemService struct {
-	itemRepo postgres.NutritionTemplateItemRepository
-	tmplRepo postgres.NutritionTemplateRepository
-	logger   *zap.Logger
+	itemRepo    postgres.NutritionTemplateItemRepository
+	tmplRepo    postgres.NutritionTemplateRepository
+	productRepo postgres.NutritionProductRepository
+	logger      *zap.Logger
 }
 
-func NewNutritionTemplateItemService(itemRepo postgres.NutritionTemplateItemRepository, tmplRepo postgres.NutritionTemplateRepository, logger *zap.Logger) NutritionTemplateItemService {
-	return &nutritionTemplateItemService{itemRepo: itemRepo, tmplRepo: tmplRepo, logger: logger}
+func NewNutritionTemplateItemService(
+	itemRepo postgres.NutritionTemplateItemRepository,
+	tmplRepo postgres.NutritionTemplateRepository,
+	productRepo postgres.NutritionProductRepository,
+	logger *zap.Logger,
+) NutritionTemplateItemService {
+	return &nutritionTemplateItemService{itemRepo: itemRepo, tmplRepo: tmplRepo, productRepo: productRepo, logger: logger}
 }
 
 func (s *nutritionTemplateItemService) Create(ctx context.Context, userID string, input models.CreateTemplateItemInput) (*models.NutritionTemplateItem, error) {
@@ -55,6 +64,14 @@ func (s *nutritionTemplateItemService) Create(ctx context.Context, userID string
 		return nil, ErrTemplateNotFound
 	}
 
+	product, err := s.productRepo.GetByID(ctx, userID, input.ProductID)
+	if err != nil {
+		return nil, fmt.Errorf("nutrition_template_item_service.Create: %w", err)
+	}
+	if product == nil || !product.IsActive {
+		return nil, ErrProductNotFound
+	}
+
 	record, err := s.itemRepo.Create(ctx, input.TemplateID, input.ProductID, input.AmountGrams, input.MealLabel, input.Notes)
 	if err != nil {
 		return nil, fmt.Errorf("nutrition_template_item_service.Create: %w", err)
@@ -65,7 +82,7 @@ func (s *nutritionTemplateItemService) Create(ctx context.Context, userID string
 
 func (s *nutritionTemplateItemService) Update(ctx context.Context, userID string, id string, input models.UpdateTemplateItemInput) (*models.NutritionTemplateItem, error) {
 	s.logger.Info("[NutritionTemplateItem][update]")
-	existing, err := s.itemRepo.GetByID(ctx, id)
+	existing, err := s.itemRepo.GetByIDForUser(ctx, userID, id)
 	if err != nil {
 		return nil, fmt.Errorf("nutrition_template_item_service.Update: %w", err)
 	}
@@ -104,6 +121,14 @@ func (s *nutritionTemplateItemService) Update(ctx context.Context, userID string
 
 func (s *nutritionTemplateItemService) Delete(ctx context.Context, userID string, id string) (*models.NutritionTemplateItem, error) {
 	s.logger.Info("[NutritionTemplateItem][delete]")
+	existing, err := s.itemRepo.GetByIDForUser(ctx, userID, id)
+	if err != nil {
+		return nil, fmt.Errorf("nutrition_template_item_service.Delete: %w", err)
+	}
+	if existing == nil {
+		return nil, ErrTemplateItemNotFound
+	}
+
 	record, err := s.itemRepo.Delete(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("nutrition_template_item_service.Delete: %w", err)

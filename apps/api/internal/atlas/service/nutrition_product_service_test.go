@@ -1,12 +1,15 @@
 // FILE: apps/api/internal/atlas/service/nutrition_product_service_test.go
 // VERSION: 1.0.0
 // START_MODULE_CONTRACT
-//   PURPOSE: Unit tests for NutritionProductService covering Create, GetByID, ListActive, Update, Delete with validation.
-//   SCOPE: Success paths, validation errors (name required, name too long, negative macros), not-found, soft-delete behavior.
+//   PURPOSE: Unit tests for NutritionProductService covering Create, GetByID, ListActive, ListAll, Update, Delete, Restore with validation.
+//   SCOPE: Success paths, validation errors (name required, name too long, negative macros), not-found, soft-delete and restore behavior.
 //   DEPENDS: apps/api/internal/atlas/service, apps/api/internal/atlas/repository/postgres (mock), apps/api/internal/atlas/models.
 //   ROLE: TEST
 //   MAP_MODE: SUMMARY
 // END_MODULE_CONTRACT
+// START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Added RED coverage for all-product listing and restore of archived products.
+// END_CHANGE_SUMMARY
 
 package service_test
 
@@ -25,11 +28,13 @@ import (
 
 type mockNutritionProductRepo struct {
 	atlasPostgres.NutritionProductRepository
-	createFn             func(ctx context.Context, userID string, name string, caloriesPer100g, proteinPer100g, fatPer100g, carbsPer100g float64, notes *string) (*models.NutritionProductRecord, error)
-	getByIDFn            func(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error)
-	listActiveFn         func(ctx context.Context, userID string) ([]models.NutritionProductRecord, error)
-	updateFn             func(ctx context.Context, userID string, id string, name string, caloriesPer100g, proteinPer100g, fatPer100g, carbsPer100g float64, notes *string) (*models.NutritionProductRecord, error)
-	softDeleteFn         func(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error)
+	createFn                 func(ctx context.Context, userID string, name string, caloriesPer100g, proteinPer100g, fatPer100g, carbsPer100g float64, notes *string) (*models.NutritionProductRecord, error)
+	getByIDFn                func(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error)
+	listActiveFn             func(ctx context.Context, userID string) ([]models.NutritionProductRecord, error)
+	listAllFn                func(ctx context.Context, userID string) ([]models.NutritionProductRecord, error)
+	updateFn                 func(ctx context.Context, userID string, id string, name string, caloriesPer100g, proteinPer100g, fatPer100g, carbsPer100g float64, notes *string) (*models.NutritionProductRecord, error)
+	softDeleteFn             func(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error)
+	restoreFn                func(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error)
 	getByIDIncludeInactiveFn func(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error)
 }
 
@@ -45,11 +50,17 @@ func (m *mockNutritionProductRepo) GetByIDIncludeInactive(ctx context.Context, u
 func (m *mockNutritionProductRepo) ListActive(ctx context.Context, userID string) ([]models.NutritionProductRecord, error) {
 	return m.listActiveFn(ctx, userID)
 }
+func (m *mockNutritionProductRepo) ListAll(ctx context.Context, userID string) ([]models.NutritionProductRecord, error) {
+	return m.listAllFn(ctx, userID)
+}
 func (m *mockNutritionProductRepo) Update(ctx context.Context, userID string, id string, name string, caloriesPer100g, proteinPer100g, fatPer100g, carbsPer100g float64, notes *string) (*models.NutritionProductRecord, error) {
 	return m.updateFn(ctx, userID, id, name, caloriesPer100g, proteinPer100g, fatPer100g, carbsPer100g, notes)
 }
 func (m *mockNutritionProductRepo) SoftDelete(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error) {
 	return m.softDeleteFn(ctx, userID, id)
+}
+func (m *mockNutritionProductRepo) Restore(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error) {
+	return m.restoreFn(ctx, userID, id)
 }
 
 var productTestRecord = &models.NutritionProductRecord{
@@ -218,6 +229,23 @@ func TestNutritionProductService_ListActive_Empty(t *testing.T) {
 	assert.Len(t, products, 0)
 }
 
+// ----- ListAll -----
+
+func TestNutritionProductService_ListAll_IncludesActiveAndArchived(t *testing.T) {
+	svc := newProductService(&mockNutritionProductRepo{
+		listAllFn: func(ctx context.Context, userID string) ([]models.NutritionProductRecord, error) {
+			assert.Equal(t, testUserID, userID)
+			return []models.NutritionProductRecord{*productTestRecord, *productSoftDeletedRecord}, nil
+		},
+	})
+
+	products, err := svc.ListAll(ctx, testUserID)
+	require.NoError(t, err)
+	require.Len(t, products, 2)
+	assert.True(t, products[0].IsActive)
+	assert.False(t, products[1].IsActive)
+}
+
 // ----- Update -----
 
 func TestNutritionProductService_Update_Success(t *testing.T) {
@@ -298,3 +326,31 @@ func TestNutritionProductService_Delete_NotFound(t *testing.T) {
 	assert.Nil(t, product)
 }
 
+// ----- Restore -----
+
+func TestNutritionProductService_Restore_Success(t *testing.T) {
+	svc := newProductService(&mockNutritionProductRepo{
+		restoreFn: func(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error) {
+			assert.Equal(t, testUserID, userID)
+			assert.Equal(t, testID, id)
+			return productTestRecord, nil
+		},
+	})
+
+	product, err := svc.Restore(ctx, testUserID, testID)
+	require.NoError(t, err)
+	require.NotNil(t, product)
+	assert.True(t, product.IsActive)
+}
+
+func TestNutritionProductService_Restore_NotFound(t *testing.T) {
+	svc := newProductService(&mockNutritionProductRepo{
+		restoreFn: func(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error) {
+			return nil, nil
+		},
+	})
+
+	product, err := svc.Restore(ctx, testUserID, testID)
+	assert.ErrorIs(t, err, service.ErrProductNotFound)
+	assert.Nil(t, product)
+}

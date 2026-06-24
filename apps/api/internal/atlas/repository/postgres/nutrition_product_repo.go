@@ -2,11 +2,14 @@
 // VERSION: 1.0.0
 // START_MODULE_CONTRACT
 //   PURPOSE: Implement NutritionProductRepository using sqlc-generated queries for the nutrition_product table.
-//   SCOPE: Create, GetByID, ListActive, Update, SoftDelete, GetByIDIncludeInactive. All user-scoped. Not-found returns nil, nil.
+//   SCOPE: Create, GetByID, ListActive, ListAll, Update, SoftDelete, Restore, GetByIDIncludeInactive. All user-scoped. Not-found returns nil, nil.
 //   DEPENDS: sqlc generated NutritionProduct model and query functions, atlas/models for record types.
 //   ROLE: RUNTIME
 //   MAP_MODE: EXPORTS
 // END_MODULE_CONTRACT
+// START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Exposed all-product listing and restore using generated sqlc queries.
+// END_CHANGE_SUMMARY
 
 package postgres
 
@@ -26,8 +29,10 @@ type NutritionProductRepository interface {
 	Create(ctx context.Context, userID string, name string, caloriesPer100g, proteinPer100g, fatPer100g, carbsPer100g float64, notes *string) (*models.NutritionProductRecord, error)
 	GetByID(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error)
 	ListActive(ctx context.Context, userID string) ([]models.NutritionProductRecord, error)
+	ListAll(ctx context.Context, userID string) ([]models.NutritionProductRecord, error)
 	Update(ctx context.Context, userID string, id string, name string, caloriesPer100g, proteinPer100g, fatPer100g, carbsPer100g float64, notes *string) (*models.NutritionProductRecord, error)
 	SoftDelete(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error)
+	Restore(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error)
 	GetByIDIncludeInactive(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error)
 }
 
@@ -96,6 +101,24 @@ func (r *nutritionProductRepository) ListActive(ctx context.Context, userID stri
 	return out, nil
 }
 
+func (r *nutritionProductRepository) ListAll(ctx context.Context, userID string) ([]models.NutritionProductRecord, error) {
+	uid, err := uuidFromString(userID)
+	if err != nil {
+		return nil, fmt.Errorf("nutrition_product_repo.ListAll: %w", err)
+	}
+
+	rows, err := r.q.ListNutritionProductsAll(ctx, uid)
+	if err != nil {
+		return nil, fmt.Errorf("nutrition_product_repo.ListAll: %w", err)
+	}
+
+	out := make([]models.NutritionProductRecord, len(rows))
+	for i, row := range rows {
+		out[i] = *nutritionProductRecordFromRow(row)
+	}
+	return out, nil
+}
+
 func (r *nutritionProductRepository) Update(ctx context.Context, userID string, id string, name string, caloriesPer100g, proteinPer100g, fatPer100g, carbsPer100g float64, notes *string) (*models.NutritionProductRecord, error) {
 	uid, pid, err := parseTwoUUIDs(userID, id)
 	if err != nil {
@@ -134,6 +157,23 @@ func (r *nutritionProductRepository) SoftDelete(ctx context.Context, userID stri
 			return nil, nil
 		}
 		return nil, fmt.Errorf("nutrition_product_repo.SoftDelete: %w", err)
+	}
+
+	return nutritionProductRecordFromRow(row), nil
+}
+
+func (r *nutritionProductRepository) Restore(ctx context.Context, userID string, id string) (*models.NutritionProductRecord, error) {
+	uid, pid, err := parseTwoUUIDs(userID, id)
+	if err != nil {
+		return nil, fmt.Errorf("nutrition_product_repo.Restore: %w", err)
+	}
+
+	row, err := r.q.RestoreNutritionProduct(ctx, generated.RestoreNutritionProductParams{ID: pid, UserID: uid})
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("nutrition_product_repo.Restore: %w", err)
 	}
 
 	return nutritionProductRecordFromRow(row), nil

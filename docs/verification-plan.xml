@@ -523,6 +523,7 @@
       <test-files>
         <file>apps/api/internal/atlas/service/nutrition_product_service_test.go</file>
         <file>apps/api/internal/atlas/service/nutrition_template_service_test.go</file>
+        <file>apps/api/internal/atlas/service/nutrition_template_item_service_test.go</file>
         <file>apps/api/internal/atlas/service/nutrition_macro_service_test.go</file>
         <file>apps/api/internal/atlas/service/nutrition_override_service_test.go</file>
         <file>apps/api/internal/atlas/service/daily_nutrition_log_service_test.go</file>

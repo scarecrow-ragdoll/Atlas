@@ -175,7 +175,7 @@ func main() {
 
 	atlasNutritionProductService := atlasService.NewNutritionProductService(atlasNutritionProductRepo, l)
 	atlasNutritionTemplateService := atlasService.NewNutritionTemplateService(atlasNutritionTemplateRepo, atlasNutritionTemplateItemRepo, l)
-	atlasNutritionTemplateItemService := atlasService.NewNutritionTemplateItemService(atlasNutritionTemplateItemRepo, atlasNutritionTemplateRepo, l)
+	atlasNutritionTemplateItemService := atlasService.NewNutritionTemplateItemService(atlasNutritionTemplateItemRepo, atlasNutritionTemplateRepo, atlasNutritionProductRepo, l)
 	atlasNutritionOverrideService := atlasService.NewNutritionOverrideService(atlasNutritionOverrideRepo, atlasNutritionOverrideItemRepo, l)
 	atlasNutritionMacroService := atlasService.NewNutritionMacroService(
 		atlasNutritionTemplateRepo,
@@ -243,14 +243,14 @@ func main() {
 	}
 
 	atlasRes := &atlasResolver.Resolver{
-		SettingsService:      atlasSettingsService,
-		PinService:           atlasPinService,
-		ExerciseService:      atlasExerciseService,
-		CardioService:        atlasCardioService,
-		BodyWeightService:    atlasBodyWeightService,
-		BodyCheckInService:   atlasCheckInService,
-		BodyMeasurementService: atlasMeasurementService,
-		WeekFlagService:      atlasWeekFlagService,
+		SettingsService:               atlasSettingsService,
+		PinService:                    atlasPinService,
+		ExerciseService:               atlasExerciseService,
+		CardioService:                 atlasCardioService,
+		BodyWeightService:             atlasBodyWeightService,
+		BodyCheckInService:            atlasCheckInService,
+		BodyMeasurementService:        atlasMeasurementService,
+		WeekFlagService:               atlasWeekFlagService,
 		NutritionProductService:       atlasNutritionProductService,
 		NutritionTemplateService:      atlasNutritionTemplateService,
 		NutritionTemplateItemService:  atlasNutritionTemplateItemService,
@@ -260,7 +260,7 @@ func main() {
 		NutritionWeeklyAvgService:     atlasNutritionWeeklyAvgService,
 		UserProfileService:            atlasUserProfileService,
 		AiExportService:               atlasAiExportService,
-		AiReviewService:                atlasAiReviewService,
+		AiReviewService:               atlasAiReviewService,
 		BackupExportService:           atlasBackupExportService,
 		BackupImportService:           atlasBackupImportService,
 		AiExportConfig:                cfg.AiExport,

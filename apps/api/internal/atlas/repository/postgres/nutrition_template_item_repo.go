@@ -2,11 +2,14 @@
 // VERSION: 1.0.0
 // START_MODULE_CONTRACT
 //   PURPOSE: Implement NutritionTemplateItemRepository using sqlc-generated queries for the nutrition_template_item table.
-//   SCOPE: Create, GetByID, ListByTemplate, Update, Delete. Template-scoped (not user-scoped for item CRUD). Not-found returns nil, nil.
+//   SCOPE: Create, GetByID, GetByIDForUser, ListByTemplate, Update, Delete. User-scoped lookup is used before item mutations. Not-found returns nil, nil.
 //   DEPENDS: sqlc generated NutritionTemplateItem model, atlas/models for record types.
 //   ROLE: RUNTIME
 //   MAP_MODE: EXPORTS
 // END_MODULE_CONTRACT
+// START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Exposed user-scoped item lookup for parent-template ownership checks.
+// END_CHANGE_SUMMARY
 
 package postgres
 
@@ -25,6 +28,7 @@ import (
 type NutritionTemplateItemRepository interface {
 	Create(ctx context.Context, templateID string, productID string, amountGrams float64, mealLabel, notes *string) (*models.NutritionTemplateItemRecord, error)
 	GetByID(ctx context.Context, id string) (*models.NutritionTemplateItemRecord, error)
+	GetByIDForUser(ctx context.Context, userID string, id string) (*models.NutritionTemplateItemRecord, error)
 	ListByTemplate(ctx context.Context, templateID string) ([]models.NutritionTemplateItemRecord, error)
 	Update(ctx context.Context, id string, amountGrams float64, mealLabel, notes *string) (*models.NutritionTemplateItemRecord, error)
 	Delete(ctx context.Context, id string) (*models.NutritionTemplateItemRecord, error)
@@ -74,6 +78,23 @@ func (r *nutritionTemplateItemRepository) GetByID(ctx context.Context, id string
 			return nil, nil
 		}
 		return nil, fmt.Errorf("nutrition_template_item_repo.GetByID: %w", err)
+	}
+
+	return nutritionTemplateItemRecordFromRow(row), nil
+}
+
+func (r *nutritionTemplateItemRepository) GetByIDForUser(ctx context.Context, userID string, id string) (*models.NutritionTemplateItemRecord, error) {
+	uid, iid, err := parseTwoUUIDs(userID, id)
+	if err != nil {
+		return nil, fmt.Errorf("nutrition_template_item_repo.GetByIDForUser: %w", err)
+	}
+
+	row, err := r.q.GetNutritionTemplateItemByIDForUser(ctx, generated.GetNutritionTemplateItemByIDForUserParams{ID: iid, UserID: uid})
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("nutrition_template_item_repo.GetByIDForUser: %w", err)
 	}
 
 	return nutritionTemplateItemRecordFromRow(row), nil

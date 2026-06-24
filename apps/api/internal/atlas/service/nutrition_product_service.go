@@ -1,12 +1,15 @@
 // FILE: apps/api/internal/atlas/service/nutrition_product_service.go
 // VERSION: 1.0.0
 // START_MODULE_CONTRACT
-//   PURPOSE: Implement NutritionProductService with validation for product name and macro values, soft-delete, and log markers.
-//   SCOPE: Create, GetByID (includes inactive), ListActive, Update, Delete (soft-delete). Validation: name required (<=255 chars), macros >= 0. Log markers: [NutritionProduct][create|get|list|update|delete].
+//   PURPOSE: Implement NutritionProductService with validation for product name and macro values, soft-delete/restore, and log markers.
+//   SCOPE: Create, GetByID (includes inactive), ListActive, ListAll, Update, Delete (soft-delete), Restore. Validation: name required (<=255 chars), macros >= 0. Log markers: [NutritionProduct][create|get|list|update|delete|restore].
 //   DEPENDS: postgres.NutritionProductRepository, models.
 //   ROLE: RUNTIME
 //   MAP_MODE: EXPORTS
 // END_MODULE_CONTRACT
+// START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Added ListAll and Restore product management operations.
+// END_CHANGE_SUMMARY
 
 package service
 
@@ -33,8 +36,10 @@ type NutritionProductService interface {
 	Create(ctx context.Context, userID string, input models.CreateProductInput) (*models.NutritionProduct, error)
 	GetByID(ctx context.Context, userID string, id string) (*models.NutritionProduct, error)
 	ListActive(ctx context.Context, userID string) ([]models.NutritionProduct, error)
+	ListAll(ctx context.Context, userID string) ([]models.NutritionProduct, error)
 	Update(ctx context.Context, userID string, id string, input models.UpdateProductInput) (*models.NutritionProduct, error)
 	Delete(ctx context.Context, userID string, id string) (*models.NutritionProduct, error)
+	Restore(ctx context.Context, userID string, id string) (*models.NutritionProduct, error)
 }
 
 type nutritionProductService struct {
@@ -83,6 +88,20 @@ func (s *nutritionProductService) ListActive(ctx context.Context, userID string)
 	records, err := s.repo.ListActive(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("nutrition_product_service.ListActive: %w", err)
+	}
+
+	out := make([]models.NutritionProduct, len(records))
+	for i := range records {
+		out[i] = *models.NutritionProductFromRecord(&records[i])
+	}
+	return out, nil
+}
+
+func (s *nutritionProductService) ListAll(ctx context.Context, userID string) ([]models.NutritionProduct, error) {
+	s.logger.Info("[NutritionProduct][list]")
+	records, err := s.repo.ListAll(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("nutrition_product_service.ListAll: %w", err)
 	}
 
 	out := make([]models.NutritionProduct, len(records))
@@ -150,6 +169,17 @@ func (s *nutritionProductService) Update(ctx context.Context, userID string, id 
 	return models.NutritionProductFromRecord(record), nil
 }
 
+func (s *nutritionProductService) Restore(ctx context.Context, userID string, id string) (*models.NutritionProduct, error) {
+	s.logger.Info("[NutritionProduct][restore]")
+	record, err := s.repo.Restore(ctx, userID, id)
+	if err != nil {
+		return nil, fmt.Errorf("nutrition_product_service.Restore: %w", err)
+	}
+	if record == nil {
+		return nil, ErrProductNotFound
+	}
+	return models.NutritionProductFromRecord(record), nil
+}
 func (s *nutritionProductService) Delete(ctx context.Context, userID string, id string) (*models.NutritionProduct, error) {
 	s.logger.Info("[NutritionProduct][delete]")
 	record, err := s.repo.SoftDelete(ctx, userID, id)
