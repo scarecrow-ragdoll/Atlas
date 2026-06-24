@@ -121,79 +121,144 @@ func (r *mutationResolver) DeleteWeekFlag(ctx context.Context, id string) (*mode
 	return r.Resolver.DeleteWeekFlag(ctx, id)
 }
 
+// UpdateUserProfile is the resolver for the updateUserProfile field.
+func (r *mutationResolver) UpdateUserProfile(ctx context.Context, input models.UserProfileInput) (*models.UserProfileResult, error) {
+	return r.Resolver.UpdateUserProfile(ctx, input)
+}
+
+// CreateAiExportPrompt is the resolver for the createAiExportPrompt field.
+func (r *mutationResolver) CreateAiExportPrompt(ctx context.Context, input models.CreateAiExportInput) (*models.AiExportResult, error) {
+	return r.Resolver.CreateAiExportPrompt(ctx, input)
+}
+
+// GenerateAiExport is the resolver for the generateAiExport field.
+func (r *mutationResolver) GenerateAiExport(ctx context.Context, id string) (*models.AiExportResult, error) {
+	return r.Resolver.GenerateAiExport(ctx, id)
+}
+
+// DeleteAiExport is the resolver for the deleteAiExport field.
+func (r *mutationResolver) DeleteAiExport(ctx context.Context, id string) (*models.AiExportResult, error) {
+	return r.Resolver.DeleteAiExport(ctx, id)
+}
+
+// CreateAiReview is the resolver for the createAiReview field.
+func (r *mutationResolver) CreateAiReview(ctx context.Context, input models.CreateAiReviewInput) (*models.AiReviewResult, error) {
+	return r.Resolver.CreateAiReview(ctx, input)
+}
+
+// UpdateAiReview is the resolver for the updateAiReview field.
+func (r *mutationResolver) UpdateAiReview(ctx context.Context, id string, input models.UpdateAiReviewInput) (*models.AiReviewResult, error) {
+	return r.Resolver.UpdateAiReview(ctx, id, input)
+}
+
+// DeleteAiReview is the resolver for the deleteAiReview field.
+func (r *mutationResolver) DeleteAiReview(ctx context.Context, id string) (*models.AiReviewResult, error) {
+	return r.Resolver.DeleteAiReview(ctx, id)
+}
+
 // CreateNutritionProduct is the resolver for the createNutritionProduct field.
 func (r *mutationResolver) CreateNutritionProduct(ctx context.Context, input models.CreateProductInput) (*models.NutritionProductResult, error) {
-	panic(fmt.Errorf("not implemented: CreateNutritionProduct - createNutritionProduct"))
+	return r.Resolver.CreateNutritionProduct(ctx, input)
 }
 
 // UpdateNutritionProduct is the resolver for the updateNutritionProduct field.
 func (r *mutationResolver) UpdateNutritionProduct(ctx context.Context, id string, input models.UpdateProductInput) (*models.NutritionProductResult, error) {
-	panic(fmt.Errorf("not implemented: UpdateNutritionProduct - updateNutritionProduct"))
+	return r.Resolver.UpdateNutritionProduct(ctx, id, input)
 }
 
 // DeleteNutritionProduct is the resolver for the deleteNutritionProduct field.
 func (r *mutationResolver) DeleteNutritionProduct(ctx context.Context, id string) (*models.NutritionProductResult, error) {
-	panic(fmt.Errorf("not implemented: DeleteNutritionProduct - deleteNutritionProduct"))
+	return r.Resolver.DeleteNutritionProduct(ctx, id)
+}
+
+// RestoreNutritionProduct is the resolver for the restoreNutritionProduct field.
+func (r *mutationResolver) RestoreNutritionProduct(ctx context.Context, id string) (*models.NutritionProductResult, error) {
+	return r.Resolver.RestoreNutritionProduct(ctx, id)
 }
 
 // CreateNutritionTemplate is the resolver for the createNutritionTemplate field.
 func (r *mutationResolver) CreateNutritionTemplate(ctx context.Context, input models.CreateTemplateInput) (*models.NutritionTemplateResult, error) {
-	panic(fmt.Errorf("not implemented: CreateNutritionTemplate - createNutritionTemplate"))
+	return r.Resolver.CreateNutritionTemplate(ctx, input)
 }
 
 // UpdateNutritionTemplate is the resolver for the updateNutritionTemplate field.
 func (r *mutationResolver) UpdateNutritionTemplate(ctx context.Context, id string, input models.UpdateTemplateInput) (*models.NutritionTemplateResult, error) {
-	panic(fmt.Errorf("not implemented: UpdateNutritionTemplate - updateNutritionTemplate"))
+	return r.Resolver.UpdateNutritionTemplate(ctx, id, input)
 }
 
 // DeleteNutritionTemplate is the resolver for the deleteNutritionTemplate field.
 func (r *mutationResolver) DeleteNutritionTemplate(ctx context.Context, id string) (*models.NutritionTemplateResult, error) {
-	panic(fmt.Errorf("not implemented: DeleteNutritionTemplate - deleteNutritionTemplate"))
+	return r.Resolver.DeleteNutritionTemplate(ctx, id)
+}
+
+// ApplyNutritionTemplateToWeek is the resolver for the applyNutritionTemplateToWeek field.
+func (r *mutationResolver) ApplyNutritionTemplateToWeek(ctx context.Context, templateID string, mode models.NutritionTemplateApplyMode) (*models.NutritionTemplateApplyResult, error) {
+	return r.Resolver.ApplyNutritionTemplateToWeek(ctx, templateID, mode)
+}
+
+// UpdateDailyNutritionLogNotes is the resolver for the updateDailyNutritionLogNotes field.
+func (r *mutationResolver) UpdateDailyNutritionLogNotes(ctx context.Context, id string, input models.UpdateDailyNutritionLogNotesInput) (*models.DailyNutritionLogResult, error) {
+	return r.Resolver.UpdateDailyNutritionLogNotes(ctx, id, input)
+}
+
+// AddDailyNutritionEntry is the resolver for the addDailyNutritionEntry field.
+func (r *mutationResolver) AddDailyNutritionEntry(ctx context.Context, input models.AddDailyNutritionEntryInput) (*models.DailyNutritionLogResult, error) {
+	return r.Resolver.AddDailyNutritionEntry(ctx, input)
+}
+
+// UpdateDailyNutritionEntry is the resolver for the updateDailyNutritionEntry field.
+func (r *mutationResolver) UpdateDailyNutritionEntry(ctx context.Context, id string, input models.UpdateDailyNutritionEntryInput) (*models.DailyNutritionLogResult, error) {
+	return r.Resolver.UpdateDailyNutritionEntry(ctx, id, input)
+}
+
+// DeleteDailyNutritionEntry is the resolver for the deleteDailyNutritionEntry field.
+func (r *mutationResolver) DeleteDailyNutritionEntry(ctx context.Context, id string) (*models.DailyNutritionLogResult, error) {
+	return r.Resolver.DeleteDailyNutritionEntry(ctx, id)
 }
 
 // CreateNutritionTemplateItem is the resolver for the createNutritionTemplateItem field.
 func (r *mutationResolver) CreateNutritionTemplateItem(ctx context.Context, input models.CreateTemplateItemInput) (*models.NutritionTemplateItemResult, error) {
-	panic(fmt.Errorf("not implemented: CreateNutritionTemplateItem - createNutritionTemplateItem"))
+	return r.Resolver.CreateNutritionTemplateItem(ctx, input)
 }
 
 // UpdateNutritionTemplateItem is the resolver for the updateNutritionTemplateItem field.
 func (r *mutationResolver) UpdateNutritionTemplateItem(ctx context.Context, id string, input models.UpdateTemplateItemInput) (*models.NutritionTemplateItemResult, error) {
-	panic(fmt.Errorf("not implemented: UpdateNutritionTemplateItem - updateNutritionTemplateItem"))
+	return r.Resolver.UpdateNutritionTemplateItem(ctx, id, input)
 }
 
 // DeleteNutritionTemplateItem is the resolver for the deleteNutritionTemplateItem field.
 func (r *mutationResolver) DeleteNutritionTemplateItem(ctx context.Context, id string) (*models.NutritionTemplateItemResult, error) {
-	panic(fmt.Errorf("not implemented: DeleteNutritionTemplateItem - deleteNutritionTemplateItem"))
+	return r.Resolver.DeleteNutritionTemplateItem(ctx, id)
 }
 
 // CreateDailyNutritionOverride is the resolver for the createDailyNutritionOverride field.
 func (r *mutationResolver) CreateDailyNutritionOverride(ctx context.Context, input models.CreateOverrideInput) (*models.DailyNutritionOverrideResult, error) {
-	panic(fmt.Errorf("not implemented: CreateDailyNutritionOverride - createDailyNutritionOverride"))
+	return r.Resolver.CreateDailyNutritionOverride(ctx, input)
 }
 
 // UpdateDailyNutritionOverride is the resolver for the updateDailyNutritionOverride field.
 func (r *mutationResolver) UpdateDailyNutritionOverride(ctx context.Context, id string, input models.UpdateOverrideInput) (*models.DailyNutritionOverrideResult, error) {
-	panic(fmt.Errorf("not implemented: UpdateDailyNutritionOverride - updateDailyNutritionOverride"))
+	return r.Resolver.UpdateDailyNutritionOverride(ctx, id, input)
 }
 
 // DeleteDailyNutritionOverride is the resolver for the deleteDailyNutritionOverride field.
 func (r *mutationResolver) DeleteDailyNutritionOverride(ctx context.Context, id string) (*models.DailyNutritionOverrideResult, error) {
-	panic(fmt.Errorf("not implemented: DeleteDailyNutritionOverride - deleteDailyNutritionOverride"))
+	return r.Resolver.DeleteDailyNutritionOverride(ctx, id)
 }
 
 // CreateDailyNutritionOverrideItem is the resolver for the createDailyNutritionOverrideItem field.
 func (r *mutationResolver) CreateDailyNutritionOverrideItem(ctx context.Context, input models.CreateOverrideItemInput) (*models.DailyNutritionOverrideItemResult, error) {
-	panic(fmt.Errorf("not implemented: CreateDailyNutritionOverrideItem - createDailyNutritionOverrideItem"))
+	return r.Resolver.CreateDailyNutritionOverrideItem(ctx, input)
 }
 
 // UpdateDailyNutritionOverrideItem is the resolver for the updateDailyNutritionOverrideItem field.
 func (r *mutationResolver) UpdateDailyNutritionOverrideItem(ctx context.Context, id string, input models.UpdateOverrideItemInput) (*models.DailyNutritionOverrideItemResult, error) {
-	panic(fmt.Errorf("not implemented: UpdateDailyNutritionOverrideItem - updateDailyNutritionOverrideItem"))
+	return r.Resolver.UpdateDailyNutritionOverrideItem(ctx, id, input)
 }
 
 // DeleteDailyNutritionOverrideItem is the resolver for the deleteDailyNutritionOverrideItem field.
 func (r *mutationResolver) DeleteDailyNutritionOverrideItem(ctx context.Context, id string) (*models.DailyNutritionOverrideItemResult, error) {
-	panic(fmt.Errorf("not implemented: DeleteDailyNutritionOverrideItem - deleteDailyNutritionOverrideItem"))
+	return r.Resolver.DeleteDailyNutritionOverrideItem(ctx, id)
 }
 
 // Settings is the resolver for the settings field.
@@ -266,49 +331,89 @@ func (r *queryResolver) WeekFlags(ctx context.Context, weekStartDate models.Date
 	return r.Resolver.GetWeekFlags(ctx, weekStartDate)
 }
 
+// UserProfile is the resolver for the userProfile field.
+func (r *queryResolver) UserProfile(ctx context.Context) (*models.UserProfileResult, error) {
+	return r.Resolver.GetUserProfile(ctx)
+}
+
+// AiExport is the resolver for the aiExport field.
+func (r *queryResolver) AiExport(ctx context.Context, id string) (*models.AiExportResult, error) {
+	return r.Resolver.GetAiExport(ctx, id)
+}
+
+// AiExports is the resolver for the aiExports field.
+func (r *queryResolver) AiExports(ctx context.Context) (*models.AiExportsResult, error) {
+	return r.Resolver.ListAiExports(ctx)
+}
+
+// AiReview is the resolver for the aiReview field.
+func (r *queryResolver) AiReview(ctx context.Context, id string) (*models.AiReviewResult, error) {
+	return r.Resolver.GetAiReview(ctx, id)
+}
+
+// AiReviews is the resolver for the aiReviews field.
+func (r *queryResolver) AiReviews(ctx context.Context, dateRangeStart *models.Date, dateRangeEnd *models.Date) (*models.AiReviewsResult, error) {
+	return r.Resolver.ListAiReviews(ctx, dateRangeStart, dateRangeEnd)
+}
+
 // NutritionProducts is the resolver for the nutritionProducts field.
 func (r *queryResolver) NutritionProducts(ctx context.Context) (*models.NutritionProductsResult, error) {
-	panic(fmt.Errorf("not implemented: NutritionProducts - nutritionProducts"))
+	return r.Resolver.GetNutritionProducts(ctx)
+}
+
+// NutritionProductsAll is the resolver for the nutritionProductsAll field.
+func (r *queryResolver) NutritionProductsAll(ctx context.Context) (*models.NutritionProductsResult, error) {
+	return r.Resolver.GetNutritionProductsAll(ctx)
 }
 
 // NutritionProduct is the resolver for the nutritionProduct field.
 func (r *queryResolver) NutritionProduct(ctx context.Context, id string) (*models.NutritionProductResult, error) {
-	panic(fmt.Errorf("not implemented: NutritionProduct - nutritionProduct"))
+	return r.Resolver.GetNutritionProduct(ctx, id)
 }
 
 // NutritionTemplates is the resolver for the nutritionTemplates field.
 func (r *queryResolver) NutritionTemplates(ctx context.Context, startDate models.Date, endDate models.Date) (*models.NutritionTemplatesResult, error) {
-	panic(fmt.Errorf("not implemented: NutritionTemplates - nutritionTemplates"))
+	return r.Resolver.GetNutritionTemplates(ctx, startDate.String(), endDate.String())
 }
 
 // NutritionTemplate is the resolver for the nutritionTemplate field.
 func (r *queryResolver) NutritionTemplate(ctx context.Context, id string) (*models.NutritionTemplateResult, error) {
-	panic(fmt.Errorf("not implemented: NutritionTemplate - nutritionTemplate"))
+	return r.Resolver.GetNutritionTemplate(ctx, id)
 }
 
 // NutritionTemplateCurrent is the resolver for the nutritionTemplateCurrent field.
 func (r *queryResolver) NutritionTemplateCurrent(ctx context.Context, weekStartDate models.Date) (*models.NutritionTemplateResult, error) {
-	panic(fmt.Errorf("not implemented: NutritionTemplateCurrent - nutritionTemplateCurrent"))
+	return r.Resolver.GetNutritionTemplateCurrent(ctx, weekStartDate.String())
+}
+
+// DailyNutritionLog is the resolver for the dailyNutritionLog field.
+func (r *queryResolver) DailyNutritionLog(ctx context.Context, date models.Date) (*models.DailyNutritionLogResult, error) {
+	return r.Resolver.GetDailyNutritionLog(ctx, date)
 }
 
 // DailyNutritionOverrides is the resolver for the dailyNutritionOverrides field.
 func (r *queryResolver) DailyNutritionOverrides(ctx context.Context, startDate models.Date, endDate models.Date) (*models.DailyNutritionOverridesResult, error) {
-	panic(fmt.Errorf("not implemented: DailyNutritionOverrides - dailyNutritionOverrides"))
+	return r.Resolver.GetDailyNutritionOverrides(ctx, startDate.String(), endDate.String())
 }
 
 // DailyNutritionOverride is the resolver for the dailyNutritionOverride field.
 func (r *queryResolver) DailyNutritionOverride(ctx context.Context, id string) (*models.DailyNutritionOverrideResult, error) {
-	panic(fmt.Errorf("not implemented: DailyNutritionOverride - dailyNutritionOverride"))
+	return r.Resolver.GetDailyNutritionOverride(ctx, id)
 }
 
 // DailyNutritionOverrideByDate is the resolver for the dailyNutritionOverrideByDate field.
 func (r *queryResolver) DailyNutritionOverrideByDate(ctx context.Context, date models.Date) (*models.DailyNutritionOverrideResult, error) {
-	panic(fmt.Errorf("not implemented: DailyNutritionOverrideByDate - dailyNutritionOverrideByDate"))
+	return r.Resolver.GetDailyNutritionOverrideByDate(ctx, date.String())
 }
 
 // NutritionMacros is the resolver for the nutritionMacros field.
 func (r *queryResolver) NutritionMacros(ctx context.Context, weekStartDate models.Date, date *models.Date) (*models.NutritionMacrosResult, error) {
-	panic(fmt.Errorf("not implemented: NutritionMacros - nutritionMacros"))
+	var day *string
+	if date != nil {
+		value := date.String()
+		day = &value
+	}
+	return r.Resolver.GetNutritionMacros(ctx, weekStartDate.String(), day)
 }
 
 // BodyWeightTrend is the resolver for the bodyWeightTrend field.

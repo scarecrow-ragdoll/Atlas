@@ -18,13 +18,14 @@
 //   UpdateDailyNutritionEntryInput - Service/repository input for updating factual entry fields.
 //   CreateDailyNutritionEntryRecordInput - Repository input for creating a snapshot entry.
 //   DailyNutritionSeedEntryInput/DailyNutritionSeedResult - Repository input/result for atomic per-date template seeding.
-//   NutritionTemplateApplyMode/NutritionTemplateApplyResult - Weekly template apply mode and per-date result contract.
+//   NutritionTemplateApplyMode/NutritionTemplateApplyResult - Weekly template apply mode, per-date result contract, and GraphQL error wrapper fields.
 //   DailyNutritionLogResult - Union-style result wrapper for future transport mapping.
 //   DailyNutritionEntryFromRecord/DailyNutritionLogFromRecord - Record-to-model converters.
 //   DailyNutritionEntriesFromRecords - Slice converter for entry records.
 //   DailyNutritionEntryMacros/DailyNutritionTotalsFromEntries - Snapshot-based macro calculations.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.3 - Added GraphQL union-style error fields to NutritionTemplateApplyResult.
 //   LAST_CHANGE: 1.0.2 - Added weekly template apply result models and atomic daily seed input/result types.
 // END_CHANGE_SUMMARY
 
@@ -154,6 +155,9 @@ type NutritionTemplateApplyResult struct {
 	WeekEndDate   string                             `json:"weekEndDate"`
 	Mode          NutritionTemplateApplyMode         `json:"mode"`
 	Dates         []NutritionTemplateApplyDateResult `json:"dates"`
+	ValidationErr *NutritionValidationErr            `json:"validationError"`
+	NotFoundErr   *NutritionNotFoundErr              `json:"notFoundError"`
+	AuthErr       *NutritionAuthErr                  `json:"authError"`
 }
 
 type DailyNutritionLogResult struct {

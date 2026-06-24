@@ -39,6 +39,12 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	AiExport() AiExportResolver
+	AiExportResult() AiExportResultResolver
+	AiExportsResult() AiExportsResultResolver
+	AiReview() AiReviewResolver
+	AiReviewResult() AiReviewResultResolver
+	AiReviewsResult() AiReviewsResultResolver
 	ArchiveResult() ArchiveResultResolver
 	BodyCheckIn() BodyCheckInResolver
 	BodyCheckInResult() BodyCheckInResultResolver
@@ -52,6 +58,9 @@ type ResolverRoot interface {
 	CardioEntriesResult() CardioEntriesResultResolver
 	CardioEntry() CardioEntryResolver
 	CardioEntryResult() CardioEntryResultResolver
+	DailyNutritionEntry() DailyNutritionEntryResolver
+	DailyNutritionLog() DailyNutritionLogResolver
+	DailyNutritionLogResult() DailyNutritionLogResultResolver
 	DailyNutritionOverride() DailyNutritionOverrideResolver
 	DailyNutritionOverrideItem() DailyNutritionOverrideItemResolver
 	DailyNutritionOverrideItemResult() DailyNutritionOverrideItemResultResolver
@@ -69,6 +78,8 @@ type ResolverRoot interface {
 	NutritionProductResult() NutritionProductResultResolver
 	NutritionProductsResult() NutritionProductsResultResolver
 	NutritionTemplate() NutritionTemplateResolver
+	NutritionTemplateApplyDateResult() NutritionTemplateApplyDateResultResolver
+	NutritionTemplateApplyResult() NutritionTemplateApplyResultResolver
 	NutritionTemplateItem() NutritionTemplateItemResolver
 	NutritionTemplateItemResult() NutritionTemplateItemResultResolver
 	NutritionTemplateResult() NutritionTemplateResultResolver
@@ -77,6 +88,8 @@ type ResolverRoot interface {
 	ProgressPhoto() ProgressPhotoResolver
 	ProgressPhotosResult() ProgressPhotosResultResolver
 	Query() QueryResolver
+	UserProfile() UserProfileResolver
+	UserProfileResult() UserProfileResultResolver
 	WeekFlag() WeekFlagResolver
 	WeekFlagResult() WeekFlagResultResolver
 	WeekFlagsResult() WeekFlagsResultResolver
@@ -86,6 +99,90 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	AiExport struct {
+		CreatedAt           func(childComplexity int) int
+		DateRangeEnd        func(childComplexity int) int
+		DateRangeStart      func(childComplexity int) int
+		ExportFilePath      func(childComplexity int) int
+		GeneratedPrompt     func(childComplexity int) int
+		ID                  func(childComplexity int) int
+		IncludeCardio       func(childComplexity int) int
+		IncludeMeasurements func(childComplexity int) int
+		IncludeNutrition    func(childComplexity int) int
+		IncludePhotos       func(childComplexity int) int
+		UpdatedAt           func(childComplexity int) int
+		UserComment         func(childComplexity int) int
+		UserID              func(childComplexity int) int
+	}
+
+	AiExportAuthError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	AiExportNotFoundError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	AiExportResult struct {
+		AuthError       func(childComplexity int) int
+		Export          func(childComplexity int) int
+		NotFoundError   func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	AiExportValidationError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	AiExportsResult struct {
+		AuthError       func(childComplexity int) int
+		Exports         func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	AiReview struct {
+		AiResponseText func(childComplexity int) int
+		CreatedAt      func(childComplexity int) int
+		DateRangeEnd   func(childComplexity int) int
+		DateRangeStart func(childComplexity int) int
+		ID             func(childComplexity int) int
+		PlannedActions func(childComplexity int) int
+		UpdatedAt      func(childComplexity int) int
+		UserID         func(childComplexity int) int
+		UserNotes      func(childComplexity int) int
+	}
+
+	AiReviewAuthError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	AiReviewNotFoundError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	AiReviewResult struct {
+		AuthError       func(childComplexity int) int
+		NotFoundError   func(childComplexity int) int
+		Review          func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	AiReviewValidationError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	AiReviewsResult struct {
+		AuthError       func(childComplexity int) int
+		Reviews         func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
 	ArchiveResult struct {
 		AuthError     func(childComplexity int) int
 		Exercise      func(childComplexity int) int
@@ -252,6 +349,42 @@ type ComplexityRoot struct {
 		Message func(childComplexity int) int
 	}
 
+	DailyNutritionEntry struct {
+		AmountGrams             func(childComplexity int) int
+		CaloriesPer100gSnapshot func(childComplexity int) int
+		CarbsPer100gSnapshot    func(childComplexity int) int
+		CreatedAt               func(childComplexity int) int
+		DailyLogID              func(childComplexity int) int
+		FatPer100gSnapshot      func(childComplexity int) int
+		ID                      func(childComplexity int) int
+		Macros                  func(childComplexity int) int
+		MealLabel               func(childComplexity int) int
+		Notes                   func(childComplexity int) int
+		Position                func(childComplexity int) int
+		ProductID               func(childComplexity int) int
+		ProductNameSnapshot     func(childComplexity int) int
+		ProteinPer100gSnapshot  func(childComplexity int) int
+		UpdatedAt               func(childComplexity int) int
+	}
+
+	DailyNutritionLog struct {
+		CreatedAt func(childComplexity int) int
+		Date      func(childComplexity int) int
+		Entries   func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Notes     func(childComplexity int) int
+		Totals    func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		UserID    func(childComplexity int) int
+	}
+
+	DailyNutritionLogResult struct {
+		AuthError         func(childComplexity int) int
+		DailyNutritionLog func(childComplexity int) int
+		NotFoundError     func(childComplexity int) int
+		ValidationError   func(childComplexity int) int
+	}
+
 	DailyNutritionOverride struct {
 		CreatedAt func(childComplexity int) int
 		Date      func(childComplexity int) int
@@ -361,8 +494,12 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
+		AddDailyNutritionEntry           func(childComplexity int, input models.AddDailyNutritionEntryInput) int
+		ApplyNutritionTemplateToWeek     func(childComplexity int, templateID string, mode models.NutritionTemplateApplyMode) int
 		ArchiveExercise                  func(childComplexity int, id string) int
 		ChangePin                        func(childComplexity int, input models.PinChangeInput) int
+		CreateAiExportPrompt             func(childComplexity int, input models.CreateAiExportInput) int
+		CreateAiReview                   func(childComplexity int, input models.CreateAiReviewInput) int
 		CreateBodyCheckIn                func(childComplexity int, input models.CreateCheckInInput) int
 		CreateBodyMeasurement            func(childComplexity int, checkInID string, input models.CreateMeasurementInput) int
 		CreateBodyWeightEntry            func(childComplexity int, input models.CreateBodyWeightInput) int
@@ -374,10 +511,13 @@ type ComplexityRoot struct {
 		CreateNutritionTemplate          func(childComplexity int, input models.CreateTemplateInput) int
 		CreateNutritionTemplateItem      func(childComplexity int, input models.CreateTemplateItemInput) int
 		CreateWeekFlag                   func(childComplexity int, input models.CreateWeekFlagInput) int
+		DeleteAiExport                   func(childComplexity int, id string) int
+		DeleteAiReview                   func(childComplexity int, id string) int
 		DeleteBodyCheckIn                func(childComplexity int, id string) int
 		DeleteBodyMeasurement            func(childComplexity int, id string) int
 		DeleteBodyWeightEntry            func(childComplexity int, id string) int
 		DeleteCardioEntry                func(childComplexity int, id string) int
+		DeleteDailyNutritionEntry        func(childComplexity int, id string) int
 		DeleteDailyNutritionOverride     func(childComplexity int, id string) int
 		DeleteDailyNutritionOverrideItem func(childComplexity int, id string) int
 		DeleteNutritionProduct           func(childComplexity int, id string) int
@@ -386,11 +526,16 @@ type ComplexityRoot struct {
 		DeleteWeekFlag                   func(childComplexity int, id string) int
 		DisablePin                       func(childComplexity int, input models.PinDisableInput) int
 		EnablePin                        func(childComplexity int, input models.PinEnableInput) int
+		GenerateAiExport                 func(childComplexity int, id string) int
 		RestoreExercise                  func(childComplexity int, id string) int
+		RestoreNutritionProduct          func(childComplexity int, id string) int
+		UpdateAiReview                   func(childComplexity int, id string, input models.UpdateAiReviewInput) int
 		UpdateBodyCheckIn                func(childComplexity int, id string, input models.UpdateCheckInInput) int
 		UpdateBodyMeasurement            func(childComplexity int, id string, input models.UpdateMeasurementInput) int
 		UpdateBodyWeightEntry            func(childComplexity int, id string, input models.UpdateBodyWeightInput) int
 		UpdateCardioEntry                func(childComplexity int, id string, input models.UpdateCardioInput) int
+		UpdateDailyNutritionEntry        func(childComplexity int, id string, input models.UpdateDailyNutritionEntryInput) int
+		UpdateDailyNutritionLogNotes     func(childComplexity int, id string, input models.UpdateDailyNutritionLogNotesInput) int
 		UpdateDailyNutritionOverride     func(childComplexity int, id string, input models.UpdateOverrideInput) int
 		UpdateDailyNutritionOverrideItem func(childComplexity int, id string, input models.UpdateOverrideItemInput) int
 		UpdateExercise                   func(childComplexity int, id string, input models.UpdateExerciseInput) int
@@ -398,6 +543,7 @@ type ComplexityRoot struct {
 		UpdateNutritionTemplate          func(childComplexity int, id string, input models.UpdateTemplateInput) int
 		UpdateNutritionTemplateItem      func(childComplexity int, id string, input models.UpdateTemplateItemInput) int
 		UpdateSettings                   func(childComplexity int, input models.SettingsInput) int
+		UpdateUserProfile                func(childComplexity int, input models.UserProfileInput) int
 	}
 
 	NotFoundError struct {
@@ -464,6 +610,23 @@ type ComplexityRoot struct {
 		UpdatedAt     func(childComplexity int) int
 		UserID        func(childComplexity int) int
 		WeekStartDate func(childComplexity int) int
+	}
+
+	NutritionTemplateApplyDateResult struct {
+		Date       func(childComplexity int) int
+		EntryCount func(childComplexity int) int
+		Reason     func(childComplexity int) int
+		Status     func(childComplexity int) int
+	}
+
+	NutritionTemplateApplyResult struct {
+		AuthError       func(childComplexity int) int
+		Dates           func(childComplexity int) int
+		Mode            func(childComplexity int) int
+		NotFoundError   func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+		WeekEndDate     func(childComplexity int) int
+		WeekStartDate   func(childComplexity int) int
 	}
 
 	NutritionTemplateItem struct {
@@ -561,6 +724,10 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		AiExport                     func(childComplexity int, id string) int
+		AiExports                    func(childComplexity int) int
+		AiReview                     func(childComplexity int, id string) int
+		AiReviews                    func(childComplexity int, dateRangeStart *models.Date, dateRangeEnd *models.Date) int
 		AllExercises                 func(childComplexity int, includeInactive *bool) int
 		BodyCheckIn                  func(childComplexity int, id string) int
 		BodyCheckIns                 func(childComplexity int, from models.Date, to models.Date) int
@@ -570,6 +737,7 @@ type ComplexityRoot struct {
 		BodyWeightTrend              func(childComplexity int, from *models.Date, to *models.Date) int
 		CardioEntries                func(childComplexity int, date models.Date) int
 		CardioEntry                  func(childComplexity int, id string) int
+		DailyNutritionLog            func(childComplexity int, date models.Date) int
 		DailyNutritionOverride       func(childComplexity int, id string) int
 		DailyNutritionOverrideByDate func(childComplexity int, date models.Date) int
 		DailyNutritionOverrides      func(childComplexity int, startDate models.Date, endDate models.Date) int
@@ -582,12 +750,14 @@ type ComplexityRoot struct {
 		NutritionMacros              func(childComplexity int, weekStartDate models.Date, date *models.Date) int
 		NutritionProduct             func(childComplexity int, id string) int
 		NutritionProducts            func(childComplexity int) int
+		NutritionProductsAll         func(childComplexity int) int
 		NutritionTemplate            func(childComplexity int, id string) int
 		NutritionTemplateCurrent     func(childComplexity int, weekStartDate models.Date) int
 		NutritionTemplates           func(childComplexity int, startDate models.Date, endDate models.Date) int
 		NutritionWeeklyAverages      func(childComplexity int, from *models.Date, to *models.Date) int
 		ProgressPhotos               func(childComplexity int, checkInID string) int
 		Settings                     func(childComplexity int) int
+		UserProfile                  func(childComplexity int) int
 		WeekFlags                    func(childComplexity int, weekStartDate models.Date) int
 	}
 
@@ -605,6 +775,43 @@ type ComplexityRoot struct {
 	SettingsResult struct {
 		Error    func(childComplexity int) int
 		Settings func(childComplexity int) int
+	}
+
+	UserProfile struct {
+		BirthDate                 func(childComplexity int) int
+		CreatedAt                 func(childComplexity int) int
+		CurrentTrainingSplit      func(childComplexity int) int
+		Goal                      func(childComplexity int) int
+		Height                    func(childComplexity int) int
+		ID                        func(childComplexity int) int
+		NutritionStrategy         func(childComplexity int) int
+		PersistentAiContext       func(childComplexity int) int
+		PreferredProgressionStyle func(childComplexity int) int
+		TrainingExperience        func(childComplexity int) int
+		UpdatedAt                 func(childComplexity int) int
+		UserID                    func(childComplexity int) int
+	}
+
+	UserProfileAuthError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	UserProfileNotFoundError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
+	}
+
+	UserProfileResult struct {
+		AuthError       func(childComplexity int) int
+		NotFoundError   func(childComplexity int) int
+		Profile         func(childComplexity int) int
+		ValidationError func(childComplexity int) int
+	}
+
+	UserProfileValidationError struct {
+		Code    func(childComplexity int) int
+		Message func(childComplexity int) int
 	}
 
 	ValidationError struct {
@@ -651,6 +858,32 @@ type ComplexityRoot struct {
 	}
 }
 
+type AiExportResolver interface {
+	CreatedAt(ctx context.Context, obj *models.AiExport) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.AiExport) (*time.Time, error)
+}
+type AiExportResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.AiExportResult) (*models.AiExportValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.AiExportResult) (*models.AiExportNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.AiExportResult) (*models.AiExportAuthErr, error)
+}
+type AiExportsResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.AiExportsResult) (*models.AiExportValidationErr, error)
+	AuthError(ctx context.Context, obj *models.AiExportsResult) (*models.AiExportAuthErr, error)
+}
+type AiReviewResolver interface {
+	CreatedAt(ctx context.Context, obj *models.AiReview) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.AiReview) (*time.Time, error)
+}
+type AiReviewResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.AiReviewResult) (*models.AiReviewValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.AiReviewResult) (*models.AiReviewNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.AiReviewResult) (*models.AiReviewAuthErr, error)
+}
+type AiReviewsResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.AiReviewsResult) (*models.AiReviewValidationErr, error)
+	AuthError(ctx context.Context, obj *models.AiReviewsResult) (*models.AiReviewAuthErr, error)
+}
 type ArchiveResultResolver interface {
 	NotFoundError(ctx context.Context, obj *models.ArchiveResult) (*models.NotFoundErr, error)
 	AuthError(ctx context.Context, obj *models.ArchiveResult) (*models.AuthErr, error)
@@ -706,6 +939,21 @@ type CardioEntryResultResolver interface {
 	ValidationError(ctx context.Context, obj *models.CardioEntryResult) (*models.CardioValidationErr, error)
 	NotFoundError(ctx context.Context, obj *models.CardioEntryResult) (*models.CardioNotFoundErr, error)
 	AuthError(ctx context.Context, obj *models.CardioEntryResult) (*models.CardioAuthErr, error)
+}
+type DailyNutritionEntryResolver interface {
+	CreatedAt(ctx context.Context, obj *models.DailyNutritionEntry) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.DailyNutritionEntry) (*time.Time, error)
+}
+type DailyNutritionLogResolver interface {
+	Date(ctx context.Context, obj *models.DailyNutritionLog) (*models.Date, error)
+
+	CreatedAt(ctx context.Context, obj *models.DailyNutritionLog) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.DailyNutritionLog) (*time.Time, error)
+}
+type DailyNutritionLogResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.DailyNutritionLogResult) (*models.NutritionValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.DailyNutritionLogResult) (*models.NutritionNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.DailyNutritionLogResult) (*models.NutritionAuthErr, error)
 }
 type DailyNutritionOverrideResolver interface {
 	Date(ctx context.Context, obj *models.DailyNutritionOverride) (*models.Date, error)
@@ -778,12 +1026,25 @@ type MutationResolver interface {
 	DeleteBodyMeasurement(ctx context.Context, id string) (*models.BodyMeasurementResult, error)
 	CreateWeekFlag(ctx context.Context, input models.CreateWeekFlagInput) (*models.WeekFlagResult, error)
 	DeleteWeekFlag(ctx context.Context, id string) (*models.WeekFlagResult, error)
+	UpdateUserProfile(ctx context.Context, input models.UserProfileInput) (*models.UserProfileResult, error)
+	CreateAiExportPrompt(ctx context.Context, input models.CreateAiExportInput) (*models.AiExportResult, error)
+	GenerateAiExport(ctx context.Context, id string) (*models.AiExportResult, error)
+	DeleteAiExport(ctx context.Context, id string) (*models.AiExportResult, error)
+	CreateAiReview(ctx context.Context, input models.CreateAiReviewInput) (*models.AiReviewResult, error)
+	UpdateAiReview(ctx context.Context, id string, input models.UpdateAiReviewInput) (*models.AiReviewResult, error)
+	DeleteAiReview(ctx context.Context, id string) (*models.AiReviewResult, error)
 	CreateNutritionProduct(ctx context.Context, input models.CreateProductInput) (*models.NutritionProductResult, error)
 	UpdateNutritionProduct(ctx context.Context, id string, input models.UpdateProductInput) (*models.NutritionProductResult, error)
 	DeleteNutritionProduct(ctx context.Context, id string) (*models.NutritionProductResult, error)
+	RestoreNutritionProduct(ctx context.Context, id string) (*models.NutritionProductResult, error)
 	CreateNutritionTemplate(ctx context.Context, input models.CreateTemplateInput) (*models.NutritionTemplateResult, error)
 	UpdateNutritionTemplate(ctx context.Context, id string, input models.UpdateTemplateInput) (*models.NutritionTemplateResult, error)
 	DeleteNutritionTemplate(ctx context.Context, id string) (*models.NutritionTemplateResult, error)
+	ApplyNutritionTemplateToWeek(ctx context.Context, templateID string, mode models.NutritionTemplateApplyMode) (*models.NutritionTemplateApplyResult, error)
+	UpdateDailyNutritionLogNotes(ctx context.Context, id string, input models.UpdateDailyNutritionLogNotesInput) (*models.DailyNutritionLogResult, error)
+	AddDailyNutritionEntry(ctx context.Context, input models.AddDailyNutritionEntryInput) (*models.DailyNutritionLogResult, error)
+	UpdateDailyNutritionEntry(ctx context.Context, id string, input models.UpdateDailyNutritionEntryInput) (*models.DailyNutritionLogResult, error)
+	DeleteDailyNutritionEntry(ctx context.Context, id string) (*models.DailyNutritionLogResult, error)
 	CreateNutritionTemplateItem(ctx context.Context, input models.CreateTemplateItemInput) (*models.NutritionTemplateItemResult, error)
 	UpdateNutritionTemplateItem(ctx context.Context, id string, input models.UpdateTemplateItemInput) (*models.NutritionTemplateItemResult, error)
 	DeleteNutritionTemplateItem(ctx context.Context, id string) (*models.NutritionTemplateItemResult, error)
@@ -816,6 +1077,18 @@ type NutritionTemplateResolver interface {
 
 	CreatedAt(ctx context.Context, obj *models.NutritionTemplate) (*time.Time, error)
 	UpdatedAt(ctx context.Context, obj *models.NutritionTemplate) (*time.Time, error)
+}
+type NutritionTemplateApplyDateResultResolver interface {
+	Date(ctx context.Context, obj *models.NutritionTemplateApplyDateResult) (*models.Date, error)
+	Status(ctx context.Context, obj *models.NutritionTemplateApplyDateResult) (string, error)
+}
+type NutritionTemplateApplyResultResolver interface {
+	WeekStartDate(ctx context.Context, obj *models.NutritionTemplateApplyResult) (*models.Date, error)
+	WeekEndDate(ctx context.Context, obj *models.NutritionTemplateApplyResult) (*models.Date, error)
+
+	ValidationError(ctx context.Context, obj *models.NutritionTemplateApplyResult) (*models.NutritionValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.NutritionTemplateApplyResult) (*models.NutritionNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.NutritionTemplateApplyResult) (*models.NutritionAuthErr, error)
 }
 type NutritionTemplateItemResolver interface {
 	CreatedAt(ctx context.Context, obj *models.NutritionTemplateItem) (*time.Time, error)
@@ -862,11 +1135,18 @@ type QueryResolver interface {
 	BodyMeasurements(ctx context.Context, checkInID string) ([]*models.BodyMeasurement, error)
 	ProgressPhotos(ctx context.Context, checkInID string) (*models.ProgressPhotosResult, error)
 	WeekFlags(ctx context.Context, weekStartDate models.Date) (*models.WeekFlagsResult, error)
+	UserProfile(ctx context.Context) (*models.UserProfileResult, error)
+	AiExport(ctx context.Context, id string) (*models.AiExportResult, error)
+	AiExports(ctx context.Context) (*models.AiExportsResult, error)
+	AiReview(ctx context.Context, id string) (*models.AiReviewResult, error)
+	AiReviews(ctx context.Context, dateRangeStart *models.Date, dateRangeEnd *models.Date) (*models.AiReviewsResult, error)
 	NutritionProducts(ctx context.Context) (*models.NutritionProductsResult, error)
+	NutritionProductsAll(ctx context.Context) (*models.NutritionProductsResult, error)
 	NutritionProduct(ctx context.Context, id string) (*models.NutritionProductResult, error)
 	NutritionTemplates(ctx context.Context, startDate models.Date, endDate models.Date) (*models.NutritionTemplatesResult, error)
 	NutritionTemplate(ctx context.Context, id string) (*models.NutritionTemplateResult, error)
 	NutritionTemplateCurrent(ctx context.Context, weekStartDate models.Date) (*models.NutritionTemplateResult, error)
+	DailyNutritionLog(ctx context.Context, date models.Date) (*models.DailyNutritionLogResult, error)
 	DailyNutritionOverrides(ctx context.Context, startDate models.Date, endDate models.Date) (*models.DailyNutritionOverridesResult, error)
 	DailyNutritionOverride(ctx context.Context, id string) (*models.DailyNutritionOverrideResult, error)
 	DailyNutritionOverrideByDate(ctx context.Context, date models.Date) (*models.DailyNutritionOverrideResult, error)
@@ -876,6 +1156,15 @@ type QueryResolver interface {
 	MeasurementOverlay(ctx context.Context, measurementTypes []models.MeasurementType, from *models.Date, to *models.Date) (*models.MeasurementOverlayResult, error)
 	NutritionWeeklyAverages(ctx context.Context, from *models.Date, to *models.Date) (*models.NutritionWeeklyAveragesResult, error)
 	ExerciseProgress(ctx context.Context, exerciseID string, from *models.Date, to *models.Date) (*models.ExerciseProgressResult, error)
+}
+type UserProfileResolver interface {
+	CreatedAt(ctx context.Context, obj *models.UserProfile) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *models.UserProfile) (*time.Time, error)
+}
+type UserProfileResultResolver interface {
+	ValidationError(ctx context.Context, obj *models.UserProfileResult) (*models.UserProfileValidationErr, error)
+	NotFoundError(ctx context.Context, obj *models.UserProfileResult) (*models.UserProfileNotFoundErr, error)
+	AuthError(ctx context.Context, obj *models.UserProfileResult) (*models.UserProfileAuthErr, error)
 }
 type WeekFlagResolver interface {
 	CreatedAt(ctx context.Context, obj *models.WeekFlag) (*time.Time, error)
@@ -909,6 +1198,342 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "AiExport.createdAt":
+		if e.complexity.AiExport.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.AiExport.CreatedAt(childComplexity), true
+
+	case "AiExport.dateRangeEnd":
+		if e.complexity.AiExport.DateRangeEnd == nil {
+			break
+		}
+
+		return e.complexity.AiExport.DateRangeEnd(childComplexity), true
+
+	case "AiExport.dateRangeStart":
+		if e.complexity.AiExport.DateRangeStart == nil {
+			break
+		}
+
+		return e.complexity.AiExport.DateRangeStart(childComplexity), true
+
+	case "AiExport.exportFilePath":
+		if e.complexity.AiExport.ExportFilePath == nil {
+			break
+		}
+
+		return e.complexity.AiExport.ExportFilePath(childComplexity), true
+
+	case "AiExport.generatedPrompt":
+		if e.complexity.AiExport.GeneratedPrompt == nil {
+			break
+		}
+
+		return e.complexity.AiExport.GeneratedPrompt(childComplexity), true
+
+	case "AiExport.id":
+		if e.complexity.AiExport.ID == nil {
+			break
+		}
+
+		return e.complexity.AiExport.ID(childComplexity), true
+
+	case "AiExport.includeCardio":
+		if e.complexity.AiExport.IncludeCardio == nil {
+			break
+		}
+
+		return e.complexity.AiExport.IncludeCardio(childComplexity), true
+
+	case "AiExport.includeMeasurements":
+		if e.complexity.AiExport.IncludeMeasurements == nil {
+			break
+		}
+
+		return e.complexity.AiExport.IncludeMeasurements(childComplexity), true
+
+	case "AiExport.includeNutrition":
+		if e.complexity.AiExport.IncludeNutrition == nil {
+			break
+		}
+
+		return e.complexity.AiExport.IncludeNutrition(childComplexity), true
+
+	case "AiExport.includePhotos":
+		if e.complexity.AiExport.IncludePhotos == nil {
+			break
+		}
+
+		return e.complexity.AiExport.IncludePhotos(childComplexity), true
+
+	case "AiExport.updatedAt":
+		if e.complexity.AiExport.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.AiExport.UpdatedAt(childComplexity), true
+
+	case "AiExport.userComment":
+		if e.complexity.AiExport.UserComment == nil {
+			break
+		}
+
+		return e.complexity.AiExport.UserComment(childComplexity), true
+
+	case "AiExport.userId":
+		if e.complexity.AiExport.UserID == nil {
+			break
+		}
+
+		return e.complexity.AiExport.UserID(childComplexity), true
+
+	case "AiExportAuthError.code":
+		if e.complexity.AiExportAuthError.Code == nil {
+			break
+		}
+
+		return e.complexity.AiExportAuthError.Code(childComplexity), true
+
+	case "AiExportAuthError.message":
+		if e.complexity.AiExportAuthError.Message == nil {
+			break
+		}
+
+		return e.complexity.AiExportAuthError.Message(childComplexity), true
+
+	case "AiExportNotFoundError.code":
+		if e.complexity.AiExportNotFoundError.Code == nil {
+			break
+		}
+
+		return e.complexity.AiExportNotFoundError.Code(childComplexity), true
+
+	case "AiExportNotFoundError.message":
+		if e.complexity.AiExportNotFoundError.Message == nil {
+			break
+		}
+
+		return e.complexity.AiExportNotFoundError.Message(childComplexity), true
+
+	case "AiExportResult.authError":
+		if e.complexity.AiExportResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.AiExportResult.AuthError(childComplexity), true
+
+	case "AiExportResult.export":
+		if e.complexity.AiExportResult.Export == nil {
+			break
+		}
+
+		return e.complexity.AiExportResult.Export(childComplexity), true
+
+	case "AiExportResult.notFoundError":
+		if e.complexity.AiExportResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.AiExportResult.NotFoundError(childComplexity), true
+
+	case "AiExportResult.validationError":
+		if e.complexity.AiExportResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.AiExportResult.ValidationError(childComplexity), true
+
+	case "AiExportValidationError.code":
+		if e.complexity.AiExportValidationError.Code == nil {
+			break
+		}
+
+		return e.complexity.AiExportValidationError.Code(childComplexity), true
+
+	case "AiExportValidationError.message":
+		if e.complexity.AiExportValidationError.Message == nil {
+			break
+		}
+
+		return e.complexity.AiExportValidationError.Message(childComplexity), true
+
+	case "AiExportsResult.authError":
+		if e.complexity.AiExportsResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.AiExportsResult.AuthError(childComplexity), true
+
+	case "AiExportsResult.exports":
+		if e.complexity.AiExportsResult.Exports == nil {
+			break
+		}
+
+		return e.complexity.AiExportsResult.Exports(childComplexity), true
+
+	case "AiExportsResult.validationError":
+		if e.complexity.AiExportsResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.AiExportsResult.ValidationError(childComplexity), true
+
+	case "AiReview.aiResponseText":
+		if e.complexity.AiReview.AiResponseText == nil {
+			break
+		}
+
+		return e.complexity.AiReview.AiResponseText(childComplexity), true
+
+	case "AiReview.createdAt":
+		if e.complexity.AiReview.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.AiReview.CreatedAt(childComplexity), true
+
+	case "AiReview.dateRangeEnd":
+		if e.complexity.AiReview.DateRangeEnd == nil {
+			break
+		}
+
+		return e.complexity.AiReview.DateRangeEnd(childComplexity), true
+
+	case "AiReview.dateRangeStart":
+		if e.complexity.AiReview.DateRangeStart == nil {
+			break
+		}
+
+		return e.complexity.AiReview.DateRangeStart(childComplexity), true
+
+	case "AiReview.id":
+		if e.complexity.AiReview.ID == nil {
+			break
+		}
+
+		return e.complexity.AiReview.ID(childComplexity), true
+
+	case "AiReview.plannedActions":
+		if e.complexity.AiReview.PlannedActions == nil {
+			break
+		}
+
+		return e.complexity.AiReview.PlannedActions(childComplexity), true
+
+	case "AiReview.updatedAt":
+		if e.complexity.AiReview.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.AiReview.UpdatedAt(childComplexity), true
+
+	case "AiReview.userId":
+		if e.complexity.AiReview.UserID == nil {
+			break
+		}
+
+		return e.complexity.AiReview.UserID(childComplexity), true
+
+	case "AiReview.userNotes":
+		if e.complexity.AiReview.UserNotes == nil {
+			break
+		}
+
+		return e.complexity.AiReview.UserNotes(childComplexity), true
+
+	case "AiReviewAuthError.code":
+		if e.complexity.AiReviewAuthError.Code == nil {
+			break
+		}
+
+		return e.complexity.AiReviewAuthError.Code(childComplexity), true
+
+	case "AiReviewAuthError.message":
+		if e.complexity.AiReviewAuthError.Message == nil {
+			break
+		}
+
+		return e.complexity.AiReviewAuthError.Message(childComplexity), true
+
+	case "AiReviewNotFoundError.code":
+		if e.complexity.AiReviewNotFoundError.Code == nil {
+			break
+		}
+
+		return e.complexity.AiReviewNotFoundError.Code(childComplexity), true
+
+	case "AiReviewNotFoundError.message":
+		if e.complexity.AiReviewNotFoundError.Message == nil {
+			break
+		}
+
+		return e.complexity.AiReviewNotFoundError.Message(childComplexity), true
+
+	case "AiReviewResult.authError":
+		if e.complexity.AiReviewResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.AiReviewResult.AuthError(childComplexity), true
+
+	case "AiReviewResult.notFoundError":
+		if e.complexity.AiReviewResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.AiReviewResult.NotFoundError(childComplexity), true
+
+	case "AiReviewResult.review":
+		if e.complexity.AiReviewResult.Review == nil {
+			break
+		}
+
+		return e.complexity.AiReviewResult.Review(childComplexity), true
+
+	case "AiReviewResult.validationError":
+		if e.complexity.AiReviewResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.AiReviewResult.ValidationError(childComplexity), true
+
+	case "AiReviewValidationError.code":
+		if e.complexity.AiReviewValidationError.Code == nil {
+			break
+		}
+
+		return e.complexity.AiReviewValidationError.Code(childComplexity), true
+
+	case "AiReviewValidationError.message":
+		if e.complexity.AiReviewValidationError.Message == nil {
+			break
+		}
+
+		return e.complexity.AiReviewValidationError.Message(childComplexity), true
+
+	case "AiReviewsResult.authError":
+		if e.complexity.AiReviewsResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.AiReviewsResult.AuthError(childComplexity), true
+
+	case "AiReviewsResult.reviews":
+		if e.complexity.AiReviewsResult.Reviews == nil {
+			break
+		}
+
+		return e.complexity.AiReviewsResult.Reviews(childComplexity), true
+
+	case "AiReviewsResult.validationError":
+		if e.complexity.AiReviewsResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.AiReviewsResult.ValidationError(childComplexity), true
 
 	case "ArchiveResult.authError":
 		if e.complexity.ArchiveResult.AuthError == nil {
@@ -1547,6 +2172,195 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ChartValidationError.Message(childComplexity), true
 
+	case "DailyNutritionEntry.amountGrams":
+		if e.complexity.DailyNutritionEntry.AmountGrams == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.AmountGrams(childComplexity), true
+
+	case "DailyNutritionEntry.caloriesPer100gSnapshot":
+		if e.complexity.DailyNutritionEntry.CaloriesPer100gSnapshot == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.CaloriesPer100gSnapshot(childComplexity), true
+
+	case "DailyNutritionEntry.carbsPer100gSnapshot":
+		if e.complexity.DailyNutritionEntry.CarbsPer100gSnapshot == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.CarbsPer100gSnapshot(childComplexity), true
+
+	case "DailyNutritionEntry.createdAt":
+		if e.complexity.DailyNutritionEntry.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.CreatedAt(childComplexity), true
+
+	case "DailyNutritionEntry.dailyLogId":
+		if e.complexity.DailyNutritionEntry.DailyLogID == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.DailyLogID(childComplexity), true
+
+	case "DailyNutritionEntry.fatPer100gSnapshot":
+		if e.complexity.DailyNutritionEntry.FatPer100gSnapshot == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.FatPer100gSnapshot(childComplexity), true
+
+	case "DailyNutritionEntry.id":
+		if e.complexity.DailyNutritionEntry.ID == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.ID(childComplexity), true
+
+	case "DailyNutritionEntry.macros":
+		if e.complexity.DailyNutritionEntry.Macros == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.Macros(childComplexity), true
+
+	case "DailyNutritionEntry.mealLabel":
+		if e.complexity.DailyNutritionEntry.MealLabel == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.MealLabel(childComplexity), true
+
+	case "DailyNutritionEntry.notes":
+		if e.complexity.DailyNutritionEntry.Notes == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.Notes(childComplexity), true
+
+	case "DailyNutritionEntry.position":
+		if e.complexity.DailyNutritionEntry.Position == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.Position(childComplexity), true
+
+	case "DailyNutritionEntry.productId":
+		if e.complexity.DailyNutritionEntry.ProductID == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.ProductID(childComplexity), true
+
+	case "DailyNutritionEntry.productNameSnapshot":
+		if e.complexity.DailyNutritionEntry.ProductNameSnapshot == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.ProductNameSnapshot(childComplexity), true
+
+	case "DailyNutritionEntry.proteinPer100gSnapshot":
+		if e.complexity.DailyNutritionEntry.ProteinPer100gSnapshot == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.ProteinPer100gSnapshot(childComplexity), true
+
+	case "DailyNutritionEntry.updatedAt":
+		if e.complexity.DailyNutritionEntry.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionEntry.UpdatedAt(childComplexity), true
+
+	case "DailyNutritionLog.createdAt":
+		if e.complexity.DailyNutritionLog.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionLog.CreatedAt(childComplexity), true
+
+	case "DailyNutritionLog.date":
+		if e.complexity.DailyNutritionLog.Date == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionLog.Date(childComplexity), true
+
+	case "DailyNutritionLog.entries":
+		if e.complexity.DailyNutritionLog.Entries == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionLog.Entries(childComplexity), true
+
+	case "DailyNutritionLog.id":
+		if e.complexity.DailyNutritionLog.ID == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionLog.ID(childComplexity), true
+
+	case "DailyNutritionLog.notes":
+		if e.complexity.DailyNutritionLog.Notes == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionLog.Notes(childComplexity), true
+
+	case "DailyNutritionLog.totals":
+		if e.complexity.DailyNutritionLog.Totals == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionLog.Totals(childComplexity), true
+
+	case "DailyNutritionLog.updatedAt":
+		if e.complexity.DailyNutritionLog.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionLog.UpdatedAt(childComplexity), true
+
+	case "DailyNutritionLog.userId":
+		if e.complexity.DailyNutritionLog.UserID == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionLog.UserID(childComplexity), true
+
+	case "DailyNutritionLogResult.authError":
+		if e.complexity.DailyNutritionLogResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionLogResult.AuthError(childComplexity), true
+
+	case "DailyNutritionLogResult.dailyNutritionLog":
+		if e.complexity.DailyNutritionLogResult.DailyNutritionLog == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionLogResult.DailyNutritionLog(childComplexity), true
+
+	case "DailyNutritionLogResult.notFoundError":
+		if e.complexity.DailyNutritionLogResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionLogResult.NotFoundError(childComplexity), true
+
+	case "DailyNutritionLogResult.validationError":
+		if e.complexity.DailyNutritionLogResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.DailyNutritionLogResult.ValidationError(childComplexity), true
+
 	case "DailyNutritionOverride.createdAt":
 		if e.complexity.DailyNutritionOverride.CreatedAt == nil {
 			break
@@ -2009,6 +2823,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.MeasurementTrendResult.ValidationError(childComplexity), true
 
+	case "Mutation.addDailyNutritionEntry":
+		if e.complexity.Mutation.AddDailyNutritionEntry == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addDailyNutritionEntry_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddDailyNutritionEntry(childComplexity, args["input"].(models.AddDailyNutritionEntryInput)), true
+
+	case "Mutation.applyNutritionTemplateToWeek":
+		if e.complexity.Mutation.ApplyNutritionTemplateToWeek == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_applyNutritionTemplateToWeek_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ApplyNutritionTemplateToWeek(childComplexity, args["templateId"].(string), args["mode"].(models.NutritionTemplateApplyMode)), true
+
 	case "Mutation.archiveExercise":
 		if e.complexity.Mutation.ArchiveExercise == nil {
 			break
@@ -2032,6 +2870,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.ChangePin(childComplexity, args["input"].(models.PinChangeInput)), true
+
+	case "Mutation.createAiExportPrompt":
+		if e.complexity.Mutation.CreateAiExportPrompt == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createAiExportPrompt_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateAiExportPrompt(childComplexity, args["input"].(models.CreateAiExportInput)), true
+
+	case "Mutation.createAiReview":
+		if e.complexity.Mutation.CreateAiReview == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createAiReview_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateAiReview(childComplexity, args["input"].(models.CreateAiReviewInput)), true
 
 	case "Mutation.createBodyCheckIn":
 		if e.complexity.Mutation.CreateBodyCheckIn == nil {
@@ -2165,6 +3027,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateWeekFlag(childComplexity, args["input"].(models.CreateWeekFlagInput)), true
 
+	case "Mutation.deleteAiExport":
+		if e.complexity.Mutation.DeleteAiExport == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteAiExport_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteAiExport(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteAiReview":
+		if e.complexity.Mutation.DeleteAiReview == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteAiReview_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteAiReview(childComplexity, args["id"].(string)), true
+
 	case "Mutation.deleteBodyCheckIn":
 		if e.complexity.Mutation.DeleteBodyCheckIn == nil {
 			break
@@ -2212,6 +3098,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteCardioEntry(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteDailyNutritionEntry":
+		if e.complexity.Mutation.DeleteDailyNutritionEntry == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteDailyNutritionEntry_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteDailyNutritionEntry(childComplexity, args["id"].(string)), true
 
 	case "Mutation.deleteDailyNutritionOverride":
 		if e.complexity.Mutation.DeleteDailyNutritionOverride == nil {
@@ -2309,6 +3207,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.EnablePin(childComplexity, args["input"].(models.PinEnableInput)), true
 
+	case "Mutation.generateAiExport":
+		if e.complexity.Mutation.GenerateAiExport == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_generateAiExport_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.GenerateAiExport(childComplexity, args["id"].(string)), true
+
 	case "Mutation.restoreExercise":
 		if e.complexity.Mutation.RestoreExercise == nil {
 			break
@@ -2320,6 +3230,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.RestoreExercise(childComplexity, args["id"].(string)), true
+
+	case "Mutation.restoreNutritionProduct":
+		if e.complexity.Mutation.RestoreNutritionProduct == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_restoreNutritionProduct_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RestoreNutritionProduct(childComplexity, args["id"].(string)), true
+
+	case "Mutation.updateAiReview":
+		if e.complexity.Mutation.UpdateAiReview == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateAiReview_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateAiReview(childComplexity, args["id"].(string), args["input"].(models.UpdateAiReviewInput)), true
 
 	case "Mutation.updateBodyCheckIn":
 		if e.complexity.Mutation.UpdateBodyCheckIn == nil {
@@ -2368,6 +3302,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateCardioEntry(childComplexity, args["id"].(string), args["input"].(models.UpdateCardioInput)), true
+
+	case "Mutation.updateDailyNutritionEntry":
+		if e.complexity.Mutation.UpdateDailyNutritionEntry == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateDailyNutritionEntry_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateDailyNutritionEntry(childComplexity, args["id"].(string), args["input"].(models.UpdateDailyNutritionEntryInput)), true
+
+	case "Mutation.updateDailyNutritionLogNotes":
+		if e.complexity.Mutation.UpdateDailyNutritionLogNotes == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateDailyNutritionLogNotes_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateDailyNutritionLogNotes(childComplexity, args["id"].(string), args["input"].(models.UpdateDailyNutritionLogNotesInput)), true
 
 	case "Mutation.updateDailyNutritionOverride":
 		if e.complexity.Mutation.UpdateDailyNutritionOverride == nil {
@@ -2452,6 +3410,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateSettings(childComplexity, args["input"].(models.SettingsInput)), true
+
+	case "Mutation.updateUserProfile":
+		if e.complexity.Mutation.UpdateUserProfile == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateUserProfile_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateUserProfile(childComplexity, args["input"].(models.UserProfileInput)), true
 
 	case "NotFoundError.code":
 		if e.complexity.NotFoundError.Code == nil {
@@ -2725,6 +3695,83 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.NutritionTemplate.WeekStartDate(childComplexity), true
+
+	case "NutritionTemplateApplyDateResult.date":
+		if e.complexity.NutritionTemplateApplyDateResult.Date == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateApplyDateResult.Date(childComplexity), true
+
+	case "NutritionTemplateApplyDateResult.entryCount":
+		if e.complexity.NutritionTemplateApplyDateResult.EntryCount == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateApplyDateResult.EntryCount(childComplexity), true
+
+	case "NutritionTemplateApplyDateResult.reason":
+		if e.complexity.NutritionTemplateApplyDateResult.Reason == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateApplyDateResult.Reason(childComplexity), true
+
+	case "NutritionTemplateApplyDateResult.status":
+		if e.complexity.NutritionTemplateApplyDateResult.Status == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateApplyDateResult.Status(childComplexity), true
+
+	case "NutritionTemplateApplyResult.authError":
+		if e.complexity.NutritionTemplateApplyResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateApplyResult.AuthError(childComplexity), true
+
+	case "NutritionTemplateApplyResult.dates":
+		if e.complexity.NutritionTemplateApplyResult.Dates == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateApplyResult.Dates(childComplexity), true
+
+	case "NutritionTemplateApplyResult.mode":
+		if e.complexity.NutritionTemplateApplyResult.Mode == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateApplyResult.Mode(childComplexity), true
+
+	case "NutritionTemplateApplyResult.notFoundError":
+		if e.complexity.NutritionTemplateApplyResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateApplyResult.NotFoundError(childComplexity), true
+
+	case "NutritionTemplateApplyResult.validationError":
+		if e.complexity.NutritionTemplateApplyResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateApplyResult.ValidationError(childComplexity), true
+
+	case "NutritionTemplateApplyResult.weekEndDate":
+		if e.complexity.NutritionTemplateApplyResult.WeekEndDate == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateApplyResult.WeekEndDate(childComplexity), true
+
+	case "NutritionTemplateApplyResult.weekStartDate":
+		if e.complexity.NutritionTemplateApplyResult.WeekStartDate == nil {
+			break
+		}
+
+		return e.complexity.NutritionTemplateApplyResult.WeekStartDate(childComplexity), true
 
 	case "NutritionTemplateItem.amountGrams":
 		if e.complexity.NutritionTemplateItem.AmountGrams == nil {
@@ -3090,6 +4137,49 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ProgressPhotosResult.ValidationError(childComplexity), true
 
+	case "Query.aiExport":
+		if e.complexity.Query.AiExport == nil {
+			break
+		}
+
+		args, err := ec.field_Query_aiExport_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.AiExport(childComplexity, args["id"].(string)), true
+
+	case "Query.aiExports":
+		if e.complexity.Query.AiExports == nil {
+			break
+		}
+
+		return e.complexity.Query.AiExports(childComplexity), true
+
+	case "Query.aiReview":
+		if e.complexity.Query.AiReview == nil {
+			break
+		}
+
+		args, err := ec.field_Query_aiReview_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.AiReview(childComplexity, args["id"].(string)), true
+
+	case "Query.aiReviews":
+		if e.complexity.Query.AiReviews == nil {
+			break
+		}
+
+		args, err := ec.field_Query_aiReviews_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.AiReviews(childComplexity, args["dateRangeStart"].(*models.Date), args["dateRangeEnd"].(*models.Date)), true
+
 	case "Query.allExercises":
 		if e.complexity.Query.AllExercises == nil {
 			break
@@ -3197,6 +4287,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.CardioEntry(childComplexity, args["id"].(string)), true
+
+	case "Query.dailyNutritionLog":
+		if e.complexity.Query.DailyNutritionLog == nil {
+			break
+		}
+
+		args, err := ec.field_Query_dailyNutritionLog_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.DailyNutritionLog(childComplexity, args["date"].(models.Date)), true
 
 	case "Query.dailyNutritionOverride":
 		if e.complexity.Query.DailyNutritionOverride == nil {
@@ -3332,6 +4434,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.NutritionProducts(childComplexity), true
 
+	case "Query.nutritionProductsAll":
+		if e.complexity.Query.NutritionProductsAll == nil {
+			break
+		}
+
+		return e.complexity.Query.NutritionProductsAll(childComplexity), true
+
 	case "Query.nutritionTemplate":
 		if e.complexity.Query.NutritionTemplate == nil {
 			break
@@ -3399,6 +4508,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Settings(childComplexity), true
 
+	case "Query.userProfile":
+		if e.complexity.Query.UserProfile == nil {
+			break
+		}
+
+		return e.complexity.Query.UserProfile(childComplexity), true
+
 	case "Query.weekFlags":
 		if e.complexity.Query.WeekFlags == nil {
 			break
@@ -3459,6 +4575,160 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SettingsResult.Settings(childComplexity), true
+
+	case "UserProfile.birthDate":
+		if e.complexity.UserProfile.BirthDate == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.BirthDate(childComplexity), true
+
+	case "UserProfile.createdAt":
+		if e.complexity.UserProfile.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.CreatedAt(childComplexity), true
+
+	case "UserProfile.currentTrainingSplit":
+		if e.complexity.UserProfile.CurrentTrainingSplit == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.CurrentTrainingSplit(childComplexity), true
+
+	case "UserProfile.goal":
+		if e.complexity.UserProfile.Goal == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.Goal(childComplexity), true
+
+	case "UserProfile.height":
+		if e.complexity.UserProfile.Height == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.Height(childComplexity), true
+
+	case "UserProfile.id":
+		if e.complexity.UserProfile.ID == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.ID(childComplexity), true
+
+	case "UserProfile.nutritionStrategy":
+		if e.complexity.UserProfile.NutritionStrategy == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.NutritionStrategy(childComplexity), true
+
+	case "UserProfile.persistentAiContext":
+		if e.complexity.UserProfile.PersistentAiContext == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.PersistentAiContext(childComplexity), true
+
+	case "UserProfile.preferredProgressionStyle":
+		if e.complexity.UserProfile.PreferredProgressionStyle == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.PreferredProgressionStyle(childComplexity), true
+
+	case "UserProfile.trainingExperience":
+		if e.complexity.UserProfile.TrainingExperience == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.TrainingExperience(childComplexity), true
+
+	case "UserProfile.updatedAt":
+		if e.complexity.UserProfile.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.UpdatedAt(childComplexity), true
+
+	case "UserProfile.userId":
+		if e.complexity.UserProfile.UserID == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.UserID(childComplexity), true
+
+	case "UserProfileAuthError.code":
+		if e.complexity.UserProfileAuthError.Code == nil {
+			break
+		}
+
+		return e.complexity.UserProfileAuthError.Code(childComplexity), true
+
+	case "UserProfileAuthError.message":
+		if e.complexity.UserProfileAuthError.Message == nil {
+			break
+		}
+
+		return e.complexity.UserProfileAuthError.Message(childComplexity), true
+
+	case "UserProfileNotFoundError.code":
+		if e.complexity.UserProfileNotFoundError.Code == nil {
+			break
+		}
+
+		return e.complexity.UserProfileNotFoundError.Code(childComplexity), true
+
+	case "UserProfileNotFoundError.message":
+		if e.complexity.UserProfileNotFoundError.Message == nil {
+			break
+		}
+
+		return e.complexity.UserProfileNotFoundError.Message(childComplexity), true
+
+	case "UserProfileResult.authError":
+		if e.complexity.UserProfileResult.AuthError == nil {
+			break
+		}
+
+		return e.complexity.UserProfileResult.AuthError(childComplexity), true
+
+	case "UserProfileResult.notFoundError":
+		if e.complexity.UserProfileResult.NotFoundError == nil {
+			break
+		}
+
+		return e.complexity.UserProfileResult.NotFoundError(childComplexity), true
+
+	case "UserProfileResult.profile":
+		if e.complexity.UserProfileResult.Profile == nil {
+			break
+		}
+
+		return e.complexity.UserProfileResult.Profile(childComplexity), true
+
+	case "UserProfileResult.validationError":
+		if e.complexity.UserProfileResult.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.UserProfileResult.ValidationError(childComplexity), true
+
+	case "UserProfileValidationError.code":
+		if e.complexity.UserProfileValidationError.Code == nil {
+			break
+		}
+
+		return e.complexity.UserProfileValidationError.Code(childComplexity), true
+
+	case "UserProfileValidationError.message":
+		if e.complexity.UserProfileValidationError.Message == nil {
+			break
+		}
+
+		return e.complexity.UserProfileValidationError.Message(childComplexity), true
 
 	case "ValidationError.code":
 		if e.complexity.ValidationError.Code == nil {
@@ -3622,6 +4892,9 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputAddDailyNutritionEntryInput,
+		ec.unmarshalInputCreateAiExportInput,
+		ec.unmarshalInputCreateAiReviewInput,
 		ec.unmarshalInputCreateBodyWeightInput,
 		ec.unmarshalInputCreateCardioInput,
 		ec.unmarshalInputCreateCheckInInput,
@@ -3637,9 +4910,12 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputPinDisableInput,
 		ec.unmarshalInputPinEnableInput,
 		ec.unmarshalInputSettingsInput,
+		ec.unmarshalInputUpdateAiReviewInput,
 		ec.unmarshalInputUpdateBodyWeightInput,
 		ec.unmarshalInputUpdateCardioInput,
 		ec.unmarshalInputUpdateCheckInInput,
+		ec.unmarshalInputUpdateDailyNutritionEntryInput,
+		ec.unmarshalInputUpdateDailyNutritionLogNotesInput,
 		ec.unmarshalInputUpdateExerciseInput,
 		ec.unmarshalInputUpdateMeasurementInput,
 		ec.unmarshalInputUpdateOverrideInput,
@@ -3647,6 +4923,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputUpdateProductInput,
 		ec.unmarshalInputUpdateTemplateInput,
 		ec.unmarshalInputUpdateTemplateItemInput,
+		ec.unmarshalInputUserProfileInput,
 	)
 	first := true
 
@@ -3744,6 +5021,129 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
+	{Name: "../schema/ai_export.graphql", Input: `type AiExport {
+  id: ID!
+  userId: ID!
+  dateRangeStart: Date!
+  dateRangeEnd: Date!
+  includePhotos: Boolean!
+  includeNutrition: Boolean!
+  includeCardio: Boolean!
+  includeMeasurements: Boolean!
+  userComment: String
+  generatedPrompt: String!
+  exportFilePath: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input CreateAiExportInput {
+  dateRangeStart: Date!
+  dateRangeEnd: Date!
+  includePhotos: Boolean
+  includeNutrition: Boolean
+  includeCardio: Boolean
+  includeMeasurements: Boolean
+  userComment: String
+}
+
+type AiExportResult {
+  export: AiExport
+  validationError: AiExportValidationError
+  notFoundError: AiExportNotFoundError
+  authError: AiExportAuthError
+}
+
+type AiExportsResult {
+  exports: [AiExport!]!
+  validationError: AiExportValidationError
+  authError: AiExportAuthError
+}
+
+type AiExportValidationError {
+  message: String!
+  code: AiExportErrorCode!
+}
+
+type AiExportNotFoundError {
+  message: String!
+  code: AiExportErrorCode!
+}
+
+type AiExportAuthError {
+  message: String!
+  code: AiExportErrorCode!
+}
+
+enum AiExportErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}
+`, BuiltIn: false},
+	{Name: "../schema/ai_review.graphql", Input: `type AiReview {
+  id: ID!
+  userId: ID!
+  dateRangeStart: Date!
+  dateRangeEnd: Date!
+  aiResponseText: String!
+  userNotes: String
+  plannedActions: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input CreateAiReviewInput {
+  dateRangeStart: Date!
+  dateRangeEnd: Date!
+  aiResponseText: String!
+  userNotes: String
+  plannedActions: String
+}
+
+input UpdateAiReviewInput {
+  dateRangeStart: Date
+  dateRangeEnd: Date
+  aiResponseText: String
+  userNotes: String
+  plannedActions: String
+}
+
+type AiReviewResult {
+  review: AiReview
+  validationError: AiReviewValidationError
+  notFoundError: AiReviewNotFoundError
+  authError: AiReviewAuthError
+}
+
+type AiReviewsResult {
+  reviews: [AiReview!]!
+  validationError: AiReviewValidationError
+  authError: AiReviewAuthError
+}
+
+type AiReviewValidationError {
+  message: String!
+  code: AiReviewErrorCode!
+}
+
+type AiReviewNotFoundError {
+  message: String!
+  code: AiReviewErrorCode!
+}
+
+type AiReviewAuthError {
+  message: String!
+  code: AiReviewErrorCode!
+}
+
+enum AiReviewErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}`, BuiltIn: false},
 	{Name: "../schema/body_tracking.graphql", Input: `type BodyWeightEntry {
   id: ID!
   userId: ID!
@@ -4061,6 +5461,81 @@ enum ChartErrorCode {
   AUTH_ERROR
   INTERNAL_ERROR
 }`, BuiltIn: false},
+	{Name: "../schema/daily_nutrition.graphql", Input: `# FILE: apps/api/internal/atlas/graph/schema/daily_nutrition.graphql
+# VERSION: 1.0.0
+# START_MODULE_CONTRACT
+#   PURPOSE: Define factual daily nutrition log GraphQL types, inputs, and result wrappers.
+#   SCOPE: DailyNutritionLog aggregate, DailyNutritionEntry snapshots, entry mutations, notes update input, and daily log result error shape; excludes weekly template apply and legacy overrides.
+#   DEPENDS: schema.graphql Date/Time scalars and nutrition.graphql NutritionMacros/error types.
+#   LINKS: M-API-NUTRITION / V-M-API-NUTRITION.
+#   ROLE: RUNTIME
+#   MAP_MODE: LOCALS
+# END_MODULE_CONTRACT
+# START_MODULE_MAP
+#   DailyNutritionLog - Date-scoped factual food log aggregate with entries and totals.
+#   DailyNutritionEntry - Product snapshot food entry with calculated macros.
+#   AddDailyNutritionEntryInput - Input for adding a product snapshot entry by date.
+#   UpdateDailyNutritionEntryInput - Full replacement input for mutable entry fields; position is required.
+#   UpdateDailyNutritionLogNotesInput - Notes-only input used with updateDailyNutritionLogNotes(id: ...).
+#   DailyNutritionLogResult - Union-style daily log result with validation, not-found, and auth errors.
+# END_MODULE_MAP
+
+type DailyNutritionLog {
+  id: ID!
+  userId: ID!
+  date: Date!
+  notes: String
+  entries: [DailyNutritionEntry!]!
+  totals: NutritionMacros!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type DailyNutritionEntry {
+  id: ID!
+  dailyLogId: ID!
+  productId: ID!
+  productNameSnapshot: String!
+  caloriesPer100gSnapshot: Float!
+  proteinPer100gSnapshot: Float!
+  fatPer100gSnapshot: Float!
+  carbsPer100gSnapshot: Float!
+  amountGrams: Float!
+  mealLabel: String
+  notes: String
+  position: Int!
+  macros: NutritionMacros!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input AddDailyNutritionEntryInput {
+  date: Date!
+  productId: ID!
+  amountGrams: Float!
+  mealLabel: String
+  notes: String
+}
+
+input UpdateDailyNutritionEntryInput {
+  dailyLogId: ID!
+  amountGrams: Float!
+  mealLabel: String
+  notes: String
+  position: Int!
+}
+
+input UpdateDailyNutritionLogNotesInput {
+  notes: String
+}
+
+type DailyNutritionLogResult {
+  dailyNutritionLog: DailyNutritionLog
+  validationError: NutritionValidationError
+  notFoundError: NutritionNotFoundError
+  authError: NutritionAuthError
+}
+`, BuiltIn: false},
 	{Name: "../schema/exercises.graphql", Input: `type Exercise {
   id: ID!
   userId: ID!
@@ -4150,11 +5625,14 @@ enum ExerciseErrorCode {
 # VERSION: 1.0.0
 # START_MODULE_CONTRACT
 #   PURPOSE: Define GraphQL types, enums, inputs, queries, mutations, and union result types for WAVE-05 Nutrition module.
-#   SCOPE: NutritionProduct, NutritionTemplate (with nested items), DailyNutritionOverride (with nested items), NutritionMacros. Operation and NutritionErrorCode enums. CRUD inputs and union results with ValidationError/NotFoundError/AuthError for all entities.
+#   SCOPE: NutritionProduct, NutritionTemplate (with nested items), DailyNutritionOverride (with nested items), NutritionMacros, and weekly template apply result types. Operation and NutritionErrorCode enums. CRUD inputs and union results with ValidationError/NotFoundError/AuthError for all entities.
 #   DEPENDS: schema.graphql for Time and Date scalars, Query and Mutation root types.
 #   ROLE: RUNTIME
 #   MAP_MODE: LOCALS
 # END_MODULE_CONTRACT
+# START_CHANGE_SUMMARY
+#   LAST_CHANGE: 1.0.1 - Added weekly template apply enum/result types for factual daily nutrition seeding.
+# END_CHANGE_SUMMARY
 
 type NutritionProduct {
   id: ID!
@@ -4232,6 +5710,10 @@ enum NutritionErrorCode {
   NOT_FOUND
   AUTH_ERROR
   INTERNAL_ERROR
+}
+
+enum NutritionTemplateApplyMode {
+  SEED_EMPTY_DAYS
 }
 
 input CreateProductInput {
@@ -4361,6 +5843,23 @@ type NutritionMacrosResult {
   authError: NutritionAuthError
 }
 
+type NutritionTemplateApplyDateResult {
+  date: Date!
+  status: String!
+  entryCount: Int!
+  reason: String
+}
+
+type NutritionTemplateApplyResult {
+  weekStartDate: Date
+  weekEndDate: Date
+  mode: NutritionTemplateApplyMode
+  dates: [NutritionTemplateApplyDateResult!]!
+  validationError: NutritionValidationError
+  notFoundError: NutritionNotFoundError
+  authError: NutritionAuthError
+}
+
 type NutritionValidationError {
   message: String!
   code: NutritionErrorCode!
@@ -4374,7 +5873,8 @@ type NutritionNotFoundError {
 type NutritionAuthError {
   message: String!
   code: NutritionErrorCode!
-}`, BuiltIn: false},
+}
+`, BuiltIn: false},
 	{Name: "../schema/pin.graphql", Input: `input PinEnableInput {
   pin: String!
 }
@@ -4480,12 +5980,25 @@ type Query {
   # WAVE-04 Week Flags
   weekFlags(weekStartDate: Date!): WeekFlagsResult!
 
+  # WAVE-07 User Profile
+  userProfile: UserProfileResult!
+
+  # WAVE-07 AI Export
+  aiExport(id: ID!): AiExportResult!
+  aiExports: AiExportsResult!
+
+  # WAVE-08 AI Review
+  aiReview(id: ID!): AiReviewResult!
+  aiReviews(dateRangeStart: Date, dateRangeEnd: Date): AiReviewsResult!
+
   # WAVE-05 Nutrition
   nutritionProducts: NutritionProductsResult!
+  nutritionProductsAll: NutritionProductsResult!
   nutritionProduct(id: ID!): NutritionProductResult!
   nutritionTemplates(startDate: Date!, endDate: Date!): NutritionTemplatesResult!
   nutritionTemplate(id: ID!): NutritionTemplateResult!
   nutritionTemplateCurrent(weekStartDate: Date!): NutritionTemplateResult!
+  dailyNutritionLog(date: Date!): DailyNutritionLogResult!
   dailyNutritionOverrides(startDate: Date!, endDate: Date!): DailyNutritionOverridesResult!
   dailyNutritionOverride(id: ID!): DailyNutritionOverrideResult!
   dailyNutritionOverrideByDate(date: Date!): DailyNutritionOverrideResult!
@@ -4533,13 +6046,32 @@ type Mutation {
   createWeekFlag(input: CreateWeekFlagInput!): WeekFlagResult!
   deleteWeekFlag(id: ID!): WeekFlagResult!
 
+  # WAVE-07 User Profile
+  updateUserProfile(input: UserProfileInput!): UserProfileResult!
+
+  # WAVE-07 AI Export
+  createAiExportPrompt(input: CreateAiExportInput!): AiExportResult!
+  generateAiExport(id: ID!): AiExportResult!
+  deleteAiExport(id: ID!): AiExportResult!
+
+  # WAVE-08 AI Review
+  createAiReview(input: CreateAiReviewInput!): AiReviewResult!
+  updateAiReview(id: ID!, input: UpdateAiReviewInput!): AiReviewResult!
+  deleteAiReview(id: ID!): AiReviewResult!
+
   # WAVE-05 Nutrition
   createNutritionProduct(input: CreateProductInput!): NutritionProductResult!
   updateNutritionProduct(id: ID!, input: UpdateProductInput!): NutritionProductResult!
   deleteNutritionProduct(id: ID!): NutritionProductResult!
+  restoreNutritionProduct(id: ID!): NutritionProductResult!
   createNutritionTemplate(input: CreateTemplateInput!): NutritionTemplateResult!
   updateNutritionTemplate(id: ID!, input: UpdateTemplateInput!): NutritionTemplateResult!
   deleteNutritionTemplate(id: ID!): NutritionTemplateResult!
+  applyNutritionTemplateToWeek(templateId: ID!, mode: NutritionTemplateApplyMode!): NutritionTemplateApplyResult!
+  updateDailyNutritionLogNotes(id: ID!, input: UpdateDailyNutritionLogNotesInput!): DailyNutritionLogResult!
+  addDailyNutritionEntry(input: AddDailyNutritionEntryInput!): DailyNutritionLogResult!
+  updateDailyNutritionEntry(id: ID!, input: UpdateDailyNutritionEntryInput!): DailyNutritionLogResult!
+  deleteDailyNutritionEntry(id: ID!): DailyNutritionLogResult!
   createNutritionTemplateItem(input: CreateTemplateItemInput!): NutritionTemplateItemResult!
   updateNutritionTemplateItem(id: ID!, input: UpdateTemplateItemInput!): NutritionTemplateItemResult!
   deleteNutritionTemplateItem(id: ID!): NutritionTemplateItemResult!
@@ -4549,7 +6081,8 @@ type Mutation {
   createDailyNutritionOverrideItem(input: CreateOverrideItemInput!): DailyNutritionOverrideItemResult!
   updateDailyNutritionOverrideItem(id: ID!, input: UpdateOverrideItemInput!): DailyNutritionOverrideItemResult!
   deleteDailyNutritionOverrideItem(id: ID!): DailyNutritionOverrideItemResult!
-}`, BuiltIn: false},
+}
+`, BuiltIn: false},
 	{Name: "../schema/settings.graphql", Input: `type Settings {
   pinEnabled: Boolean!
   units: String!
@@ -4576,6 +6109,61 @@ input SettingsInput {
   units: String
   defaultAiExportWeeks: Int
 }`, BuiltIn: false},
+	{Name: "../schema/user_profile.graphql", Input: `type UserProfile {
+  id: ID!
+  userId: ID!
+  goal: String
+  height: Float
+  birthDate: Date
+  trainingExperience: String
+  currentTrainingSplit: String
+  preferredProgressionStyle: String
+  nutritionStrategy: String
+  persistentAiContext: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input UserProfileInput {
+  goal: String
+  height: Float
+  birthDate: Date
+  trainingExperience: String
+  currentTrainingSplit: String
+  preferredProgressionStyle: String
+  nutritionStrategy: String
+  persistentAiContext: String
+}
+
+type UserProfileResult {
+  profile: UserProfile
+  validationError: UserProfileValidationError
+  notFoundError: UserProfileNotFoundError
+  authError: UserProfileAuthError
+}
+
+type UserProfileValidationError {
+  message: String!
+  code: UserProfileErrorCode!
+}
+
+type UserProfileNotFoundError {
+  message: String!
+  code: UserProfileErrorCode!
+}
+
+type UserProfileAuthError {
+  message: String!
+  code: UserProfileErrorCode!
+}
+
+enum UserProfileErrorCode {
+  VALIDATION_ERROR
+  NOT_FOUND
+  AUTH_ERROR
+  INTERNAL_ERROR
+}
+`, BuiltIn: false},
 	{Name: "../schema/week_flag.graphql", Input: `type WeekFlag {
   id: ID!
   userId: ID!
@@ -4646,6 +6234,45 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
+func (ec *executionContext) field_Mutation_addDailyNutritionEntry_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.AddDailyNutritionEntryInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNAddDailyNutritionEntryInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAddDailyNutritionEntryInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_applyNutritionTemplateToWeek_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["templateId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("templateId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["templateId"] = arg0
+	var arg1 models.NutritionTemplateApplyMode
+	if tmp, ok := rawArgs["mode"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mode"))
+		arg1, err = ec.unmarshalNNutritionTemplateApplyMode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyMode(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["mode"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_archiveExercise_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -4668,6 +6295,36 @@ func (ec *executionContext) field_Mutation_changePin_args(ctx context.Context, r
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNPinChangeInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐPinChangeInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createAiExportPrompt_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreateAiExportInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateAiExportInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateAiExportInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createAiReview_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreateAiReviewInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateAiReviewInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateAiReviewInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -4850,6 +6507,36 @@ func (ec *executionContext) field_Mutation_createWeekFlag_args(ctx context.Conte
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_deleteAiExport_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteAiReview_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_deleteBodyCheckIn_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -4896,6 +6583,21 @@ func (ec *executionContext) field_Mutation_deleteBodyWeightEntry_args(ctx contex
 }
 
 func (ec *executionContext) field_Mutation_deleteCardioEntry_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteDailyNutritionEntry_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -5030,6 +6732,21 @@ func (ec *executionContext) field_Mutation_enablePin_args(ctx context.Context, r
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_generateAiExport_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_restoreExercise_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -5042,6 +6759,45 @@ func (ec *executionContext) field_Mutation_restoreExercise_args(ctx context.Cont
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_restoreNutritionProduct_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateAiReview_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 models.UpdateAiReviewInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdateAiReviewInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateAiReviewInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
 	return args, nil
 }
 
@@ -5133,6 +6889,54 @@ func (ec *executionContext) field_Mutation_updateCardioEntry_args(ctx context.Co
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg1, err = ec.unmarshalNUpdateCardioInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateCardioInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateDailyNutritionEntry_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 models.UpdateDailyNutritionEntryInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdateDailyNutritionEntryInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateDailyNutritionEntryInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateDailyNutritionLogNotes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 models.UpdateDailyNutritionLogNotesInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdateDailyNutritionLogNotesInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateDailyNutritionLogNotesInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -5300,6 +7104,21 @@ func (ec *executionContext) field_Mutation_updateSettings_args(ctx context.Conte
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_updateUserProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.UserProfileInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUserProfileInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -5312,6 +7131,60 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_aiExport_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_aiReview_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_aiReviews_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *models.Date
+	if tmp, ok := rawArgs["dateRangeStart"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateRangeStart"))
+		arg0, err = ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["dateRangeStart"] = arg0
+	var arg1 *models.Date
+	if tmp, ok := rawArgs["dateRangeEnd"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateRangeEnd"))
+		arg1, err = ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["dateRangeEnd"] = arg1
 	return args, nil
 }
 
@@ -5474,6 +7347,21 @@ func (ec *executionContext) field_Query_cardioEntry_args(ctx context.Context, ra
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_dailyNutritionLog_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.Date
+	if tmp, ok := rawArgs["date"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+		arg0, err = ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["date"] = arg0
 	return args, nil
 }
 
@@ -5862,6 +7750,2226 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _AiExport_id(ctx context.Context, field graphql.CollectedField, obj *models.AiExport) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExport_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExport_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExport",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExport_userId(ctx context.Context, field graphql.CollectedField, obj *models.AiExport) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExport_userId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExport_userId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExport",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExport_dateRangeStart(ctx context.Context, field graphql.CollectedField, obj *models.AiExport) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExport_dateRangeStart(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DateRangeStart, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Date)
+	fc.Result = res
+	return ec.marshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExport_dateRangeStart(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExport",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExport_dateRangeEnd(ctx context.Context, field graphql.CollectedField, obj *models.AiExport) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExport_dateRangeEnd(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DateRangeEnd, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Date)
+	fc.Result = res
+	return ec.marshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExport_dateRangeEnd(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExport",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExport_includePhotos(ctx context.Context, field graphql.CollectedField, obj *models.AiExport) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExport_includePhotos(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IncludePhotos, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExport_includePhotos(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExport",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExport_includeNutrition(ctx context.Context, field graphql.CollectedField, obj *models.AiExport) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExport_includeNutrition(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IncludeNutrition, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExport_includeNutrition(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExport",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExport_includeCardio(ctx context.Context, field graphql.CollectedField, obj *models.AiExport) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExport_includeCardio(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IncludeCardio, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExport_includeCardio(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExport",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExport_includeMeasurements(ctx context.Context, field graphql.CollectedField, obj *models.AiExport) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExport_includeMeasurements(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IncludeMeasurements, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExport_includeMeasurements(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExport",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExport_userComment(ctx context.Context, field graphql.CollectedField, obj *models.AiExport) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExport_userComment(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserComment, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExport_userComment(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExport",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExport_generatedPrompt(ctx context.Context, field graphql.CollectedField, obj *models.AiExport) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExport_generatedPrompt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GeneratedPrompt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExport_generatedPrompt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExport",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExport_exportFilePath(ctx context.Context, field graphql.CollectedField, obj *models.AiExport) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExport_exportFilePath(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ExportFilePath, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExport_exportFilePath(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExport",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExport_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.AiExport) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExport_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AiExport().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExport_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExport",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExport_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.AiExport) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExport_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AiExport().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExport_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExport",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExportAuthError_message(ctx context.Context, field graphql.CollectedField, obj *models.AiExportAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExportAuthError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExportAuthError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExportAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExportAuthError_code(ctx context.Context, field graphql.CollectedField, obj *models.AiExportAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExportAuthError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.AiExportErrorCode)
+	fc.Result = res
+	return ec.marshalNAiExportErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExportAuthError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExportAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type AiExportErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExportNotFoundError_message(ctx context.Context, field graphql.CollectedField, obj *models.AiExportNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExportNotFoundError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExportNotFoundError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExportNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExportNotFoundError_code(ctx context.Context, field graphql.CollectedField, obj *models.AiExportNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExportNotFoundError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.AiExportErrorCode)
+	fc.Result = res
+	return ec.marshalNAiExportErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExportNotFoundError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExportNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type AiExportErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExportResult_export(ctx context.Context, field graphql.CollectedField, obj *models.AiExportResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExportResult_export(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Export, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiExport)
+	fc.Result = res
+	return ec.marshalOAiExport2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExport(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExportResult_export(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExportResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_AiExport_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_AiExport_userId(ctx, field)
+			case "dateRangeStart":
+				return ec.fieldContext_AiExport_dateRangeStart(ctx, field)
+			case "dateRangeEnd":
+				return ec.fieldContext_AiExport_dateRangeEnd(ctx, field)
+			case "includePhotos":
+				return ec.fieldContext_AiExport_includePhotos(ctx, field)
+			case "includeNutrition":
+				return ec.fieldContext_AiExport_includeNutrition(ctx, field)
+			case "includeCardio":
+				return ec.fieldContext_AiExport_includeCardio(ctx, field)
+			case "includeMeasurements":
+				return ec.fieldContext_AiExport_includeMeasurements(ctx, field)
+			case "userComment":
+				return ec.fieldContext_AiExport_userComment(ctx, field)
+			case "generatedPrompt":
+				return ec.fieldContext_AiExport_generatedPrompt(ctx, field)
+			case "exportFilePath":
+				return ec.fieldContext_AiExport_exportFilePath(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_AiExport_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_AiExport_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiExport", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExportResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.AiExportResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExportResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AiExportResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiExportValidationErr)
+	fc.Result = res
+	return ec.marshalOAiExportValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExportResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExportResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_AiExportValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_AiExportValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiExportValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExportResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.AiExportResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExportResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AiExportResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiExportNotFoundErr)
+	fc.Result = res
+	return ec.marshalOAiExportNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExportResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExportResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_AiExportNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_AiExportNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiExportNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExportResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.AiExportResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExportResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AiExportResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiExportAuthErr)
+	fc.Result = res
+	return ec.marshalOAiExportAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExportResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExportResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_AiExportAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_AiExportAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiExportAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExportValidationError_message(ctx context.Context, field graphql.CollectedField, obj *models.AiExportValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExportValidationError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExportValidationError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExportValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExportValidationError_code(ctx context.Context, field graphql.CollectedField, obj *models.AiExportValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExportValidationError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.AiExportErrorCode)
+	fc.Result = res
+	return ec.marshalNAiExportErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExportValidationError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExportValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type AiExportErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExportsResult_exports(ctx context.Context, field graphql.CollectedField, obj *models.AiExportsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExportsResult_exports(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Exports, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.AiExport)
+	fc.Result = res
+	return ec.marshalNAiExport2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExportsResult_exports(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExportsResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_AiExport_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_AiExport_userId(ctx, field)
+			case "dateRangeStart":
+				return ec.fieldContext_AiExport_dateRangeStart(ctx, field)
+			case "dateRangeEnd":
+				return ec.fieldContext_AiExport_dateRangeEnd(ctx, field)
+			case "includePhotos":
+				return ec.fieldContext_AiExport_includePhotos(ctx, field)
+			case "includeNutrition":
+				return ec.fieldContext_AiExport_includeNutrition(ctx, field)
+			case "includeCardio":
+				return ec.fieldContext_AiExport_includeCardio(ctx, field)
+			case "includeMeasurements":
+				return ec.fieldContext_AiExport_includeMeasurements(ctx, field)
+			case "userComment":
+				return ec.fieldContext_AiExport_userComment(ctx, field)
+			case "generatedPrompt":
+				return ec.fieldContext_AiExport_generatedPrompt(ctx, field)
+			case "exportFilePath":
+				return ec.fieldContext_AiExport_exportFilePath(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_AiExport_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_AiExport_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiExport", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExportsResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.AiExportsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExportsResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AiExportsResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiExportValidationErr)
+	fc.Result = res
+	return ec.marshalOAiExportValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExportsResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExportsResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_AiExportValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_AiExportValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiExportValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExportsResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.AiExportsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiExportsResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AiExportsResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiExportAuthErr)
+	fc.Result = res
+	return ec.marshalOAiExportAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiExportsResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExportsResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_AiExportAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_AiExportAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiExportAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReview_id(ctx context.Context, field graphql.CollectedField, obj *models.AiReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReview_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReview_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReview",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReview_userId(ctx context.Context, field graphql.CollectedField, obj *models.AiReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReview_userId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReview_userId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReview",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReview_dateRangeStart(ctx context.Context, field graphql.CollectedField, obj *models.AiReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReview_dateRangeStart(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DateRangeStart, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Date)
+	fc.Result = res
+	return ec.marshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReview_dateRangeStart(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReview",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReview_dateRangeEnd(ctx context.Context, field graphql.CollectedField, obj *models.AiReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReview_dateRangeEnd(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DateRangeEnd, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Date)
+	fc.Result = res
+	return ec.marshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReview_dateRangeEnd(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReview",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReview_aiResponseText(ctx context.Context, field graphql.CollectedField, obj *models.AiReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReview_aiResponseText(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AiResponseText, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReview_aiResponseText(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReview",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReview_userNotes(ctx context.Context, field graphql.CollectedField, obj *models.AiReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReview_userNotes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserNotes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReview_userNotes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReview",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReview_plannedActions(ctx context.Context, field graphql.CollectedField, obj *models.AiReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReview_plannedActions(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PlannedActions, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReview_plannedActions(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReview",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReview_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.AiReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReview_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AiReview().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReview_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReview",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReview_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.AiReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReview_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AiReview().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReview_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReview",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReviewAuthError_message(ctx context.Context, field graphql.CollectedField, obj *models.AiReviewAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReviewAuthError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReviewAuthError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReviewAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReviewAuthError_code(ctx context.Context, field graphql.CollectedField, obj *models.AiReviewAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReviewAuthError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.AiReviewErrorCode)
+	fc.Result = res
+	return ec.marshalNAiReviewErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReviewAuthError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReviewAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type AiReviewErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReviewNotFoundError_message(ctx context.Context, field graphql.CollectedField, obj *models.AiReviewNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReviewNotFoundError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReviewNotFoundError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReviewNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReviewNotFoundError_code(ctx context.Context, field graphql.CollectedField, obj *models.AiReviewNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReviewNotFoundError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.AiReviewErrorCode)
+	fc.Result = res
+	return ec.marshalNAiReviewErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReviewNotFoundError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReviewNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type AiReviewErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReviewResult_review(ctx context.Context, field graphql.CollectedField, obj *models.AiReviewResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReviewResult_review(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Review, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiReview)
+	fc.Result = res
+	return ec.marshalOAiReview2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReview(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReviewResult_review(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReviewResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_AiReview_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_AiReview_userId(ctx, field)
+			case "dateRangeStart":
+				return ec.fieldContext_AiReview_dateRangeStart(ctx, field)
+			case "dateRangeEnd":
+				return ec.fieldContext_AiReview_dateRangeEnd(ctx, field)
+			case "aiResponseText":
+				return ec.fieldContext_AiReview_aiResponseText(ctx, field)
+			case "userNotes":
+				return ec.fieldContext_AiReview_userNotes(ctx, field)
+			case "plannedActions":
+				return ec.fieldContext_AiReview_plannedActions(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_AiReview_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_AiReview_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiReview", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReviewResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.AiReviewResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReviewResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AiReviewResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiReviewValidationErr)
+	fc.Result = res
+	return ec.marshalOAiReviewValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReviewResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReviewResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_AiReviewValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_AiReviewValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiReviewValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReviewResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.AiReviewResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReviewResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AiReviewResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiReviewNotFoundErr)
+	fc.Result = res
+	return ec.marshalOAiReviewNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReviewResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReviewResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_AiReviewNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_AiReviewNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiReviewNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReviewResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.AiReviewResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReviewResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AiReviewResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiReviewAuthErr)
+	fc.Result = res
+	return ec.marshalOAiReviewAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReviewResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReviewResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_AiReviewAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_AiReviewAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiReviewAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReviewValidationError_message(ctx context.Context, field graphql.CollectedField, obj *models.AiReviewValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReviewValidationError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReviewValidationError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReviewValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReviewValidationError_code(ctx context.Context, field graphql.CollectedField, obj *models.AiReviewValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReviewValidationError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.AiReviewErrorCode)
+	fc.Result = res
+	return ec.marshalNAiReviewErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReviewValidationError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReviewValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type AiReviewErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReviewsResult_reviews(ctx context.Context, field graphql.CollectedField, obj *models.AiReviewsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReviewsResult_reviews(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Reviews, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.AiReview)
+	fc.Result = res
+	return ec.marshalNAiReview2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReviewsResult_reviews(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReviewsResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_AiReview_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_AiReview_userId(ctx, field)
+			case "dateRangeStart":
+				return ec.fieldContext_AiReview_dateRangeStart(ctx, field)
+			case "dateRangeEnd":
+				return ec.fieldContext_AiReview_dateRangeEnd(ctx, field)
+			case "aiResponseText":
+				return ec.fieldContext_AiReview_aiResponseText(ctx, field)
+			case "userNotes":
+				return ec.fieldContext_AiReview_userNotes(ctx, field)
+			case "plannedActions":
+				return ec.fieldContext_AiReview_plannedActions(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_AiReview_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_AiReview_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiReview", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReviewsResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.AiReviewsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReviewsResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AiReviewsResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiReviewValidationErr)
+	fc.Result = res
+	return ec.marshalOAiReviewValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReviewsResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReviewsResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_AiReviewValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_AiReviewValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiReviewValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiReviewsResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.AiReviewsResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AiReviewsResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AiReviewsResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiReviewAuthErr)
+	fc.Result = res
+	return ec.marshalOAiReviewAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AiReviewsResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiReviewsResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_AiReviewAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_AiReviewAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiReviewAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
 
 func (ec *executionContext) _ArchiveResult_exercise(ctx context.Context, field graphql.CollectedField, obj *models.ArchiveResult) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_ArchiveResult_exercise(ctx, field)
@@ -10099,6 +14207,1261 @@ func (ec *executionContext) fieldContext_ChartValidationError_code(_ context.Con
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ChartErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_id(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_dailyLogId(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_dailyLogId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DailyLogID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_dailyLogId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_productId(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_productId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProductID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_productId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_productNameSnapshot(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_productNameSnapshot(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProductNameSnapshot, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_productNameSnapshot(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_caloriesPer100gSnapshot(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_caloriesPer100gSnapshot(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CaloriesPer100gSnapshot, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_caloriesPer100gSnapshot(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_proteinPer100gSnapshot(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_proteinPer100gSnapshot(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProteinPer100gSnapshot, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_proteinPer100gSnapshot(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_fatPer100gSnapshot(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_fatPer100gSnapshot(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FatPer100gSnapshot, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_fatPer100gSnapshot(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_carbsPer100gSnapshot(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_carbsPer100gSnapshot(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CarbsPer100gSnapshot, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_carbsPer100gSnapshot(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_amountGrams(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_amountGrams(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AmountGrams, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_amountGrams(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_mealLabel(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_mealLabel(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MealLabel, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_mealLabel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_notes(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_notes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Notes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_notes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_position(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_position(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Position, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int32)
+	fc.Result = res
+	return ec.marshalNInt2int32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_position(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_macros(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_macros(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Macros, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.NutritionMacros)
+	fc.Result = res
+	return ec.marshalNNutritionMacros2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionMacros(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_macros(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "calories":
+				return ec.fieldContext_NutritionMacros_calories(ctx, field)
+			case "protein":
+				return ec.fieldContext_NutritionMacros_protein(ctx, field)
+			case "fat":
+				return ec.fieldContext_NutritionMacros_fat(ctx, field)
+			case "carbs":
+				return ec.fieldContext_NutritionMacros_carbs(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionMacros", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionEntry().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionEntry_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionEntry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionEntry_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionEntry().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionEntry_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionLog_id(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionLog) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionLog_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionLog_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionLog_userId(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionLog) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionLog_userId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionLog_userId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionLog_date(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionLog) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionLog_date(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionLog().Date(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Date)
+	fc.Result = res
+	return ec.marshalNDate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionLog_date(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionLog",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionLog_notes(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionLog) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionLog_notes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Notes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionLog_notes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionLog_entries(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionLog) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionLog_entries(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Entries, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.DailyNutritionEntry)
+	fc.Result = res
+	return ec.marshalNDailyNutritionEntry2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionEntryᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionLog_entries(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_DailyNutritionEntry_id(ctx, field)
+			case "dailyLogId":
+				return ec.fieldContext_DailyNutritionEntry_dailyLogId(ctx, field)
+			case "productId":
+				return ec.fieldContext_DailyNutritionEntry_productId(ctx, field)
+			case "productNameSnapshot":
+				return ec.fieldContext_DailyNutritionEntry_productNameSnapshot(ctx, field)
+			case "caloriesPer100gSnapshot":
+				return ec.fieldContext_DailyNutritionEntry_caloriesPer100gSnapshot(ctx, field)
+			case "proteinPer100gSnapshot":
+				return ec.fieldContext_DailyNutritionEntry_proteinPer100gSnapshot(ctx, field)
+			case "fatPer100gSnapshot":
+				return ec.fieldContext_DailyNutritionEntry_fatPer100gSnapshot(ctx, field)
+			case "carbsPer100gSnapshot":
+				return ec.fieldContext_DailyNutritionEntry_carbsPer100gSnapshot(ctx, field)
+			case "amountGrams":
+				return ec.fieldContext_DailyNutritionEntry_amountGrams(ctx, field)
+			case "mealLabel":
+				return ec.fieldContext_DailyNutritionEntry_mealLabel(ctx, field)
+			case "notes":
+				return ec.fieldContext_DailyNutritionEntry_notes(ctx, field)
+			case "position":
+				return ec.fieldContext_DailyNutritionEntry_position(ctx, field)
+			case "macros":
+				return ec.fieldContext_DailyNutritionEntry_macros(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_DailyNutritionEntry_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_DailyNutritionEntry_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionEntry", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionLog_totals(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionLog) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionLog_totals(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Totals, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.NutritionMacros)
+	fc.Result = res
+	return ec.marshalNNutritionMacros2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionMacros(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionLog_totals(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "calories":
+				return ec.fieldContext_NutritionMacros_calories(ctx, field)
+			case "protein":
+				return ec.fieldContext_NutritionMacros_protein(ctx, field)
+			case "fat":
+				return ec.fieldContext_NutritionMacros_fat(ctx, field)
+			case "carbs":
+				return ec.fieldContext_NutritionMacros_carbs(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionMacros", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionLog_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionLog) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionLog_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionLog().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionLog_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionLog",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionLog_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionLog) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionLog_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionLog().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionLog_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionLog",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionLogResult_dailyNutritionLog(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionLogResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionLogResult_dailyNutritionLog(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DailyNutritionLog, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionLog)
+	fc.Result = res
+	return ec.marshalODailyNutritionLog2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionLog(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionLogResult_dailyNutritionLog(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionLogResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_DailyNutritionLog_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_DailyNutritionLog_userId(ctx, field)
+			case "date":
+				return ec.fieldContext_DailyNutritionLog_date(ctx, field)
+			case "notes":
+				return ec.fieldContext_DailyNutritionLog_notes(ctx, field)
+			case "entries":
+				return ec.fieldContext_DailyNutritionLog_entries(ctx, field)
+			case "totals":
+				return ec.fieldContext_DailyNutritionLog_totals(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_DailyNutritionLog_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_DailyNutritionLog_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionLog", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionLogResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionLogResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionLogResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionLogResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionValidationErr)
+	fc.Result = res
+	return ec.marshalONutritionValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionLogResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionLogResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionLogResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionLogResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionLogResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionLogResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionNotFoundErr)
+	fc.Result = res
+	return ec.marshalONutritionNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionLogResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionLogResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyNutritionLogResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.DailyNutritionLogResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DailyNutritionLogResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DailyNutritionLogResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionAuthErr)
+	fc.Result = res
+	return ec.marshalONutritionAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DailyNutritionLogResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyNutritionLogResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionAuthError", field.Name)
 		},
 	}
 	return fc, nil
@@ -14606,6 +19969,461 @@ func (ec *executionContext) fieldContext_Mutation_deleteWeekFlag(ctx context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_updateUserProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateUserProfile(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateUserProfile(rctx, fc.Args["input"].(models.UserProfileInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.UserProfileResult)
+	fc.Result = res
+	return ec.marshalNUserProfileResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateUserProfile(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "profile":
+				return ec.fieldContext_UserProfileResult_profile(ctx, field)
+			case "validationError":
+				return ec.fieldContext_UserProfileResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_UserProfileResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_UserProfileResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserProfileResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateUserProfile_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createAiExportPrompt(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createAiExportPrompt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateAiExportPrompt(rctx, fc.Args["input"].(models.CreateAiExportInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiExportResult)
+	fc.Result = res
+	return ec.marshalNAiExportResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createAiExportPrompt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "export":
+				return ec.fieldContext_AiExportResult_export(ctx, field)
+			case "validationError":
+				return ec.fieldContext_AiExportResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_AiExportResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_AiExportResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiExportResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createAiExportPrompt_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_generateAiExport(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_generateAiExport(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().GenerateAiExport(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiExportResult)
+	fc.Result = res
+	return ec.marshalNAiExportResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_generateAiExport(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "export":
+				return ec.fieldContext_AiExportResult_export(ctx, field)
+			case "validationError":
+				return ec.fieldContext_AiExportResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_AiExportResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_AiExportResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiExportResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_generateAiExport_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteAiExport(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteAiExport(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteAiExport(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiExportResult)
+	fc.Result = res
+	return ec.marshalNAiExportResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteAiExport(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "export":
+				return ec.fieldContext_AiExportResult_export(ctx, field)
+			case "validationError":
+				return ec.fieldContext_AiExportResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_AiExportResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_AiExportResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiExportResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteAiExport_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createAiReview(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createAiReview(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateAiReview(rctx, fc.Args["input"].(models.CreateAiReviewInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiReviewResult)
+	fc.Result = res
+	return ec.marshalNAiReviewResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createAiReview(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "review":
+				return ec.fieldContext_AiReviewResult_review(ctx, field)
+			case "validationError":
+				return ec.fieldContext_AiReviewResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_AiReviewResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_AiReviewResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiReviewResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createAiReview_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateAiReview(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateAiReview(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateAiReview(rctx, fc.Args["id"].(string), fc.Args["input"].(models.UpdateAiReviewInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiReviewResult)
+	fc.Result = res
+	return ec.marshalNAiReviewResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateAiReview(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "review":
+				return ec.fieldContext_AiReviewResult_review(ctx, field)
+			case "validationError":
+				return ec.fieldContext_AiReviewResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_AiReviewResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_AiReviewResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiReviewResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateAiReview_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteAiReview(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteAiReview(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteAiReview(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiReviewResult)
+	fc.Result = res
+	return ec.marshalNAiReviewResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteAiReview(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "review":
+				return ec.fieldContext_AiReviewResult_review(ctx, field)
+			case "validationError":
+				return ec.fieldContext_AiReviewResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_AiReviewResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_AiReviewResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiReviewResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteAiReview_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createNutritionProduct(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_createNutritionProduct(ctx, field)
 	if err != nil {
@@ -14801,6 +20619,71 @@ func (ec *executionContext) fieldContext_Mutation_deleteNutritionProduct(ctx con
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_restoreNutritionProduct(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_restoreNutritionProduct(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().RestoreNutritionProduct(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionProductResult)
+	fc.Result = res
+	return ec.marshalNNutritionProductResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProductResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_restoreNutritionProduct(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nutritionProduct":
+				return ec.fieldContext_NutritionProductResult_nutritionProduct(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionProductResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_NutritionProductResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionProductResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionProductResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_restoreNutritionProduct_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createNutritionTemplate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_createNutritionTemplate(ctx, field)
 	if err != nil {
@@ -14990,6 +20873,337 @@ func (ec *executionContext) fieldContext_Mutation_deleteNutritionTemplate(ctx co
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteNutritionTemplate_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_applyNutritionTemplateToWeek(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_applyNutritionTemplateToWeek(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ApplyNutritionTemplateToWeek(rctx, fc.Args["templateId"].(string), fc.Args["mode"].(models.NutritionTemplateApplyMode))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionTemplateApplyResult)
+	fc.Result = res
+	return ec.marshalNNutritionTemplateApplyResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_applyNutritionTemplateToWeek(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "weekStartDate":
+				return ec.fieldContext_NutritionTemplateApplyResult_weekStartDate(ctx, field)
+			case "weekEndDate":
+				return ec.fieldContext_NutritionTemplateApplyResult_weekEndDate(ctx, field)
+			case "mode":
+				return ec.fieldContext_NutritionTemplateApplyResult_mode(ctx, field)
+			case "dates":
+				return ec.fieldContext_NutritionTemplateApplyResult_dates(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionTemplateApplyResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_NutritionTemplateApplyResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionTemplateApplyResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplateApplyResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_applyNutritionTemplateToWeek_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateDailyNutritionLogNotes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateDailyNutritionLogNotes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateDailyNutritionLogNotes(rctx, fc.Args["id"].(string), fc.Args["input"].(models.UpdateDailyNutritionLogNotesInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionLogResult)
+	fc.Result = res
+	return ec.marshalNDailyNutritionLogResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionLogResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateDailyNutritionLogNotes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dailyNutritionLog":
+				return ec.fieldContext_DailyNutritionLogResult_dailyNutritionLog(ctx, field)
+			case "validationError":
+				return ec.fieldContext_DailyNutritionLogResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_DailyNutritionLogResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_DailyNutritionLogResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionLogResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateDailyNutritionLogNotes_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_addDailyNutritionEntry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_addDailyNutritionEntry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddDailyNutritionEntry(rctx, fc.Args["input"].(models.AddDailyNutritionEntryInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionLogResult)
+	fc.Result = res
+	return ec.marshalNDailyNutritionLogResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionLogResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_addDailyNutritionEntry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dailyNutritionLog":
+				return ec.fieldContext_DailyNutritionLogResult_dailyNutritionLog(ctx, field)
+			case "validationError":
+				return ec.fieldContext_DailyNutritionLogResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_DailyNutritionLogResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_DailyNutritionLogResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionLogResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_addDailyNutritionEntry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateDailyNutritionEntry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateDailyNutritionEntry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateDailyNutritionEntry(rctx, fc.Args["id"].(string), fc.Args["input"].(models.UpdateDailyNutritionEntryInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionLogResult)
+	fc.Result = res
+	return ec.marshalNDailyNutritionLogResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionLogResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateDailyNutritionEntry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dailyNutritionLog":
+				return ec.fieldContext_DailyNutritionLogResult_dailyNutritionLog(ctx, field)
+			case "validationError":
+				return ec.fieldContext_DailyNutritionLogResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_DailyNutritionLogResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_DailyNutritionLogResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionLogResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateDailyNutritionEntry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteDailyNutritionEntry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteDailyNutritionEntry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteDailyNutritionEntry(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionLogResult)
+	fc.Result = res
+	return ec.marshalNDailyNutritionLogResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionLogResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteDailyNutritionEntry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dailyNutritionLog":
+				return ec.fieldContext_DailyNutritionLogResult_dailyNutritionLog(ctx, field)
+			case "validationError":
+				return ec.fieldContext_DailyNutritionLogResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_DailyNutritionLogResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_DailyNutritionLogResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionLogResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteDailyNutritionEntry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -17374,6 +23588,497 @@ func (ec *executionContext) fieldContext_NutritionTemplate_updatedAt(_ context.C
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateApplyDateResult_date(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateApplyDateResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateApplyDateResult_date(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateApplyDateResult().Date(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Date)
+	fc.Result = res
+	return ec.marshalNDate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateApplyDateResult_date(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateApplyDateResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateApplyDateResult_status(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateApplyDateResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateApplyDateResult_status(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateApplyDateResult().Status(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateApplyDateResult_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateApplyDateResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateApplyDateResult_entryCount(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateApplyDateResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateApplyDateResult_entryCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EntryCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int32)
+	fc.Result = res
+	return ec.marshalNInt2int32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateApplyDateResult_entryCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateApplyDateResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateApplyDateResult_reason(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateApplyDateResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateApplyDateResult_reason(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Reason, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateApplyDateResult_reason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateApplyDateResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateApplyResult_weekStartDate(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateApplyResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateApplyResult_weekStartDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateApplyResult().WeekStartDate(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.Date)
+	fc.Result = res
+	return ec.marshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateApplyResult_weekStartDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateApplyResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateApplyResult_weekEndDate(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateApplyResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateApplyResult_weekEndDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateApplyResult().WeekEndDate(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.Date)
+	fc.Result = res
+	return ec.marshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateApplyResult_weekEndDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateApplyResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateApplyResult_mode(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateApplyResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateApplyResult_mode(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Mode, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(models.NutritionTemplateApplyMode)
+	fc.Result = res
+	return ec.marshalONutritionTemplateApplyMode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyMode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateApplyResult_mode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateApplyResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type NutritionTemplateApplyMode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateApplyResult_dates(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateApplyResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateApplyResult_dates(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Dates, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.NutritionTemplateApplyDateResult)
+	fc.Result = res
+	return ec.marshalNNutritionTemplateApplyDateResult2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyDateResultᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateApplyResult_dates(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateApplyResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "date":
+				return ec.fieldContext_NutritionTemplateApplyDateResult_date(ctx, field)
+			case "status":
+				return ec.fieldContext_NutritionTemplateApplyDateResult_status(ctx, field)
+			case "entryCount":
+				return ec.fieldContext_NutritionTemplateApplyDateResult_entryCount(ctx, field)
+			case "reason":
+				return ec.fieldContext_NutritionTemplateApplyDateResult_reason(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionTemplateApplyDateResult", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateApplyResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateApplyResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateApplyResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateApplyResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionValidationErr)
+	fc.Result = res
+	return ec.marshalONutritionValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateApplyResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateApplyResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateApplyResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateApplyResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateApplyResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateApplyResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionNotFoundErr)
+	fc.Result = res
+	return ec.marshalONutritionNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateApplyResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateApplyResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _NutritionTemplateApplyResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.NutritionTemplateApplyResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_NutritionTemplateApplyResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NutritionTemplateApplyResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionAuthErr)
+	fc.Result = res
+	return ec.marshalONutritionAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_NutritionTemplateApplyResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "NutritionTemplateApplyResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_NutritionAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_NutritionAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionAuthError", field.Name)
 		},
 	}
 	return fc, nil
@@ -20662,6 +27367,305 @@ func (ec *executionContext) fieldContext_Query_weekFlags(ctx context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_userProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_userProfile(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().UserProfile(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.UserProfileResult)
+	fc.Result = res
+	return ec.marshalNUserProfileResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_userProfile(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "profile":
+				return ec.fieldContext_UserProfileResult_profile(ctx, field)
+			case "validationError":
+				return ec.fieldContext_UserProfileResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_UserProfileResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_UserProfileResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserProfileResult", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_aiExport(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_aiExport(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AiExport(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiExportResult)
+	fc.Result = res
+	return ec.marshalNAiExportResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_aiExport(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "export":
+				return ec.fieldContext_AiExportResult_export(ctx, field)
+			case "validationError":
+				return ec.fieldContext_AiExportResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_AiExportResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_AiExportResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiExportResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_aiExport_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_aiExports(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_aiExports(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AiExports(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiExportsResult)
+	fc.Result = res
+	return ec.marshalNAiExportsResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportsResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_aiExports(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "exports":
+				return ec.fieldContext_AiExportsResult_exports(ctx, field)
+			case "validationError":
+				return ec.fieldContext_AiExportsResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_AiExportsResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiExportsResult", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_aiReview(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_aiReview(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AiReview(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiReviewResult)
+	fc.Result = res
+	return ec.marshalNAiReviewResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_aiReview(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "review":
+				return ec.fieldContext_AiReviewResult_review(ctx, field)
+			case "validationError":
+				return ec.fieldContext_AiReviewResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_AiReviewResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_AiReviewResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiReviewResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_aiReview_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_aiReviews(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_aiReviews(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AiReviews(rctx, fc.Args["dateRangeStart"].(*models.Date), fc.Args["dateRangeEnd"].(*models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.AiReviewsResult)
+	fc.Result = res
+	return ec.marshalNAiReviewsResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewsResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_aiReviews(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "reviews":
+				return ec.fieldContext_AiReviewsResult_reviews(ctx, field)
+			case "validationError":
+				return ec.fieldContext_AiReviewsResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_AiReviewsResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AiReviewsResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_aiReviews_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_nutritionProducts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_nutritionProducts(ctx, field)
 	if err != nil {
@@ -20694,6 +27698,58 @@ func (ec *executionContext) _Query_nutritionProducts(ctx context.Context, field 
 }
 
 func (ec *executionContext) fieldContext_Query_nutritionProducts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "products":
+				return ec.fieldContext_NutritionProductsResult_products(ctx, field)
+			case "validationError":
+				return ec.fieldContext_NutritionProductsResult_validationError(ctx, field)
+			case "authError":
+				return ec.fieldContext_NutritionProductsResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NutritionProductsResult", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_nutritionProductsAll(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_nutritionProductsAll(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().NutritionProductsAll(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.NutritionProductsResult)
+	fc.Result = res
+	return ec.marshalNNutritionProductsResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionProductsResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_nutritionProductsAll(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -20966,6 +28022,71 @@ func (ec *executionContext) fieldContext_Query_nutritionTemplateCurrent(ctx cont
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_nutritionTemplateCurrent_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_dailyNutritionLog(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_dailyNutritionLog(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().DailyNutritionLog(rctx, fc.Args["date"].(models.Date))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DailyNutritionLogResult)
+	fc.Result = res
+	return ec.marshalNDailyNutritionLogResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionLogResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_dailyNutritionLog(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dailyNutritionLog":
+				return ec.fieldContext_DailyNutritionLogResult_dailyNutritionLog(ctx, field)
+			case "validationError":
+				return ec.fieldContext_DailyNutritionLogResult_validationError(ctx, field)
+			case "notFoundError":
+				return ec.fieldContext_DailyNutritionLogResult_notFoundError(ctx, field)
+			case "authError":
+				return ec.fieldContext_DailyNutritionLogResult_authError(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyNutritionLogResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_dailyNutritionLog_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -21983,6 +29104,982 @@ func (ec *executionContext) fieldContext_SettingsResult_error(_ context.Context,
 				return ec.fieldContext_SettingsError_code(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SettingsError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_id(ctx context.Context, field graphql.CollectedField, obj *models.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_userId(ctx context.Context, field graphql.CollectedField, obj *models.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_userId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_userId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_goal(ctx context.Context, field graphql.CollectedField, obj *models.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_goal(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Goal, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_goal(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_height(ctx context.Context, field graphql.CollectedField, obj *models.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_height(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Height, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_height(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_birthDate(ctx context.Context, field graphql.CollectedField, obj *models.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_birthDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BirthDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.Date)
+	fc.Result = res
+	return ec.marshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_birthDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_trainingExperience(ctx context.Context, field graphql.CollectedField, obj *models.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_trainingExperience(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TrainingExperience, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_trainingExperience(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_currentTrainingSplit(ctx context.Context, field graphql.CollectedField, obj *models.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_currentTrainingSplit(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CurrentTrainingSplit, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_currentTrainingSplit(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_preferredProgressionStyle(ctx context.Context, field graphql.CollectedField, obj *models.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_preferredProgressionStyle(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PreferredProgressionStyle, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_preferredProgressionStyle(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_nutritionStrategy(ctx context.Context, field graphql.CollectedField, obj *models.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_nutritionStrategy(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.NutritionStrategy, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_nutritionStrategy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_persistentAiContext(ctx context.Context, field graphql.CollectedField, obj *models.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_persistentAiContext(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PersistentAiContext, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_persistentAiContext(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.UserProfile().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.UserProfile().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfileAuthError_message(ctx context.Context, field graphql.CollectedField, obj *models.UserProfileAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfileAuthError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfileAuthError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfileAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfileAuthError_code(ctx context.Context, field graphql.CollectedField, obj *models.UserProfileAuthErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfileAuthError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.UserProfileErrorCode)
+	fc.Result = res
+	return ec.marshalNUserProfileErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfileAuthError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfileAuthError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type UserProfileErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfileNotFoundError_message(ctx context.Context, field graphql.CollectedField, obj *models.UserProfileNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfileNotFoundError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfileNotFoundError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfileNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfileNotFoundError_code(ctx context.Context, field graphql.CollectedField, obj *models.UserProfileNotFoundErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfileNotFoundError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.UserProfileErrorCode)
+	fc.Result = res
+	return ec.marshalNUserProfileErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfileNotFoundError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfileNotFoundError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type UserProfileErrorCode does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfileResult_profile(ctx context.Context, field graphql.CollectedField, obj *models.UserProfileResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfileResult_profile(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Profile, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.UserProfile)
+	fc.Result = res
+	return ec.marshalOUserProfile2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfile(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfileResult_profile(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfileResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_UserProfile_id(ctx, field)
+			case "userId":
+				return ec.fieldContext_UserProfile_userId(ctx, field)
+			case "goal":
+				return ec.fieldContext_UserProfile_goal(ctx, field)
+			case "height":
+				return ec.fieldContext_UserProfile_height(ctx, field)
+			case "birthDate":
+				return ec.fieldContext_UserProfile_birthDate(ctx, field)
+			case "trainingExperience":
+				return ec.fieldContext_UserProfile_trainingExperience(ctx, field)
+			case "currentTrainingSplit":
+				return ec.fieldContext_UserProfile_currentTrainingSplit(ctx, field)
+			case "preferredProgressionStyle":
+				return ec.fieldContext_UserProfile_preferredProgressionStyle(ctx, field)
+			case "nutritionStrategy":
+				return ec.fieldContext_UserProfile_nutritionStrategy(ctx, field)
+			case "persistentAiContext":
+				return ec.fieldContext_UserProfile_persistentAiContext(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_UserProfile_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_UserProfile_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserProfile", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfileResult_validationError(ctx context.Context, field graphql.CollectedField, obj *models.UserProfileResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfileResult_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.UserProfileResult().ValidationError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.UserProfileValidationErr)
+	fc.Result = res
+	return ec.marshalOUserProfileValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileValidationErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfileResult_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfileResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_UserProfileValidationError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_UserProfileValidationError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserProfileValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfileResult_notFoundError(ctx context.Context, field graphql.CollectedField, obj *models.UserProfileResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfileResult_notFoundError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.UserProfileResult().NotFoundError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.UserProfileNotFoundErr)
+	fc.Result = res
+	return ec.marshalOUserProfileNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileNotFoundErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfileResult_notFoundError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfileResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_UserProfileNotFoundError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_UserProfileNotFoundError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserProfileNotFoundError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfileResult_authError(ctx context.Context, field graphql.CollectedField, obj *models.UserProfileResult) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfileResult_authError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.UserProfileResult().AuthError(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.UserProfileAuthErr)
+	fc.Result = res
+	return ec.marshalOUserProfileAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileAuthErr(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfileResult_authError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfileResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_UserProfileAuthError_message(ctx, field)
+			case "code":
+				return ec.fieldContext_UserProfileAuthError_code(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserProfileAuthError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfileValidationError_message(ctx context.Context, field graphql.CollectedField, obj *models.UserProfileValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfileValidationError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfileValidationError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfileValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfileValidationError_code(ctx context.Context, field graphql.CollectedField, obj *models.UserProfileValidationErr) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfileValidationError_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.UserProfileErrorCode)
+	fc.Result = res
+	return ec.marshalNUserProfileErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileErrorCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfileValidationError_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfileValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type UserProfileErrorCode does not have child fields")
 		},
 	}
 	return fc, nil
@@ -24770,6 +32867,185 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputAddDailyNutritionEntryInput(ctx context.Context, obj interface{}) (models.AddDailyNutritionEntryInput, error) {
+	var it models.AddDailyNutritionEntryInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"date", "productId", "amountGrams", "mealLabel", "notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "date":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+			data, err := ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Date = data
+		case "productId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("productId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ProductID = data
+		case "amountGrams":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("amountGrams"))
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AmountGrams = data
+		case "mealLabel":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mealLabel"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MealLabel = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateAiExportInput(ctx context.Context, obj interface{}) (models.CreateAiExportInput, error) {
+	var it models.CreateAiExportInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"dateRangeStart", "dateRangeEnd", "includePhotos", "includeNutrition", "includeCardio", "includeMeasurements", "userComment"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "dateRangeStart":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateRangeStart"))
+			data, err := ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DateRangeStart = data
+		case "dateRangeEnd":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateRangeEnd"))
+			data, err := ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DateRangeEnd = data
+		case "includePhotos":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includePhotos"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IncludePhotos = data
+		case "includeNutrition":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includeNutrition"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IncludeNutrition = data
+		case "includeCardio":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includeCardio"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IncludeCardio = data
+		case "includeMeasurements":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includeMeasurements"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IncludeMeasurements = data
+		case "userComment":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userComment"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserComment = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateAiReviewInput(ctx context.Context, obj interface{}) (models.CreateAiReviewInput, error) {
+	var it models.CreateAiReviewInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"dateRangeStart", "dateRangeEnd", "aiResponseText", "userNotes", "plannedActions"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "dateRangeStart":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateRangeStart"))
+			data, err := ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DateRangeStart = data
+		case "dateRangeEnd":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateRangeEnd"))
+			data, err := ec.unmarshalNDate2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DateRangeEnd = data
+		case "aiResponseText":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("aiResponseText"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AiResponseText = data
+		case "userNotes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userNotes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserNotes = data
+		case "plannedActions":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plannedActions"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlannedActions = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateBodyWeightInput(ctx context.Context, obj interface{}) (models.CreateBodyWeightInput, error) {
 	var it models.CreateBodyWeightInput
 	asMap := map[string]interface{}{}
@@ -25441,6 +33717,61 @@ func (ec *executionContext) unmarshalInputSettingsInput(ctx context.Context, obj
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateAiReviewInput(ctx context.Context, obj interface{}) (models.UpdateAiReviewInput, error) {
+	var it models.UpdateAiReviewInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"dateRangeStart", "dateRangeEnd", "aiResponseText", "userNotes", "plannedActions"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "dateRangeStart":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateRangeStart"))
+			data, err := ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DateRangeStart = data
+		case "dateRangeEnd":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateRangeEnd"))
+			data, err := ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DateRangeEnd = data
+		case "aiResponseText":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("aiResponseText"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AiResponseText = data
+		case "userNotes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userNotes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserNotes = data
+		case "plannedActions":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plannedActions"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlannedActions = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateBodyWeightInput(ctx context.Context, obj interface{}) (models.UpdateBodyWeightInput, error) {
 	var it models.UpdateBodyWeightInput
 	asMap := map[string]interface{}{}
@@ -25565,6 +33896,88 @@ func (ec *executionContext) unmarshalInputUpdateCheckInInput(ctx context.Context
 				return it, err
 			}
 			it.BodyFatPercentage = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateDailyNutritionEntryInput(ctx context.Context, obj interface{}) (models.UpdateDailyNutritionEntryInput, error) {
+	var it models.UpdateDailyNutritionEntryInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"dailyLogId", "amountGrams", "mealLabel", "notes", "position"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "dailyLogId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dailyLogId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DailyLogID = data
+		case "amountGrams":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("amountGrams"))
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AmountGrams = data
+		case "mealLabel":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mealLabel"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MealLabel = data
+		case "notes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Notes = data
+		case "position":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("position"))
+			data, err := ec.unmarshalNInt2int32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Position = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateDailyNutritionLogNotesInput(ctx context.Context, obj interface{}) (models.UpdateDailyNutritionLogNotesInput, error) {
+	var it models.UpdateDailyNutritionLogNotesInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"notes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
 		case "notes":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -25886,6 +34299,82 @@ func (ec *executionContext) unmarshalInputUpdateTemplateItemInput(ctx context.Co
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUserProfileInput(ctx context.Context, obj interface{}) (models.UserProfileInput, error) {
+	var it models.UserProfileInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"goal", "height", "birthDate", "trainingExperience", "currentTrainingSplit", "preferredProgressionStyle", "nutritionStrategy", "persistentAiContext"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "goal":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("goal"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Goal = data
+		case "height":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("height"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Height = data
+		case "birthDate":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birthDate"))
+			data, err := ec.unmarshalODate2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDate(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BirthDate = data
+		case "trainingExperience":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("trainingExperience"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TrainingExperience = data
+		case "currentTrainingSplit":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currentTrainingSplit"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrentTrainingSplit = data
+		case "preferredProgressionStyle":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("preferredProgressionStyle"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PreferredProgressionStyle = data
+		case "nutritionStrategy":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nutritionStrategy"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NutritionStrategy = data
+		case "persistentAiContext":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("persistentAiContext"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PersistentAiContext = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -25893,6 +34382,1040 @@ func (ec *executionContext) unmarshalInputUpdateTemplateItemInput(ctx context.Co
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var aiExportImplementors = []string{"AiExport"}
+
+func (ec *executionContext) _AiExport(ctx context.Context, sel ast.SelectionSet, obj *models.AiExport) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aiExportImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AiExport")
+		case "id":
+			out.Values[i] = ec._AiExport_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "userId":
+			out.Values[i] = ec._AiExport_userId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "dateRangeStart":
+			out.Values[i] = ec._AiExport_dateRangeStart(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "dateRangeEnd":
+			out.Values[i] = ec._AiExport_dateRangeEnd(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "includePhotos":
+			out.Values[i] = ec._AiExport_includePhotos(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "includeNutrition":
+			out.Values[i] = ec._AiExport_includeNutrition(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "includeCardio":
+			out.Values[i] = ec._AiExport_includeCardio(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "includeMeasurements":
+			out.Values[i] = ec._AiExport_includeMeasurements(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "userComment":
+			out.Values[i] = ec._AiExport_userComment(ctx, field, obj)
+		case "generatedPrompt":
+			out.Values[i] = ec._AiExport_generatedPrompt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "exportFilePath":
+			out.Values[i] = ec._AiExport_exportFilePath(ctx, field, obj)
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AiExport_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AiExport_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var aiExportAuthErrorImplementors = []string{"AiExportAuthError"}
+
+func (ec *executionContext) _AiExportAuthError(ctx context.Context, sel ast.SelectionSet, obj *models.AiExportAuthErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aiExportAuthErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AiExportAuthError")
+		case "message":
+			out.Values[i] = ec._AiExportAuthError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._AiExportAuthError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var aiExportNotFoundErrorImplementors = []string{"AiExportNotFoundError"}
+
+func (ec *executionContext) _AiExportNotFoundError(ctx context.Context, sel ast.SelectionSet, obj *models.AiExportNotFoundErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aiExportNotFoundErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AiExportNotFoundError")
+		case "message":
+			out.Values[i] = ec._AiExportNotFoundError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._AiExportNotFoundError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var aiExportResultImplementors = []string{"AiExportResult"}
+
+func (ec *executionContext) _AiExportResult(ctx context.Context, sel ast.SelectionSet, obj *models.AiExportResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aiExportResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AiExportResult")
+		case "export":
+			out.Values[i] = ec._AiExportResult_export(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AiExportResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AiExportResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AiExportResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var aiExportValidationErrorImplementors = []string{"AiExportValidationError"}
+
+func (ec *executionContext) _AiExportValidationError(ctx context.Context, sel ast.SelectionSet, obj *models.AiExportValidationErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aiExportValidationErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AiExportValidationError")
+		case "message":
+			out.Values[i] = ec._AiExportValidationError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._AiExportValidationError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var aiExportsResultImplementors = []string{"AiExportsResult"}
+
+func (ec *executionContext) _AiExportsResult(ctx context.Context, sel ast.SelectionSet, obj *models.AiExportsResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aiExportsResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AiExportsResult")
+		case "exports":
+			out.Values[i] = ec._AiExportsResult_exports(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AiExportsResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AiExportsResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var aiReviewImplementors = []string{"AiReview"}
+
+func (ec *executionContext) _AiReview(ctx context.Context, sel ast.SelectionSet, obj *models.AiReview) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aiReviewImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AiReview")
+		case "id":
+			out.Values[i] = ec._AiReview_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "userId":
+			out.Values[i] = ec._AiReview_userId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "dateRangeStart":
+			out.Values[i] = ec._AiReview_dateRangeStart(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "dateRangeEnd":
+			out.Values[i] = ec._AiReview_dateRangeEnd(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "aiResponseText":
+			out.Values[i] = ec._AiReview_aiResponseText(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "userNotes":
+			out.Values[i] = ec._AiReview_userNotes(ctx, field, obj)
+		case "plannedActions":
+			out.Values[i] = ec._AiReview_plannedActions(ctx, field, obj)
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AiReview_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AiReview_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var aiReviewAuthErrorImplementors = []string{"AiReviewAuthError"}
+
+func (ec *executionContext) _AiReviewAuthError(ctx context.Context, sel ast.SelectionSet, obj *models.AiReviewAuthErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aiReviewAuthErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AiReviewAuthError")
+		case "message":
+			out.Values[i] = ec._AiReviewAuthError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._AiReviewAuthError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var aiReviewNotFoundErrorImplementors = []string{"AiReviewNotFoundError"}
+
+func (ec *executionContext) _AiReviewNotFoundError(ctx context.Context, sel ast.SelectionSet, obj *models.AiReviewNotFoundErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aiReviewNotFoundErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AiReviewNotFoundError")
+		case "message":
+			out.Values[i] = ec._AiReviewNotFoundError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._AiReviewNotFoundError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var aiReviewResultImplementors = []string{"AiReviewResult"}
+
+func (ec *executionContext) _AiReviewResult(ctx context.Context, sel ast.SelectionSet, obj *models.AiReviewResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aiReviewResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AiReviewResult")
+		case "review":
+			out.Values[i] = ec._AiReviewResult_review(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AiReviewResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AiReviewResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AiReviewResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var aiReviewValidationErrorImplementors = []string{"AiReviewValidationError"}
+
+func (ec *executionContext) _AiReviewValidationError(ctx context.Context, sel ast.SelectionSet, obj *models.AiReviewValidationErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aiReviewValidationErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AiReviewValidationError")
+		case "message":
+			out.Values[i] = ec._AiReviewValidationError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._AiReviewValidationError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var aiReviewsResultImplementors = []string{"AiReviewsResult"}
+
+func (ec *executionContext) _AiReviewsResult(ctx context.Context, sel ast.SelectionSet, obj *models.AiReviewsResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aiReviewsResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AiReviewsResult")
+		case "reviews":
+			out.Values[i] = ec._AiReviewsResult_reviews(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AiReviewsResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AiReviewsResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
 
 var archiveResultImplementors = []string{"ArchiveResult"}
 
@@ -28024,6 +37547,470 @@ func (ec *executionContext) _ChartValidationError(ctx context.Context, sel ast.S
 	return out
 }
 
+var dailyNutritionEntryImplementors = []string{"DailyNutritionEntry"}
+
+func (ec *executionContext) _DailyNutritionEntry(ctx context.Context, sel ast.SelectionSet, obj *models.DailyNutritionEntry) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, dailyNutritionEntryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DailyNutritionEntry")
+		case "id":
+			out.Values[i] = ec._DailyNutritionEntry_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "dailyLogId":
+			out.Values[i] = ec._DailyNutritionEntry_dailyLogId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "productId":
+			out.Values[i] = ec._DailyNutritionEntry_productId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "productNameSnapshot":
+			out.Values[i] = ec._DailyNutritionEntry_productNameSnapshot(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "caloriesPer100gSnapshot":
+			out.Values[i] = ec._DailyNutritionEntry_caloriesPer100gSnapshot(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "proteinPer100gSnapshot":
+			out.Values[i] = ec._DailyNutritionEntry_proteinPer100gSnapshot(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "fatPer100gSnapshot":
+			out.Values[i] = ec._DailyNutritionEntry_fatPer100gSnapshot(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "carbsPer100gSnapshot":
+			out.Values[i] = ec._DailyNutritionEntry_carbsPer100gSnapshot(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "amountGrams":
+			out.Values[i] = ec._DailyNutritionEntry_amountGrams(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "mealLabel":
+			out.Values[i] = ec._DailyNutritionEntry_mealLabel(ctx, field, obj)
+		case "notes":
+			out.Values[i] = ec._DailyNutritionEntry_notes(ctx, field, obj)
+		case "position":
+			out.Values[i] = ec._DailyNutritionEntry_position(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "macros":
+			out.Values[i] = ec._DailyNutritionEntry_macros(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionEntry_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionEntry_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var dailyNutritionLogImplementors = []string{"DailyNutritionLog"}
+
+func (ec *executionContext) _DailyNutritionLog(ctx context.Context, sel ast.SelectionSet, obj *models.DailyNutritionLog) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, dailyNutritionLogImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DailyNutritionLog")
+		case "id":
+			out.Values[i] = ec._DailyNutritionLog_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "userId":
+			out.Values[i] = ec._DailyNutritionLog_userId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "date":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionLog_date(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notes":
+			out.Values[i] = ec._DailyNutritionLog_notes(ctx, field, obj)
+		case "entries":
+			out.Values[i] = ec._DailyNutritionLog_entries(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "totals":
+			out.Values[i] = ec._DailyNutritionLog_totals(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionLog_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionLog_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var dailyNutritionLogResultImplementors = []string{"DailyNutritionLogResult"}
+
+func (ec *executionContext) _DailyNutritionLogResult(ctx context.Context, sel ast.SelectionSet, obj *models.DailyNutritionLogResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, dailyNutritionLogResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DailyNutritionLogResult")
+		case "dailyNutritionLog":
+			out.Values[i] = ec._DailyNutritionLogResult_dailyNutritionLog(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionLogResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionLogResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DailyNutritionLogResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var dailyNutritionOverrideImplementors = []string{"DailyNutritionOverride"}
 
 func (ec *executionContext) _DailyNutritionOverride(ctx context.Context, sel ast.SelectionSet, obj *models.DailyNutritionOverride) graphql.Marshaler {
@@ -29694,6 +39681,55 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "updateUserProfile":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateUserProfile(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createAiExportPrompt":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createAiExportPrompt(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "generateAiExport":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_generateAiExport(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteAiExport":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteAiExport(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createAiReview":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createAiReview(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateAiReview":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateAiReview(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteAiReview":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteAiReview(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "createNutritionProduct":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createNutritionProduct(ctx, field)
@@ -29715,6 +39751,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "restoreNutritionProduct":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_restoreNutritionProduct(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "createNutritionTemplate":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createNutritionTemplate(ctx, field)
@@ -29732,6 +39775,41 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "deleteNutritionTemplate":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deleteNutritionTemplate(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "applyNutritionTemplateToWeek":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_applyNutritionTemplateToWeek(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateDailyNutritionLogNotes":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateDailyNutritionLogNotes(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "addDailyNutritionEntry":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_addDailyNutritionEntry(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateDailyNutritionEntry":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateDailyNutritionEntry(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteDailyNutritionEntry":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteDailyNutritionEntry(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -30613,6 +40691,325 @@ func (ec *executionContext) _NutritionTemplate(ctx context.Context, sel ast.Sele
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionTemplateApplyDateResultImplementors = []string{"NutritionTemplateApplyDateResult"}
+
+func (ec *executionContext) _NutritionTemplateApplyDateResult(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionTemplateApplyDateResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionTemplateApplyDateResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionTemplateApplyDateResult")
+		case "date":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateApplyDateResult_date(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "status":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateApplyDateResult_status(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "entryCount":
+			out.Values[i] = ec._NutritionTemplateApplyDateResult_entryCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "reason":
+			out.Values[i] = ec._NutritionTemplateApplyDateResult_reason(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var nutritionTemplateApplyResultImplementors = []string{"NutritionTemplateApplyResult"}
+
+func (ec *executionContext) _NutritionTemplateApplyResult(ctx context.Context, sel ast.SelectionSet, obj *models.NutritionTemplateApplyResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nutritionTemplateApplyResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NutritionTemplateApplyResult")
+		case "weekStartDate":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateApplyResult_weekStartDate(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "weekEndDate":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateApplyResult_weekEndDate(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "mode":
+			out.Values[i] = ec._NutritionTemplateApplyResult_mode(ctx, field, obj)
+		case "dates":
+			out.Values[i] = ec._NutritionTemplateApplyResult_dates(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateApplyResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateApplyResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NutritionTemplateApplyResult_authError(ctx, field, obj)
 				return res
 			}
 
@@ -32155,6 +42552,116 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "userProfile":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_userProfile(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "aiExport":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_aiExport(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "aiExports":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_aiExports(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "aiReview":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_aiReview(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "aiReviews":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_aiReviews(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "nutritionProducts":
 			field := field
 
@@ -32165,6 +42672,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_nutritionProducts(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "nutritionProductsAll":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_nutritionProductsAll(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -32253,6 +42782,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_nutritionTemplateCurrent(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "dailyNutritionLog":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_dailyNutritionLog(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -32602,6 +43153,405 @@ func (ec *executionContext) _SettingsResult(ctx context.Context, sel ast.Selecti
 			out.Values[i] = ec._SettingsResult_settings(ctx, field, obj)
 		case "error":
 			out.Values[i] = ec._SettingsResult_error(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var userProfileImplementors = []string{"UserProfile"}
+
+func (ec *executionContext) _UserProfile(ctx context.Context, sel ast.SelectionSet, obj *models.UserProfile) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userProfileImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserProfile")
+		case "id":
+			out.Values[i] = ec._UserProfile_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "userId":
+			out.Values[i] = ec._UserProfile_userId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "goal":
+			out.Values[i] = ec._UserProfile_goal(ctx, field, obj)
+		case "height":
+			out.Values[i] = ec._UserProfile_height(ctx, field, obj)
+		case "birthDate":
+			out.Values[i] = ec._UserProfile_birthDate(ctx, field, obj)
+		case "trainingExperience":
+			out.Values[i] = ec._UserProfile_trainingExperience(ctx, field, obj)
+		case "currentTrainingSplit":
+			out.Values[i] = ec._UserProfile_currentTrainingSplit(ctx, field, obj)
+		case "preferredProgressionStyle":
+			out.Values[i] = ec._UserProfile_preferredProgressionStyle(ctx, field, obj)
+		case "nutritionStrategy":
+			out.Values[i] = ec._UserProfile_nutritionStrategy(ctx, field, obj)
+		case "persistentAiContext":
+			out.Values[i] = ec._UserProfile_persistentAiContext(ctx, field, obj)
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._UserProfile_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "updatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._UserProfile_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var userProfileAuthErrorImplementors = []string{"UserProfileAuthError"}
+
+func (ec *executionContext) _UserProfileAuthError(ctx context.Context, sel ast.SelectionSet, obj *models.UserProfileAuthErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userProfileAuthErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserProfileAuthError")
+		case "message":
+			out.Values[i] = ec._UserProfileAuthError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._UserProfileAuthError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var userProfileNotFoundErrorImplementors = []string{"UserProfileNotFoundError"}
+
+func (ec *executionContext) _UserProfileNotFoundError(ctx context.Context, sel ast.SelectionSet, obj *models.UserProfileNotFoundErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userProfileNotFoundErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserProfileNotFoundError")
+		case "message":
+			out.Values[i] = ec._UserProfileNotFoundError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._UserProfileNotFoundError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var userProfileResultImplementors = []string{"UserProfileResult"}
+
+func (ec *executionContext) _UserProfileResult(ctx context.Context, sel ast.SelectionSet, obj *models.UserProfileResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userProfileResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserProfileResult")
+		case "profile":
+			out.Values[i] = ec._UserProfileResult_profile(ctx, field, obj)
+		case "validationError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._UserProfileResult_validationError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "notFoundError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._UserProfileResult_notFoundError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "authError":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._UserProfileResult_authError(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var userProfileValidationErrorImplementors = []string{"UserProfileValidationError"}
+
+func (ec *executionContext) _UserProfileValidationError(ctx context.Context, sel ast.SelectionSet, obj *models.UserProfileValidationErr) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userProfileValidationErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserProfileValidationError")
+		case "message":
+			out.Values[i] = ec._UserProfileValidationError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "code":
+			out.Values[i] = ec._UserProfileValidationError_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -33495,6 +44445,195 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) unmarshalNAddDailyNutritionEntryInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAddDailyNutritionEntryInput(ctx context.Context, v interface{}) (models.AddDailyNutritionEntryInput, error) {
+	res, err := ec.unmarshalInputAddDailyNutritionEntryInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNAiExport2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExport(ctx context.Context, sel ast.SelectionSet, v models.AiExport) graphql.Marshaler {
+	return ec._AiExport(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNAiExport2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportᚄ(ctx context.Context, sel ast.SelectionSet, v []models.AiExport) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNAiExport2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExport(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalNAiExportErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportErrorCode(ctx context.Context, v interface{}) (models.AiExportErrorCode, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.AiExportErrorCode(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNAiExportErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportErrorCode(ctx context.Context, sel ast.SelectionSet, v models.AiExportErrorCode) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNAiExportResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportResult(ctx context.Context, sel ast.SelectionSet, v models.AiExportResult) graphql.Marshaler {
+	return ec._AiExportResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNAiExportResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportResult(ctx context.Context, sel ast.SelectionSet, v *models.AiExportResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._AiExportResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNAiExportsResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportsResult(ctx context.Context, sel ast.SelectionSet, v models.AiExportsResult) graphql.Marshaler {
+	return ec._AiExportsResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNAiExportsResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportsResult(ctx context.Context, sel ast.SelectionSet, v *models.AiExportsResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._AiExportsResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNAiReview2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReview(ctx context.Context, sel ast.SelectionSet, v models.AiReview) graphql.Marshaler {
+	return ec._AiReview(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNAiReview2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewᚄ(ctx context.Context, sel ast.SelectionSet, v []models.AiReview) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNAiReview2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReview(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalNAiReviewErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewErrorCode(ctx context.Context, v interface{}) (models.AiReviewErrorCode, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.AiReviewErrorCode(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNAiReviewErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewErrorCode(ctx context.Context, sel ast.SelectionSet, v models.AiReviewErrorCode) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNAiReviewResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewResult(ctx context.Context, sel ast.SelectionSet, v models.AiReviewResult) graphql.Marshaler {
+	return ec._AiReviewResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNAiReviewResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewResult(ctx context.Context, sel ast.SelectionSet, v *models.AiReviewResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._AiReviewResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNAiReviewsResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewsResult(ctx context.Context, sel ast.SelectionSet, v models.AiReviewsResult) graphql.Marshaler {
+	return ec._AiReviewsResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNAiReviewsResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewsResult(ctx context.Context, sel ast.SelectionSet, v *models.AiReviewsResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._AiReviewsResult(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNArchiveResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐArchiveResult(ctx context.Context, sel ast.SelectionSet, v models.ArchiveResult) graphql.Marshaler {
 	return ec._ArchiveResult(ctx, sel, &v)
 }
@@ -34058,6 +45197,16 @@ func (ec *executionContext) marshalNChartErrorCode2monorepoᚑtemplateᚋappsᚋ
 	return res
 }
 
+func (ec *executionContext) unmarshalNCreateAiExportInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateAiExportInput(ctx context.Context, v interface{}) (models.CreateAiExportInput, error) {
+	res, err := ec.unmarshalInputCreateAiExportInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateAiReviewInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateAiReviewInput(ctx context.Context, v interface{}) (models.CreateAiReviewInput, error) {
+	res, err := ec.unmarshalInputCreateAiReviewInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateBodyWeightInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateBodyWeightInput(ctx context.Context, v interface{}) (models.CreateBodyWeightInput, error) {
 	res, err := ec.unmarshalInputCreateBodyWeightInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -34111,6 +45260,68 @@ func (ec *executionContext) unmarshalNCreateTemplateItemInput2monorepoᚑtemplat
 func (ec *executionContext) unmarshalNCreateWeekFlagInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐCreateWeekFlagInput(ctx context.Context, v interface{}) (models.CreateWeekFlagInput, error) {
 	res, err := ec.unmarshalInputCreateWeekFlagInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDailyNutritionEntry2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionEntry(ctx context.Context, sel ast.SelectionSet, v models.DailyNutritionEntry) graphql.Marshaler {
+	return ec._DailyNutritionEntry(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDailyNutritionEntry2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionEntryᚄ(ctx context.Context, sel ast.SelectionSet, v []models.DailyNutritionEntry) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNDailyNutritionEntry2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionEntry(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNDailyNutritionLogResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionLogResult(ctx context.Context, sel ast.SelectionSet, v models.DailyNutritionLogResult) graphql.Marshaler {
+	return ec._DailyNutritionLogResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDailyNutritionLogResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionLogResult(ctx context.Context, sel ast.SelectionSet, v *models.DailyNutritionLogResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DailyNutritionLogResult(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNDailyNutritionOverride2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverride(ctx context.Context, sel ast.SelectionSet, v models.DailyNutritionOverride) graphql.Marshaler {
@@ -34777,6 +45988,10 @@ func (ec *executionContext) marshalNNutritionErrorCode2monorepoᚑtemplateᚋapp
 	return res
 }
 
+func (ec *executionContext) marshalNNutritionMacros2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionMacros(ctx context.Context, sel ast.SelectionSet, v models.NutritionMacros) graphql.Marshaler {
+	return ec._NutritionMacros(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNNutritionMacrosResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionMacrosResult(ctx context.Context, sel ast.SelectionSet, v models.NutritionMacrosResult) graphql.Marshaler {
 	return ec._NutritionMacrosResult(ctx, sel, &v)
 }
@@ -34913,6 +46128,93 @@ func (ec *executionContext) marshalNNutritionTemplate2ᚕmonorepoᚑtemplateᚋa
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalNNutritionTemplateApplyDateResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyDateResult(ctx context.Context, sel ast.SelectionSet, v models.NutritionTemplateApplyDateResult) graphql.Marshaler {
+	return ec._NutritionTemplateApplyDateResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNutritionTemplateApplyDateResult2ᚕmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyDateResultᚄ(ctx context.Context, sel ast.SelectionSet, v []models.NutritionTemplateApplyDateResult) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNNutritionTemplateApplyDateResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyDateResult(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalNNutritionTemplateApplyMode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyMode(ctx context.Context, v interface{}) (models.NutritionTemplateApplyMode, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := unmarshalNNutritionTemplateApplyMode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyMode[tmp]
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNNutritionTemplateApplyMode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyMode(ctx context.Context, sel ast.SelectionSet, v models.NutritionTemplateApplyMode) graphql.Marshaler {
+	res := graphql.MarshalString(marshalNNutritionTemplateApplyMode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyMode[v])
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+var (
+	unmarshalNNutritionTemplateApplyMode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyMode = map[string]models.NutritionTemplateApplyMode{
+		"SEED_EMPTY_DAYS": models.ApplyModeSeedEmptyDays,
+	}
+	marshalNNutritionTemplateApplyMode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyMode = map[models.NutritionTemplateApplyMode]string{
+		models.ApplyModeSeedEmptyDays: "SEED_EMPTY_DAYS",
+	}
+)
+
+func (ec *executionContext) marshalNNutritionTemplateApplyResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyResult(ctx context.Context, sel ast.SelectionSet, v models.NutritionTemplateApplyResult) graphql.Marshaler {
+	return ec._NutritionTemplateApplyResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNutritionTemplateApplyResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyResult(ctx context.Context, sel ast.SelectionSet, v *models.NutritionTemplateApplyResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._NutritionTemplateApplyResult(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNNutritionTemplateItem2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateItem(ctx context.Context, sel ast.SelectionSet, v models.NutritionTemplateItem) graphql.Marshaler {
@@ -35296,6 +46598,11 @@ func (ec *executionContext) marshalNTime2ᚖtimeᚐTime(ctx context.Context, sel
 	return res
 }
 
+func (ec *executionContext) unmarshalNUpdateAiReviewInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateAiReviewInput(ctx context.Context, v interface{}) (models.UpdateAiReviewInput, error) {
+	res, err := ec.unmarshalInputUpdateAiReviewInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNUpdateBodyWeightInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateBodyWeightInput(ctx context.Context, v interface{}) (models.UpdateBodyWeightInput, error) {
 	res, err := ec.unmarshalInputUpdateBodyWeightInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -35308,6 +46615,16 @@ func (ec *executionContext) unmarshalNUpdateCardioInput2monorepoᚑtemplateᚋap
 
 func (ec *executionContext) unmarshalNUpdateCheckInInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateCheckInInput(ctx context.Context, v interface{}) (models.UpdateCheckInInput, error) {
 	res, err := ec.unmarshalInputUpdateCheckInInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateDailyNutritionEntryInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateDailyNutritionEntryInput(ctx context.Context, v interface{}) (models.UpdateDailyNutritionEntryInput, error) {
+	res, err := ec.unmarshalInputUpdateDailyNutritionEntryInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateDailyNutritionLogNotesInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateDailyNutritionLogNotesInput(ctx context.Context, v interface{}) (models.UpdateDailyNutritionLogNotesInput, error) {
+	res, err := ec.unmarshalInputUpdateDailyNutritionLogNotesInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -35344,6 +46661,41 @@ func (ec *executionContext) unmarshalNUpdateTemplateInput2monorepoᚑtemplateᚋ
 func (ec *executionContext) unmarshalNUpdateTemplateItemInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUpdateTemplateItemInput(ctx context.Context, v interface{}) (models.UpdateTemplateItemInput, error) {
 	res, err := ec.unmarshalInputUpdateTemplateItemInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUserProfileErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileErrorCode(ctx context.Context, v interface{}) (models.UserProfileErrorCode, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models.UserProfileErrorCode(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUserProfileErrorCode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileErrorCode(ctx context.Context, sel ast.SelectionSet, v models.UserProfileErrorCode) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNUserProfileInput2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileInput(ctx context.Context, v interface{}) (models.UserProfileInput, error) {
+	res, err := ec.unmarshalInputUserProfileInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUserProfileResult2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileResult(ctx context.Context, sel ast.SelectionSet, v models.UserProfileResult) graphql.Marshaler {
+	return ec._UserProfileResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUserProfileResult2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileResult(ctx context.Context, sel ast.SelectionSet, v *models.UserProfileResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._UserProfileResult(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNWeekFlag2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐWeekFlag(ctx context.Context, sel ast.SelectionSet, v models.WeekFlag) graphql.Marshaler {
@@ -35707,6 +47059,62 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
+func (ec *executionContext) marshalOAiExport2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExport(ctx context.Context, sel ast.SelectionSet, v *models.AiExport) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._AiExport(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOAiExportAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportAuthErr(ctx context.Context, sel ast.SelectionSet, v *models.AiExportAuthErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._AiExportAuthError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOAiExportNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportNotFoundErr(ctx context.Context, sel ast.SelectionSet, v *models.AiExportNotFoundErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._AiExportNotFoundError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOAiExportValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiExportValidationErr(ctx context.Context, sel ast.SelectionSet, v *models.AiExportValidationErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._AiExportValidationError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOAiReview2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReview(ctx context.Context, sel ast.SelectionSet, v *models.AiReview) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._AiReview(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOAiReviewAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewAuthErr(ctx context.Context, sel ast.SelectionSet, v *models.AiReviewAuthErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._AiReviewAuthError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOAiReviewNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewNotFoundErr(ctx context.Context, sel ast.SelectionSet, v *models.AiReviewNotFoundErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._AiReviewNotFoundError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOAiReviewValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAiReviewValidationErr(ctx context.Context, sel ast.SelectionSet, v *models.AiReviewValidationErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._AiReviewValidationError(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalOAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐAuthErr(ctx context.Context, sel ast.SelectionSet, v *models.AuthErr) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -35856,6 +47264,13 @@ func (ec *executionContext) marshalOChartValidationError2ᚖmonorepoᚑtemplate�
 		return graphql.Null
 	}
 	return ec._ChartValidationError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalODailyNutritionLog2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionLog(ctx context.Context, sel ast.SelectionSet, v *models.DailyNutritionLog) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._DailyNutritionLog(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalODailyNutritionOverride2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐDailyNutritionOverride(ctx context.Context, sel ast.SelectionSet, v *models.DailyNutritionOverride) graphql.Marshaler {
@@ -36036,6 +47451,26 @@ func (ec *executionContext) marshalONutritionTemplate2ᚖmonorepoᚑtemplateᚋa
 	return ec._NutritionTemplate(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalONutritionTemplateApplyMode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyMode(ctx context.Context, v interface{}) (models.NutritionTemplateApplyMode, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := unmarshalONutritionTemplateApplyMode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyMode[tmp]
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalONutritionTemplateApplyMode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyMode(ctx context.Context, sel ast.SelectionSet, v models.NutritionTemplateApplyMode) graphql.Marshaler {
+	res := graphql.MarshalString(marshalONutritionTemplateApplyMode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyMode[v])
+	return res
+}
+
+var (
+	unmarshalONutritionTemplateApplyMode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyMode = map[string]models.NutritionTemplateApplyMode{
+		"SEED_EMPTY_DAYS": models.ApplyModeSeedEmptyDays,
+	}
+	marshalONutritionTemplateApplyMode2monorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateApplyMode = map[models.NutritionTemplateApplyMode]string{
+		models.ApplyModeSeedEmptyDays: "SEED_EMPTY_DAYS",
+	}
+)
+
 func (ec *executionContext) marshalONutritionTemplateItem2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐNutritionTemplateItem(ctx context.Context, sel ast.SelectionSet, v *models.NutritionTemplateItem) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -36183,6 +47618,34 @@ func (ec *executionContext) unmarshalOString2ᚖᚕstringᚄ(ctx context.Context
 
 func (ec *executionContext) marshalOString2ᚖᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v *[]string) graphql.Marshaler {
 	return ec.marshalOString2ᚕstringᚄ(ctx, sel, *v)
+}
+
+func (ec *executionContext) marshalOUserProfile2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfile(ctx context.Context, sel ast.SelectionSet, v *models.UserProfile) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._UserProfile(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOUserProfileAuthError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileAuthErr(ctx context.Context, sel ast.SelectionSet, v *models.UserProfileAuthErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._UserProfileAuthError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOUserProfileNotFoundError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileNotFoundErr(ctx context.Context, sel ast.SelectionSet, v *models.UserProfileNotFoundErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._UserProfileNotFoundError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOUserProfileValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐUserProfileValidationErr(ctx context.Context, sel ast.SelectionSet, v *models.UserProfileValidationErr) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._UserProfileValidationError(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOValidationError2ᚖmonorepoᚑtemplateᚋappsᚋapiᚋinternalᚋatlasᚋmodelsᚐValidationErr(ctx context.Context, sel ast.SelectionSet, v *models.ValidationErr) graphql.Marshaler {

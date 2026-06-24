@@ -17,7 +17,9 @@ type Resolver struct {
 	NutritionProductService       service.NutritionProductService
 	NutritionTemplateService      service.NutritionTemplateService
 	NutritionTemplateItemService  service.NutritionTemplateItemService
+	NutritionTemplateApplyService service.NutritionTemplateApplyService
 	DailyNutritionOverrideService service.DailyNutritionOverrideService
+	DailyNutritionLogService      service.DailyNutritionLogService
 	NutritionMacroService         service.NutritionMacroService
 	BodyChartService              service.BodyChartService
 	NutritionWeeklyAvgService     service.NutritionWeeklyAvgService

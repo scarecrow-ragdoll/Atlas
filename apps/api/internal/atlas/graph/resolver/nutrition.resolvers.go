@@ -6,7 +6,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"monorepo-template/apps/api/internal/atlas/graph/generated"
 	"monorepo-template/apps/api/internal/atlas/models"
 	"time"
@@ -14,177 +13,212 @@ import (
 
 // Date is the resolver for the date field.
 func (r *dailyNutritionOverrideResolver) Date(ctx context.Context, obj *models.DailyNutritionOverride) (*models.Date, error) {
-	panic(fmt.Errorf("not implemented: Date - date"))
+	return atlasGraphQLDatePtr(obj.Date)
 }
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *dailyNutritionOverrideResolver) CreatedAt(ctx context.Context, obj *models.DailyNutritionOverride) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	return atlasGraphQLTimePtr(obj.CreatedAt)
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
 func (r *dailyNutritionOverrideResolver) UpdatedAt(ctx context.Context, obj *models.DailyNutritionOverride) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
+	return atlasGraphQLTimePtr(obj.UpdatedAt)
 }
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *dailyNutritionOverrideItemResolver) CreatedAt(ctx context.Context, obj *models.DailyNutritionOverrideItem) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	return atlasGraphQLTimePtr(obj.CreatedAt)
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
 func (r *dailyNutritionOverrideItemResolver) UpdatedAt(ctx context.Context, obj *models.DailyNutritionOverrideItem) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
+	return atlasGraphQLTimePtr(obj.UpdatedAt)
 }
 
 // ValidationError is the resolver for the validationError field.
 func (r *dailyNutritionOverrideItemResultResolver) ValidationError(ctx context.Context, obj *models.DailyNutritionOverrideItemResult) (*models.NutritionValidationErr, error) {
-	panic(fmt.Errorf("not implemented: ValidationError - validationError"))
+	return obj.ValidationErr, nil
 }
 
 // NotFoundError is the resolver for the notFoundError field.
 func (r *dailyNutritionOverrideItemResultResolver) NotFoundError(ctx context.Context, obj *models.DailyNutritionOverrideItemResult) (*models.NutritionNotFoundErr, error) {
-	panic(fmt.Errorf("not implemented: NotFoundError - notFoundError"))
+	return obj.NotFoundErr, nil
 }
 
 // AuthError is the resolver for the authError field.
 func (r *dailyNutritionOverrideItemResultResolver) AuthError(ctx context.Context, obj *models.DailyNutritionOverrideItemResult) (*models.NutritionAuthErr, error) {
-	panic(fmt.Errorf("not implemented: AuthError - authError"))
+	return obj.AuthErr, nil
 }
 
 // ValidationError is the resolver for the validationError field.
 func (r *dailyNutritionOverrideResultResolver) ValidationError(ctx context.Context, obj *models.DailyNutritionOverrideResult) (*models.NutritionValidationErr, error) {
-	panic(fmt.Errorf("not implemented: ValidationError - validationError"))
+	return obj.ValidationErr, nil
 }
 
 // NotFoundError is the resolver for the notFoundError field.
 func (r *dailyNutritionOverrideResultResolver) NotFoundError(ctx context.Context, obj *models.DailyNutritionOverrideResult) (*models.NutritionNotFoundErr, error) {
-	panic(fmt.Errorf("not implemented: NotFoundError - notFoundError"))
+	return obj.NotFoundErr, nil
 }
 
 // AuthError is the resolver for the authError field.
 func (r *dailyNutritionOverrideResultResolver) AuthError(ctx context.Context, obj *models.DailyNutritionOverrideResult) (*models.NutritionAuthErr, error) {
-	panic(fmt.Errorf("not implemented: AuthError - authError"))
+	return obj.AuthErr, nil
 }
 
 // ValidationError is the resolver for the validationError field.
 func (r *dailyNutritionOverridesResultResolver) ValidationError(ctx context.Context, obj *models.DailyNutritionOverridesResult) (*models.NutritionValidationErr, error) {
-	panic(fmt.Errorf("not implemented: ValidationError - validationError"))
+	return obj.ValidationErr, nil
 }
 
 // AuthError is the resolver for the authError field.
 func (r *dailyNutritionOverridesResultResolver) AuthError(ctx context.Context, obj *models.DailyNutritionOverridesResult) (*models.NutritionAuthErr, error) {
-	panic(fmt.Errorf("not implemented: AuthError - authError"))
+	return obj.AuthErr, nil
 }
 
 // ValidationError is the resolver for the validationError field.
 func (r *nutritionMacrosResultResolver) ValidationError(ctx context.Context, obj *models.NutritionMacrosResult) (*models.NutritionValidationErr, error) {
-	panic(fmt.Errorf("not implemented: ValidationError - validationError"))
+	return obj.ValidationErr, nil
 }
 
 // AuthError is the resolver for the authError field.
 func (r *nutritionMacrosResultResolver) AuthError(ctx context.Context, obj *models.NutritionMacrosResult) (*models.NutritionAuthErr, error) {
-	panic(fmt.Errorf("not implemented: AuthError - authError"))
+	return obj.AuthErr, nil
 }
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *nutritionProductResolver) CreatedAt(ctx context.Context, obj *models.NutritionProduct) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	return atlasGraphQLTimePtr(obj.CreatedAt)
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
 func (r *nutritionProductResolver) UpdatedAt(ctx context.Context, obj *models.NutritionProduct) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
+	return atlasGraphQLTimePtr(obj.UpdatedAt)
 }
 
 // ValidationError is the resolver for the validationError field.
 func (r *nutritionProductResultResolver) ValidationError(ctx context.Context, obj *models.NutritionProductResult) (*models.NutritionValidationErr, error) {
-	panic(fmt.Errorf("not implemented: ValidationError - validationError"))
+	return obj.ValidationErr, nil
 }
 
 // NotFoundError is the resolver for the notFoundError field.
 func (r *nutritionProductResultResolver) NotFoundError(ctx context.Context, obj *models.NutritionProductResult) (*models.NutritionNotFoundErr, error) {
-	panic(fmt.Errorf("not implemented: NotFoundError - notFoundError"))
+	return obj.NotFoundErr, nil
 }
 
 // AuthError is the resolver for the authError field.
 func (r *nutritionProductResultResolver) AuthError(ctx context.Context, obj *models.NutritionProductResult) (*models.NutritionAuthErr, error) {
-	panic(fmt.Errorf("not implemented: AuthError - authError"))
+	return obj.AuthErr, nil
 }
 
 // ValidationError is the resolver for the validationError field.
 func (r *nutritionProductsResultResolver) ValidationError(ctx context.Context, obj *models.NutritionProductsResult) (*models.NutritionValidationErr, error) {
-	panic(fmt.Errorf("not implemented: ValidationError - validationError"))
+	return obj.ValidationErr, nil
 }
 
 // AuthError is the resolver for the authError field.
 func (r *nutritionProductsResultResolver) AuthError(ctx context.Context, obj *models.NutritionProductsResult) (*models.NutritionAuthErr, error) {
-	panic(fmt.Errorf("not implemented: AuthError - authError"))
+	return obj.AuthErr, nil
 }
 
 // WeekStartDate is the resolver for the weekStartDate field.
 func (r *nutritionTemplateResolver) WeekStartDate(ctx context.Context, obj *models.NutritionTemplate) (*models.Date, error) {
-	panic(fmt.Errorf("not implemented: WeekStartDate - weekStartDate"))
+	return atlasGraphQLDatePtr(obj.WeekStartDate)
 }
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *nutritionTemplateResolver) CreatedAt(ctx context.Context, obj *models.NutritionTemplate) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	return atlasGraphQLTimePtr(obj.CreatedAt)
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
 func (r *nutritionTemplateResolver) UpdatedAt(ctx context.Context, obj *models.NutritionTemplate) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
+	return atlasGraphQLTimePtr(obj.UpdatedAt)
+}
+
+// Date is the resolver for the date field.
+func (r *nutritionTemplateApplyDateResultResolver) Date(ctx context.Context, obj *models.NutritionTemplateApplyDateResult) (*models.Date, error) {
+	return atlasGraphQLDatePtr(obj.Date)
+}
+
+// Status is the resolver for the status field.
+func (r *nutritionTemplateApplyDateResultResolver) Status(ctx context.Context, obj *models.NutritionTemplateApplyDateResult) (string, error) {
+	return string(obj.Status), nil
+}
+
+// WeekStartDate is the resolver for the weekStartDate field.
+func (r *nutritionTemplateApplyResultResolver) WeekStartDate(ctx context.Context, obj *models.NutritionTemplateApplyResult) (*models.Date, error) {
+	return atlasGraphQLDatePtr(obj.WeekStartDate)
+}
+
+// WeekEndDate is the resolver for the weekEndDate field.
+func (r *nutritionTemplateApplyResultResolver) WeekEndDate(ctx context.Context, obj *models.NutritionTemplateApplyResult) (*models.Date, error) {
+	return atlasGraphQLDatePtr(obj.WeekEndDate)
+}
+
+// ValidationError is the resolver for the validationError field.
+func (r *nutritionTemplateApplyResultResolver) ValidationError(ctx context.Context, obj *models.NutritionTemplateApplyResult) (*models.NutritionValidationErr, error) {
+	return obj.ValidationErr, nil
+}
+
+// NotFoundError is the resolver for the notFoundError field.
+func (r *nutritionTemplateApplyResultResolver) NotFoundError(ctx context.Context, obj *models.NutritionTemplateApplyResult) (*models.NutritionNotFoundErr, error) {
+	return obj.NotFoundErr, nil
+}
+
+// AuthError is the resolver for the authError field.
+func (r *nutritionTemplateApplyResultResolver) AuthError(ctx context.Context, obj *models.NutritionTemplateApplyResult) (*models.NutritionAuthErr, error) {
+	return obj.AuthErr, nil
 }
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *nutritionTemplateItemResolver) CreatedAt(ctx context.Context, obj *models.NutritionTemplateItem) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	return atlasGraphQLTimePtr(obj.CreatedAt)
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
 func (r *nutritionTemplateItemResolver) UpdatedAt(ctx context.Context, obj *models.NutritionTemplateItem) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
+	return atlasGraphQLTimePtr(obj.UpdatedAt)
 }
 
 // ValidationError is the resolver for the validationError field.
 func (r *nutritionTemplateItemResultResolver) ValidationError(ctx context.Context, obj *models.NutritionTemplateItemResult) (*models.NutritionValidationErr, error) {
-	panic(fmt.Errorf("not implemented: ValidationError - validationError"))
+	return obj.ValidationErr, nil
 }
 
 // NotFoundError is the resolver for the notFoundError field.
 func (r *nutritionTemplateItemResultResolver) NotFoundError(ctx context.Context, obj *models.NutritionTemplateItemResult) (*models.NutritionNotFoundErr, error) {
-	panic(fmt.Errorf("not implemented: NotFoundError - notFoundError"))
+	return obj.NotFoundErr, nil
 }
 
 // AuthError is the resolver for the authError field.
 func (r *nutritionTemplateItemResultResolver) AuthError(ctx context.Context, obj *models.NutritionTemplateItemResult) (*models.NutritionAuthErr, error) {
-	panic(fmt.Errorf("not implemented: AuthError - authError"))
+	return obj.AuthErr, nil
 }
 
 // ValidationError is the resolver for the validationError field.
 func (r *nutritionTemplateResultResolver) ValidationError(ctx context.Context, obj *models.NutritionTemplateResult) (*models.NutritionValidationErr, error) {
-	panic(fmt.Errorf("not implemented: ValidationError - validationError"))
+	return obj.ValidationErr, nil
 }
 
 // NotFoundError is the resolver for the notFoundError field.
 func (r *nutritionTemplateResultResolver) NotFoundError(ctx context.Context, obj *models.NutritionTemplateResult) (*models.NutritionNotFoundErr, error) {
-	panic(fmt.Errorf("not implemented: NotFoundError - notFoundError"))
+	return obj.NotFoundErr, nil
 }
 
 // AuthError is the resolver for the authError field.
 func (r *nutritionTemplateResultResolver) AuthError(ctx context.Context, obj *models.NutritionTemplateResult) (*models.NutritionAuthErr, error) {
-	panic(fmt.Errorf("not implemented: AuthError - authError"))
+	return obj.AuthErr, nil
 }
 
 // ValidationError is the resolver for the validationError field.
 func (r *nutritionTemplatesResultResolver) ValidationError(ctx context.Context, obj *models.NutritionTemplatesResult) (*models.NutritionValidationErr, error) {
-	panic(fmt.Errorf("not implemented: ValidationError - validationError"))
+	return obj.ValidationErr, nil
 }
 
 // AuthError is the resolver for the authError field.
 func (r *nutritionTemplatesResultResolver) AuthError(ctx context.Context, obj *models.NutritionTemplatesResult) (*models.NutritionAuthErr, error) {
-	panic(fmt.Errorf("not implemented: AuthError - authError"))
+	return obj.AuthErr, nil
 }
 
 // DailyNutritionOverride returns generated.DailyNutritionOverrideResolver implementation.
@@ -237,6 +271,16 @@ func (r *Resolver) NutritionTemplate() generated.NutritionTemplateResolver {
 	return &nutritionTemplateResolver{r}
 }
 
+// NutritionTemplateApplyDateResult returns generated.NutritionTemplateApplyDateResultResolver implementation.
+func (r *Resolver) NutritionTemplateApplyDateResult() generated.NutritionTemplateApplyDateResultResolver {
+	return &nutritionTemplateApplyDateResultResolver{r}
+}
+
+// NutritionTemplateApplyResult returns generated.NutritionTemplateApplyResultResolver implementation.
+func (r *Resolver) NutritionTemplateApplyResult() generated.NutritionTemplateApplyResultResolver {
+	return &nutritionTemplateApplyResultResolver{r}
+}
+
 // NutritionTemplateItem returns generated.NutritionTemplateItemResolver implementation.
 func (r *Resolver) NutritionTemplateItem() generated.NutritionTemplateItemResolver {
 	return &nutritionTemplateItemResolver{r}
@@ -267,6 +311,8 @@ type nutritionProductResolver struct{ *Resolver }
 type nutritionProductResultResolver struct{ *Resolver }
 type nutritionProductsResultResolver struct{ *Resolver }
 type nutritionTemplateResolver struct{ *Resolver }
+type nutritionTemplateApplyDateResultResolver struct{ *Resolver }
+type nutritionTemplateApplyResultResolver struct{ *Resolver }
 type nutritionTemplateItemResolver struct{ *Resolver }
 type nutritionTemplateItemResultResolver struct{ *Resolver }
 type nutritionTemplateResultResolver struct{ *Resolver }

@@ -1,5 +1,5 @@
 // FILE: apps/api/cmd/server/main.go
-// VERSION: 1.0.1
+// VERSION: 1.0.2
 // START_MODULE_CONTRACT
 //   PURPOSE: Start the API HTTP server and wire persistence, GraphQL, admin auth, Atlas module, health, and graceful shutdown.
 //   SCOPE: Runtime dependency construction, admin bootstrap validation/seed, Atlas bootstrap, explicit route groups (public, admin, Atlas auth-public, Atlas guarded), middleware order, and process lifecycle.
@@ -13,7 +13,7 @@
 //   optionalEnvFile - Returns a local .env path only when present.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.1 - Added Atlas module wiring: Atlas repos, services, bootstrap, GraphQL handler, PIN auth REST, media scaffold, and explicit route groups.
+//   LAST_CHANGE: 1.0.2 - Wired factual daily nutrition log and template-apply services into the Atlas GraphQL server.
 // END_CHANGE_SUMMARY
 
 package main
@@ -172,11 +172,28 @@ func main() {
 	atlasNutritionTemplateItemRepo := atlasPostgres.NewNutritionTemplateItemRepository(db.Pool)
 	atlasNutritionOverrideRepo := atlasPostgres.NewDailyNutritionOverrideRepository(db.Pool)
 	atlasNutritionOverrideItemRepo := atlasPostgres.NewDailyNutritionOverrideItemRepository(db.Pool)
+	atlasDailyNutritionLogRepo := atlasPostgres.NewDailyNutritionLogRepository(db.Pool)
 
 	atlasNutritionProductService := atlasService.NewNutritionProductService(atlasNutritionProductRepo, l)
 	atlasNutritionTemplateService := atlasService.NewNutritionTemplateService(atlasNutritionTemplateRepo, atlasNutritionTemplateItemRepo, l)
 	atlasNutritionTemplateItemService := atlasService.NewNutritionTemplateItemService(atlasNutritionTemplateItemRepo, atlasNutritionTemplateRepo, atlasNutritionProductRepo, l)
 	atlasNutritionOverrideService := atlasService.NewNutritionOverrideService(atlasNutritionOverrideRepo, atlasNutritionOverrideItemRepo, l)
+	atlasDailyNutritionLogService := atlasService.NewDailyNutritionLogService(atlasDailyNutritionLogRepo, atlasNutritionProductService, l)
+	atlasDailyNutritionLegacyResolver := atlasService.NewDailyNutritionLegacyResolver(
+		atlasNutritionTemplateRepo,
+		atlasNutritionTemplateItemRepo,
+		atlasNutritionOverrideRepo,
+		atlasNutritionOverrideItemRepo,
+		atlasNutritionProductRepo,
+	)
+	atlasNutritionTemplateApplyService := atlasService.NewNutritionTemplateApplyService(
+		atlasNutritionTemplateRepo,
+		atlasNutritionTemplateItemRepo,
+		atlasNutritionProductRepo,
+		atlasDailyNutritionLogRepo,
+		atlasDailyNutritionLegacyResolver,
+		l,
+	)
 	atlasNutritionMacroService := atlasService.NewNutritionMacroService(
 		atlasNutritionTemplateRepo,
 		atlasNutritionTemplateItemRepo,
@@ -256,6 +273,8 @@ func main() {
 		NutritionTemplateItemService:  atlasNutritionTemplateItemService,
 		DailyNutritionOverrideService: atlasNutritionOverrideService,
 		NutritionMacroService:         atlasNutritionMacroService,
+		NutritionTemplateApplyService: atlasNutritionTemplateApplyService,
+		DailyNutritionLogService:      atlasDailyNutritionLogService,
 		BodyChartService:              atlasBodyChartService,
 		NutritionWeeklyAvgService:     atlasNutritionWeeklyAvgService,
 		UserProfileService:            atlasUserProfileService,

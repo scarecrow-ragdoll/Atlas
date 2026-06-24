@@ -1,0 +1,74 @@
+# FILE: apps/api/internal/atlas/graph/schema/daily_nutrition.graphql
+# VERSION: 1.0.0
+# START_MODULE_CONTRACT
+#   PURPOSE: Define factual daily nutrition log GraphQL types, inputs, and result wrappers.
+#   SCOPE: DailyNutritionLog aggregate, DailyNutritionEntry snapshots, entry mutations, notes update input, and daily log result error shape; excludes weekly template apply and legacy overrides.
+#   DEPENDS: schema.graphql Date/Time scalars and nutrition.graphql NutritionMacros/error types.
+#   LINKS: M-API-NUTRITION / V-M-API-NUTRITION.
+#   ROLE: RUNTIME
+#   MAP_MODE: LOCALS
+# END_MODULE_CONTRACT
+# START_MODULE_MAP
+#   DailyNutritionLog - Date-scoped factual food log aggregate with entries and totals.
+#   DailyNutritionEntry - Product snapshot food entry with calculated macros.
+#   AddDailyNutritionEntryInput - Input for adding a product snapshot entry by date.
+#   UpdateDailyNutritionEntryInput - Full replacement input for mutable entry fields; position is required.
+#   UpdateDailyNutritionLogNotesInput - Notes-only input used with updateDailyNutritionLogNotes(id: ...).
+#   DailyNutritionLogResult - Union-style daily log result with validation, not-found, and auth errors.
+# END_MODULE_MAP
+
+type DailyNutritionLog {
+  id: ID!
+  userId: ID!
+  date: Date!
+  notes: String
+  entries: [DailyNutritionEntry!]!
+  totals: NutritionMacros!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type DailyNutritionEntry {
+  id: ID!
+  dailyLogId: ID!
+  productId: ID!
+  productNameSnapshot: String!
+  caloriesPer100gSnapshot: Float!
+  proteinPer100gSnapshot: Float!
+  fatPer100gSnapshot: Float!
+  carbsPer100gSnapshot: Float!
+  amountGrams: Float!
+  mealLabel: String
+  notes: String
+  position: Int!
+  macros: NutritionMacros!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input AddDailyNutritionEntryInput {
+  date: Date!
+  productId: ID!
+  amountGrams: Float!
+  mealLabel: String
+  notes: String
+}
+
+input UpdateDailyNutritionEntryInput {
+  dailyLogId: ID!
+  amountGrams: Float!
+  mealLabel: String
+  notes: String
+  position: Int!
+}
+
+input UpdateDailyNutritionLogNotesInput {
+  notes: String
+}
+
+type DailyNutritionLogResult {
+  dailyNutritionLog: DailyNutritionLog
+  validationError: NutritionValidationError
+  notFoundError: NutritionNotFoundError
+  authError: NutritionAuthError
+}

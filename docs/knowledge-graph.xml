@@ -219,8 +219,13 @@
       <path>apps/api/internal/atlas/service/nutrition_override_service.go</path>
       <path>apps/api/internal/atlas/service/nutrition_macro_service.go</path>
       <path>apps/api/internal/atlas/service/daily_nutrition_log_service.go</path>
+      <path>apps/api/atlas-gqlgen.yml</path>
+      <path>apps/api/internal/atlas/graph/schema/schema.graphql</path>
       <path>apps/api/internal/atlas/graph/schema/nutrition.graphql</path>
+      <path>apps/api/internal/atlas/graph/schema/daily_nutrition.graphql</path>
       <path>apps/api/internal/atlas/graph/resolver/nutrition.go</path>
+      <path>apps/api/internal/atlas/graph/resolver/daily_nutrition.go</path>
+      <path>apps/api/internal/atlas/graph/resolver/nutrition_graphql_test.go</path>
       <path>apps/api/internal/repository/postgres/queries/nutrition_products.sql</path>
       <path>apps/api/internal/repository/postgres/queries/nutrition_templates.sql</path>
       <path>apps/api/internal/repository/postgres/queries/nutrition_template_items.sql</path>

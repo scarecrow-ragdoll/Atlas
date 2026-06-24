@@ -2,11 +2,14 @@
 # VERSION: 1.0.0
 # START_MODULE_CONTRACT
 #   PURPOSE: Define GraphQL types, enums, inputs, queries, mutations, and union result types for WAVE-05 Nutrition module.
-#   SCOPE: NutritionProduct, NutritionTemplate (with nested items), DailyNutritionOverride (with nested items), NutritionMacros. Operation and NutritionErrorCode enums. CRUD inputs and union results with ValidationError/NotFoundError/AuthError for all entities.
+#   SCOPE: NutritionProduct, NutritionTemplate (with nested items), DailyNutritionOverride (with nested items), NutritionMacros, and weekly template apply result types. Operation and NutritionErrorCode enums. CRUD inputs and union results with ValidationError/NotFoundError/AuthError for all entities.
 #   DEPENDS: schema.graphql for Time and Date scalars, Query and Mutation root types.
 #   ROLE: RUNTIME
 #   MAP_MODE: LOCALS
 # END_MODULE_CONTRACT
+# START_CHANGE_SUMMARY
+#   LAST_CHANGE: 1.0.1 - Added weekly template apply enum/result types for factual daily nutrition seeding.
+# END_CHANGE_SUMMARY
 
 type NutritionProduct {
   id: ID!
@@ -84,6 +87,10 @@ enum NutritionErrorCode {
   NOT_FOUND
   AUTH_ERROR
   INTERNAL_ERROR
+}
+
+enum NutritionTemplateApplyMode {
+  SEED_EMPTY_DAYS
 }
 
 input CreateProductInput {
@@ -210,6 +217,23 @@ type DailyNutritionOverrideItemResult {
 type NutritionMacrosResult {
   macros: NutritionMacros
   validationError: NutritionValidationError
+  authError: NutritionAuthError
+}
+
+type NutritionTemplateApplyDateResult {
+  date: Date!
+  status: String!
+  entryCount: Int!
+  reason: String
+}
+
+type NutritionTemplateApplyResult {
+  weekStartDate: Date
+  weekEndDate: Date
+  mode: NutritionTemplateApplyMode
+  dates: [NutritionTemplateApplyDateResult!]!
+  validationError: NutritionValidationError
+  notFoundError: NutritionNotFoundError
   authError: NutritionAuthError
 }
 

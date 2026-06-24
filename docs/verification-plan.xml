@@ -529,6 +529,7 @@
         <file>apps/api/internal/atlas/service/nutrition_override_service_test.go</file>
         <file>apps/api/internal/atlas/service/daily_nutrition_log_service_test.go</file>
         <file>apps/api/internal/atlas/graph/resolver/nutrition_test.go</file>
+        <file>apps/api/internal/atlas/graph/resolver/nutrition_graphql_test.go</file>
         <file>apps/api/internal/atlas/repository/postgres/nutrition_migration_test.go</file>
       </test-files>
       <module-checks>
@@ -536,6 +537,8 @@
         <check-1a>cd apps/api &amp;&amp; go test ./internal/atlas/service -run TestNutritionTemplateApplyService -count=1</check-1a>
         <check-2>cd apps/api &amp;&amp; INTEGRATION_TESTS=1 go test -run "TestWave05|TestDailyNutritionMigration|TestDailyNutritionRepository" ./internal/atlas/repository/postgres/ -count=1</check-2>
         <check-3>bunx nx run api:codegen</check-3>
+        <check-3a>bunx nx run api:codegen:atlas</check-3a>
+        <check-3b>cd apps/api &amp;&amp; go test ./internal/atlas/graph/resolver -run "TestDailyNutritionGraphQL|TestNutritionGraphQL" -count=1</check-3b>
         <check-4>bunx nx build api</check-4>
       </module-checks>
       <scenarios>
@@ -545,6 +548,7 @@
         <scenario-3 kind="success">NutritionMacroService calculates KJBJU from template items with override ADD/SUBTRACT/REPLACE operations.</scenario-3>
         <scenario-4 kind="success">DailyNutritionOverride service manages date-scoped overrides with isolated item CRUD.</scenario-4>
         <scenario-5 kind="success">DailyNutritionLog service get-or-creates date-scoped factual logs, snapshots product macros into entries, and returns snapshot-based totals.</scenario-5>
+        <scenario-5a kind="success">Atlas GraphQL exposes factual daily nutrition log queries and mutations, all-product listing, product restore, and weekly template apply results through executable schema resolvers.</scenario-5a>
         <scenario-6 kind="success">WAVE-05 and factual daily nutrition migrations apply without errors against test PostgreSQL.</scenario-6>
         <scenario-7 kind="failure">Empty or negative macro values, missing names, zero amounts, and invalid operations return deterministic validation errors.</scenario-7>
         <scenario-8 kind="failure">Non-existent products, templates, items, overrides, daily logs, or daily entries return not-found errors.</scenario-8>
@@ -554,8 +558,9 @@
         <assertion-1>Log markers use [NutritionProduct], [NutritionTemplate], [NutritionTemplateItem], [DailyNutritionOverride], [DailyNutritionOverrideItem], [DailyNutritionLog], [DailyNutritionEntry], [NutritionMacros] prefixes.</assertion-1>
         <assertion-2>No notes, labels, or meal names are logged in service calls (log privacy).</assertion-2>
         <assertion-3>WAVE-03 PIN auth guard protects all nutrition GraphQL resolvers via middleware.GetAtlasUserID.</assertion-3>
+        <assertion-4>Nutrition root GraphQL operations delegate to service-backed resolver methods; nutrition root stubs must not panic.</assertion-4>
       </required-trace-assertions>
-      <wave-follow-up>Run service tests and codegen after nutrition service or query changes.</wave-follow-up>
+      <wave-follow-up>Run service tests, executable GraphQL resolver tests, and codegen after nutrition service, schema, or query changes.</wave-follow-up>
       <phase-follow-up>Run integration migration smoke test and full API test suite.</phase-follow-up>
     </V-M-API-NUTRITION>
 

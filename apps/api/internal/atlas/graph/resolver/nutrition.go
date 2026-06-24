@@ -7,6 +7,9 @@
 //   ROLE: RUNTIME
 //   MAP_MODE: EXPORTS
 // END_MODULE_CONTRACT
+// START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Added product list-all and restore GraphQL adapter methods for archived product management.
+// END_CHANGE_SUMMARY
 
 package resolver
 
@@ -28,6 +31,22 @@ func (r *Resolver) GetNutritionProducts(ctx context.Context) (*models.NutritionP
 	}
 
 	products, err := r.NutritionProductService.ListActive(ctx, userID)
+	if err != nil {
+		return nil, nil
+	}
+
+	return &models.NutritionProductsResult{Products: products}, nil
+}
+
+func (r *Resolver) GetNutritionProductsAll(ctx context.Context) (*models.NutritionProductsResult, error) {
+	userID := middleware.GetAtlasUserID(ctx)
+	if userID == "" {
+		return &models.NutritionProductsResult{
+			AuthErr: &models.NutritionAuthErr{Message: "unauthorized", Code: models.NutritionErrorAuth},
+		}, nil
+	}
+
+	products, err := r.NutritionProductService.ListAll(ctx, userID)
 	if err != nil {
 		return nil, nil
 	}
@@ -119,6 +138,27 @@ func (r *Resolver) DeleteNutritionProduct(ctx context.Context, id string) (*mode
 	}
 
 	product, err := r.NutritionProductService.Delete(ctx, userID, id)
+	if err != nil {
+		if errors.Is(err, atlasService.ErrProductNotFound) {
+			return &models.NutritionProductResult{
+				NotFoundErr: &models.NutritionNotFoundErr{Message: "product not found", Code: models.NutritionErrorNotFound},
+			}, nil
+		}
+		return nil, nil
+	}
+
+	return &models.NutritionProductResult{NutritionProduct: product}, nil
+}
+
+func (r *Resolver) RestoreNutritionProduct(ctx context.Context, id string) (*models.NutritionProductResult, error) {
+	userID := middleware.GetAtlasUserID(ctx)
+	if userID == "" {
+		return &models.NutritionProductResult{
+			AuthErr: &models.NutritionAuthErr{Message: "unauthorized", Code: models.NutritionErrorAuth},
+		}, nil
+	}
+
+	product, err := r.NutritionProductService.Restore(ctx, userID, id)
 	if err != nil {
 		if errors.Is(err, atlasService.ErrProductNotFound) {
 			return &models.NutritionProductResult{

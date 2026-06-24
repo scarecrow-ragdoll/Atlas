@@ -42,10 +42,12 @@ type Query {
 
   # WAVE-05 Nutrition
   nutritionProducts: NutritionProductsResult!
+  nutritionProductsAll: NutritionProductsResult!
   nutritionProduct(id: ID!): NutritionProductResult!
   nutritionTemplates(startDate: Date!, endDate: Date!): NutritionTemplatesResult!
   nutritionTemplate(id: ID!): NutritionTemplateResult!
   nutritionTemplateCurrent(weekStartDate: Date!): NutritionTemplateResult!
+  dailyNutritionLog(date: Date!): DailyNutritionLogResult!
   dailyNutritionOverrides(startDate: Date!, endDate: Date!): DailyNutritionOverridesResult!
   dailyNutritionOverride(id: ID!): DailyNutritionOverrideResult!
   dailyNutritionOverrideByDate(date: Date!): DailyNutritionOverrideResult!
@@ -110,9 +112,15 @@ type Mutation {
   createNutritionProduct(input: CreateProductInput!): NutritionProductResult!
   updateNutritionProduct(id: ID!, input: UpdateProductInput!): NutritionProductResult!
   deleteNutritionProduct(id: ID!): NutritionProductResult!
+  restoreNutritionProduct(id: ID!): NutritionProductResult!
   createNutritionTemplate(input: CreateTemplateInput!): NutritionTemplateResult!
   updateNutritionTemplate(id: ID!, input: UpdateTemplateInput!): NutritionTemplateResult!
   deleteNutritionTemplate(id: ID!): NutritionTemplateResult!
+  applyNutritionTemplateToWeek(templateId: ID!, mode: NutritionTemplateApplyMode!): NutritionTemplateApplyResult!
+  updateDailyNutritionLogNotes(id: ID!, input: UpdateDailyNutritionLogNotesInput!): DailyNutritionLogResult!
+  addDailyNutritionEntry(input: AddDailyNutritionEntryInput!): DailyNutritionLogResult!
+  updateDailyNutritionEntry(id: ID!, input: UpdateDailyNutritionEntryInput!): DailyNutritionLogResult!
+  deleteDailyNutritionEntry(id: ID!): DailyNutritionLogResult!
   createNutritionTemplateItem(input: CreateTemplateItemInput!): NutritionTemplateItemResult!
   updateNutritionTemplateItem(id: ID!, input: UpdateTemplateItemInput!): NutritionTemplateItemResult!
   deleteNutritionTemplateItem(id: ID!): NutritionTemplateItemResult!

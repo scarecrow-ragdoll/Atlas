@@ -234,6 +234,27 @@ models:
     model: monorepo-template/apps/api/internal/atlas/models.NutritionMacros
   NutritionMacrosResult:
     model: monorepo-template/apps/api/internal/atlas/models.NutritionMacrosResult
+  DailyNutritionLog:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyNutritionLog
+  DailyNutritionEntry:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyNutritionEntry
+  AddDailyNutritionEntryInput:
+    model: monorepo-template/apps/api/internal/atlas/models.AddDailyNutritionEntryInput
+  UpdateDailyNutritionEntryInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateDailyNutritionEntryInput
+  UpdateDailyNutritionLogNotesInput:
+    model: monorepo-template/apps/api/internal/atlas/models.UpdateDailyNutritionLogNotesInput
+  DailyNutritionLogResult:
+    model: monorepo-template/apps/api/internal/atlas/models.DailyNutritionLogResult
+  NutritionTemplateApplyMode:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionTemplateApplyMode
+    enum_values:
+      SEED_EMPTY_DAYS:
+        value: monorepo-template/apps/api/internal/atlas/models.ApplyModeSeedEmptyDays
+  NutritionTemplateApplyDateResult:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionTemplateApplyDateResult
+  NutritionTemplateApplyResult:
+    model: monorepo-template/apps/api/internal/atlas/models.NutritionTemplateApplyResult
   Operation:
     model: monorepo-template/apps/api/internal/atlas/models.Operation
   NutritionErrorCode:
