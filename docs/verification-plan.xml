@@ -523,6 +523,7 @@
       <test-files>
         <file>apps/api/internal/atlas/service/nutrition_product_service_test.go</file>
         <file>apps/api/internal/atlas/service/nutrition_template_service_test.go</file>
+        <file>apps/api/internal/atlas/service/nutrition_template_apply_service_test.go</file>
         <file>apps/api/internal/atlas/service/nutrition_template_item_service_test.go</file>
         <file>apps/api/internal/atlas/service/nutrition_macro_service_test.go</file>
         <file>apps/api/internal/atlas/service/nutrition_override_service_test.go</file>
@@ -532,6 +533,7 @@
       </test-files>
       <module-checks>
         <check-1>cd apps/api &amp;&amp; go test -run "TestNutrition|TestOverride|TestDailyNutritionLogService" ./internal/atlas/service/ -count=1</check-1>
+        <check-1a>cd apps/api &amp;&amp; go test ./internal/atlas/service -run TestNutritionTemplateApplyService -count=1</check-1a>
         <check-2>cd apps/api &amp;&amp; INTEGRATION_TESTS=1 go test -run "TestWave05|TestDailyNutritionMigration|TestDailyNutritionRepository" ./internal/atlas/repository/postgres/ -count=1</check-2>
         <check-3>bunx nx run api:codegen</check-3>
         <check-4>bunx nx build api</check-4>
@@ -539,6 +541,7 @@
       <scenarios>
         <scenario-1 kind="success">NutritionProduct service creates, reads, updates, and soft-deletes products with validation.</scenario-1>
         <scenario-2 kind="success">NutritionTemplate service upserts weekly templates, loads cascading items, and supports date-range listing.</scenario-2>
+        <scenario-2a kind="success">NutritionTemplateApply service applies seed_empty_days only to empty factual days, skips legacy daily override days, remains idempotent under retries/concurrency, and never commits partial per-date seeds.</scenario-2a>
         <scenario-3 kind="success">NutritionMacroService calculates KJBJU from template items with override ADD/SUBTRACT/REPLACE operations.</scenario-3>
         <scenario-4 kind="success">DailyNutritionOverride service manages date-scoped overrides with isolated item CRUD.</scenario-4>
         <scenario-5 kind="success">DailyNutritionLog service get-or-creates date-scoped factual logs, snapshots product macros into entries, and returns snapshot-based totals.</scenario-5>

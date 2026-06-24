@@ -214,6 +214,7 @@
       <path>apps/api/internal/atlas/repository/postgres/daily_nutrition_log_repo.go</path>
       <path>apps/api/internal/atlas/service/nutrition_product_service.go</path>
       <path>apps/api/internal/atlas/service/nutrition_template_service.go</path>
+      <path>apps/api/internal/atlas/service/nutrition_template_apply_service.go</path>
       <path>apps/api/internal/atlas/service/nutrition_template_item_service.go</path>
       <path>apps/api/internal/atlas/service/nutrition_override_service.go</path>
       <path>apps/api/internal/atlas/service/nutrition_macro_service.go</path>
@@ -233,6 +234,7 @@
       <annotations>
         <export-NutritionProductService PURPOSE="Product CRUD with active/all listing, soft-delete, restore, name validation, macro non-negative check." />
         <export-NutritionTemplateService PURPOSE="Weekly template upsert with cascading item loading." />
+        <export-NutritionTemplateApplyService PURPOSE="Weekly template seed_empty_days apply with legacy-date skips, active product validation, and atomic empty-day factual entry seeding." />
         <export-NutritionTemplateItemService PURPOSE="Template item CRUD with parent-template and active-product ownership checks." />
         <export-DailyNutritionOverrideService PURPOSE="Daily override upsert with isolated item CRUD." />
         <export-DailyNutritionLogService PURPOSE="Factual daily nutrition get-or-create, entry CRUD, product snapshots, and snapshot-based totals." />

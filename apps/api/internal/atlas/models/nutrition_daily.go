@@ -1,8 +1,8 @@
 // FILE: apps/api/internal/atlas/models/nutrition_daily.go
 // VERSION: 1.0.1
 // START_MODULE_CONTRACT
-//   PURPOSE: Define factual daily nutrition log models, entry snapshots, inputs, result wrappers, and macro-total converters.
-//   SCOPE: DailyNutritionLogRecord, DailyNutritionEntryRecord, public daily log/entry models, add/update inputs, repository create input, and snapshot-based total calculations; excludes legacy template and override types.
+//   PURPOSE: Define factual daily nutrition log models, entry snapshots, inputs, result wrappers, weekly-template apply results, and macro-total converters.
+//   SCOPE: DailyNutritionLogRecord, DailyNutritionEntryRecord, public daily log/entry models, add/update inputs, repository create/seed inputs, template apply results, and snapshot-based total calculations; excludes legacy template and override types.
 //   DEPENDS: apps/api/internal/atlas/models/nutrition.go NutritionMacros and nutrition error result types.
 //   LINKS: M-API-NUTRITION / V-M-API-NUTRITION.
 //   ROLE: RUNTIME
@@ -17,13 +17,15 @@
 //   AddDailyNutritionEntryInput - Service input for adding a product snapshot entry by date.
 //   UpdateDailyNutritionEntryInput - Service/repository input for updating factual entry fields.
 //   CreateDailyNutritionEntryRecordInput - Repository input for creating a snapshot entry.
+//   DailyNutritionSeedEntryInput/DailyNutritionSeedResult - Repository input/result for atomic per-date template seeding.
+//   NutritionTemplateApplyMode/NutritionTemplateApplyResult - Weekly template apply mode and per-date result contract.
 //   DailyNutritionLogResult - Union-style result wrapper for future transport mapping.
 //   DailyNutritionEntryFromRecord/DailyNutritionLogFromRecord - Record-to-model converters.
 //   DailyNutritionEntriesFromRecords - Slice converter for entry records.
 //   DailyNutritionEntryMacros/DailyNutritionTotalsFromEntries - Snapshot-based macro calculations.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.1 - Made daily nutrition entry update input an explicit full-replacement contract.
+//   LAST_CHANGE: 1.0.2 - Added weekly template apply result models and atomic daily seed input/result types.
 // END_CHANGE_SUMMARY
 
 package models
@@ -113,11 +115,74 @@ type CreateDailyNutritionEntryRecordInput struct {
 	Position    int32
 }
 
+type DailyNutritionSeedEntryInput struct {
+	ProductID   string
+	AmountGrams float64
+	MealLabel   *string
+	Notes       *string
+	Position    int32
+}
+
+type DailyNutritionSeedResult struct {
+	Created    bool
+	EntryCount int32
+}
+
+type NutritionTemplateApplyMode string
+
+const (
+	ApplyModeSeedEmptyDays NutritionTemplateApplyMode = "seed_empty_days"
+)
+
+type NutritionTemplateApplyDateStatus string
+
+const (
+	ApplyDateCreated  NutritionTemplateApplyDateStatus = "created"
+	ApplyDateSkipped  NutritionTemplateApplyDateStatus = "skipped"
+	ApplyDateConflict NutritionTemplateApplyDateStatus = "conflict"
+)
+
+type NutritionTemplateApplyDateResult struct {
+	Date       string                           `json:"date"`
+	Status     NutritionTemplateApplyDateStatus `json:"status"`
+	EntryCount int32                            `json:"entryCount"`
+	Reason     *string                          `json:"reason"`
+}
+
+type NutritionTemplateApplyResult struct {
+	WeekStartDate string                             `json:"weekStartDate"`
+	WeekEndDate   string                             `json:"weekEndDate"`
+	Mode          NutritionTemplateApplyMode         `json:"mode"`
+	Dates         []NutritionTemplateApplyDateResult `json:"dates"`
+}
+
 type DailyNutritionLogResult struct {
 	DailyNutritionLog *DailyNutritionLog      `json:"dailyNutritionLog"`
 	ValidationErr     *NutritionValidationErr `json:"validationError"`
 	NotFoundErr       *NutritionNotFoundErr   `json:"notFoundError"`
 	AuthErr           *NutritionAuthErr       `json:"authError"`
+}
+
+func (r NutritionTemplateApplyResult) CreatedCount() int {
+	return countNutritionTemplateApplyStatuses(r.Dates, ApplyDateCreated)
+}
+
+func (r NutritionTemplateApplyResult) SkippedCount() int {
+	return countNutritionTemplateApplyStatuses(r.Dates, ApplyDateSkipped)
+}
+
+func (r NutritionTemplateApplyResult) ConflictCount() int {
+	return countNutritionTemplateApplyStatuses(r.Dates, ApplyDateConflict)
+}
+
+func countNutritionTemplateApplyStatuses(dates []NutritionTemplateApplyDateResult, status NutritionTemplateApplyDateStatus) int {
+	count := 0
+	for _, date := range dates {
+		if date.Status == status {
+			count++
+		}
+	}
+	return count
 }
 
 func DailyNutritionEntryFromRecord(r *DailyNutritionEntryRecord) *DailyNutritionEntry {
