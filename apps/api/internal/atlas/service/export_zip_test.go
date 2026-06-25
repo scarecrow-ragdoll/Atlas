@@ -1,8 +1,23 @@
+// FILE: apps/api/internal/atlas/service/export_zip_test.go
+// VERSION: 1.0.0
+// START_MODULE_CONTRACT
+//   PURPOSE: Unit tests for AI export ZIP archive shape, manifest/data files, CSV headers, photo inclusion, and user profile serialization.
+//   SCOPE: In-memory ZIP generation only; excludes AiExportService repository writes and runtime data-provider assembly.
+//   DEPENDS: apps/api/internal/atlas/service export ZIP helpers.
+//   LINKS: M-API / V-M-API / M-API-NUTRITION / V-M-API-NUTRITION.
+//   ROLE: TEST
+//   MAP_MODE: SUMMARY
+// END_MODULE_CONTRACT
+// START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Added exact detailed nutrition CSV header coverage for Task 11 nutrition AI export payloads.
+// END_CHANGE_SUMMARY
+
 package service_test
 
 import (
 	"archive/zip"
 	"bytes"
+	"encoding/csv"
 	"encoding/json"
 	"strings"
 	"testing"
@@ -113,6 +128,35 @@ func TestAiExportZIP_CSVHeadersAndRows(t *testing.T) {
 	assert.Contains(t, content, "date,exercise_name")
 	assert.Contains(t, content, "Bench Press")
 	assert.Contains(t, content, "Push Day")
+}
+
+func TestExportZip_NutritionCSVHeadersExact(t *testing.T) {
+	archive := service.NewDefaultExportArchive("2026-01-01", "2026-01-28", service.ExportProfile{})
+
+	data, err := archive.BuildZIP()
+	require.NoError(t, err)
+
+	content := readFileFromZIP(t, data, "nutrition.csv")
+	reader := csv.NewReader(strings.NewReader(content))
+	rows, err := reader.ReadAll()
+	require.NoError(t, err)
+	require.NotEmpty(t, rows)
+	assert.Equal(t, []string{
+		"date",
+		"product_id",
+		"product_name_snapshot",
+		"amount_grams",
+		"calories_per_100g_snapshot",
+		"protein_per_100g_snapshot",
+		"fat_per_100g_snapshot",
+		"carbs_per_100g_snapshot",
+		"entry_calories",
+		"entry_protein",
+		"entry_fat",
+		"entry_carbs",
+		"meal_label",
+		"notes",
+	}, rows[0])
 }
 
 func TestAiExportZIP_PhotosIncluded(t *testing.T) {

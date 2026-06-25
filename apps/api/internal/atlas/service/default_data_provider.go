@@ -1,8 +1,8 @@
 // FILE: apps/api/internal/atlas/service/default_data_provider.go
 // VERSION: 1.0.0
 // START_MODULE_CONTRACT
-//   PURPOSE: Default/stub implementation of AiExportDataProvider that returns empty data for all sources.
-//   SCOPE: Provides empty responses for workout, cardio, body weight, check-in, measurement, week flag, nutrition, and photo data.
+//   PURPOSE: Test/stub implementation of AiExportDataProvider that returns empty data for all sources.
+//   SCOPE: Provides empty responses for workout, cardio, body weight, check-in, measurement, week flag, detailed nutrition, and photo data; runtime must use AtlasAiExportDataProvider instead.
 //   DEPENDS: apps/api/internal/atlas/models, apps/api/internal/atlas/service.
 //   LINKS: M-API / V-M-API / WAVE-07 / DDEC-W07-012.
 //   ROLE: RUNTIME
@@ -12,6 +12,7 @@
 //   NewDefaultAiExportDataProvider - Creates a stub AiExportDataProvider returning empty data.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Kept default provider as test/stub-only and updated detailed nutrition export methods.
 //   LAST_CHANGE: 1.0.0 - Added default stub data provider for WAVE-07 (DDEC-W07-012).
 // END_CHANGE_SUMMARY
 
@@ -52,7 +53,15 @@ func (p *defaultDataProvider) GetWeekFlags(ctx context.Context, userID string, f
 	return []any{}, nil
 }
 
-func (p *defaultDataProvider) GetNutritionMacros(ctx context.Context, userID string, from, to models.Date) ([]any, error) {
+func (p *defaultDataProvider) GetDailyNutritionExport(ctx context.Context, userID string, from, to models.Date) ([]any, error) {
+	return []any{}, nil
+}
+
+func (p *defaultDataProvider) GetNutritionTemplateExport(ctx context.Context, userID string, from, to models.Date) ([]any, error) {
+	return []any{}, nil
+}
+
+func (p *defaultDataProvider) GetLegacyNutritionExport(ctx context.Context, userID string, from, to models.Date) ([]any, error) {
 	return []any{}, nil
 }
 

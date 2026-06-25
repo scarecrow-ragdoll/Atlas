@@ -228,7 +228,13 @@ func main() {
 	atlasUserProfileRepo := atlasPostgres.NewUserProfileRepository(db.Pool)
 	atlasUserProfileService := atlasService.NewUserProfileService(atlasUserProfileRepo)
 	atlasAiExportRepo := atlasPostgres.NewAiExportRepository(db.Pool)
-	atlasAiExportDataProvider := atlasService.NewDefaultAiExportDataProvider()
+	atlasAiExportDataProvider := atlasService.NewAtlasAiExportDataProvider(
+		atlasDailyNutritionLogService,
+		atlasNutritionTemplateRepo,
+		atlasNutritionTemplateItemRepo,
+		atlasNutritionProductRepo,
+		atlasDailyNutritionLegacyResolver,
+	)
 	atlasAiExportService := atlasService.NewAiExportService(atlasAiExportRepo, atlasUserProfileRepo, atlasAiExportDataProvider, l)
 
 	// WAVE-08: AiReview

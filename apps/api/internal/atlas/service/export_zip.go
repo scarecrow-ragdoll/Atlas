@@ -1,3 +1,23 @@
+// FILE: apps/api/internal/atlas/service/export_zip.go
+// VERSION: 1.0.0
+// START_MODULE_CONTRACT
+//   PURPOSE: Build AI export ZIP archives with manifest, JSON payload, markdown summary, CSV files, and optional photos.
+//   SCOPE: Archive data structures, in-memory ZIP construction, default archive initialization, CSV serialization, and prompt text construction.
+//   DEPENDS: archive/zip, encoding/csv, encoding/json, apps/api/internal/atlas/service AI export payload types.
+//   LINKS: M-API / V-M-API / M-API-NUTRITION / V-M-API-NUTRITION.
+//   ROLE: RUNTIME
+//   MAP_MODE: EXPORTS
+// END_MODULE_CONTRACT
+// START_MODULE_MAP
+//   ExportArchive/ExportData/ExportNutrition - ZIP payload structures serialized to data.json and CSV files.
+//   BuildZIP - Builds the in-memory ZIP archive.
+//   NewDefaultExportArchive - Initializes empty manifest/data/CSV structures.
+//   BuildPrompt - Builds the local prompt text stored with AI export records.
+// END_MODULE_MAP
+// START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Replaced nutrition products/overrides with detailed daily logs, templates, legacy block, and exact detailed CSV headers.
+// END_CHANGE_SUMMARY
+
 package service
 
 import (
@@ -22,39 +42,39 @@ type ManifestSection struct {
 
 // Manifest represents the export manifest.json structure
 type Manifest struct {
-	SchemaVersion    int              `json:"schemaVersion"`
-	ExportTimestamp  string           `json:"exportTimestamp"`
-	DateRangeStart   string           `json:"dateRangeStart"`
-	DateRangeEnd     string           `json:"dateRangeEnd"`
+	SchemaVersion    int             `json:"schemaVersion"`
+	ExportTimestamp  string          `json:"exportTimestamp"`
+	DateRangeStart   string          `json:"dateRangeStart"`
+	DateRangeEnd     string          `json:"dateRangeEnd"`
 	IncludedSections ManifestSection `json:"includedSections"`
 }
 
 // ExportData represents the full data.json structure
 type ExportData struct {
-	Workouts          []any            `json:"workouts"`
-	Cardio            []any            `json:"cardio"`
-	BodyWeightEntries []any            `json:"bodyWeightEntries"`
-	Measurements      []any            `json:"measurements"`
-	Nutrition         ExportNutrition  `json:"nutrition"`
-	WeekFlags         []any            `json:"weekFlags"`
-	UserProfile       ExportProfile    `json:"userProfile"`
+	Workouts          []any           `json:"workouts"`
+	Cardio            []any           `json:"cardio"`
+	BodyWeightEntries []any           `json:"bodyWeightEntries"`
+	Measurements      []any           `json:"measurements"`
+	Nutrition         ExportNutrition `json:"nutrition"`
+	WeekFlags         []any           `json:"weekFlags"`
+	UserProfile       ExportProfile   `json:"userProfile"`
 }
 
 type ExportNutrition struct {
-	Products  []any `json:"products"`
+	DailyLogs []any `json:"dailyLogs"`
 	Templates []any `json:"templates"`
-	Overrides []any `json:"overrides"`
+	Legacy    []any `json:"legacy,omitempty"`
 }
 
 type ExportProfile struct {
-	Goal                     *string  `json:"goal"`
-	Height                   *float64 `json:"height"`
-	BirthDate                *string  `json:"birthDate"`
-	TrainingExperience       *string  `json:"trainingExperience"`
-	CurrentTrainingSplit     *string  `json:"currentTrainingSplit"`
-	PreferredProgressionStyle *string `json:"preferredProgressionStyle"`
-	NutritionStrategy        *string  `json:"nutritionStrategy"`
-	PersistentAiContext      *string  `json:"persistentAiContext"`
+	Goal                      *string  `json:"goal"`
+	Height                    *float64 `json:"height"`
+	BirthDate                 *string  `json:"birthDate"`
+	TrainingExperience        *string  `json:"trainingExperience"`
+	CurrentTrainingSplit      *string  `json:"currentTrainingSplit"`
+	PreferredProgressionStyle *string  `json:"preferredProgressionStyle"`
+	NutritionStrategy         *string  `json:"nutritionStrategy"`
+	PersistentAiContext       *string  `json:"persistentAiContext"`
 }
 
 // ExportPhoto represents a photo entry for the ZIP
@@ -200,9 +220,9 @@ func NewDefaultExportArchive(dateRangeStart, dateRangeEnd string, profile Export
 			BodyWeightEntries: []any{},
 			Measurements:      []any{},
 			Nutrition: ExportNutrition{
-				Products:  []any{},
+				DailyLogs: []any{},
 				Templates: []any{},
-				Overrides: []any{},
+				Legacy:    []any{},
 			},
 			WeekFlags:   []any{},
 			UserProfile: profile,
@@ -210,9 +230,24 @@ func NewDefaultExportArchive(dateRangeStart, dateRangeEnd string, profile Export
 		SummaryMD:       "No data recorded for this period.\n",
 		WorkoutsCSV:     CSVData{Headers: []string{"date", "exercise_name", "set_number", "weight", "reps", "rpe", "rir", "set_notes", "exercise_notes", "day_notes"}},
 		MeasurementsCSV: CSVData{Headers: []string{"check_in_date", "measurement_type", "side", "value", "notes"}},
-		NutritionCSV:    CSVData{Headers: []string{"date", "product_name", "amount_grams", "calories", "protein", "fat", "carbs", "meal_label", "operation"}},
-		CardioCSV:       CSVData{Headers: []string{"date", "type", "duration_minutes", "avg_pulse", "heart_rate_zone", "notes"}},
-		Photos:          []ExportPhoto{},
+		NutritionCSV: CSVData{Headers: []string{
+			"date",
+			"product_id",
+			"product_name_snapshot",
+			"amount_grams",
+			"calories_per_100g_snapshot",
+			"protein_per_100g_snapshot",
+			"fat_per_100g_snapshot",
+			"carbs_per_100g_snapshot",
+			"entry_calories",
+			"entry_protein",
+			"entry_fat",
+			"entry_carbs",
+			"meal_label",
+			"notes",
+		}},
+		CardioCSV: CSVData{Headers: []string{"date", "type", "duration_minutes", "avg_pulse", "heart_rate_zone", "notes"}},
+		Photos:    []ExportPhoto{},
 	}
 }
 
@@ -282,20 +317,20 @@ func BuildPrompt(profile *UserProfileExport, dateRangeStart, dateRangeEnd string
 
 // UserProfileExport is a subset of UserProfile for prompt building
 type UserProfileExport struct {
-	Goal                     *string
-	Height                   *float64
-	BirthDate                *string
-	TrainingExperience       *string
-	CurrentTrainingSplit     *string
+	Goal                      *string
+	Height                    *float64
+	BirthDate                 *string
+	TrainingExperience        *string
+	CurrentTrainingSplit      *string
 	PreferredProgressionStyle *string
-	NutritionStrategy        *string
-	PersistentAiContext      *string
+	NutritionStrategy         *string
+	PersistentAiContext       *string
 }
 
 // SectionToggles for prompt building
 type SectionToggles struct {
-	Photos        bool
-	Nutrition     bool
-	Cardio        bool
-	Measurements  bool
+	Photos       bool
+	Nutrition    bool
+	Cardio       bool
+	Measurements bool
 }

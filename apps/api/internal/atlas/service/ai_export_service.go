@@ -1,8 +1,8 @@
 // FILE: apps/api/internal/atlas/service/ai_export_service.go
 // VERSION: 1.0.0
 // START_MODULE_CONTRACT
-//   PURPOSE: Implement AiExportService for WAVE-07 AI export generation, retrieval, and deletion.
-//   SCOPE: Generate AI export archives with data summaries and ZIP bundles, list user exports, delete exports.
+//   PURPOSE: Implement AiExportService for local/internal AI export generation, retrieval, and deletion.
+//   SCOPE: Generate AI export archives with data summaries, detailed nutrition payloads, private ZIP bundles, list user exports, delete exports.
 //   DEPENDS: apps/api/internal/atlas/repository/postgres, apps/api/internal/atlas/models, apps/api/internal/atlas/service/export_zip.go, libs/go/logger.
 //   LINKS: M-API / V-M-API / WAVE-07.
 //   ROLE: RUNTIME
@@ -17,6 +17,7 @@
 //   Delete - Deletes an AI export.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Added detailed nutrition daily/template/legacy export payloads and private archive permissions.
 //   LAST_CHANGE: 1.0.0 - Added AI export service for WAVE-07.
 // END_CHANGE_SUMMARY
 
@@ -174,9 +175,13 @@ func (s *aiExportService) Generate(ctx context.Context, userID string, input mod
 	log.Info("[AiExport][generate][BLOCK_EXPORT_ZIP_WRITE] writing ZIP to disk")
 
 	exportDir := filepath.Join(exportBasePath, userID)
-	if err := os.MkdirAll(exportDir, 0755); err != nil {
+	if err := os.MkdirAll(exportDir, 0700); err != nil {
 		log.Error("[AiExport][generate][BLOCK_EXPORT_FAILURE] cannot create export dir", zap.Error(err))
 		return nil, "", fmt.Errorf("ai_export_service.Generate: mkdir: %w", err)
+	}
+	if err := os.Chmod(exportDir, 0700); err != nil {
+		log.Error("[AiExport][generate][BLOCK_EXPORT_FAILURE] cannot protect export dir", zap.Error(err))
+		return nil, "", fmt.Errorf("ai_export_service.Generate: chmod dir: %w", err)
 	}
 
 	tmpName := fmt.Sprintf(".tmp-%x.zip", newRandomSuffix())
@@ -184,16 +189,25 @@ func (s *aiExportService) Generate(ctx context.Context, userID string, input mod
 	finalName := fmt.Sprintf("%s.zip", aiExportRecord.ID)
 	finalPath := filepath.Join(exportDir, finalName)
 
-	if err := os.WriteFile(tmpPath, zipData, 0644); err != nil {
+	if err := os.WriteFile(tmpPath, zipData, 0600); err != nil {
 		log.Error("[AiExport][generate][BLOCK_EXPORT_FAILURE] failed to write temp file", zap.Error(err))
 		os.Remove(tmpPath)
 		return nil, "", fmt.Errorf("ai_export_service.Generate: write temp: %w", err)
+	}
+	if err := os.Chmod(tmpPath, 0600); err != nil {
+		log.Error("[AiExport][generate][BLOCK_EXPORT_FAILURE] failed to protect temp file", zap.Error(err))
+		os.Remove(tmpPath)
+		return nil, "", fmt.Errorf("ai_export_service.Generate: chmod temp: %w", err)
 	}
 
 	if err := os.Rename(tmpPath, finalPath); err != nil {
 		log.Error("[AiExport][generate][BLOCK_EXPORT_FAILURE] failed to rename temp file", zap.Error(err))
 		os.Remove(tmpPath)
 		return nil, "", fmt.Errorf("ai_export_service.Generate: rename: %w", err)
+	}
+	if err := os.Chmod(finalPath, 0600); err != nil {
+		log.Error("[AiExport][generate][BLOCK_EXPORT_FAILURE] failed to protect final file", zap.Error(err))
+		return nil, "", fmt.Errorf("ai_export_service.Generate: chmod final: %w", err)
 	}
 
 	log.Info("[AiExport][generate][BLOCK_EXPORT_DB_SAVE] saving export record")
@@ -250,9 +264,11 @@ func (s *aiExportService) buildDataSummary(ctx context.Context, userID string, f
 	var parts []string
 
 	if toggles.Nutrition {
-		nutrition, _ := s.dataProvider.GetNutritionMacros(ctx, userID, from, to)
-		if len(nutrition) > 0 {
-			parts = append(parts, fmt.Sprintf("- Nutrition data: %d entries", len(nutrition)))
+		dailyLogs, _ := s.dataProvider.GetDailyNutritionExport(ctx, userID, from, to)
+		templates, _ := s.dataProvider.GetNutritionTemplateExport(ctx, userID, from, to)
+		legacy, _ := s.dataProvider.GetLegacyNutritionExport(ctx, userID, from, to)
+		if len(dailyLogs) > 0 || len(templates) > 0 || len(legacy) > 0 {
+			parts = append(parts, fmt.Sprintf("- Nutrition data: %d daily logs, %d weekly templates, %d unresolved legacy days", len(dailyLogs), len(templates), len(legacy)))
 		} else {
 			parts = append(parts, "- Nutrition data: No entries")
 		}
@@ -279,21 +295,26 @@ func (s *aiExportService) buildArchive(ctx context.Context, userID string, dateR
 	to, _ := models.ParseDate(dateRangeEnd)
 
 	profileData := ExportProfile{
-		Goal:                     profile.Goal,
-		Height:                   profile.Height,
-		BirthDate:                profile.BirthDate,
-		TrainingExperience:       profile.TrainingExperience,
-		CurrentTrainingSplit:     profile.CurrentTrainingSplit,
+		Goal:                      profile.Goal,
+		Height:                    profile.Height,
+		BirthDate:                 profile.BirthDate,
+		TrainingExperience:        profile.TrainingExperience,
+		CurrentTrainingSplit:      profile.CurrentTrainingSplit,
 		PreferredProgressionStyle: profile.PreferredProgressionStyle,
-		NutritionStrategy:        profile.NutritionStrategy,
-		PersistentAiContext:      profile.PersistentAiContext,
+		NutritionStrategy:         profile.NutritionStrategy,
+		PersistentAiContext:       profile.PersistentAiContext,
 	}
 
 	archive := NewDefaultExportArchive(dateRangeStart, dateRangeEnd, profileData)
 
 	if toggles.Nutrition {
-		nutrition, _ := s.dataProvider.GetNutritionMacros(ctx, userID, from, to)
-		archive.Data.Nutrition.Products = nutrition
+		dailyLogs, _ := s.dataProvider.GetDailyNutritionExport(ctx, userID, from, to)
+		templates, _ := s.dataProvider.GetNutritionTemplateExport(ctx, userID, from, to)
+		legacy, _ := s.dataProvider.GetLegacyNutritionExport(ctx, userID, from, to)
+		archive.Data.Nutrition.DailyLogs = dailyLogs
+		archive.Data.Nutrition.Templates = templates
+		archive.Data.Nutrition.Legacy = legacy
+		archive.NutritionCSV.Rows = nutritionCSVRowsFromExport(dailyLogs, templates)
 		archive.Manifest.IncludedSections.Nutrition = true
 	}
 
@@ -376,4 +397,94 @@ func newRandomSuffix() string {
 	b := make([]byte, 8)
 	rand.Read(b)
 	return fmt.Sprintf("%x", b)
+}
+
+func nutritionCSVRowsFromExport(dailyLogs []any, templates []any) [][]string {
+	rows := [][]string{}
+	for _, logAny := range dailyLogs {
+		logMap := exportMap(logAny)
+		date := exportString(logMap["date"])
+		for _, entryAny := range exportSlice(logMap["entries"]) {
+			rows = append(rows, nutritionEntryCSVRow(date, exportMap(entryAny)))
+		}
+	}
+	for _, templateAny := range templates {
+		templateMap := exportMap(templateAny)
+		date := exportString(templateMap["weekStartDate"])
+		for _, entryAny := range exportSlice(templateMap["plannedEntries"]) {
+			rows = append(rows, nutritionEntryCSVRow(date, exportMap(entryAny)))
+		}
+	}
+	return rows
+}
+
+func nutritionEntryCSVRow(date string, entry map[string]any) []string {
+	return []string{
+		date,
+		exportString(entry["productId"]),
+		exportString(entry["productNameSnapshot"]),
+		exportString(entry["amountGrams"]),
+		exportString(entry["caloriesPer100gSnapshot"]),
+		exportString(entry["proteinPer100gSnapshot"]),
+		exportString(entry["fatPer100gSnapshot"]),
+		exportString(entry["carbsPer100gSnapshot"]),
+		exportString(entry["entryCalories"]),
+		exportString(entry["entryProtein"]),
+		exportString(entry["entryFat"]),
+		exportString(entry["entryCarbs"]),
+		exportString(entry["mealLabel"]),
+		exportString(entry["notes"]),
+	}
+}
+
+func exportMap(value any) map[string]any {
+	if value == nil {
+		return map[string]any{}
+	}
+	if m, ok := value.(map[string]any); ok {
+		return m
+	}
+	raw, err := json.Marshal(value)
+	if err != nil {
+		return map[string]any{}
+	}
+	var out map[string]any
+	if err := json.Unmarshal(raw, &out); err != nil {
+		return map[string]any{}
+	}
+	return out
+}
+
+func exportSlice(value any) []any {
+	if value == nil {
+		return []any{}
+	}
+	if items, ok := value.([]any); ok {
+		return items
+	}
+	raw, err := json.Marshal(value)
+	if err != nil {
+		return []any{}
+	}
+	var out []any
+	if err := json.Unmarshal(raw, &out); err != nil {
+		return []any{}
+	}
+	return out
+}
+
+func exportString(value any) string {
+	switch v := value.(type) {
+	case nil:
+		return ""
+	case string:
+		return v
+	case *string:
+		if v == nil {
+			return ""
+		}
+		return *v
+	default:
+		return fmt.Sprintf("%v", v)
+	}
 }

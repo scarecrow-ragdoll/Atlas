@@ -1,8 +1,8 @@
 // FILE: apps/api/internal/atlas/service/ai_export_data_provider.go
 // VERSION: 1.0.0
 // START_MODULE_CONTRACT
-//   PURPOSE: Define the AiExportDataProvider interface for WAVE-07 AI export data source dependencies.
-//   SCOPE: Data source abstraction for workout, cardio, body weight, check-in, measurement, week flag, nutrition, and photo retrieval.
+//   PURPOSE: Define the AiExportDataProvider interface for local/internal AI export data source dependencies.
+//   SCOPE: Data source abstraction for workout, cardio, body weight, check-in, measurement, week flag, detailed nutrition export, and photo retrieval.
 //   DEPENDS: apps/api/internal/atlas/models.
 //   LINKS: M-API / V-M-API / WAVE-07.
 //   ROLE: TYPES
@@ -12,6 +12,7 @@
 //   AiExportDataProvider - Interface for data source dependencies in AI export generation.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Replaced legacy nutrition macro export with detailed daily, template, and unresolved legacy nutrition payloads.
 //   LAST_CHANGE: 1.0.0 - Added AI export data provider interface for WAVE-07.
 // END_CHANGE_SUMMARY
 
@@ -30,6 +31,8 @@ type AiExportDataProvider interface {
 	GetBodyCheckIns(ctx context.Context, userID string, from, to models.Date) ([]any, error)
 	GetBodyMeasurements(ctx context.Context, userID string, from, to models.Date) ([]any, error)
 	GetWeekFlags(ctx context.Context, userID string, from, to models.Date) ([]any, error)
-	GetNutritionMacros(ctx context.Context, userID string, from, to models.Date) ([]any, error)
+	GetDailyNutritionExport(ctx context.Context, userID string, from, to models.Date) ([]any, error)
+	GetNutritionTemplateExport(ctx context.Context, userID string, from, to models.Date) ([]any, error)
+	GetLegacyNutritionExport(ctx context.Context, userID string, from, to models.Date) ([]any, error)
 	GetProgressPhotos(ctx context.Context, userID string, from, to models.Date) ([]ExportPhoto, error)
 }
