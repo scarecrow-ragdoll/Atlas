@@ -324,6 +324,24 @@ describe('WeeklyNutritionTemplatePage', () => {
     expect(await screen.findByText('Template saved')).toBeInTheDocument();
   });
 
+  it('disables Apply to Week when an existing template has unsaved local edits', async () => {
+    getCurrentTemplateMock.mockResolvedValue(makeTemplate({ title: 'Saved plan' }));
+    listProductsMock.mockResolvedValue([makeProduct()]);
+
+    renderWeeklyTemplatePage();
+
+    expect(await screen.findByRole('button', { name: 'Apply to Week' })).toBeEnabled();
+    fireEvent.change(screen.getByLabelText('Template title'), {
+      target: { value: 'Unsaved plan' },
+    });
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Apply to Week' })).toBeDisabled(),
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Apply to Week' }));
+    expect(applyTemplateMock).not.toHaveBeenCalled();
+  });
+
   it('applies seed_empty_days and reports created and skipped dates', async () => {
     getCurrentTemplateMock.mockResolvedValue(makeTemplate());
     listProductsMock.mockResolvedValue([makeProduct()]);

@@ -57,7 +57,7 @@ DONE_WITH_CONCERNS
 - Create paths keep blank optional text as `null`.
 - Existing item product changes are reconciled as create-new plus delete-old because the update-item adapter input does not support `productId`.
 - `Save Template` does not call `applyAtlasNutritionTemplateToWeek`.
-- `Apply to Week` calls `applyAtlasNutritionTemplateToWeek(template.id, 'SEED_EMPTY_DAYS')` only and is disabled while a save is pending.
+- `Apply to Week` calls `applyAtlasNutritionTemplateToWeek(template.id, 'SEED_EMPTY_DAYS')` only and is disabled while a save is pending or local edits are unsaved.
 - Apply result renders created/skipped counts plus per-date status, entry count, and reason.
 - Planned weekly totals are calculated client-side from active product macros per 100g times item grams.
 - Local draft state is guarded from same-week React Query refetch overwrites once the user has unsaved edits.
@@ -78,6 +78,9 @@ DONE_WITH_CONCERNS
   - `cd apps/web-admin && bun run test -- src/pages/atlas/weekly-nutrition-template-page.test.tsx src/pages/atlas/nutrition-api.test.ts`
   - FAIL before production fixes: 5 failed / 25 passed.
   - Failures proved empty current-template success mapped to `INTERNAL_ERROR`, cleared text serialized as `null`, same-week query data overwrote unsaved title edits, Apply to Week stayed enabled while save was pending, and RU fallback text stayed hardcoded in English.
+- Second quality review regression:
+  - `cd apps/web-admin && bun run test -- src/pages/atlas/weekly-nutrition-template-page.test.tsx`
+  - FAIL before production fix: Apply to Week stayed enabled after editing an existing saved template locally.
 
 ### GREEN
 
@@ -85,6 +88,8 @@ DONE_WITH_CONCERNS
   - PASS after initial Task 10 implementation: 25 tests.
 - `cd apps/web-admin && bun run test -- src/pages/atlas/weekly-nutrition-template-page.test.tsx src/pages/atlas/nutrition-api.test.ts`
   - PASS after quality review fixes: 30 tests.
+- `cd apps/web-admin && bun run test -- src/pages/atlas/weekly-nutrition-template-page.test.tsx`
+  - PASS after second quality review fix: 17 tests.
 - `cd apps/web-admin && bun run test -- src/App.test.tsx src/app/admin-navigation.test.ts`
   - PASS: 17 tests.
 
@@ -92,6 +97,8 @@ DONE_WITH_CONCERNS
 
 - `cd apps/web-admin && bun run test -- src/pages/atlas/weekly-nutrition-template-page.test.tsx src/pages/atlas/nutrition-api.test.ts src/App.test.tsx src/app/admin-navigation.test.ts`
   - PASS after quality review fixes: 47 tests.
+- `cd apps/web-admin && bun run test -- src/pages/atlas/weekly-nutrition-template-page.test.tsx src/pages/atlas/nutrition-api.test.ts src/App.test.tsx src/app/admin-navigation.test.ts`
+  - PASS after second quality review fix: 48 tests.
 - `cd apps/web-admin && bun run typecheck`
   - PASS.
 - `NX_SKIP_NX_CACHE=true bunx nx lint web-admin`
@@ -111,4 +118,5 @@ DONE_WITH_CONCERNS
 - Confirmed no `dangerouslySetInnerHTML`, raw HTML runtime import, body weight field, `WorkoutDay`, or `replace_week` UI/API path.
 - Confirmed save and apply are separate actions and tests assert save does not apply.
 - Confirmed quality review code findings were fixed with regression coverage.
+- Confirmed Apply to Week cannot seed a stale saved template while local edits are dirty.
 - Shared `docs/*.xml` graph/verification sync was explicitly deferred to Task 13 by the approved nutrition-food-log plan; this fix did not modify `docs/knowledge-graph.xml` or `docs/verification-plan.xml`.

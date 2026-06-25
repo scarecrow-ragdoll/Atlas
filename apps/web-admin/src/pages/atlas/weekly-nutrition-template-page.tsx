@@ -12,7 +12,7 @@
 //   default - API-backed Weekly Plan route content for editable weekly nutrition templates.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.0.1 - Hardened current-template missing state, text clearing, refetch dirty guard, and localized entry labels.
+//   LAST_CHANGE: 1.0.2 - Blocked applying a saved weekly template while local edits are unsaved.
 // END_CHANGE_SUMMARY
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -486,7 +486,7 @@ export default function WeeklyNutritionTemplatePage({
     setSuccessMessage(null);
     setApplyResult(null);
 
-    if (!template?.id) {
+    if (!template?.id || isDirty) {
       setEditorError(t('nutrition.saveBeforeApply'));
       return;
     }
@@ -837,7 +837,7 @@ export default function WeeklyNutritionTemplatePage({
                   {t('nutrition.saveTemplate')}
                 </Button>
                 <Button
-                  disabled={isSaving || isApplying || !template?.id}
+                  disabled={isDirty || isSaving || isApplying || !template?.id}
                   onClick={handleApplyTemplate}
                   type="button"
                   variant="secondary"
