@@ -17,6 +17,7 @@
 //   Delete - Deletes an AI export.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.2 - Propagated nutrition provider failures instead of writing silently incomplete exports.
 //   LAST_CHANGE: 1.0.1 - Added detailed nutrition daily/template/legacy export payloads and private archive permissions.
 //   LAST_CHANGE: 1.0.0 - Added AI export service for WAVE-07.
 // END_CHANGE_SUMMARY
@@ -121,7 +122,11 @@ func (s *aiExportService) Generate(ctx context.Context, userID string, input mod
 		Measurements: includeMeasurements,
 	}
 
-	dataSummary := s.buildDataSummary(ctx, userID, input.DateRangeStart, input.DateRangeEnd, toggles)
+	dataSummary, err := s.buildDataSummary(ctx, userID, input.DateRangeStart, input.DateRangeEnd, toggles)
+	if err != nil {
+		log.Error("[AiExport][generate][BLOCK_EXPORT_FAILURE] failed to query export data summary", zap.Error(err))
+		return nil, "", fmt.Errorf("ai_export_service.Generate: data summary: %w", err)
+	}
 
 	log.Info("[AiExport][generate][BLOCK_EXPORT_PROMPT_GENERATE] building prompt")
 
@@ -260,13 +265,14 @@ func (s *aiExportService) Delete(ctx context.Context, userID string, id string) 
 	return models.AiExportFromRecord(record), nil
 }
 
-func (s *aiExportService) buildDataSummary(ctx context.Context, userID string, from, to models.Date, toggles SectionToggles) string {
+func (s *aiExportService) buildDataSummary(ctx context.Context, userID string, from, to models.Date, toggles SectionToggles) (string, error) {
 	var parts []string
 
 	if toggles.Nutrition {
-		dailyLogs, _ := s.dataProvider.GetDailyNutritionExport(ctx, userID, from, to)
-		templates, _ := s.dataProvider.GetNutritionTemplateExport(ctx, userID, from, to)
-		legacy, _ := s.dataProvider.GetLegacyNutritionExport(ctx, userID, from, to)
+		dailyLogs, templates, legacy, err := s.fetchNutritionExport(ctx, userID, from, to)
+		if err != nil {
+			return "", err
+		}
 		if len(dailyLogs) > 0 || len(templates) > 0 || len(legacy) > 0 {
 			parts = append(parts, fmt.Sprintf("- Nutrition data: %d daily logs, %d weekly templates, %d unresolved legacy days", len(dailyLogs), len(templates), len(legacy)))
 		} else {
@@ -284,10 +290,10 @@ func (s *aiExportService) buildDataSummary(ctx context.Context, userID string, f
 	}
 
 	if len(parts) == 0 {
-		return "No workout data recorded for this period.\n"
+		return "No workout data recorded for this period.\n", nil
 	}
 
-	return strings.Join(parts, "\n") + "\n"
+	return strings.Join(parts, "\n") + "\n", nil
 }
 
 func (s *aiExportService) buildArchive(ctx context.Context, userID string, dateRangeStart, dateRangeEnd string, toggles SectionToggles, profile *UserProfileExport, prompt string) (*ExportArchive, error) {
@@ -308,9 +314,10 @@ func (s *aiExportService) buildArchive(ctx context.Context, userID string, dateR
 	archive := NewDefaultExportArchive(dateRangeStart, dateRangeEnd, profileData)
 
 	if toggles.Nutrition {
-		dailyLogs, _ := s.dataProvider.GetDailyNutritionExport(ctx, userID, from, to)
-		templates, _ := s.dataProvider.GetNutritionTemplateExport(ctx, userID, from, to)
-		legacy, _ := s.dataProvider.GetLegacyNutritionExport(ctx, userID, from, to)
+		dailyLogs, templates, legacy, err := s.fetchNutritionExport(ctx, userID, from, to)
+		if err != nil {
+			return nil, err
+		}
 		archive.Data.Nutrition.DailyLogs = dailyLogs
 		archive.Data.Nutrition.Templates = templates
 		archive.Data.Nutrition.Legacy = legacy
@@ -360,7 +367,11 @@ func (s *aiExportService) buildArchive(ctx context.Context, userID string, dateR
 		summaryParts = append(summaryParts, fmt.Sprintf("Goal: %s\n\n", *profile.Goal))
 	}
 	summaryParts = append(summaryParts, "## Data\n")
-	summaryParts = append(summaryParts, s.buildDataSummary(ctx, userID, from, to, toggles))
+	dataSummary, err := s.buildDataSummary(ctx, userID, from, to, toggles)
+	if err != nil {
+		return nil, err
+	}
+	summaryParts = append(summaryParts, dataSummary)
 	archive.SummaryMD = strings.Join(summaryParts, "")
 
 	rawWeekFlags, _ := json.Marshal(weekFlags)
@@ -369,6 +380,22 @@ func (s *aiExportService) buildArchive(ctx context.Context, userID string, dateR
 	archive.Data.WeekFlags = parsedWeekFlags
 
 	return archive, nil
+}
+
+func (s *aiExportService) fetchNutritionExport(ctx context.Context, userID string, from, to models.Date) ([]any, []any, []any, error) {
+	dailyLogs, err := s.dataProvider.GetDailyNutritionExport(ctx, userID, from, to)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("daily nutrition export: %w", err)
+	}
+	templates, err := s.dataProvider.GetNutritionTemplateExport(ctx, userID, from, to)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("nutrition template export: %w", err)
+	}
+	legacy, err := s.dataProvider.GetLegacyNutritionExport(ctx, userID, from, to)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("legacy nutrition export: %w", err)
+	}
+	return dailyLogs, templates, legacy, nil
 }
 
 func profileRecordToExport(r *models.UserProfileRecord) *UserProfileExport {

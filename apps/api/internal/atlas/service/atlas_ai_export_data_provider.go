@@ -13,6 +13,7 @@
 //   GetDailyNutritionExport/GetNutritionTemplateExport/GetLegacyNutritionExport - Export detailed nutrition payload slices for archive data.json and CSV flattening.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Expanded template export lookup to week-start boundaries so mid-week exports include active weekly plans.
 //   LAST_CHANGE: 1.0.0 - Added Task 11 repo/service-backed nutrition AI export provider without external AI/API calls.
 // END_CHANGE_SUMMARY
 
@@ -21,6 +22,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"monorepo-template/apps/api/internal/atlas/models"
 	"monorepo-template/apps/api/internal/atlas/repository/postgres"
@@ -122,7 +124,9 @@ func (p *atlasAiExportDataProvider) GetNutritionTemplateExport(ctx context.Conte
 	if p == nil || p.templateRepo == nil {
 		return []any{}, nil
 	}
-	templates, err := p.templateRepo.ListByRange(ctx, userID, from.String(), to.String())
+	templateRangeStart := aiExportWeekStart(from)
+	templateRangeEnd := aiExportWeekStart(to)
+	templates, err := p.templateRepo.ListByRange(ctx, userID, templateRangeStart.String(), templateRangeEnd.String())
 	if err != nil {
 		return nil, fmt.Errorf("atlas_ai_export_data_provider.GetNutritionTemplateExport: %w", err)
 	}
@@ -298,4 +302,13 @@ func nutritionMacrosExportMap(macros models.NutritionMacros) map[string]any {
 		"fat":      macros.Fat,
 		"carbs":    macros.Carbs,
 	}
+}
+
+func aiExportWeekStart(date models.Date) models.Date {
+	t := date.Time()
+	weekday := t.Weekday()
+	if weekday == time.Sunday {
+		weekday = 7
+	}
+	return models.MustDate(t.AddDate(0, 0, -int(weekday-time.Monday)).Format("2006-01-02"))
 }

@@ -9,6 +9,7 @@
 //   MAP_MODE: SUMMARY
 // END_MODULE_CONTRACT
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Asserted week-start template export lookup for mid-week AI export ranges.
 //   LAST_CHANGE: 1.0.0 - Added Task 11 RED coverage for service-backed nutrition AI export data provider.
 // END_CHANGE_SUMMARY
 
@@ -77,8 +78,8 @@ func TestAtlasAiExportDataProvider_ReturnsDailyTemplatesAndLegacy(t *testing.T) 
 		},
 		&mockNutritionTemplateRepo{
 			listByRangeFn: func(ctx context.Context, userID string, startDate, endDate string) ([]models.NutritionTemplateRecord, error) {
-				assert.Equal(t, "2026-06-24", startDate)
-				assert.Equal(t, "2026-06-24", endDate)
+				assert.Equal(t, "2026-06-22", startDate)
+				assert.Equal(t, "2026-06-22", endDate)
 				return []models.NutritionTemplateRecord{
 					{
 						ID:            templateID,

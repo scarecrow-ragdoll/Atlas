@@ -1,14 +1,15 @@
 // FILE: apps/api/internal/atlas/service/ai_export_service_test.go
 // VERSION: 1.0.0
 // START_MODULE_CONTRACT
-//   PURPOSE: Unit tests for BuildPrompt covering user context, persistent AI context, one-time comment, week flags, empty date range, no-data-in-period, all profile fields, and nil profile.
-//   SCOPE: Pure function tests for prompt generation logic. Does not cover Generate/GetByID/List/Delete service methods (those require repo mocks and are covered by integration tests).
+//   PURPOSE: Unit tests for AI export prompt generation and local archive generation behavior.
+//   SCOPE: BuildPrompt coverage plus Generate coverage for detailed nutrition payloads, provider failure handling, and private ZIP permissions.
 //   DEPENDS: apps/api/internal/atlas/service (BuildPrompt, UserProfileExport, SectionToggles).
 //   LINKS: M-API / V-M-API / WAVE-07.
 //   ROLE: TEST
 //   MAP_MODE: SUMMARY
 // END_MODULE_CONTRACT
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Added Generate tests for detailed nutrition export payloads, provider errors, and private ZIP permissions.
 //   LAST_CHANGE: 1.0.0 - Added BuildPrompt pure function tests for WAVE-07.
 // END_CHANGE_SUMMARY
 
@@ -18,6 +19,7 @@ import (
 	"archive/zip"
 	"context"
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -146,6 +148,12 @@ type aiExportProviderMock struct {
 	templateNutrition []any
 	legacyNutrition   []any
 	photos            []service.ExportPhoto
+
+	dailyNutritionErr       error
+	dailyNutritionErrOnCall int
+	dailyNutritionCalls     int
+	templateNutritionErr    error
+	legacyNutritionErr      error
 }
 
 func (m *aiExportProviderMock) GetWorkoutSummary(ctx context.Context, userID string, from, to models.Date) ([]any, error) {
@@ -173,19 +181,74 @@ func (m *aiExportProviderMock) GetWeekFlags(ctx context.Context, userID string, 
 }
 
 func (m *aiExportProviderMock) GetDailyNutritionExport(ctx context.Context, userID string, from, to models.Date) ([]any, error) {
+	m.dailyNutritionCalls++
+	if m.dailyNutritionErr != nil && (m.dailyNutritionErrOnCall == 0 || m.dailyNutritionCalls == m.dailyNutritionErrOnCall) {
+		return nil, m.dailyNutritionErr
+	}
 	return m.dailyNutrition, nil
 }
 
 func (m *aiExportProviderMock) GetNutritionTemplateExport(ctx context.Context, userID string, from, to models.Date) ([]any, error) {
+	if m.templateNutritionErr != nil {
+		return nil, m.templateNutritionErr
+	}
 	return m.templateNutrition, nil
 }
 
 func (m *aiExportProviderMock) GetLegacyNutritionExport(ctx context.Context, userID string, from, to models.Date) ([]any, error) {
+	if m.legacyNutritionErr != nil {
+		return nil, m.legacyNutritionErr
+	}
 	return m.legacyNutrition, nil
 }
 
 func (m *aiExportProviderMock) GetProgressPhotos(ctx context.Context, userID string, from, to models.Date) ([]service.ExportPhoto, error) {
 	return m.photos, nil
+}
+
+func TestAiExportService_FailsWhenNutritionSummaryProviderErrors(t *testing.T) {
+	providerErr := errors.New("daily nutrition unavailable")
+	provider := &aiExportProviderMock{dailyNutritionErr: providerErr}
+	exportBasePath := t.TempDir()
+	createCalled := false
+	updateCalled := false
+	svc := newAiExportServiceForGenerateTest(t, provider, &createCalled, &updateCalled)
+
+	_, _, err := svc.Generate(ctx, testUserID, models.CreateAiExportInput{
+		DateRangeStart:   models.MustDate("2026-06-24"),
+		DateRangeEnd:     models.MustDate("2026-06-30"),
+		IncludeNutrition: ptrBool(true),
+	}, 365, 10*1024*1024, exportBasePath)
+
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "daily nutrition export")
+	assert.False(t, createCalled)
+	assert.False(t, updateCalled)
+}
+
+func TestAiExportService_FailsWhenNutritionArchiveProviderErrors(t *testing.T) {
+	providerErr := errors.New("daily nutrition archive unavailable")
+	provider := &aiExportProviderMock{
+		dailyNutrition:          []any{map[string]any{"date": "2026-06-24", "entries": []any{}}},
+		dailyNutritionErr:       providerErr,
+		dailyNutritionErrOnCall: 2,
+	}
+	exportBasePath := t.TempDir()
+	createCalled := false
+	updateCalled := false
+	svc := newAiExportServiceForGenerateTest(t, provider, &createCalled, &updateCalled)
+
+	_, _, err := svc.Generate(ctx, testUserID, models.CreateAiExportInput{
+		DateRangeStart:   models.MustDate("2026-06-24"),
+		DateRangeEnd:     models.MustDate("2026-06-30"),
+		IncludeNutrition: ptrBool(true),
+	}, 365, 10*1024*1024, exportBasePath)
+
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "daily nutrition export")
+	assert.True(t, createCalled)
+	assert.False(t, updateCalled)
+	assert.NoFileExists(t, filepath.Join(exportBasePath, testUserID, "770e8400-e29b-41d4-a716-446655440000.zip"))
 }
 
 func TestAiExportService_IncludesDailyNutritionEntriesWithoutExternalCall(t *testing.T) {
@@ -352,6 +415,57 @@ func TestAiExportService_WritesPrivateNutritionZipPermissions(t *testing.T) {
 	zipInfo, err := os.Stat(zipPath)
 	require.NoError(t, err)
 	assert.Equal(t, os.FileMode(0600), zipInfo.Mode().Perm())
+}
+
+func newAiExportServiceForGenerateTest(t *testing.T, provider *aiExportProviderMock, createCalled, updateCalled *bool) service.AiExportService {
+	t.Helper()
+
+	exportID := "770e8400-e29b-41d4-a716-446655440000"
+	exportRepo := &aiExportRepoMock{
+		createFn: func(ctx context.Context, userID, dateRangeStart, dateRangeEnd string, includePhotos, includeNutrition, includeCardio, includeMeasurements bool, userComment *string, generatedPrompt string) (*models.AiExportRecord, error) {
+			if createCalled != nil {
+				*createCalled = true
+			}
+			return &models.AiExportRecord{
+				ID:                  exportID,
+				UserID:              userID,
+				DateRangeStart:      models.MustDate(dateRangeStart),
+				DateRangeEnd:        models.MustDate(dateRangeEnd),
+				IncludePhotos:       includePhotos,
+				IncludeNutrition:    includeNutrition,
+				IncludeCardio:       includeCardio,
+				IncludeMeasurements: includeMeasurements,
+				UserComment:         userComment,
+				GeneratedPrompt:     generatedPrompt,
+				CreatedAt:           "2026-06-24T00:00:00Z",
+				UpdatedAt:           "2026-06-24T00:00:00Z",
+			}, nil
+		},
+		updateFilePathFn: func(ctx context.Context, id string, filePath *string) (*models.AiExportRecord, error) {
+			if updateCalled != nil {
+				*updateCalled = true
+			}
+			return &models.AiExportRecord{
+				ID:                  id,
+				UserID:              testUserID,
+				DateRangeStart:      models.MustDate("2026-06-24"),
+				DateRangeEnd:        models.MustDate("2026-06-30"),
+				IncludeNutrition:    true,
+				IncludeCardio:       true,
+				IncludeMeasurements: true,
+				GeneratedPrompt:     "prompt",
+				ExportFilePath:      filePath,
+				CreatedAt:           "2026-06-24T00:00:00Z",
+				UpdatedAt:           "2026-06-24T00:00:00Z",
+			}, nil
+		},
+	}
+	profileRepo := &aiExportProfileRepoMock{
+		findByUserIDFn: func(ctx context.Context, userID string) (*models.UserProfileRecord, error) {
+			return nil, nil
+		},
+	}
+	return service.NewAiExportService(exportRepo, profileRepo, provider, zap.NewNop())
 }
 
 func generateAiExportForTest(t *testing.T, provider *aiExportProviderMock) string {
