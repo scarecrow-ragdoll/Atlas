@@ -1,17 +1,18 @@
 // FILE: apps/api/internal/middleware/admin_origin.go
 // VERSION: 1.0.0
 // START_MODULE_CONTRACT
-//   PURPOSE: Enforce the web-admin browser-origin boundary for credentialed admin GraphQL requests.
-//   SCOPE: Strict Origin/Referer allowlisting for unsafe browser requests; excludes CORS header emission and GraphQL auth decisions.
+//   PURPOSE: Enforce the web-admin browser-origin boundary for credentialed admin and Atlas API requests.
+//   SCOPE: Strict Origin/Referer allowlisting for unsafe browser requests; excludes CORS header emission and auth/session decisions.
 //   DEPENDS: net/http, net/url.
 //   LINKS: M-API / V-M-API.
 //   ROLE: RUNTIME
 //   MAP_MODE: EXPORTS
 // END_MODULE_CONTRACT
 // START_MODULE_MAP
-//   AdminOriginGuard - Rejects unsafe admin GraphQL browser requests from non-admin origins.
+//   AdminOriginGuard - Rejects unsafe credentialed browser requests from non-admin origins.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Documented reuse for Atlas browser API route groups.
 //   LAST_CHANGE: 1.0.0 - Added admin origin guard.
 // END_CHANGE_SUMMARY
 
@@ -28,7 +29,7 @@ import (
 
 // START_CONTRACT: AdminOriginGuard
 //
-//	PURPOSE: Reject unsafe credentialed admin GraphQL browser requests from missing or untrusted origins.
+//	PURPOSE: Reject unsafe credentialed browser requests from missing or untrusted web-admin origins.
 //	INPUTS: { allowedOrigins: []string - exact web-admin origins }
 //	OUTPUTS: { func(http.Handler) http.Handler - middleware }
 //	SIDE_EFFECTS: May write HTTP 403 before GraphQL execution.

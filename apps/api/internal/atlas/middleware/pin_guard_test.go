@@ -214,6 +214,10 @@ func (f *fakeBootstrapService) EnsureDefaultSettings(ctx context.Context, userID
 	return f.err
 }
 
+func (f *fakeBootstrapService) EnsureDefaultUserProfile(ctx context.Context, userID string) error {
+	return f.err
+}
+
 type fakePinService struct {
 	pinEnabled bool
 	err        error

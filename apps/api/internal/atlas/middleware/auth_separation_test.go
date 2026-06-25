@@ -12,6 +12,7 @@
 //   TestAtlasAuthSeparation_* - Validates admin vs atlas auth cookie isolation across route groups.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Added credentialed CORS preflight coverage for Atlas browser route groups.
 //   LAST_CHANGE: 1.0.0 - Added auth separation integration tests for admin vs Atlas route groups.
 // END_CHANGE_SUMMARY
 
@@ -56,7 +57,7 @@ type mockPinService struct {
 	enabledFn func() bool
 }
 
-func (m *mockPinService) Enable(_ context.Context, _ string, _ string) error { return nil }
+func (m *mockPinService) Enable(_ context.Context, _ string, _ string) error  { return nil }
 func (m *mockPinService) Disable(_ context.Context, _ string, _ string) error { return nil }
 func (m *mockPinService) Change(_ context.Context, _ string, _, _ string) error {
 	return nil
@@ -82,6 +83,9 @@ func (m *mockBootstrapService) EnsureDefaultUser(_ context.Context) (string, err
 func (m *mockBootstrapService) EnsureDefaultSettings(_ context.Context, _ string) error {
 	return m.err
 }
+func (m *mockBootstrapService) EnsureDefaultUserProfile(_ context.Context, _ string) error {
+	return m.err
+}
 
 type mockPinSessionStore struct {
 	validUserID string
@@ -98,7 +102,7 @@ func (m *mockPinSessionStore) Validate(_ context.Context, token string) (string,
 	}
 	return m.validUserID, m.valid, nil
 }
-func (m *mockPinSessionStore) Revoke(_ context.Context, _ string) error   { return nil }
+func (m *mockPinSessionStore) Revoke(_ context.Context, _ string) error { return nil }
 func (m *mockPinSessionStore) RevokeAllByUser(_ context.Context, _ string) error {
 	return nil
 }
@@ -126,8 +130,15 @@ func buildTestRouter(
 ) *chi.Mux {
 	t.Helper()
 	r := chi.NewRouter()
+	adminCORS := middleware.CORS(middleware.CORSConfig{
+		AllowedOrigins:   []string{"http://localhost:3100"},
+		AllowedMethods:   []string{"GET", "POST", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type"},
+		AllowCredentials: true,
+	})
 
 	r.Group(func(admin chi.Router) {
+		admin.Use(adminCORS)
 		admin.Use(middleware.AdminOriginGuard([]string{"http://localhost:3100"}))
 		admin.Use(middleware.AdminSessionMiddleware(adminResolver, "web_admin_session"))
 		admin.Handle("/graphql", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -145,19 +156,30 @@ func buildTestRouter(
 	})
 
 	r.Group(func(atlasAuth chi.Router) {
+		atlasAuth.Use(adminCORS)
 		atlasAuth.Use(atlasMiddleware.AtlasUserContext(bootstrapSvc))
+		atlasAuth.Options("/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 		atlasAuth.Post("/api/v1/auth/pin/unlock", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
 	})
 
 	r.Group(func(atlas chi.Router) {
+		atlas.Use(adminCORS)
+		atlas.Use(middleware.AdminOriginGuard([]string{"http://localhost:3100"}))
 		atlas.Use(atlasMiddleware.AtlasUserContext(bootstrapSvc))
 		atlas.Use(atlasMiddleware.AtlasPinGuard(pinService, pinSessionStore, "atlas_pin_session"))
+		atlas.Options("/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 		atlas.Handle("/graphql/atlas", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte(`{"data":{"__typename":"AtlasQuery"}}`))
+		}))
+		atlas.Post("/api/ai-export/generate", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		atlas.Delete("/api/v1/media/{id}", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNoContent)
 		}))
 	})
 
@@ -193,12 +215,59 @@ func TestAtlasAuthSeparation_AtlasGraphQL_PINDisabled_Returns200(t *testing.T) {
 	)
 
 	req := httptest.NewRequest(http.MethodPost, "/graphql/atlas", nil)
+	req.Header.Set("Origin", "http://localhost:3100")
 	rec := httptest.NewRecorder()
 
 	router.ServeHTTP(rec, req)
 
 	assert.Equal(t, http.StatusOK, rec.Code)
 	assert.Contains(t, rec.Body.String(), "AtlasQuery")
+}
+
+func TestAtlasAuthSeparation_AtlasAiExportPreflight_AllowsWebAdminOrigin(t *testing.T) {
+	router := buildTestRouter(t,
+		&mockAdminSessionResolver{},
+		&mockPinService{enabled: true},
+		&mockBootstrapService{userID: testUserID},
+		&mockPinSessionStore{},
+	)
+
+	req := httptest.NewRequest(http.MethodOptions, "/api/ai-export/generate", nil)
+	req.Header.Set("Origin", "http://localhost:3100")
+	req.Header.Set("Access-Control-Request-Method", http.MethodPost)
+	req.Header.Set("Access-Control-Request-Headers", "Content-Type")
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusNoContent, rec.Code)
+	assert.Equal(t, "http://localhost:3100", rec.Header().Get("Access-Control-Allow-Origin"))
+	assert.Equal(t, "true", rec.Header().Get("Access-Control-Allow-Credentials"))
+	assert.Contains(t, rec.Header().Get("Access-Control-Allow-Methods"), http.MethodPost)
+	assert.Contains(t, rec.Header().Get("Access-Control-Allow-Headers"), "Content-Type")
+}
+
+func TestAtlasAuthSeparation_AtlasDeletePreflight_AllowsWebAdminOrigin(t *testing.T) {
+	router := buildTestRouter(t,
+		&mockAdminSessionResolver{},
+		&mockPinService{enabled: true},
+		&mockBootstrapService{userID: testUserID},
+		&mockPinSessionStore{},
+	)
+
+	req := httptest.NewRequest(http.MethodOptions, "/api/v1/media/media-1", nil)
+	req.Header.Set("Origin", "http://localhost:3100")
+	req.Header.Set("Access-Control-Request-Method", http.MethodDelete)
+	req.Header.Set("Access-Control-Request-Headers", "Content-Type")
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusNoContent, rec.Code)
+	assert.Equal(t, "http://localhost:3100", rec.Header().Get("Access-Control-Allow-Origin"))
+	assert.Equal(t, "true", rec.Header().Get("Access-Control-Allow-Credentials"))
+	assert.Contains(t, rec.Header().Get("Access-Control-Allow-Methods"), http.MethodDelete)
+	assert.Contains(t, rec.Header().Get("Access-Control-Allow-Headers"), "Content-Type")
 }
 
 func TestAtlasAuthSeparation_AtlasGraphQL_PINEnabled_NoCookie_Returns401(t *testing.T) {
@@ -210,6 +279,7 @@ func TestAtlasAuthSeparation_AtlasGraphQL_PINEnabled_NoCookie_Returns401(t *test
 	)
 
 	req := httptest.NewRequest(http.MethodPost, "/graphql/atlas", nil)
+	req.Header.Set("Origin", "http://localhost:3100")
 	rec := httptest.NewRecorder()
 
 	router.ServeHTTP(rec, req)
@@ -291,6 +361,7 @@ func TestAtlasAuthSeparation_AtlasPINEnabled_WithValidCookie_Succeeds(t *testing
 
 	req := httptest.NewRequest(http.MethodPost, "/graphql/atlas", nil)
 	req.AddCookie(newAtlasCookie("atlas_pin_session", "valid-atlas-token"))
+	req.Header.Set("Origin", "http://localhost:3100")
 	rec := httptest.NewRecorder()
 
 	router.ServeHTTP(rec, req)
@@ -318,6 +389,7 @@ func TestAtlasAuthSeparation_AdminCookie_IgnoredByAtlasGuard(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "/graphql/atlas", nil)
 	req.AddCookie(newAdminCookie("web_admin_session", "valid-admin-session"))
 	req.AddCookie(newAtlasCookie("atlas_pin_session", "valid-atlas-token"))
+	req.Header.Set("Origin", "http://localhost:3100")
 	rec := httptest.NewRecorder()
 
 	router.ServeHTTP(rec, req)

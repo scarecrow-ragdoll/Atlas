@@ -13,6 +13,7 @@
 //   optionalEnvFile - Returns a local .env path only when present.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.4 - Applied credentialed web-admin CORS and origin checks to Atlas browser endpoints.
 //   LAST_CHANGE: 1.0.3 - Wired DailyNutritionLogService to the legacy override resolver for Task 6 read compatibility.
 //   LAST_CHANGE: 1.0.2 - Wired factual daily nutrition log and template-apply services into the Atlas GraphQL server.
 // END_CHANGE_SUMMARY
@@ -315,7 +316,7 @@ func main() {
 	})
 	adminCORS := middleware.CORS(middleware.CORSConfig{
 		AllowedOrigins:   cfg.Admin.Origins,
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedMethods:   []string{"GET", "POST", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type"},
 		AllowCredentials: true,
 	})
@@ -358,15 +359,20 @@ func main() {
 	)
 
 	_ = r.Group(func(atlasAuth chi.Router) {
+		atlasAuth.Use(adminCORS)
 		atlasAuth.Use(atlasMiddleware.AtlasUserContext(atlasBootstrapService))
+		atlasAuth.Options("/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 		atlasAuth.Post("/api/v1/auth/pin/unlock", pinAuthHandler.Unlock)
 		atlasAuth.Post("/api/v1/auth/pin/lock", pinAuthHandler.Lock)
 		atlasAuth.Get("/api/v1/auth/session", pinAuthHandler.SessionCheck)
 	})
 
 	_ = r.Group(func(atlas chi.Router) {
+		atlas.Use(adminCORS)
+		atlas.Use(middleware.AdminOriginGuard(cfg.Admin.Origins))
 		atlas.Use(atlasMiddleware.AtlasUserContext(atlasBootstrapService))
 		atlas.Use(atlasMiddleware.AtlasPinGuard(atlasPinService, atlasPinSessionStore, cfg.AtlasPinSession.CookieName))
+		atlas.Options("/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 		atlas.Handle("/graphql/atlas", atlasSrv)
 		atlas.Post("/api/v1/media/upload", atlasMediaHandler.Upload)
 		atlas.Get("/api/v1/media/{id}", atlasMediaHandler.Download)
