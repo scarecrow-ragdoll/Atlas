@@ -1,5 +1,5 @@
 // FILE: apps/web-admin/src/App.test.tsx
-// VERSION: 1.3.0
+// VERSION: 1.4.0
 // START_MODULE_CONTRACT
 //   PURPOSE: Verify the web-admin Vite route table and auth guard at the app boundary.
 //   SCOPE: Covers protected home, users, UI-kit, login redirect, and no protected-content flash behavior through browser history; excludes page-level create/detail edge cases.
@@ -12,7 +12,7 @@
 //   web-admin routes tests - Prove the Vite admin app exposes home, users, and UI-kit routes.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.3.0 - Added Atlas weekly nutrition template route coverage.
+//   LAST_CHANGE: 1.4.0 - Added Atlas AI export route coverage.
 // END_CHANGE_SUMMARY
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -34,6 +34,7 @@ const updateAtlasNutritionTemplateMock = vi.hoisted(() => vi.fn());
 const updateAtlasNutritionTemplateItemMock = vi.hoisted(() => vi.fn());
 const deleteAtlasDailyNutritionEntryMock = vi.hoisted(() => vi.fn());
 const originalMatchMedia = window.matchMedia;
+const originalResizeObserver = globalThis.ResizeObserver;
 const currentAdmin = {
   id: 'admin-1',
   email: 'owner@example.test',
@@ -69,6 +70,20 @@ function mockGraphQLResponse(request: MockGraphQLRequest) {
     return Promise.resolve({ logoutAdmin: { __typename: 'LogoutAdminSuccess', ok: true } });
   }
   return Promise.reject(new Error(`Unhandled GraphQL document: ${document.slice(0, 80)}`));
+}
+
+class TestResizeObserver {
+  observe() {
+    return undefined;
+  }
+
+  unobserve() {
+    return undefined;
+  }
+
+  disconnect() {
+    return undefined;
+  }
 }
 
 vi.mock('@shared/api/graphql-client', () => ({
@@ -108,6 +123,7 @@ vi.mock('./pages/atlas/nutrition-api', () => ({
 }));
 
 beforeAll(() => {
+  globalThis.ResizeObserver = TestResizeObserver as typeof ResizeObserver;
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
@@ -156,6 +172,12 @@ afterEach(() => {
 });
 
 afterAll(() => {
+  if (originalResizeObserver) {
+    globalThis.ResizeObserver = originalResizeObserver;
+  } else {
+    delete (globalThis as Partial<typeof globalThis>).ResizeObserver;
+  }
+
   if (originalMatchMedia) {
     window.matchMedia = originalMatchMedia;
   } else {
@@ -321,6 +343,17 @@ describe('web-admin routes', () => {
     );
     expect(getAtlasNutritionTemplateCurrentMock).toHaveBeenCalled();
     expect(listAtlasNutritionProductsMock).toHaveBeenCalledWith();
+  });
+
+  it('renders the Atlas AI export route through the browser router', async () => {
+    renderApp('/atlas/ai-export');
+
+    expect(await screen.findByRole('heading', { name: 'AI Export' })).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /This export is local and internal\. Atlas does not call external AI APIs\./i,
+      ),
+    ).toBeInTheDocument();
   });
 
   it('redirects the legacy daily override route to the factual nutrition route', async () => {

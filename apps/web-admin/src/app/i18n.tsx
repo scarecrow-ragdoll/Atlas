@@ -1,5 +1,5 @@
 // FILE: apps/web-admin/src/app/i18n.tsx
-// VERSION: 1.2.0
+// VERSION: 1.3.0
 // START_MODULE_CONTRACT
 //   PURPOSE: Provide lightweight EN/RU translation state for Atlas web-admin pages.
 //   SCOPE: Owns local language persistence, document language sync, translation lookup, and provider/hook exports; excludes server-side locale negotiation and settings-page UI.
@@ -14,7 +14,7 @@
 //   LANGUAGE_STORAGE_KEY - LocalStorage key for the selected Atlas language.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.2.1 - Added localized weekly template entry fallback and aria label fragments.
+//   LAST_CHANGE: 1.3.0 - Added localized AI export builder labels and state messages.
 // END_CHANGE_SUMMARY
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
@@ -24,6 +24,40 @@ export const LANGUAGE_STORAGE_KEY = 'atlas-language';
 export type Language = 'en' | 'ru';
 
 type TranslationKey =
+  | 'aiExport.cardio'
+  | 'aiExport.cardioDescription'
+  | 'aiExport.contextNotes'
+  | 'aiExport.contextNotesDescription'
+  | 'aiExport.dateRange'
+  | 'aiExport.dateRangeDescription'
+  | 'aiExport.description'
+  | 'aiExport.downloadZip'
+  | 'aiExport.endDate'
+  | 'aiExport.errorTitle'
+  | 'aiExport.generate'
+  | 'aiExport.generateDescription'
+  | 'aiExport.generating'
+  | 'aiExport.includedSections'
+  | 'aiExport.includedSectionsDescription'
+  | 'aiExport.localDownloadDescription'
+  | 'aiExport.measurements'
+  | 'aiExport.measurementsDescription'
+  | 'aiExport.noPrompt'
+  | 'aiExport.nutrition'
+  | 'aiExport.nutritionDescription'
+  | 'aiExport.photos'
+  | 'aiExport.photosDescription'
+  | 'aiExport.photosExcluded'
+  | 'aiExport.privacyDescription'
+  | 'aiExport.privacyTitle'
+  | 'aiExport.progressDescription'
+  | 'aiExport.promptPreview'
+  | 'aiExport.promptPreviewDescription'
+  | 'aiExport.readyTitle'
+  | 'aiExport.retry'
+  | 'aiExport.startDate'
+  | 'aiExport.title'
+  | 'aiExport.userComment'
   | 'nutrition.actions'
   | 'nutrition.active'
   | 'nutrition.addFood'
@@ -115,6 +149,45 @@ type TranslationKey =
 
 const translations: Record<Language, Record<TranslationKey, string>> = {
   en: {
+    'aiExport.cardio': 'Cardio',
+    'aiExport.cardioDescription': 'Cardio sessions and conditioning totals.',
+    'aiExport.contextNotes': 'Context notes',
+    'aiExport.contextNotesDescription': 'Optional notes added to the generated prompt.',
+    'aiExport.dateRange': 'Date range',
+    'aiExport.dateRangeDescription': 'Choose the period included in the local export package.',
+    'aiExport.description':
+      'Generate an AI-ready prompt and ZIP from local Atlas data without contacting external AI services.',
+    'aiExport.downloadZip': 'Download ZIP',
+    'aiExport.endDate': 'End date',
+    'aiExport.errorTitle': 'Export failed',
+    'aiExport.generate': 'Generate export',
+    'aiExport.generateDescription':
+      'The request uses the guarded local Atlas export endpoint with your current session.',
+    'aiExport.generating': 'Generating export',
+    'aiExport.includedSections': 'Included sections',
+    'aiExport.includedSectionsDescription':
+      'Select which local Atlas data sets should be packaged.',
+    'aiExport.localDownloadDescription':
+      'Download uses the guarded local endpoint and only includes the export id.',
+    'aiExport.measurements': 'Measurements',
+    'aiExport.measurementsDescription': 'Body weight, check-ins, and measurements.',
+    'aiExport.noPrompt': 'No prompt returned.',
+    'aiExport.nutrition': 'Nutrition',
+    'aiExport.nutritionDescription': 'Food logs, product snapshots, and nutrition totals.',
+    'aiExport.photos': 'Photos',
+    'aiExport.photosDescription': 'Progress photo files when explicitly selected.',
+    'aiExport.photosExcluded': 'Photos are excluded unless selected.',
+    'aiExport.privacyDescription':
+      'This export is local and internal. Atlas does not call external AI APIs.',
+    'aiExport.privacyTitle': 'Privacy',
+    'aiExport.progressDescription': 'Preparing local ZIP and prompt preview.',
+    'aiExport.promptPreview': 'Prompt preview',
+    'aiExport.promptPreviewDescription': 'Copy this text into your own AI tool when ready.',
+    'aiExport.readyTitle': 'Export ready',
+    'aiExport.retry': 'Retry export',
+    'aiExport.startDate': 'Start date',
+    'aiExport.title': 'AI Export',
+    'aiExport.userComment': 'User comment',
     'nutrition.actions': 'Actions',
     'nutrition.active': 'Active',
     'nutrition.addFood': 'Add food',
@@ -210,6 +283,45 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.weekOf': 'Week of',
   },
   ru: {
+    'aiExport.cardio': 'Кардио',
+    'aiExport.cardioDescription': 'Кардио-сессии и суммарная нагрузка.',
+    'aiExport.contextNotes': 'Контекстные заметки',
+    'aiExport.contextNotesDescription': 'Необязательные заметки для сгенерированного промпта.',
+    'aiExport.dateRange': 'Диапазон дат',
+    'aiExport.dateRangeDescription': 'Выберите период для локального export-пакета.',
+    'aiExport.description':
+      'Сгенерируйте AI-ready промпт и ZIP из локальных данных Atlas без обращения к внешним AI-сервисам.',
+    'aiExport.downloadZip': 'Скачать ZIP',
+    'aiExport.endDate': 'Дата окончания',
+    'aiExport.errorTitle': 'Export не создан',
+    'aiExport.generate': 'Создать export',
+    'aiExport.generateDescription':
+      'Запрос идет в защищенный локальный Atlas endpoint с текущей сессией.',
+    'aiExport.generating': 'Создание export',
+    'aiExport.includedSections': 'Разделы в export',
+    'aiExport.includedSectionsDescription':
+      'Выберите, какие локальные наборы данных Atlas нужно упаковать.',
+    'aiExport.localDownloadDescription':
+      'Скачивание идет через защищенный локальный endpoint и содержит только export id.',
+    'aiExport.measurements': 'Замеры',
+    'aiExport.measurementsDescription': 'Вес, чек-ины и замеры тела.',
+    'aiExport.noPrompt': 'Промпт не вернулся.',
+    'aiExport.nutrition': 'Питание',
+    'aiExport.nutritionDescription': 'Дневники питания, снимки продуктов и итоги КБЖУ.',
+    'aiExport.photos': 'Фото',
+    'aiExport.photosDescription': 'Файлы прогресс-фото только при явном выборе.',
+    'aiExport.photosExcluded': 'Фото исключены, пока вы их не выберете.',
+    'aiExport.privacyDescription':
+      'Этот export локальный и внутренний. Atlas не вызывает внешние AI API.',
+    'aiExport.privacyTitle': 'Приватность',
+    'aiExport.progressDescription': 'Готовим локальный ZIP и preview промпта.',
+    'aiExport.promptPreview': 'Preview промпта',
+    'aiExport.promptPreviewDescription': 'Скопируйте этот текст в свой AI-инструмент.',
+    'aiExport.readyTitle': 'Export готов',
+    'aiExport.retry': 'Повторить export',
+    'aiExport.startDate': 'Дата начала',
+    'aiExport.title': 'AI Export',
+    'aiExport.userComment': 'Комментарий пользователя',
     'nutrition.actions': 'Действия',
     'nutrition.active': 'Активные',
     'nutrition.addFood': 'Добавить продукт',

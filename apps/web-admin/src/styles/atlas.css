@@ -1,5 +1,5 @@
 /* FILE: apps/web-admin/src/styles/atlas.css */
-/* VERSION: 1.2.0 */
+/* VERSION: 1.3.0 */
 /* START_MODULE_CONTRACT */
 /*   PURPOSE: Provide small reusable Atlas page layout helpers for web-admin routes. */
 /*   SCOPE: Defines scoped Atlas filter/form/table helper classes used by factual nutrition pages; excludes global theme tokens and generated OpenDesign CSS. */
@@ -12,9 +12,10 @@
 /*   atlas-product-library - Scoped helpers for product library filters, form grid, and table actions. */
 /*   atlas-nutrition-log - Scoped helpers for daily nutrition date controls, summary cards, and entry forms. */
 /*   atlas-weekly-template - Scoped helpers for weekly nutrition template header and item editor. */
+/*   atlas-ai-export - Scoped helpers for AI export controls and prompt preview. */
 /* END_MODULE_MAP */
 /* START_CHANGE_SUMMARY */
-/*   LAST_CHANGE: 1.2.0 - Added scoped weekly nutrition template editor layout helpers. */
+/*   LAST_CHANGE: 1.3.0 - Added scoped AI export builder layout helpers. */
 /* END_CHANGE_SUMMARY */
 
 .atlas-product-library {
@@ -26,6 +27,10 @@
 }
 
 .atlas-weekly-template {
+  gap: 1.5rem;
+}
+
+.atlas-ai-export {
   gap: 1.5rem;
 }
 
@@ -73,6 +78,35 @@
 .atlas-entry-form {
   display: grid;
   gap: 1rem;
+}
+
+.atlas-checkbox-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.atlas-checkbox-row {
+  align-items: flex-start;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  padding: 0.875rem;
+}
+
+.atlas-prompt-preview {
+  background: var(--muted);
+  border-radius: 0.5rem;
+  color: var(--foreground);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+  max-height: 24rem;
+  overflow: auto;
+  padding: 1rem;
+  white-space: pre-wrap;
 }
 
 .atlas-template-header-grid {
@@ -134,6 +168,10 @@
   .atlas-form-grid,
   .atlas-entry-form,
   .atlas-template-header-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .atlas-checkbox-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
