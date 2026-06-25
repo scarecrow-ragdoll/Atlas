@@ -14,7 +14,7 @@
 //   LANGUAGE_STORAGE_KEY - LocalStorage key for the selected Atlas language.
 // END_MODULE_MAP
 // START_CHANGE_SUMMARY
-//   LAST_CHANGE: 1.2.0 - Added weekly nutrition template editor translations.
+//   LAST_CHANGE: 1.2.1 - Added localized weekly template entry fallback and aria label fragments.
 // END_CHANGE_SUMMARY
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
@@ -59,6 +59,7 @@ type TranslationKey =
   | 'nutrition.fat'
   | 'nutrition.fatPer100g'
   | 'nutrition.foodLog'
+  | 'nutrition.forEntry'
   | 'nutrition.grams'
   | 'nutrition.gramsPositive'
   | 'nutrition.includeArchived'
@@ -78,6 +79,7 @@ type TranslationKey =
   | 'nutrition.previousDay'
   | 'nutrition.previousWeek'
   | 'nutrition.product'
+  | 'nutrition.plannedEntry'
   | 'nutrition.productArchived'
   | 'nutrition.productCreated'
   | 'nutrition.productLibrary'
@@ -105,6 +107,7 @@ type TranslationKey =
   | 'nutrition.title'
   | 'nutrition.today'
   | 'nutrition.updateProduct'
+  | 'nutrition.unknownProduct'
   | 'nutrition.weeklyPlan'
   | 'nutrition.weeklyPlanDescription'
   | 'nutrition.weeklyTotals'
@@ -150,6 +153,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.fat': 'Fat',
     'nutrition.fatPer100g': 'Fat per 100g',
     'nutrition.foodLog': 'Food log',
+    'nutrition.forEntry': 'for entry',
     'nutrition.grams': 'Grams',
     'nutrition.gramsPositive': 'Grams must be greater than 0',
     'nutrition.includeArchived': 'Include archived',
@@ -168,6 +172,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.notes': 'Notes',
     'nutrition.previousDay': 'Previous day',
     'nutrition.previousWeek': 'Previous week',
+    'nutrition.plannedEntry': 'Planned entry',
     'nutrition.product': 'Product',
     'nutrition.productArchived': 'Product archived',
     'nutrition.productCreated': 'Product created',
@@ -197,6 +202,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.title': 'Nutrition',
     'nutrition.today': 'Today',
     'nutrition.updateProduct': 'Update product',
+    'nutrition.unknownProduct': 'Unknown product',
     'nutrition.weeklyPlan': 'Weekly Plan',
     'nutrition.weeklyPlanDescription':
       'Plan reusable meals for a week. Saving edits the template only; applying seeds empty factual days.',
@@ -243,6 +249,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.fat': 'Жиры',
     'nutrition.fatPer100g': 'Жиры на 100 г',
     'nutrition.foodLog': 'Дневник питания',
+    'nutrition.forEntry': 'для записи',
     'nutrition.grams': 'Граммы',
     'nutrition.gramsPositive': 'Граммы должны быть больше 0',
     'nutrition.includeArchived': 'Включая архивные',
@@ -261,6 +268,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.notes': 'Заметки',
     'nutrition.previousDay': 'Предыдущий день',
     'nutrition.previousWeek': 'Предыдущая неделя',
+    'nutrition.plannedEntry': 'Плановая запись',
     'nutrition.product': 'Продукт',
     'nutrition.productArchived': 'Продукт архивирован',
     'nutrition.productCreated': 'Продукт создан',
@@ -290,6 +298,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'nutrition.title': 'Питание',
     'nutrition.today': 'Сегодня',
     'nutrition.updateProduct': 'Обновить продукт',
+    'nutrition.unknownProduct': 'Неизвестный продукт',
     'nutrition.weeklyPlan': 'Недельный план',
     'nutrition.weeklyPlanDescription':
       'Планируйте повторяемые приемы пищи на неделю. Сохранение меняет только шаблон; применение заполняет пустые фактические дни.',

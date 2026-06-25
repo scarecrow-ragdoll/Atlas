@@ -11,9 +11,12 @@
 // START_MODULE_MAP
 //   default - API-backed Weekly Plan route content for editable weekly nutrition templates.
 // END_MODULE_MAP
+// START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Hardened current-template missing state, text clearing, refetch dirty guard, and localized entry labels.
+// END_CHANGE_SUMMARY
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { useI18n } from '../../app/i18n';
 import '../../styles/atlas.css';
@@ -167,7 +170,9 @@ function isNotFoundError(error: unknown) {
     : false;
 }
 
-async function getCurrentTemplateOrNull(weekStartDate: string) {
+async function getCurrentTemplateOrNull(
+  weekStartDate: string,
+): Promise<AtlasNutritionTemplate | null> {
   try {
     return await getAtlasNutritionTemplateCurrent(weekStartDate);
   } catch (error) {
@@ -207,8 +212,21 @@ function parsePositiveGrams(value: string) {
   return Number.isFinite(grams) && grams > 0 ? grams : null;
 }
 
-function productName(product: AtlasNutritionProduct | undefined, productId: string) {
-  return product?.name ?? (productId ? `Unknown product (${productId})` : 'Planned entry');
+function optionalCreateText(value: string) {
+  return value.trim() || null;
+}
+
+function updateText(value: string) {
+  return value.trim();
+}
+
+function productName(
+  product: AtlasNutritionProduct | undefined,
+  productId: string,
+  unknownProductLabel: string,
+  plannedEntryLabel: string,
+) {
+  return product?.name ?? (productId ? `${unknownProductLabel} (${productId})` : plannedEntryLabel);
 }
 
 function calculateItemMacros(
@@ -254,6 +272,7 @@ export default function WeeklyNutritionTemplatePage({
 }: WeeklyNutritionTemplatePageProps) {
   const { language, t } = useI18n();
   const queryClient = useQueryClient();
+  const initializedWeekStartDate = useRef<string | null>(null);
   const [selectedWeekStartDate, setSelectedWeekStartDate] = useState(
     initialWeekStartDate ?? getCurrentWeekStartDate(),
   );
@@ -266,6 +285,7 @@ export default function WeeklyNutritionTemplatePage({
   const [applyResult, setApplyResult] = useState<AtlasNutritionTemplateApplyResult | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
 
   const templateQuery = useQuery({
     queryKey: templateQueryKey(selectedWeekStartDate),
@@ -311,18 +331,25 @@ export default function WeeklyNutritionTemplatePage({
       return;
     }
 
+    if (initializedWeekStartDate.current === selectedWeekStartDate && isDirty) {
+      return;
+    }
+
+    initializedWeekStartDate.current = selectedWeekStartDate;
     setTitle(templateQuery.data?.title ?? '');
     setNotes(templateQuery.data?.notes ?? '');
     setDraftItems((templateQuery.data?.items ?? []).map(draftFromTemplateItem));
     setDeletedItemIds([]);
     setEditorError(null);
-  }, [templateQuery.data, selectedWeekStartDate]);
+    setIsDirty(false);
+  }, [isDirty, selectedWeekStartDate, templateQuery.data]);
 
   function changeWeek(nextWeekStartDate: string) {
     setSelectedWeekStartDate(nextWeekStartDate);
     setEditorError(null);
     setSuccessMessage(null);
     setApplyResult(null);
+    setIsDirty(false);
   }
 
   function updateDraftItem(localId: string, field: keyof DraftTemplateItem, value: string) {
@@ -330,12 +357,14 @@ export default function WeeklyNutritionTemplatePage({
       currentItems.map((item) => (item.localId === localId ? { ...item, [field]: value } : item)),
     );
     setEditorError(null);
+    setIsDirty(true);
   }
 
   function addDraftItem() {
     setDraftItems((currentItems) => [...currentItems, emptyDraftItem()]);
     setEditorError(null);
     setSuccessMessage(null);
+    setIsDirty(true);
   }
 
   function deleteDraftItem(item: DraftTemplateItem) {
@@ -347,6 +376,7 @@ export default function WeeklyNutritionTemplatePage({
     }
     setEditorError(null);
     setSuccessMessage(null);
+    setIsDirty(true);
   }
 
   function validateDraftItems() {
@@ -362,12 +392,20 @@ export default function WeeklyNutritionTemplatePage({
     return null;
   }
 
-  function itemInput(item: DraftTemplateItem) {
+  function createItemInput(item: DraftTemplateItem) {
     return {
       productId: item.productId,
       amountGrams: parsePositiveGrams(item.amountGrams) ?? 0,
-      mealLabel: item.mealLabel.trim() || null,
-      notes: item.notes.trim() || null,
+      mealLabel: optionalCreateText(item.mealLabel),
+      notes: optionalCreateText(item.notes),
+    };
+  }
+
+  function updateItemInput(item: DraftTemplateItem) {
+    return {
+      amountGrams: parsePositiveGrams(item.amountGrams) ?? 0,
+      mealLabel: updateText(item.mealLabel),
+      notes: updateText(item.notes),
     };
   }
 
@@ -393,15 +431,15 @@ export default function WeeklyNutritionTemplatePage({
     setEditorError(null);
 
     try {
-      const headerInput = {
-        title: title.trim() || null,
-        notes: notes.trim() || null,
-      };
       const savedTemplate = template
-        ? await updateAtlasNutritionTemplate(template.id, headerInput)
+        ? await updateAtlasNutritionTemplate(template.id, {
+            title: updateText(title),
+            notes: updateText(notes),
+          })
         : await createAtlasNutritionTemplate({
             weekStartDate: selectedWeekStartDate,
-            ...headerInput,
+            title: optionalCreateText(title),
+            notes: optionalCreateText(notes),
           });
 
       const savedItems: AtlasNutritionTemplateItem[] = [];
@@ -409,15 +447,8 @@ export default function WeeklyNutritionTemplatePage({
       const itemIdsToDelete = [...deletedItemIds];
 
       for (const item of draftItems) {
-        const input = itemInput(item);
         if (item.id && item.productId === item.originalProductId) {
-          savedItems.push(
-            await updateAtlasNutritionTemplateItem(item.id, {
-              amountGrams: input.amountGrams,
-              mealLabel: input.mealLabel,
-              notes: input.notes,
-            }),
-          );
+          savedItems.push(await updateAtlasNutritionTemplateItem(item.id, updateItemInput(item)));
         } else {
           if (item.id) {
             itemIdsToDelete.push(item.id);
@@ -425,7 +456,7 @@ export default function WeeklyNutritionTemplatePage({
           savedItems.push(
             await createAtlasNutritionTemplateItem({
               templateId: savedTemplate.id,
-              ...input,
+              ...createItemInput(item),
             }),
           );
         }
@@ -442,6 +473,7 @@ export default function WeeklyNutritionTemplatePage({
       );
       setDraftItems(savedItems.map(draftFromTemplateItem));
       setDeletedItemIds([]);
+      setIsDirty(false);
       setSuccessMessage(t('nutrition.templateSaved'));
     } catch (error) {
       setEditorError(errorMessageFromUnknown(error));
@@ -500,7 +532,13 @@ export default function WeeklyNutritionTemplatePage({
     return draftItems.map((item, index) => {
       const entryNumber = index + 1;
       const product = productsById.get(item.productId);
-      const name = productName(product, item.productId);
+      const entryContext = `${t('nutrition.forEntry')} ${entryNumber}`;
+      const name = productName(
+        product,
+        item.productId,
+        t('nutrition.unknownProduct'),
+        t('nutrition.plannedEntry'),
+      );
       const macros = calculateItemMacros(item, product);
 
       return (
@@ -518,7 +556,7 @@ export default function WeeklyNutritionTemplatePage({
               value={item.productId || productPlaceholderValue}
             >
               <SelectTrigger
-                aria-label={`${t('nutrition.product')} for entry ${entryNumber}`}
+                aria-label={`${t('nutrition.product')} ${entryContext}`}
                 id={`template-product-${item.localId}`}
               >
                 <SelectValue placeholder={t('nutrition.selectProduct')} />
@@ -537,7 +575,7 @@ export default function WeeklyNutritionTemplatePage({
           </TableCell>
           <TableCell>
             <Input
-              aria-label={`${t('nutrition.grams')} for entry ${entryNumber}`}
+              aria-label={`${t('nutrition.grams')} ${entryContext}`}
               inputMode="decimal"
               onChange={(event) => updateDraftItem(item.localId, 'amountGrams', event.target.value)}
               type="number"
@@ -546,14 +584,14 @@ export default function WeeklyNutritionTemplatePage({
           </TableCell>
           <TableCell>
             <Input
-              aria-label={`${t('nutrition.mealLabel')} for entry ${entryNumber}`}
+              aria-label={`${t('nutrition.mealLabel')} ${entryContext}`}
               onChange={(event) => updateDraftItem(item.localId, 'mealLabel', event.target.value)}
               value={item.mealLabel}
             />
           </TableCell>
           <TableCell>
             <Input
-              aria-label={`${t('nutrition.notes')} for entry ${entryNumber}`}
+              aria-label={`${t('nutrition.notes')} ${entryContext}`}
               onChange={(event) => updateDraftItem(item.localId, 'notes', event.target.value)}
               value={item.notes}
             />
@@ -766,6 +804,7 @@ export default function WeeklyNutritionTemplatePage({
                   onChange={(event) => {
                     setTitle(event.target.value);
                     setEditorError(null);
+                    setIsDirty(true);
                   }}
                   value={title}
                 />
@@ -777,6 +816,7 @@ export default function WeeklyNutritionTemplatePage({
                   onChange={(event) => {
                     setNotes(event.target.value);
                     setEditorError(null);
+                    setIsDirty(true);
                   }}
                   value={notes}
                 />
@@ -797,7 +837,7 @@ export default function WeeklyNutritionTemplatePage({
                   {t('nutrition.saveTemplate')}
                 </Button>
                 <Button
-                  disabled={isApplying || !template?.id}
+                  disabled={isSaving || isApplying || !template?.id}
                   onClick={handleApplyTemplate}
                   type="button"
                   variant="secondary"

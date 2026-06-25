@@ -13,7 +13,7 @@
 // END_MODULE_MAP
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { I18nProvider, type Language } from '../../app/i18n';
@@ -132,12 +132,17 @@ function makeApplyResult(
   };
 }
 
-function renderWeeklyTemplatePage(language: Language = 'en') {
-  const queryClient = new QueryClient({
+function createTestQueryClient() {
+  return new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
+}
 
-  return render(
+function renderWeeklyTemplatePage(
+  language: Language = 'en',
+  queryClient = createTestQueryClient(),
+) {
+  const result = render(
     <QueryClientProvider client={queryClient}>
       <I18nProvider initialLanguage={language}>
         <MemoryRouter>
@@ -146,6 +151,8 @@ function renderWeeklyTemplatePage(language: Language = 'en') {
       </I18nProvider>
     </QueryClientProvider>,
   );
+
+  return { ...result, queryClient };
 }
 
 function createDeferred<T>() {
@@ -235,6 +242,88 @@ describe('WeeklyNutritionTemplatePage', () => {
     expect(applyTemplateMock).not.toHaveBeenCalled();
   });
 
+  it('sends empty strings when clearing existing template and item text fields', async () => {
+    const riceItem = makeTemplateItem({
+      id: 'item-1',
+      productId: 'product-1',
+      amountGrams: 100,
+      mealLabel: 'Lunch',
+      notes: 'Steamed',
+    });
+    getCurrentTemplateMock.mockResolvedValue(
+      makeTemplate({ title: 'Base week', notes: 'Steady plan', items: [riceItem] }),
+    );
+    listProductsMock.mockResolvedValue([makeProduct({ id: 'product-1', name: 'Rice' })]);
+    updateTemplateMock.mockResolvedValue(makeTemplate({ title: '', notes: '' }));
+    updateTemplateItemMock.mockResolvedValue(
+      makeTemplateItem({ id: 'item-1', mealLabel: '', notes: '' }),
+    );
+
+    renderWeeklyTemplatePage();
+
+    fireEvent.change(await screen.findByLabelText('Template title'), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText('Template notes'), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText('Meal label for entry 1'), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText('Notes for entry 1'), { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save Template' }));
+
+    expect(await screen.findByText('Template saved')).toBeInTheDocument();
+    expect(updateTemplateMock).toHaveBeenCalledWith('template-1', {
+      title: '',
+      notes: '',
+    });
+    expect(updateTemplateItemMock).toHaveBeenCalledWith('item-1', {
+      amountGrams: 100,
+      mealLabel: '',
+      notes: '',
+    });
+  });
+
+  it('keeps unsaved local edits when the current week query data refetches', async () => {
+    getCurrentTemplateMock.mockResolvedValue(makeTemplate({ title: 'Server title' }));
+    listProductsMock.mockResolvedValue([makeProduct()]);
+
+    const { queryClient } = renderWeeklyTemplatePage();
+
+    fireEvent.change(await screen.findByLabelText('Template title'), {
+      target: { value: 'Unsaved local title' },
+    });
+
+    await act(async () => {
+      queryClient.setQueryData(
+        ['atlas-weekly-nutrition-template', '2026-06-22'],
+        makeTemplate({ title: 'Refetched title' }),
+      );
+    });
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('Template title')).toHaveValue('Unsaved local title'),
+    );
+    expect(screen.queryByDisplayValue('Refetched title')).not.toBeInTheDocument();
+  });
+
+  it('disables Apply to Week while a save is pending', async () => {
+    const saveDeferred = createDeferred<AtlasNutritionTemplate>();
+    getCurrentTemplateMock.mockResolvedValue(makeTemplate());
+    listProductsMock.mockResolvedValue([makeProduct()]);
+    updateTemplateMock.mockReturnValue(saveDeferred.promise);
+
+    renderWeeklyTemplatePage();
+
+    expect(await screen.findByRole('button', { name: 'Apply to Week' })).toBeEnabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Save Template' }));
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Apply to Week' })).toBeDisabled(),
+    );
+    expect(applyTemplateMock).not.toHaveBeenCalled();
+
+    await act(async () => {
+      saveDeferred.resolve(makeTemplate());
+    });
+    expect(await screen.findByText('Template saved')).toBeInTheDocument();
+  });
+
   it('applies seed_empty_days and reports created and skipped dates', async () => {
     getCurrentTemplateMock.mockResolvedValue(makeTemplate());
     listProductsMock.mockResolvedValue([makeProduct()]);
@@ -297,9 +386,7 @@ describe('WeeklyNutritionTemplatePage', () => {
   });
 
   it('renders an empty template state without reference-only blocks', async () => {
-    getCurrentTemplateMock.mockRejectedValue(
-      new AtlasNutritionApiError('Template not found', 'NOT_FOUND', 'not_found'),
-    );
+    getCurrentTemplateMock.mockResolvedValue(null);
     listProductsMock.mockResolvedValue([]);
 
     renderWeeklyTemplatePage();
@@ -384,9 +471,7 @@ describe('WeeklyNutritionTemplatePage', () => {
   });
 
   it('creates a missing template and renders success after Save Template', async () => {
-    getCurrentTemplateMock.mockRejectedValue(
-      new AtlasNutritionApiError('Template not found', 'NOT_FOUND', 'not_found'),
-    );
+    getCurrentTemplateMock.mockResolvedValue(null);
     listProductsMock.mockResolvedValue([]);
     createTemplateMock.mockResolvedValue(makeTemplate({ title: 'New week', notes: null }));
 
@@ -424,5 +509,27 @@ describe('WeeklyNutritionTemplatePage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Недельный план' })).toBeInTheDocument();
     expect(await screen.findByRole('button', { name: 'Сохранить шаблон' })).toBeInTheDocument();
+  });
+
+  it('localizes unknown product fallback text and entry aria labels in Russian', async () => {
+    getCurrentTemplateMock.mockResolvedValue(
+      makeTemplate({
+        items: [
+          makeTemplateItem({
+            id: 'item-1',
+            productId: 'missing-product',
+            mealLabel: null,
+            notes: null,
+          }),
+        ],
+      }),
+    );
+    listProductsMock.mockResolvedValue([]);
+
+    renderWeeklyTemplatePage('ru');
+
+    expect(await screen.findAllByText('Неизвестный продукт (missing-product)')).not.toHaveLength(0);
+    expect(screen.getByLabelText('Продукт для записи 1')).toBeInTheDocument();
+    expect(screen.getByLabelText('Граммы для записи 1')).toBeInTheDocument();
   });
 });

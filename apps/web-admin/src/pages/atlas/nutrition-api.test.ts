@@ -33,6 +33,7 @@ import {
   createAtlasNutritionTemplateItem,
   deleteAtlasDailyNutritionEntry,
   deleteAtlasNutritionTemplateItem,
+  getAtlasNutritionTemplateCurrent,
   getAtlasGraphQLApiUrl,
   getAtlasDailyNutritionLog,
   listAtlasNutritionProducts,
@@ -319,6 +320,19 @@ describe('Atlas nutrition API adapter', () => {
       { date: '2026-06-22', status: 'created', entryCount: 2, reason: null },
       { date: '2026-06-23', status: 'skipped', entryCount: 1, reason: 'day has entries' },
     ]);
+  });
+
+  it('maps an empty current-template success result to null', async () => {
+    requestMock.mockResolvedValueOnce({
+      nutritionTemplateCurrent: {},
+    });
+
+    const result = await getAtlasNutritionTemplateCurrent('2026-06-22');
+
+    expect(requestMock).toHaveBeenCalledWith(expect.stringContaining('nutritionTemplateCurrent'), {
+      weekStartDate: '2026-06-22',
+    });
+    expect(result).toBeNull();
   });
 
   it('creates, updates, and deletes weekly template product rows', async () => {

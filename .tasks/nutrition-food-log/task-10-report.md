@@ -31,6 +31,8 @@ DONE_WITH_CONCERNS
 
 - `apps/web-admin/src/pages/atlas/weekly-nutrition-template-page.tsx`
 - `apps/web-admin/src/pages/atlas/weekly-nutrition-template-page.test.tsx`
+- `apps/web-admin/src/pages/atlas/nutrition-api.ts`
+- `apps/web-admin/src/pages/atlas/nutrition-api.test.ts`
 - `apps/web-admin/src/App.tsx`
 - `apps/web-admin/src/App.test.tsx`
 - `apps/web-admin/src/app/admin-navigation.ts`
@@ -43,18 +45,23 @@ DONE_WITH_CONCERNS
 
 - Loads active products with `listAtlasNutritionProducts()`.
 - Loads the selected week with `getAtlasNutritionTemplateCurrent(weekStartDate)`.
-- Treats `AtlasNutritionApiError` with type `not_found` from current-template load as an empty editable template.
+- Treats `getAtlasNutritionTemplateCurrent(weekStartDate)` returning `null` as an empty editable template; the adapter maps the backend's empty success result `{}` for this current-template query to `null`.
+- Still treats `AtlasNutritionApiError` with type `not_found` from current-template load as an empty editable template defensively.
 - `Save Template` creates or updates only the template header and reconciles item rows through:
   - `createAtlasNutritionTemplate`
   - `updateAtlasNutritionTemplate`
   - `createAtlasNutritionTemplateItem`
   - `updateAtlasNutritionTemplateItem`
   - `deleteAtlasNutritionTemplateItem`
+- Update paths send empty strings for cleared title, notes, meal label, and item notes so backend null-as-keep semantics do not preserve stale text.
+- Create paths keep blank optional text as `null`.
 - Existing item product changes are reconciled as create-new plus delete-old because the update-item adapter input does not support `productId`.
 - `Save Template` does not call `applyAtlasNutritionTemplateToWeek`.
-- `Apply to Week` calls `applyAtlasNutritionTemplateToWeek(template.id, 'SEED_EMPTY_DAYS')` only.
+- `Apply to Week` calls `applyAtlasNutritionTemplateToWeek(template.id, 'SEED_EMPTY_DAYS')` only and is disabled while a save is pending.
 - Apply result renders created/skipped counts plus per-date status, entry count, and reason.
 - Planned weekly totals are calculated client-side from active product macros per 100g times item grams.
+- Local draft state is guarded from same-week React Query refetch overwrites once the user has unsaved edits.
+- Entry fallback text and entry aria labels use EN/RU i18n keys.
 
 ## TDD Evidence
 
@@ -67,16 +74,24 @@ DONE_WITH_CONCERNS
 - Additional self-review regression:
   - `cd apps/web-admin && bun run test -- src/pages/atlas/weekly-nutrition-template-page.test.tsx`
   - FAIL before reconciliation fix: changed product on existing item did not create/delete the item.
+- Quality review regression:
+  - `cd apps/web-admin && bun run test -- src/pages/atlas/weekly-nutrition-template-page.test.tsx src/pages/atlas/nutrition-api.test.ts`
+  - FAIL before production fixes: 5 failed / 25 passed.
+  - Failures proved empty current-template success mapped to `INTERNAL_ERROR`, cleared text serialized as `null`, same-week query data overwrote unsaved title edits, Apply to Week stayed enabled while save was pending, and RU fallback text stayed hardcoded in English.
 
 ### GREEN
 
 - `cd apps/web-admin && bun run test -- src/pages/atlas/weekly-nutrition-template-page.test.tsx src/pages/atlas/nutrition-api.test.ts`
-  - PASS: 25 tests.
+  - PASS after initial Task 10 implementation: 25 tests.
+- `cd apps/web-admin && bun run test -- src/pages/atlas/weekly-nutrition-template-page.test.tsx src/pages/atlas/nutrition-api.test.ts`
+  - PASS after quality review fixes: 30 tests.
 - `cd apps/web-admin && bun run test -- src/App.test.tsx src/app/admin-navigation.test.ts`
   - PASS: 17 tests.
 
 ## Verification Evidence
 
+- `cd apps/web-admin && bun run test -- src/pages/atlas/weekly-nutrition-template-page.test.tsx src/pages/atlas/nutrition-api.test.ts src/App.test.tsx src/app/admin-navigation.test.ts`
+  - PASS after quality review fixes: 47 tests.
 - `cd apps/web-admin && bun run typecheck`
   - PASS.
 - `NX_SKIP_NX_CACHE=true bunx nx lint web-admin`
@@ -95,4 +110,5 @@ DONE_WITH_CONCERNS
 - Confirmed page imports UI only from bare `@shared/ui`; no direct icon/Radix/class utility imports in the page file.
 - Confirmed no `dangerouslySetInnerHTML`, raw HTML runtime import, body weight field, `WorkoutDay`, or `replace_week` UI/API path.
 - Confirmed save and apply are separate actions and tests assert save does not apply.
-- Shared `docs/*.xml` graph/verification updates were not made because this subagent packet did not include them in write scope; controller should decide whether to sync `M-WEB-ADMIN` paths and `V-M-WEB-ADMIN` frontend file lists for the new page.
+- Confirmed quality review code findings were fixed with regression coverage.
+- Shared `docs/*.xml` graph/verification sync was explicitly deferred to Task 13 by the approved nutrition-food-log plan; this fix did not modify `docs/knowledge-graph.xml` or `docs/verification-plan.xml`.

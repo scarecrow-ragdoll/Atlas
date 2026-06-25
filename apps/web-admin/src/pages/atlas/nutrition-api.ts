@@ -21,6 +21,9 @@
 //   applyAtlasNutritionTemplateToWeek - Seeds empty factual days from a weekly template.
 //   AtlasNutritionApiError - Typed API error thrown from GraphQL result error envelopes.
 // END_MODULE_MAP
+// START_CHANGE_SUMMARY
+//   LAST_CHANGE: 1.0.1 - Mapped empty current-template success responses to null for missing weekly templates.
+// END_CHANGE_SUMMARY
 
 import { GraphQLClient } from 'graphql-request';
 import { appConfig } from '@shared/config';
@@ -603,6 +606,19 @@ function unwrapResult<TValue, TValueKey extends string>(
   return value;
 }
 
+function unwrapNullableResult<TValue, TValueKey extends string>(
+  result: Partial<AtlasNutritionResult<TValueKey, TValue>> | null | undefined,
+  valueKey: TValueKey,
+): TValue | null {
+  const apiError = resultErrorToApiError(result);
+
+  if (apiError) {
+    throw apiError;
+  }
+
+  return result?.[valueKey] ?? null;
+}
+
 function unwrapListResult<TValue, TValueKey extends string>(
   result: (AtlasNutritionResultErrors & Record<TValueKey, TValue[]>) | null | undefined,
   valueKey: TValueKey,
@@ -790,16 +806,14 @@ export async function getAtlasNutritionTemplate(id: string): Promise<AtlasNutrit
 
 export async function getAtlasNutritionTemplateCurrent(
   weekStartDate: string,
-): Promise<AtlasNutritionTemplate> {
+): Promise<AtlasNutritionTemplate | null> {
   const response = await requestAtlasNutrition<{
-    nutritionTemplateCurrent: AtlasNutritionResult<'nutritionTemplate', AtlasNutritionTemplate>;
+    nutritionTemplateCurrent: Partial<
+      AtlasNutritionResult<'nutritionTemplate', AtlasNutritionTemplate>
+    >;
   }>(NUTRITION_TEMPLATE_CURRENT_QUERY, { weekStartDate });
 
-  return unwrapResult(
-    response.nutritionTemplateCurrent,
-    'nutritionTemplate',
-    'nutritionTemplateCurrent',
-  );
+  return unwrapNullableResult(response.nutritionTemplateCurrent, 'nutritionTemplate');
 }
 
 export async function createAtlasNutritionTemplate(
