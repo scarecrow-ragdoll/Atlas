@@ -118,8 +118,9 @@
     </M-GRAPHQL-SCHEMA>
 
     <M-API NAME="GoSharedHTTPAPI" TYPE="ENTRY_POINT" STATUS="implemented">
-      <purpose>Go HTTP API serving health, protected admin GraphQL, and public REST endpoints with goose migrations, sqlc-generated user/admin queries, and Redis-backed admin sessions.</purpose>
+      <purpose>Go HTTP API serving health, protected admin GraphQL, guarded Atlas browser GraphQL/REST endpoints, and public REST endpoints with goose migrations, sqlc-generated user/admin queries, Redis-backed admin sessions, and credentialed web-admin CORS/origin boundaries.</purpose>
       <path>apps/api</path>
+      <path>apps/api/cmd/server/main.go</path>
       <path>apps/api/sqlc.yaml</path>
       <path>apps/api/internal/service/admin_auth.go</path>
       <path>apps/api/internal/repository/postgres/admin_repo.go</path>
@@ -127,6 +128,9 @@
       <path>apps/api/internal/repository/redis/admin_session_store.go</path>
       <path>apps/api/internal/middleware/admin_auth.go</path>
       <path>apps/api/internal/middleware/admin_origin.go</path>
+      <path>apps/api/internal/middleware/cors.go</path>
+      <path>apps/api/internal/atlas/middleware/auth_separation_test.go</path>
+      <path>apps/api/internal/atlas/middleware/pin_guard_test.go</path>
       <path>apps/api/internal/repository/postgres/queries</path>
       <path>apps/api/internal/repository/postgres/generated</path>
       <depends>M-GO-CONFIG, M-GO-LOGGER, M-GRAPHQL-SCHEMA</depends>
@@ -141,6 +145,8 @@
         <class-AdminAuthService PURPOSE="First-admin bootstrap, login, current admin, create admin, and logout service." />
         <fn-adminSessionStore PURPOSE="Redis-backed opaque session store using HMAC-derived keys." />
         <fn-adminAuthMiddleware PURPOSE="Session-cookie principal hydration, GraphQL cookie bridge, and admin origin guard." />
+        <fn-atlasBrowserCors PURPOSE="Credentialed web-admin CORS and OPTIONS preflight coverage for guarded Atlas browser POST/DELETE/GET routes." />
+        <fn-atlasAuthSeparation PURPOSE="Atlas PIN cookie/session checks remain separated from admin session cookies while sharing the web-admin browser origin boundary." />
       </annotations>
     </M-API>
 
@@ -154,13 +160,17 @@
       <path>apps/web-admin/src/pages/login-page.tsx</path>
       <path>apps/web-admin/src/pages/atlas/nutrition-api.ts</path>
       <path>apps/web-admin/src/pages/atlas/product-library-page.tsx</path>
+      <path>apps/web-admin/src/pages/atlas/nutrition-overview-page.tsx</path>
+      <path>apps/web-admin/src/pages/atlas/weekly-nutrition-template-page.tsx</path>
+      <path>apps/web-admin/src/pages/atlas/ai-export-api.ts</path>
+      <path>apps/web-admin/src/pages/atlas/ai-export-builder-page.tsx</path>
       <path>apps/web-admin/src/app/i18n.tsx</path>
       <path>apps/web-admin/src/styles/atlas.css</path>
       <path>apps/web-admin/src/shared/ui</path>
       <path>apps/web-admin/src/shared/ui/layout/admin-app-shell.tsx</path>
       <path>apps/web-admin/src/shared/ui/primitives/sidebar.tsx</path>
       <path>apps/web-admin/src/pages/ui-kit-page.tsx</path>
-      <depends>M-GRAPHQL-SCHEMA, M-API</depends>
+      <depends>M-GRAPHQL-SCHEMA, M-API, M-API-NUTRITION, M-API-AI-EXPORT</depends>
       <verification-ref>V-M-WEB-ADMIN</verification-ref>
       <annotations>
         <export-ViteRouter PURPOSE="Vite React Router pages for admin home, users list, create, and detail routes." />
@@ -172,6 +182,10 @@
         <export-LoginPage PURPOSE="Public login form for backend cookie-backed admin sessions." />
         <export-AtlasNutritionApiAdapter PURPOSE="Raw credentialed /graphql/atlas adapter for factual daily food logs, product catalog, weekly template item operations, template apply, and typed result-error normalization without admin GraphQL codegen." />
         <export-AtlasProductLibraryPage PURPOSE="API-backed `/atlas/nutrition/products` route for private nutrition products with active/archived filtering, form validation, and create/update/archive/restore mutations." />
+        <export-AtlasNutritionOverviewPage PURPOSE="API-backed `/atlas/nutrition` route for factual daily food entries, product selection, grams consumed, snapshot macros, add/edit/delete, and calculated totals." />
+        <export-AtlasWeeklyNutritionTemplatePage PURPOSE="API-backed `/atlas/nutrition/template` route for editable weekly product plans and seed-empty-days apply behavior." />
+        <export-AtlasAiExportApiAdapter PURPOSE="Guarded local REST adapter for AI export generation and exportId-only ZIP download links with browser credentials." />
+        <export-AtlasAiExportBuilderPage PURPOSE="API-backed `/atlas/ai-export` route for local prompt/ZIP generation with date range, section toggles, nutrition inclusion, and ready/error/progress states." />
         <export-AtlasI18n PURPOSE="Lightweight EN/RU translation provider used by Atlas web-admin nutrition pages." />
         <export-SidebarLogout PURPOSE="Sidebar user-menu logout action that revokes the backend session, disables while pending, clears protected frontend query caches, and returns to login." />
         <export-UiKit PURPOSE="Approved Radix Rhea @shared/ui primitive, sidebar-07 shell, theme toggle, and layout surface for admin pages with zinc/sidebar base tokens and indigo theme accents." />
@@ -258,6 +272,25 @@
         <constraint-MacroCalc PURPOSE="Soft-deleted products contribute 0 macros. Override REPLACE removes all template occurrences of same product." />
       </annotations>
     </M-API-NUTRITION>
+
+    <M-API-AI-EXPORT NAME="AtlasAiExportModule" TYPE="CORE_LOGIC" STATUS="implemented">
+      <purpose>Atlas WAVE-07 AI export module: local prompt and ZIP generation from existing Atlas data, including detailed factual nutrition entries, planned weekly template entries, and unresolved legacy nutrition diagnostics.</purpose>
+      <path>apps/api/internal/atlas/models/ai_export.go</path>
+      <path>apps/api/internal/atlas/repository/postgres/ai_export_repo.go</path>
+      <path>apps/api/internal/atlas/service/ai_export_service.go</path>
+      <path>apps/api/internal/atlas/service/ai_export_data_provider.go</path>
+      <path>apps/api/internal/atlas/service/atlas_ai_export_data_provider.go</path>
+      <path>apps/api/internal/handler/ai_export_handler.go</path>
+      <path>apps/api/internal/atlas/graph/schema/ai_export.graphql</path>
+      <depends>M-API, M-API-NUTRITION</depends>
+      <verification-ref>V-M-API-AI-EXPORT</verification-ref>
+      <annotations>
+        <export-AiExportService PURPOSE="Generates local/private export archives and prompts, persists export metadata, lists/deletes exports, and propagates nutrition provider failures." />
+        <export-AtlasAiExportDataProvider PURPOSE="Serializes daily nutrition logs, weekly template planned entries, and legacy nutrition diagnostics with product names, grams, per-100g snapshots, and totals." />
+        <export-AiExportHandler PURPOSE="Guarded REST generate/download/user-profile endpoints for self-hosted browser use without external AI calls." />
+        <constraint-LocalOnly PURPOSE="AI export packages are local/self-hosted; photos are excluded unless explicitly selected and no hosted AI/SaaS sharing is introduced." />
+      </annotations>
+    </M-API-AI-EXPORT>
 
     <M-PRODUCT-DOCS NAME="ProductDocs" TYPE="UTILITY" STATUS="partial">
       <purpose>Product background, glossary, journeys, personas, business rules, and data dictionary used as planning context.</purpose>
@@ -382,6 +415,7 @@
     <CrossLink from="M-WEB-ADMIN" to="M-API" relation="sends credentialed admin GraphQL requests with session cookies" />
     <CrossLink from="M-WEB-ADMIN" to="M-API" relation="authenticates through cookie-backed loginAdmin, reads me through CurrentAdmin, and revokes sessions through logoutAdmin" />
     <CrossLink from="M-WEB-ADMIN" to="M-API-NUTRITION" relation="sends credentialed Atlas nutrition GraphQL requests to /graphql/atlas through raw local adapter documents" />
+    <CrossLink from="M-WEB-ADMIN" to="M-API-AI-EXPORT" relation="sends credentialed local AI export REST requests and uses exportId-only guarded download links" />
     <CrossLink from="M-WEB" to="M-API" relation="uses public REST users API" />
     <CrossLink from="M-BOT" to="M-GO-CONFIG" relation="uses shared config package" />
     <CrossLink from="M-BOT" to="M-GO-LOGGER" relation="uses shared logger package" />
@@ -422,6 +456,8 @@
     <CrossLink from="M-PLAN-TO-BEADS-SKILL" to="M-GRACE-WORKFLOW" relation="converts approved plans into Beads milestone, epic, and task graphs while preserving GRACE source-plan intent" />
     <CrossLink from="M-SUBAGENT-REVIEW-LOOP-SKILL" to="M-GRACE-WORKFLOW" relation="reviews and revises agent-generated artifacts through independent subagent approval loops under controller adjudication" />
     <CrossLink from="M-API" to="M-API-NUTRITION" relation="wires nutrition repos, services, and resolvers in main.go and gqlgen config" />
+    <CrossLink from="M-API" to="M-API-AI-EXPORT" relation="wires AI export service, data provider, and guarded REST handler routes in main.go" />
     <CrossLink from="M-API-NUTRITION" to="M-API" relation="uses API foundation: postgres pool, sqlc config, gqlgen config, go module path, and middleware auth" />
+    <CrossLink from="M-API-AI-EXPORT" to="M-API-NUTRITION" relation="exports detailed daily and planned nutrition product payloads from nutrition services" />
   </Project>
 </KnowledgeGraph>

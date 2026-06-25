@@ -274,9 +274,9 @@
 
     <M-API NAME="GoSharedHTTPAPI" TYPE="ENTRY_POINT" LAYER="1" ORDER="1" STATUS="implemented">
       <contract>
-        <purpose>Serve HTTP health, protected admin GraphQL, and public REST endpoints with PostgreSQL, Redis admin sessions, credentialed CORS/origin guards, goose migrations, sqlc-generated user/admin queries, and shared service logic.</purpose>
+        <purpose>Serve HTTP health, protected admin GraphQL, guarded Atlas GraphQL/REST, and public REST endpoints with PostgreSQL, Redis admin/PIN sessions, credentialed CORS/origin guards, goose migrations, sqlc-generated user/admin queries, and shared service logic.</purpose>
         <inputs>
-          <param name="http-requests" type="health, credentialed admin GraphQL, and public REST HTTP requests" />
+          <param name="http-requests" type="health, credentialed admin GraphQL, guarded Atlas browser GraphQL/REST, and public REST HTTP requests" />
           <param name="config" type="validated API config" />
         </inputs>
         <outputs>
@@ -296,6 +296,8 @@
         <export-admin-repository PURPOSE="Expose PostgreSQL admin_users repository adapter backed by sqlc-generated pgx/v5 queries." />
         <export-admin-session-store PURPOSE="Expose Redis-backed opaque admin session storage using HMAC-derived keys." />
         <export-admin-auth-middleware PURPOSE="Expose admin principal context, cookie bridge, session lookup, and origin guard middleware." />
+        <export-atlas-browser-routes PURPOSE="Expose guarded Atlas browser GraphQL, media, AI export, backup, and PIN auth routes with credentialed web-admin CORS." />
+        <export-atlas-browser-cors PURPOSE="Allow web-admin GET, POST, DELETE, and OPTIONS preflight requests before Atlas PIN/auth handlers while keeping unsafe guarded routes behind the admin origin guard." />
         <export-user-rest-handler PURPOSE="Expose `/api/users` public REST handlers." />
         <export-user-resolvers PURPOSE="Expose generated admin user query and mutation resolvers protected by admin session context." />
         <export-admin-auth-resolvers PURPOSE="Expose loginAdmin, logoutAdmin, me, and createAdmin GraphQL resolvers." />
@@ -311,6 +313,7 @@
         <source>apps/api/internal/repository/redis/admin_session_store.go</source>
         <source>apps/api/internal/middleware/admin_auth.go</source>
         <source>apps/api/internal/middleware/admin_origin.go</source>
+        <source>apps/api/internal/atlas/middleware/auth_separation_test.go</source>
         <source>apps/api/internal/repository/postgres/queries</source>
         <source>apps/api/internal/repository/postgres/generated</source>
         <tests>apps/api/internal/**/*_test.go</tests>
@@ -329,21 +332,110 @@
       </notes>
     </M-API>
 
+    <M-API-NUTRITION NAME="AtlasNutritionModule" TYPE="CORE_LOGIC" LAYER="1" ORDER="1.4" STATUS="implemented">
+      <contract>
+        <purpose>Provide Atlas nutrition products, factual daily food logs, weekly product templates, legacy daily override compatibility, macro calculation, and PIN-guarded GraphQL operations.</purpose>
+        <inputs>
+          <param name="user-actions" type="product CRUD, daily entry CRUD, template CRUD, template item CRUD, and template apply requests" />
+          <param name="persistence" type="nutrition products, templates, template items, overrides, override items, and daily nutrition logs" />
+        </inputs>
+        <outputs>
+          <param name="nutrition-state" type="product records, factual daily logs with snapshot entries and totals, weekly template plans, apply results, and GraphQL result unions" />
+        </outputs>
+        <errors>
+          <error code="NUTRITION_VALIDATION_ERROR" />
+          <error code="NUTRITION_NOT_FOUND" />
+          <error code="NUTRITION_AUTH_ERROR" />
+        </errors>
+      </contract>
+      <interface>
+        <export-NutritionProductService PURPOSE="Create, update, list, archive, and restore private per-user food products with per-100g KJBJU values." />
+        <export-DailyNutritionLogService PURPOSE="Get or create date-scoped factual food logs, snapshot selected product macros into entries, update/delete entries, and return snapshot-based totals." />
+        <export-NutritionTemplateService PURPOSE="Create/update weekly template headers and load cascading planned product items." />
+        <export-NutritionTemplateApplyService PURPOSE="Seed empty factual daily logs from weekly template products without overwriting days that already contain factual or legacy nutrition data." />
+        <export-NutritionGraphQLResolvers PURPOSE="Expose PIN-guarded Atlas GraphQL queries and mutations for products, daily logs, templates, items, overrides, and apply results." />
+      </interface>
+      <depends>M-API</depends>
+      <target>
+        <source>apps/api/internal/atlas/models/nutrition.go</source>
+        <source>apps/api/internal/atlas/models/nutrition_daily.go</source>
+        <source>apps/api/internal/atlas/repository/postgres/nutrition_*_repo.go</source>
+        <source>apps/api/internal/atlas/repository/postgres/daily_nutrition_log_repo.go</source>
+        <source>apps/api/internal/atlas/service/nutrition_*_service.go</source>
+        <source>apps/api/internal/atlas/service/daily_nutrition_*_service.go</source>
+        <source>apps/api/internal/atlas/graph/schema/nutrition.graphql</source>
+        <source>apps/api/internal/atlas/graph/schema/daily_nutrition.graphql</source>
+        <source>apps/api/internal/atlas/graph/resolver/nutrition.go</source>
+        <source>apps/api/internal/atlas/graph/resolver/daily_nutrition.go</source>
+        <tests>apps/api/internal/atlas/service/*nutrition*_test.go and apps/api/internal/atlas/graph/resolver/*nutrition*_test.go</tests>
+      </target>
+      <observability>
+        <log-prefix>[NutritionProduct]</log-prefix>
+        <log-prefix>[NutritionTemplate]</log-prefix>
+        <log-prefix>[DailyNutritionLog]</log-prefix>
+        <critical-block>BLOCK_VALIDATE_NUTRITION_INPUT</critical-block>
+      </observability>
+      <verification-ref>V-M-API-NUTRITION</verification-ref>
+    </M-API-NUTRITION>
+
+    <M-API-AI-EXPORT NAME="AtlasAiExportModule" TYPE="CORE_LOGIC" LAYER="1" ORDER="1.5" STATUS="implemented">
+      <contract>
+        <purpose>Generate local Atlas AI export prompts and ZIP archives from existing self-hosted data, including detailed nutrition food entries and planned weekly template products.</purpose>
+        <inputs>
+          <param name="export-request" type="date range, section toggles, optional user comment, and current Atlas user profile" />
+          <param name="source-data" type="training, cardio, body, nutrition, legacy nutrition diagnostics, progress photos when explicitly included, and settings/profile data" />
+        </inputs>
+        <outputs>
+          <param name="export-package" type="local ZIP file, generated prompt, persisted export metadata, and guarded download response" />
+        </outputs>
+        <errors>
+          <error code="AI_EXPORT_VALIDATION_ERROR" />
+          <error code="AI_EXPORT_NOT_FOUND" />
+          <error code="AI_EXPORT_GENERATION_FAILED" />
+        </errors>
+      </contract>
+      <interface>
+        <export-AiExportService PURPOSE="Validate ranges, collect existing Atlas data, generate private archive files, persist metadata, and propagate provider failures instead of silently writing incomplete exports." />
+        <export-AtlasAiExportDataProvider PURPOSE="Build daily nutrition, weekly template, and legacy nutrition payloads with product names, grams eaten/planned, per-100g snapshots, totals, and unresolved legacy diagnostics." />
+        <export-AiExportHandler PURPOSE="Expose guarded local REST generate/download endpoints for browser use without calling external AI APIs." />
+      </interface>
+      <depends>M-API, M-API-NUTRITION</depends>
+      <target>
+        <source>apps/api/internal/atlas/models/ai_export.go</source>
+        <source>apps/api/internal/atlas/repository/postgres/ai_export_repo.go</source>
+        <source>apps/api/internal/atlas/service/ai_export_service.go</source>
+        <source>apps/api/internal/atlas/service/atlas_ai_export_data_provider.go</source>
+        <source>apps/api/internal/handler/ai_export_handler.go</source>
+        <tests>apps/api/internal/atlas/service/*ai_export*_test.go and apps/api/internal/handler/ai_export_handler_test.go</tests>
+      </target>
+      <observability>
+        <log-prefix>[AiExport]</log-prefix>
+        <critical-block>BLOCK_EXPORT_START</critical-block>
+        <critical-block>BLOCK_EXPORT_SUCCESS</critical-block>
+        <critical-block>BLOCK_EXPORT_FAILURE</critical-block>
+      </observability>
+      <verification-ref>V-M-API-AI-EXPORT</verification-ref>
+    </M-API-AI-EXPORT>
+
     <M-WEB-ADMIN NAME="ViteWebAdminApp" TYPE="UI_COMPONENT" LAYER="1" ORDER="2" STATUS="implemented">
       <contract>
-        <purpose>Provide the Vite React Router web-admin SPA, credentialed generated GraphQL client, approved shadcn-based UI-kit surface, and adapted sidebar-07 app shell for the admin user flow.</purpose>
+        <purpose>Provide the Vite React Router web-admin SPA, credentialed generated GraphQL client, approved shadcn-based UI-kit surface, adapted sidebar-07 app shell, API-backed Atlas nutrition pages, and local Atlas AI export builder.</purpose>
         <inputs>
           <param name="browser-events" type="React UI interactions" />
           <param name="graphql-api" type="credentialed admin API GraphQL endpoint at /graphql" />
+          <param name="atlas-graphql-api" type="credentialed Atlas GraphQL endpoint at /graphql/atlas" />
+          <param name="atlas-rest-api" type="credentialed Atlas REST endpoints for AI export generation and download" />
           <param name="config" type="VITE_GRAPHQL_API_URL and VITE_APP_NAME" />
         </inputs>
         <outputs>
-          <param name="ui-state" type="Rendered shell, route pages, sidebar state, breadcrumbs, user list, theme state, and mutation results" />
+          <param name="ui-state" type="Rendered shell, route pages, sidebar state, breadcrumbs, user list, Atlas nutrition logs/templates/products, AI export prompt/download state, theme state, and mutation results" />
           <param name="ui-kit" type="@shared/ui primitives, sidebar-07 app shell compositions, admin layout compositions, theme toggle, and /ui-kit reference page" />
         </outputs>
         <errors>
           <error code="WEB_ADMIN_QUERY_FAILED" />
           <error code="WEB_ADMIN_MUTATION_FAILED" />
+          <error code="ATLAS_NUTRITION_QUERY_FAILED" />
+          <error code="ATLAS_AI_EXPORT_REQUEST_FAILED" />
         </errors>
       </contract>
       <interface>
@@ -352,13 +444,17 @@
         <export-admin-auth-operations PURPOSE="Expose loginAdmin, logoutAdmin, CurrentAdmin, and createAdmin operation documents for generated types." />
         <export-AtlasNutritionApiAdapter PURPOSE="Expose raw /graphql/atlas nutrition adapter functions, local TypeScript result types, and normalized typed result errors without changing admin GraphQL client semantics." />
         <export-AtlasProductLibraryPage PURPOSE="Expose `/atlas/nutrition/products` as an API-backed private product catalog page with create, edit, archive, restore, filtering, validation, and EN/RU labels." />
+        <export-AtlasNutritionOverviewPage PURPOSE="Expose `/atlas/nutrition` as an API-backed factual daily food log with product selection, grams, snapshot macros, add/edit/delete entries, and calculated day totals." />
+        <export-AtlasWeeklyNutritionTemplatePage PURPOSE="Expose `/atlas/nutrition/template` as an API-backed weekly product plan editor with template item reconciliation and seed-empty-days apply." />
+        <export-AtlasAiExportApiAdapter PURPOSE="Expose guarded local REST calls for `/api/ai-export/generate` and safe exportId-based ZIP download URL construction." />
+        <export-AtlasAiExportBuilderPage PURPOSE="Expose `/atlas/ai-export` as a local prompt/ZIP builder with date range, section toggles, nutrition inclusion, progress/ready/error states, and no external AI calls." />
         <export-AdminAuthFrontend PURPOSE="Expose CurrentAdmin-backed auth provider, login page, protected route layout, safe return-to handling, and sidebar logout for the web-admin app." />
         <export-LoginRoute PURPOSE="Render `/login` outside the sidebar shell and authenticate through cookie-backed `loginAdmin`." />
         <export-ProtectedRoutes PURPOSE="Protect all non-login admin routes through `CurrentAdmin` before rendering the global admin shell." />
         <export-ui-kit PURPOSE="Expose approved Radix Rhea shadcn primitives, sidebar-07 shell compositions, zinc/sidebar base tokens, indigo theme accents, theme toggle, and admin layout compositions through @shared/ui." />
         <export-ui-kit-reference PURPOSE="Expose /ui-kit as the visible component reference route for future admin pages." />
       </interface>
-      <depends>M-GRAPHQL-SCHEMA, M-API</depends>
+      <depends>M-GRAPHQL-SCHEMA, M-API, M-API-NUTRITION, M-API-AI-EXPORT</depends>
       <target>
         <source>apps/web-admin</source>
         <source>apps/web-admin/src/shared/api/graphql-client.ts</source>
@@ -367,6 +463,14 @@
         <source>apps/web-admin/src/pages/atlas/nutrition-api.test.ts</source>
         <source>apps/web-admin/src/pages/atlas/product-library-page.tsx</source>
         <source>apps/web-admin/src/pages/atlas/product-library-page.test.tsx</source>
+        <source>apps/web-admin/src/pages/atlas/nutrition-overview-page.tsx</source>
+        <source>apps/web-admin/src/pages/atlas/nutrition-overview-page.test.tsx</source>
+        <source>apps/web-admin/src/pages/atlas/weekly-nutrition-template-page.tsx</source>
+        <source>apps/web-admin/src/pages/atlas/weekly-nutrition-template-page.test.tsx</source>
+        <source>apps/web-admin/src/pages/atlas/ai-export-api.ts</source>
+        <source>apps/web-admin/src/pages/atlas/ai-export-api.test.ts</source>
+        <source>apps/web-admin/src/pages/atlas/ai-export-builder-page.tsx</source>
+        <source>apps/web-admin/src/pages/atlas/ai-export-builder-page.test.tsx</source>
         <source>apps/web-admin/src/app/i18n.tsx</source>
         <source>apps/web-admin/src/styles/atlas.css</source>
         <source>apps/web-admin/src/app/protected-admin-layout.tsx</source>

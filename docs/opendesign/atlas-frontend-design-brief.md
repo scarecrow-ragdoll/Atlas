@@ -10,6 +10,7 @@ START_MODULE_CONTRACT
   MAP_MODE: SUMMARY
 END_MODULE_CONTRACT
 START_CHANGE_SUMMARY
+  LAST_CHANGE: 1.0.1 - Updated Nutrition and AI Export guidance for factual product food logs and local export payloads.
   LAST_CHANGE: 1.0.0 - Initial design brief for OpenDesign generation.
 END_CHANGE_SUMMARY
 -->
@@ -36,15 +37,15 @@ The app should feel like a **personal analytics dashboard** and **training log**
 
 ## 2. Design Goals
 
-| Goal | Description |
-|------|-------------|
-| **Fast data entry** | Minimize clicks and page loads for common tasks. Forms should be compact, tab-friendly, and validate inline. |
-| **Minimal routine overhead** | Prefill working weights from exercise library. Default to today's date. Keep weekly template auto-applied. |
-| **Calm, data-focused interface** | No flashing animations, no gamification, no social feeds. Clean typography, clear hierarchy, muted palette. |
-| **Weekly review flow** | Dashboard, charts, and AI export are designed around the weekly cycle. User should feel a natural rhythm: log → check-in → export → review. |
-| **Privacy and ownership** | Self-hosted feel: no cloud badges, no "share" buttons, no SaaS language. The app belongs to the user. |
-| **Readable tables and forms** | Desktop-first. Tables with clear column alignment, sortable headers, consistent spacing. Forms with visible labels, clear validation, and sufficient field width. |
-| **Desktop-first, responsive** | Primary use case is desktop browser (large screen for data entry). Must work on tablet. Mobile is secondary but should not break. |
+| Goal                             | Description                                                                                                                                                       |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Fast data entry**              | Minimize clicks and page loads for common tasks. Forms should be compact, tab-friendly, and validate inline.                                                      |
+| **Minimal routine overhead**     | Prefill working weights from exercise library. Default to today's date. Keep weekly template auto-applied.                                                        |
+| **Calm, data-focused interface** | No flashing animations, no gamification, no social feeds. Clean typography, clear hierarchy, muted palette.                                                       |
+| **Weekly review flow**           | Dashboard, charts, and AI export are designed around the weekly cycle. User should feel a natural rhythm: log → check-in → export → review.                       |
+| **Privacy and ownership**        | Self-hosted feel: no cloud badges, no "share" buttons, no SaaS language. The app belongs to the user.                                                             |
+| **Readable tables and forms**    | Desktop-first. Tables with clear column alignment, sortable headers, consistent spacing. Forms with visible labels, clear validation, and sufficient field width. |
+| **Desktop-first, responsive**    | Primary use case is desktop browser (large screen for data entry). Must work on tablet. Mobile is secondary but should not break.                                 |
 
 ---
 
@@ -137,7 +138,7 @@ Atlas App
 ├── Training Log           # Daily workout entry by date
 ├── Exercises              # Exercise library CRUD
 ├── Body                   # Check-ins, weight, measurements, photos
-├── Nutrition              # Products, template, daily overrides
+├── Nutrition              # Daily food log, products, weekly product plan
 ├── Charts                 # Progress visualization
 ├── AI Export              # Prompt builder and ZIP download
 ├── AI Review              # Save and view AI analysis responses
@@ -148,57 +149,68 @@ Atlas App
 ### Section Details
 
 #### Dashboard (PAGE-001)
+
 - **Purpose**: Weekly overview at a glance. Entry point to today's actions.
 - **Data**: current date, last body weight, workout days this week, cardio sessions this week, current goal, next check-in reminder
 - **Actions**: add workout (→ Training Log today), add cardio, add weight, open check-in (→ Body), generate AI report (→ AI Export)
 - **Transitions**: each quick action navigates to the corresponding section with relevant date pre-selected
 
 #### Training Log (PAGE-002)
+
 - **Purpose**: Daily workout entry. Add exercises with sets.
 - **Data**: exercises for selected date, sets per exercise (weight/reps/RPE/RIR), exercise comments, cardio entries
 - **Actions**: select date via calendar, add exercise from library, add set, edit/delete set, add cardio, save
 - **Transitions**: add exercise opens exercise selector modal → Exercises section
 
 #### Exercises (PAGE-003)
+
 - **Purpose**: Manage exercise library. Foundation for workout diary.
 - **Data**: exercise list (name, muscle groups, working weight, media count, status)
 - **Actions**: create, edit, view detail, upload media, archive/restore, search/filter
 - **Transitions**: exercise detail → inline media gallery; row click → detail view
 
 #### Body (PAGE-005, PAGE-006 combined)
+
 - **Purpose**: Weekly check-ins, body weight, measurements, progress photos.
 - **Data**: check-in history, weight entries, 10 measurement types, 2-4 photos per check-in
 - **Actions**: create check-in, add weight entry, add measurements, upload photos, view gallery
 - **Transitions**: photo thumbnail → full-size viewer
 
 #### Nutrition (PAGE-007)
-- **Purpose**: Food product catalog, weekly meal template, daily overrides.
-- **Data**: products list, weekly template with gram amounts, daily override, macro summary
-- **Actions**: create/edit products, create/edit template, override specific day
-- **Transitions**: template item → product selector modal → Products section
+
+- **Purpose**: Log what was actually eaten from a private product catalog, manage weekly planned products, and compare daily KJBJU totals.
+- **Data**: factual daily food entries (product name snapshot + grams), product list with per-100g KJBJU, weekly template product rows, macro summary
+- **Actions**: add/edit/delete daily food entries, create/edit/archive/restore products, create/edit/apply weekly product plan
+- **Transitions**: daily product selector → Products section; weekly template item → product selector; template apply seeds empty daily logs only
 
 #### Charts (PAGE-008)
+
 - **Purpose**: Visualize progress over time.
 - **Data**: exercise progress (working weight, best set, e1RM, volume), body (weight, fat %, measurements), nutrition (weekly averages)
 - **Actions**: select exercise, select chart type, select date range
 - **Transitions**: chart point hover → tooltip with exact value
 
 #### AI Export (PAGE-009)
+
 - **Purpose**: Generate AI prompt and export package.
 - **Data**: date range, section toggles, persistent context, week flags, generated prompt, ZIP download
 - **Actions**: configure export → generate → preview prompt → download ZIP → copy prompt
+- **Nutrition payload**: include product names, grams consumed/planned, per-100g snapshots, calculated entry macros, daily totals, planned weekly template entries, and unresolved legacy diagnostics instead of macro totals alone.
 
 #### AI Review (PAGE-009 related)
+
 - **Purpose**: Save AI analysis responses.
 - **Data**: review history list, individual review (date range, AI response text, notes, planned actions)
 - **Actions**: create review (paste AI response), view history, edit notes
 
 #### Import / Export (PAGE-010)
+
 - **Purpose**: Full backup and restore.
 - **Data**: export progress, import validation summary, import results
 - **Actions**: export with/without media, upload backup file, dry-run validation, confirm import
 
 #### Settings (PAGE-011)
+
 - **Purpose**: Application configuration.
 - **Data**: PIN state, AI context fields, units, export preferences
 - **Actions**: enable/disable/change PIN, edit AI context, change units, change default export weeks
@@ -233,6 +245,7 @@ Atlas App
 ```
 
 #### Sidebar Navigation
+
 - Fixed left sidebar, 240-280px wide
 - Vertical nav list with icons + labels
 - Active page highlighted with accent color
@@ -241,24 +254,28 @@ Atlas App
 - No badges, no notifications, no user avatar (single user)
 
 #### Top Bar
+
 - Thin horizontal bar above content area (not overlapping sidebar)
 - Left: app name "Atlas" (non-clickable, small/medium text)
 - Right: session status indicator (green dot + "Unlocked" when PIN session active, or lock icon when PIN disabled)
 - No user avatar, no logout button (session is managed via PIN unlock/lock)
 
 #### Main Content Area
+
 - Fills remaining width after sidebar
 - Scrollable vertically (no horizontal scroll)
 - Padding: 24-32px from edges
 - Background: slightly different tint from cards/sidebar for depth
 
 #### Page Header Pattern
+
 - Every page has a consistent header row
 - Left: page title (h1)
 - Right: primary action button (e.g., "Add Exercise", "Create Check-in", "Generate Export")
 - Optional: secondary actions as icon buttons or dropdown
 
 #### Primary Action Button
+
 - Accent-colored, clearly visible
 - Consistent position in page header
 - Label is verb-based: "Add Exercise", "Log Workout", "Create Check-in"
@@ -275,6 +292,7 @@ Atlas App
 ### Session State
 
 When PIN is enabled:
+
 - If no valid session cookie, the app shows a full-screen PIN unlock overlay before any content
 - The overlay is a centered modal card on a blurred/dimmed background
 - The sidebar and nav are hidden until unlocked
@@ -282,6 +300,7 @@ When PIN is enabled:
 - A "Lock" button in the top bar (or Settings) manually revokes the session
 
 When PIN is disabled:
+
 - No PIN overlay — app opens directly to Dashboard
 - Top bar shows "PIN: Off" indicator
 - Settings shows PIN as "Not configured"
@@ -292,146 +311,146 @@ When PIN is disabled:
 
 ### Page Header
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | Every section page |
-| Content | Title (left), primary action button (right), optional secondary actions |
-| Behavior | Sticky top of content area on scroll |
-| States | Title only (no actions on detail pages) |
+| Aspect   | Description                                                             |
+| -------- | ----------------------------------------------------------------------- |
+| Used on  | Every section page                                                      |
+| Content  | Title (left), primary action button (right), optional secondary actions |
+| Behavior | Sticky top of content area on scroll                                    |
+| States   | Title only (no actions on detail pages)                                 |
 
 ### Cards
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | Dashboard (stat cards), entity lists, detail sections |
-| Content | Varies: stat value + label, entity summary, form section |
+| Aspect   | Description                                                  |
+| -------- | ------------------------------------------------------------ |
+| Used on  | Dashboard (stat cards), entity lists, detail sections        |
+| Content  | Varies: stat value + label, entity summary, form section     |
 | Behavior | Clickable when representing an entity; static for stat cards |
-| States | Default, hover (subtle border/shadow change), selected |
+| States   | Default, hover (subtle border/shadow change), selected       |
 
 ### Data Table / List
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | Exercises, products, check-in history, AI review history, backup list |
-| Content | Rows with columns, optional row actions (edit/delete/archive) as icon buttons |
+| Aspect   | Description                                                                               |
+| -------- | ----------------------------------------------------------------------------------------- |
+| Used on  | Exercises, products, check-in history, AI review history, backup list                     |
+| Content  | Rows with columns, optional row actions (edit/delete/archive) as icon buttons             |
 | Behavior | Row click opens detail; sortable by column header click; optional search/filter bar above |
-| States | Default rows, hover row highlight, selected row |
+| States   | Default rows, hover row highlight, selected row                                           |
 
 ### Filter Bar
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | Exercise list, check-in history, charts |
-| Content | Search input, toggle chips (active/inactive), optional dropdown filters |
-| Behavior | Client-side or server-side filtering; clear filter button |
+| Aspect   | Description                                                             |
+| -------- | ----------------------------------------------------------------------- |
+| Used on  | Exercise list, check-in history, charts                                 |
+| Content  | Search input, toggle chips (active/inactive), optional dropdown filters |
+| Behavior | Client-side or server-side filtering; clear filter button               |
 
 ### Date Picker / Calendar
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | Training Log (date switcher), charts (date range), AI export (date range), check-in creation |
-| Content | Month grid with day cells, prev/next month arrows, "Today" button |
-| Behavior | Click day to select; date range mode: click start, click end; inline or popover |
-| States | Selected date (accent fill), today (outline or dot), dates with data (subtle indicator) |
+| Aspect   | Description                                                                                  |
+| -------- | -------------------------------------------------------------------------------------------- |
+| Used on  | Training Log (date switcher), charts (date range), AI export (date range), check-in creation |
+| Content  | Month grid with day cells, prev/next month arrows, "Today" button                            |
+| Behavior | Click day to select; date range mode: click start, click end; inline or popover              |
+| States   | Selected date (accent fill), today (outline or dot), dates with data (subtle indicator)      |
 
 ### Form Drawer / Modal / Page
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | Exercise create/edit, check-in form, product form, settings sections |
-| Content | Form fields with labels, validation messages, save/cancel buttons |
+| Aspect   | Description                                                                                                 |
+| -------- | ----------------------------------------------------------------------------------------------------------- |
+| Used on  | Exercise create/edit, check-in form, product form, settings sections                                        |
+| Content  | Form fields with labels, validation messages, save/cancel buttons                                           |
 | Behavior | Create: open modal/drawer; Edit: prefill form; Save closes on success; Cancel discards with unsaved warning |
-| States | Filled, focused, validation error, saving (disabled + spinner), success (auto-close or toast) |
+| States   | Filled, focused, validation error, saving (disabled + spinner), success (auto-close or toast)               |
 
 ### Confirmation Dialog
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | Archive exercise, delete media, delete check-in, destructive settings changes |
-| Content | Title ("Archive exercise?"), description ("Exercise will be moved to inactive."), Cancel + Confirm buttons |
-| Behavior | Confirm performs action and closes; Cancel closes without action |
-| States | Default, confirm loading (after click while API processes) |
-| Type | Modal overlay with backdrop |
+| Aspect   | Description                                                                                                |
+| -------- | ---------------------------------------------------------------------------------------------------------- |
+| Used on  | Archive exercise, delete media, delete check-in, destructive settings changes                              |
+| Content  | Title ("Archive exercise?"), description ("Exercise will be moved to inactive."), Cancel + Confirm buttons |
+| Behavior | Confirm performs action and closes; Cancel closes without action                                           |
+| States   | Default, confirm loading (after click while API processes)                                                 |
+| Type     | Modal overlay with backdrop                                                                                |
 
 ### File Upload Dropzone
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | Exercise media, progress photos |
-| Content | Dashed border area with upload icon, "Drag & drop or click to upload" text, file type/size constraints listed below |
-| Behavior | Click opens file picker; drag highlights dropzone; shows preview after selection; multiple files allowed |
-| Validation | Reject unsupported types with inline error; reject oversized files; show file name/size per file |
-| States | Empty (dashed border), dragging (highlighted border), uploading (progress per file), success (thumbnail), error (red border + message) |
+| Aspect     | Description                                                                                                                            |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Used on    | Exercise media, progress photos                                                                                                        |
+| Content    | Dashed border area with upload icon, "Drag & drop or click to upload" text, file type/size constraints listed below                    |
+| Behavior   | Click opens file picker; drag highlights dropzone; shows preview after selection; multiple files allowed                               |
+| Validation | Reject unsupported types with inline error; reject oversized files; show file name/size per file                                       |
+| States     | Empty (dashed border), dragging (highlighted border), uploading (progress per file), success (thumbnail), error (red border + message) |
 
 ### Media Gallery
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | Exercise detail, check-in detail |
-| Content | Grid of thumbnails, optional delete button per item |
-| Behavior | Click thumbnail opens lightbox/full-size viewer; video shows play icon overlay |
-| States | Empty (hidden or "No media" text), loading (skeleton grid), loaded (thumbnail grid) |
+| Aspect   | Description                                                                         |
+| -------- | ----------------------------------------------------------------------------------- |
+| Used on  | Exercise detail, check-in detail                                                    |
+| Content  | Grid of thumbnails, optional delete button per item                                 |
+| Behavior | Click thumbnail opens lightbox/full-size viewer; video shows play icon overlay      |
+| States   | Empty (hidden or "No media" text), loading (skeleton grid), loaded (thumbnail grid) |
 
 ### Graph Card
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | Charts page |
-| Content | Chart title, chart visualization, optional period/dataset selector, tooltip on hover |
-| Behavior | Responsive to container width; interactive tooltip; optional legend |
-| States | Loading (spinner in card area), error (error message + retry), empty ("No data for this period"), loaded |
+| Aspect   | Description                                                                                              |
+| -------- | -------------------------------------------------------------------------------------------------------- |
+| Used on  | Charts page                                                                                              |
+| Content  | Chart title, chart visualization, optional period/dataset selector, tooltip on hover                     |
+| Behavior | Responsive to container width; interactive tooltip; optional legend                                      |
+| States   | Loading (spinner in card area), error (error message + retry), empty ("No data for this period"), loaded |
 
 ### Empty State
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | All list/table pages when no data exists |
-| Content | Simple illustration + heading + description + action button |
+| Aspect  | Description                                                                               |
+| ------- | ----------------------------------------------------------------------------------------- |
+| Used on | All list/table pages when no data exists                                                  |
+| Content | Simple illustration + heading + description + action button                               |
 | Example | "No exercises yet. Create your first exercise to get started." with "Add Exercise" button |
-| States | Only one: empty (shown when list is empty after loading completes) |
+| States  | Only one: empty (shown when list is empty after loading completes)                        |
 
 ### Loading State
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | All pages during data fetch |
+| Aspect  | Description                                                                                 |
+| ------- | ------------------------------------------------------------------------------------------- |
+| Used on | All pages during data fetch                                                                 |
 | Content | Skeleton placeholders (pulsing gray rectangles mimicking card/row shape), or subtle spinner |
-| States | One per fetch opportunity; avoid nested spinners |
+| States  | One per fetch opportunity; avoid nested spinners                                            |
 
 ### Error State
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | All pages on API failure |
-| Content | Error message (human-readable), optional error detail, retry button |
-| Behavior | Retry button re-fetches data; persistent until resolved |
-| States | Single error state per error boundary |
+| Aspect   | Description                                                         |
+| -------- | ------------------------------------------------------------------- |
+| Used on  | All pages on API failure                                            |
+| Content  | Error message (human-readable), optional error detail, retry button |
+| Behavior | Retry button re-fetches data; persistent until resolved             |
+| States   | Single error state per error boundary                               |
 
 ### Validation State
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | All forms |
-| Content | Red border on invalid field, error message below field, prevent form submission |
+| Aspect   | Description                                                                                 |
+| -------- | ------------------------------------------------------------------------------------------- |
+| Used on  | All forms                                                                                   |
+| Content  | Red border on invalid field, error message below field, prevent form submission             |
 | Behavior | Validate on blur (field-level), validate all on submit; clear error when field is corrected |
-| States | Field error, form-level error (top of form) |
+| States   | Field error, form-level error (top of form)                                                 |
 
 ### Success Toast
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | After successful mutations: save, delete, archive, upload, export, import |
-| Content | Brief success message, optional undo action |
+| Aspect   | Description                                                                |
+| -------- | -------------------------------------------------------------------------- |
+| Used on  | After successful mutations: save, delete, archive, upload, export, import  |
+| Content  | Brief success message, optional undo action                                |
 | Behavior | Auto-dismiss after 3-4 seconds; undo available for non-destructive actions |
-| States | Visible (slide-in from top-right or bottom-center), dismissing (fade out) |
+| States   | Visible (slide-in from top-right or bottom-center), dismissing (fade out)  |
 
 ### Unsaved Changes Warning
 
-| Aspect | Description |
-|--------|-------------|
-| Used on | Any form with unsaved data when user tries to navigate away or close modal |
-| Content | Browser native or custom dialog: "You have unsaved changes. Discard them?" |
-| Behavior | "Discard" closes without saving; "Stay" keeps form open |
+| Aspect   | Description                                                                |
+| -------- | -------------------------------------------------------------------------- |
+| Used on  | Any form with unsaved data when user tries to navigate away or close modal |
+| Content  | Browser native or custom dialog: "You have unsaved changes. Discard them?" |
+| Behavior | "Discard" closes without saving; "Stay" keeps form open                    |
 
 ---
 
@@ -439,33 +458,33 @@ When PIN is disabled:
 
 Full list of MVP screens with route suggestions:
 
-| # | Screen | Route Suggestion | Wave |
-|---|--------|-----------------|------|
-| A1 | PIN Unlock | `/pin-unlock` | WAVE-01 |
-| A2 | PIN Protected (app access) | implicit — all routes behind guard | WAVE-01 |
-| 1 | Dashboard | `/` | WAVE-03+ |
-| 2 | Training Log (daily) | `/log?date=YYYY-MM-DD` | WAVE-03 |
-| 3 | Exercise List | `/exercises` | WAVE-02 |
-| 4 | Exercise Detail | `/exercises/:id` | WAVE-02 |
-| 5 | Exercise Create | `/exercises/new` (or modal) | WAVE-02 |
-| 6 | Exercise Edit | `/exercises/:id/edit` (or modal) | WAVE-02 |
-| 7 | Archived Exercises | `/exercises?filter=archived` | WAVE-02 |
-| 8 | Body Overview | `/body` | WAVE-04 |
-| 9 | Body Check-in Create | `/body/check-in/new` | WAVE-04 |
-| 10 | Body Check-in Detail | `/body/check-in/:id` | WAVE-04 |
-| 11 | Progress Photo Gallery | `/body/photos` | WAVE-04 |
-| 12 | Nutrition Overview | `/nutrition` | WAVE-05 |
-| 13 | Product List | `/nutrition/products` | WAVE-05 |
-| 14 | Product Create/Edit | `/nutrition/products/new` (or modal) | WAVE-05 |
-| 15 | Nutrition Template | `/nutrition/template` | WAVE-05 |
-| 16 | Daily Override | `/nutrition/override?date=YYYY-MM-DD` | WAVE-05 |
-| 17 | Charts | `/charts` | WAVE-06 |
-| 18 | AI Export | `/ai/export` | WAVE-07 |
-| 19 | AI Review List | `/ai/reviews` | WAVE-08 |
-| 20 | AI Review Create | `/ai/reviews/new` | WAVE-08 |
-| 21 | AI Review Detail | `/ai/reviews/:id` | WAVE-08 |
-| 22 | Import/Export | `/data` | WAVE-09 |
-| 23 | Settings | `/settings` | WAVE-01 |
+| #   | Screen                       | Route Suggestion                                          | Wave     |
+| --- | ---------------------------- | --------------------------------------------------------- | -------- |
+| A1  | PIN Unlock                   | `/pin-unlock`                                             | WAVE-01  |
+| A2  | PIN Protected (app access)   | implicit — all routes behind guard                        | WAVE-01  |
+| 1   | Dashboard                    | `/`                                                       | WAVE-03+ |
+| 2   | Training Log (daily)         | `/log?date=YYYY-MM-DD`                                    | WAVE-03  |
+| 3   | Exercise List                | `/exercises`                                              | WAVE-02  |
+| 4   | Exercise Detail              | `/exercises/:id`                                          | WAVE-02  |
+| 5   | Exercise Create              | `/exercises/new` (or modal)                               | WAVE-02  |
+| 6   | Exercise Edit                | `/exercises/:id/edit` (or modal)                          | WAVE-02  |
+| 7   | Archived Exercises           | `/exercises?filter=archived`                              | WAVE-02  |
+| 8   | Body Overview                | `/body`                                                   | WAVE-04  |
+| 9   | Body Check-in Create         | `/body/check-in/new`                                      | WAVE-04  |
+| 10  | Body Check-in Detail         | `/body/check-in/:id`                                      | WAVE-04  |
+| 11  | Progress Photo Gallery       | `/body/photos`                                            | WAVE-04  |
+| 12  | Nutrition Overview           | `/atlas/nutrition`                                        | WAVE-05  |
+| 13  | Product List                 | `/atlas/nutrition/products`                               | WAVE-05  |
+| 14  | Product Create/Edit          | `/atlas/nutrition/products` (inline form)                 | WAVE-05  |
+| 15  | Nutrition Template           | `/atlas/nutrition/template`                               | WAVE-05  |
+| 16  | Daily Override Compatibility | `/atlas/nutrition/overrides/new` (redirects to daily log) | WAVE-05  |
+| 17  | Charts                       | `/charts`                                                 | WAVE-06  |
+| 18  | AI Export                    | `/atlas/ai-export`                                        | WAVE-07  |
+| 19  | AI Review List               | `/ai/reviews`                                             | WAVE-08  |
+| 20  | AI Review Create             | `/ai/reviews/new`                                         | WAVE-08  |
+| 21  | AI Review Detail             | `/ai/reviews/:id`                                         | WAVE-08  |
+| 22  | Import/Export                | `/data`                                                   | WAVE-09  |
+| 23  | Settings                     | `/settings`                                               | WAVE-01  |
 
 ---
 
@@ -478,11 +497,13 @@ Full list of MVP screens with route suggestions:
 **Route**: `/pin-unlock` (or full-screen overlay, no route change)
 
 **Primary user actions**:
+
 - Enter PIN digit by digit (numeral input)
 - Submit PIN to unlock
 - View lockout message if too many failed attempts
 
 **Main content blocks**:
+
 - Centered card on dimmed backdrop
 - App logo/name "Atlas" at top
 - PIN input field (secured, asterisk/dot display)
@@ -491,6 +512,7 @@ Full list of MVP screens with route suggestions:
 - Lockout message if rate-limited
 
 **Form fields**:
+
 - PIN: password input, numeric keyboard on mobile, 4-20 digits
 
 **Empty state**: N/A (always shows input)
@@ -498,16 +520,19 @@ Full list of MVP screens with route suggestions:
 **Loading state**: Submit button shows spinner during API call
 
 **Error state**:
+
 - Wrong PIN: generic "Invalid PIN" message below input — clear on next attempt
 - Lockout: "Too many attempts. Try again in X minutes."
 - Network error: "Unable to connect. Check your server."
 
 **Validation behavior**:
+
 - Numeric only (reject non-digit input silently)
 - Length 4-20 — form is submittable only when length >= minimum
 - Input clears on wrong PIN (field clears, not page reload)
 
 **Important UX notes**:
+
 - On successful unlock, redirect to Dashboard (or the page user was trying to access)
 - On wrong PIN, input clears but does not show lockout details (security)
 - If PIN is disabled, this screen is never shown
@@ -537,10 +562,12 @@ Full list of MVP screens with route suggestions:
 **Route**: `/`
 
 **Primary user actions**:
+
 - Click quick action buttons to navigate to other sections
 - View weekly stats
 
 **Main content blocks**:
+
 - Page header: "Dashboard" with today's date subtitle
 - **Stat card row**: Last body weight, Training days this week, Cardio sessions this week
 - **Goal card**: Current goal from settings
@@ -548,6 +575,7 @@ Full list of MVP screens with route suggestions:
 - **Quick actions grid**: 5 buttons — Add Workout, Add Cardio, Add Weight, Weekly Check-in, Generate AI Report
 
 **Empty state** (first launch):
+
 - "Welcome to Atlas! Get started by creating your first exercise."
 - Quick action buttons still visible but may link to relevant setup pages
 
@@ -556,12 +584,14 @@ Full list of MVP screens with route suggestions:
 **Error state**: Error message with retry button replacing stat cards. Quick actions may still be functional (they navigate, not load data).
 
 **Important UX notes**:
+
 - Stat values are large and prominent
 - Week calculation: Monday-Sunday or configurable
 - Check-in reminder: shown if no check-in recorded in the last 7 days
 - Quick actions pre-select today's date in target section
 
 **Links/transitions**:
+
 - Add Workout → Training Log (today)
 - Add Cardio → Training Log, cardio section open
 - Add Weight → Body, new weight entry
@@ -579,6 +609,7 @@ Full list of MVP screens with route suggestions:
 **Route**: `/exercises`
 
 **Primary user actions**:
+
 - View exercise list/table
 - Search by name
 - Filter: active / archived / all
@@ -586,6 +617,7 @@ Full list of MVP screens with route suggestions:
 - Click "Add Exercise" to create
 
 **Main content blocks**:
+
 - Page header: "Exercises" + "Add Exercise" button
 - Filter bar: search input, toggle chips (Active | Archived | All)
 - Data table with columns: Name, Muscle Groups, Working Weight, Media, Status, Last Updated
@@ -602,6 +634,7 @@ Full list of MVP screens with route suggestions:
 | Updated | Date | Relative: "2 days ago" |
 
 **Empty state**:
+
 - "No exercises yet"
 - "Create your first exercise to start building your library."
 - "Add Exercise" primary button
@@ -611,6 +644,7 @@ Full list of MVP screens with route suggestions:
 **Error state**: Error message: "Failed to load exercises. Retry."
 
 **Important UX notes**:
+
 - Search is client-side for small libraries (filters displayed rows)
 - Row click opens detail view (same page inline or separate route)
 - Archive action: confirmation dialog "Move [exercise name] to inactive? It can be restored later."
@@ -618,6 +652,7 @@ Full list of MVP screens with route suggestions:
 - Pagination: cursor-based, 20 items per page default. "Show more" or infinite scroll.
 
 **Links/transitions**:
+
 - Row click → Exercise Detail (`/exercises/:id`)
 - "Add Exercise" → Create form (modal or page)
 
@@ -632,12 +667,14 @@ Full list of MVP screens with route suggestions:
 **Route**: `/exercises/:id`
 
 **Primary user actions**:
+
 - View all exercise fields
 - Upload/delete media
 - Edit exercise
 - Archive/restore exercise
 
 **Main content blocks**:
+
 - Page header: exercise name + status badge
 - **Info section**: muscle groups (tags), working weight, description, personal notes
 - **Media gallery**: grid of thumbnails with upload dropzone at top
@@ -651,12 +688,14 @@ Full list of MVP screens with route suggestions:
 **Error state**: "Exercise not found" with link back to list
 
 **Important UX notes**:
+
 - Status badge is prominent near the name
 - Archived exercises: show yellow/amber status badge, all fields still editable
 - Edit opens same form as create but prefilled
 - No delete — only archive. Text: "Archive this exercise? It will be hidden from the exercise selector but data will be preserved."
 
 **Links/transitions**:
+
 - Edit → Edit form (modal)
 - Back arrow/list → Exercise list
 - Upload media → triggers file upload flow
@@ -672,6 +711,7 @@ Full list of MVP screens with route suggestions:
 **Route**: Modal or page: `/exercises/new` or `/exercises/:id/edit`
 
 **Primary user actions**:
+
 - Fill in exercise fields
 - Upload media
 - Save or cancel
@@ -691,23 +731,27 @@ Full list of MVP screens with route suggestions:
 **Loading state**: Form disabled with spinner during save
 
 **Error state**:
+
 - Field validation errors shown inline
 - Server error: toast "Failed to save exercise"
 - Network error: toast with retry
 
 **Validation behavior**:
+
 - Name: validate on blur, show "Name is required" if empty
 - Working Weight: validate on blur, show "Must be greater than 0" if <= 0
 - Duplicate name: on blur or save, query existing names. If duplicate found, show non-blocking warning: "An exercise with this name already exists. You can still save — exercise identity is ID, not name."
 - All fields validate on submit
 
 **Important UX notes**:
+
 - Save button: "Save Exercise" (primary, accent)
 - Cancel button: "Cancel" (secondary) — unsaved changes warning if form is dirty
 - On save success: close modal and refresh list/detail
 - Edit mode: prefill all fields, including existing media list
 
 **Links/transitions**:
+
 - Save → List (refresh) or Detail view
 - Cancel → List
 
@@ -722,10 +766,12 @@ Full list of MVP screens with route suggestions:
 **Route**: `/exercises?filter=archived` (tab or filter on exercise list)
 
 **Primary user actions**:
+
 - View list of archived exercises
 - Restore exercise
 
 **Main content blocks**:
+
 - Same table as active list, filtered to `isActive=false`
 - Status column shows "Inactive" badge (gray)
 - Restore button per row (or in row actions)
@@ -733,11 +779,13 @@ Full list of MVP screens with route suggestions:
 **Empty state**: "No archived exercises."
 
 **Important UX notes**:
+
 - Archived exercises are excluded from all exercise selectors (training log, etc.) by default
 - Restore is a one-click action with confirmation: "Restore [name] to active exercises?"
 - Archived detail page is still accessible via direct URL
 
 **Links/transitions**:
+
 - Restore → row returns to active list (snackbar: "Exercise restored")
 - Detail click → Exercise Detail (same as active)
 
@@ -750,16 +798,19 @@ Full list of MVP screens with route suggestions:
 **Location**: Embedded in Exercise Detail page
 
 **Primary user actions**:
+
 - Upload image/video files
 - View media thumbnails
 - Open full-size viewer/lightbox
 - Delete individual media files
 
 **Main content blocks**:
+
 - Upload dropzone (top of gallery area)
 - Thumbnail grid below
 
 **Upload flow**:
+
 1. User drags files or clicks dropzone
 2. Client-side validation: file type, file size
 3. Show upload progress per file
@@ -767,12 +818,14 @@ Full list of MVP screens with route suggestions:
 5. On error: inline error message per file
 
 **Delete flow**:
+
 1. Click delete icon on thumbnail
 2. Confirmation: "Delete this media?"
 3. On confirm: remove from UI, API call to delete
 4. On success: toast "Media deleted"
 
 **Important UX notes**:
+
 - Supported types: JPEG, PNG, WEBP, MP4, MOV, WEBM
 - Size limits: 25MB images, 250MB video
 - Video thumbnails show play overlay icon
@@ -787,6 +840,7 @@ Full list of MVP screens with route suggestions:
 **Route**: `/log?date=YYYY-MM-DD`
 
 **Primary user actions**:
+
 - Select date via calendar/date picker
 - View exercises for selected date
 - Add exercise from library
@@ -796,6 +850,7 @@ Full list of MVP screens with route suggestions:
 - Save changes
 
 **Main content blocks**:
+
 - **Date switcher**: left/right arrows, date display, calendar popover button, "Today" button
 - **Exercise list**: ordered list of exercises for the day, each in a card
 - **Exercise card**: name (linked to library), working weight display, sets table, comment area, cardio section
@@ -806,11 +861,13 @@ Full list of MVP screens with route suggestions:
 - **Save button**: saves entire day
 
 **Empty state** (no exercises for selected date):
+
 - "No exercises logged for this date."
 - "Add Exercise" prominent button
 - Cardio section still visible
 
 **Empty state** (date in the future):
+
 - Not applicable — future dates may be disabled or show "Nothing logged yet"
 
 **Loading state**: Skeleton for date switcher, skeleton exercise cards
@@ -818,6 +875,7 @@ Full list of MVP screens with route suggestions:
 **Error state**: Error toast on save failure
 
 **Validation behavior**:
+
 - Weight: >= 0
 - Reps: positive integer
 - RPE: 1-10 (optional)
@@ -825,6 +883,7 @@ Full list of MVP screens with route suggestions:
 - If working weight is 0 or empty, user can still enter custom weight per set
 
 **Important UX notes**:
+
 - Working weight auto-populated from Exercise Library when adding exercise
 - User can override per-set weight (does not update library working weight)
 - "Duplicate exercise" allowed — no restrictions
@@ -838,6 +897,7 @@ Full list of MVP screens with route suggestions:
 **Design assumption**: The daily log is the most complex screen. Sets table should be compact — each row: [set#] [weight input] [reps input] [RPE input] [RIR input] [delete icon]. The set number is auto-incrementing.
 
 **Links/transitions**:
+
 - Exercise name → Exercise Detail (opens in new view, not modal)
 - Add Exercise → Exercise selector modal (searchable list)
 - Add Cardio → inline cardio form within same page
@@ -854,12 +914,14 @@ Full list of MVP screens with route suggestions:
 **Route**: `/body`
 
 **Primary user actions**:
+
 - View check-in history
 - Create new check-in
 - Add standalone weight entry
 - View progress photos gallery
 
 **Main content blocks**:
+
 - Page header: "Body" + "New Check-in" button
 - **Stat row**: Last weight, Last check-in date, Days since last check-in
 - **Quick actions**: "Add Weight", "New Check-in"
@@ -873,6 +935,7 @@ Full list of MVP screens with route suggestions:
 **Error state**: Error message with retry
 
 **Links/transitions**:
+
 - "New Check-in" → Body Check-in Create
 - Check-in row → Body Check-in Detail
 - "View Photos" → Progress Photo Gallery
@@ -886,6 +949,7 @@ Full list of MVP screens with route suggestions:
 **Route**: `/body/check-in/new` or `/body/check-in/:id/edit`
 
 **Primary user actions**:
+
 - Enter date (default today)
 - Enter weight (optional)
 - Enter body fat % (optional)
@@ -918,12 +982,14 @@ Full list of MVP screens with route suggestions:
 **Loading state**: Form disabled with spinner during save
 
 **Validation behavior**:
+
 - All measurement values: positive numbers
 - Paired measurements: if user enters left, right is optional. If user enters only "common" field, it's treated as both sides equal
 - Photos: 2-4 recommended but not strictly enforced (design assumption: accept 0-10, show recommendation text)
 - Date: must be valid, should not be in the future (subtle warning if future)
 
 **Important UX notes**:
+
 - Paired measurements: show two input fields side by side with "Left" / "Right" labels, plus a "Single Value" option that fills both
 - Measurements in a grid layout: 3 columns on desktop, 2 on tablet, 1 on mobile
 - Photo upload: same dropzone pattern as Exercise Media
@@ -940,12 +1006,14 @@ Full list of MVP screens with route suggestions:
 **Route**: `/body/check-in/:id`
 
 **Primary user actions**:
+
 - View all measurements
 - View/edit notes
 - View photos in gallery
 - Delete check-in
 
 **Main content blocks**:
+
 - Check-in header: date, weight, body fat %
 - **Measurement grid**: all 10 measurements displayed as labeled stat cards
 - **Photo gallery**: similar to Exercise Media gallery
@@ -959,6 +1027,7 @@ Full list of MVP screens with route suggestions:
 **Error state**: "Check-in not found" with link back to overview
 
 **Important UX notes**:
+
 - Delete: requires confirmation dialog. "Delete this check-in? All measurements and photos will be permanently deleted."
 - Delete is actual delete (not soft)
 - Edit opens the same form as create but prefilled
@@ -972,11 +1041,13 @@ Full list of MVP screens with route suggestions:
 **Route**: `/body/photos` (or tab within Body section)
 
 **Primary user actions**:
+
 - View all photos grouped by check-in date
 - Click photo to view full-size
 - Delete photo
 
 **Main content blocks**:
+
 - Grid of photo thumbnails with date label
 - Grouped by check-in (date header above each group)
 - Click opens lightbox viewer
@@ -985,6 +1056,7 @@ Full list of MVP screens with route suggestions:
 **Empty state**: "No progress photos yet. Add photos during your weekly check-in."
 
 **Important UX notes**:
+
 - Photos are always associated with a check-in — cannot be standalone
 - Photo angles displayed as small badges: Front, Side, Back, Custom
 
@@ -992,22 +1064,25 @@ Full list of MVP screens with route suggestions:
 
 ### 8.14 Nutrition Overview
 
-**Purpose**: View weekly nutrition template and daily overrides.
+**Purpose**: View and edit the factual daily food log for the selected date, with quick links to products and the weekly plan.
 
-**Route**: `/nutrition`
+**Route**: `/atlas/nutrition`
 
 **Primary user actions**:
-- View product list
-- View/create weekly template
-- Override specific day
-- View macro summary
+
+- Select date
+- Add products eaten with gram amounts
+- Edit/delete food entries
+- View macro summary from returned daily entry snapshots
+- Open product library or weekly plan
 
 **Main content blocks**:
-- Page header: "Nutrition" with sub-tabs or section links
-- **Product section**: list of products, "Add Product" button
-- **Template section**: if template exists, show week's plan. If not, "Create Template" button
-- **Macro summary card**: daily/weekly totals: calories, protein, fat, carbs
-- **Day selector**: click a day of the current week to view override
+
+- Page header: "Nutrition" with date controls and links to Products / Weekly Plan
+- **Daily food form**: product selector, grams consumed, optional meal label and notes
+- **Entry table**: product name snapshot, grams, per-entry calories/protein/fat/carbs, notes, edit/delete actions
+- **Macro summary card**: daily totals: calories, protein, fat, carbs
+- **Weekly context link**: opens the weekly product plan; applying a plan seeds empty days only
 
 **Empty state**: "No products yet. Create your first food product to build your nutrition plan."
 
@@ -1016,10 +1091,11 @@ Full list of MVP screens with route suggestions:
 **Error state**: Error toast with retry
 
 **Links/transitions**:
-- Product click → Product Edit
-- "Add Product" → Product Form
-- "Create Template" → Template Editor
-- Day click → Daily Override
+
+- Product link → Product Library
+- "Create Product" → Product Library form
+- "Weekly Plan" → Template Editor
+- Date change → Daily food log for selected date
 
 ---
 
@@ -1027,9 +1103,10 @@ Full list of MVP screens with route suggestions:
 
 **Purpose**: Manage food product catalog.
 
-**Route**: `/nutrition/products`
+**Route**: `/atlas/nutrition/products`
 
 **Primary user actions**:
+
 - View product list
 - Add new product
 - Edit existing product
@@ -1046,6 +1123,7 @@ Full list of MVP screens with route suggestions:
 | Notes | Textarea | No | |
 
 **Important UX notes**:
+
 - 4 macro fields side by side in a row (Calories, Protein, Fat, Carbs)
 - Values are per 100g (display label: "per 100g")
 - Delete with confirmation: "Delete [product name]? This may affect existing templates."
@@ -1054,17 +1132,20 @@ Full list of MVP screens with route suggestions:
 
 ### 8.16 Weekly Nutrition Template
 
-**Purpose**: Create and edit the weekly meal plan.
+**Purpose**: Create and edit the weekly product plan used to seed empty factual daily logs.
 
-**Route**: `/nutrition/template`
+**Route**: `/atlas/nutrition/template`
 
 **Primary user actions**:
+
 - Add products with gram amounts
 - Assign meal labels (optional)
 - View calculated macro totals
 - Save template
+- Apply plan to week using seed-empty-days behavior
 
 **Main content blocks**:
+
 - Template header: week start date selector, template title
 - **Items table**: columns — Product, Amount (g), Meal Label (optional), Actions (delete)
 - **Add Item row/button**: opens product selector
@@ -1073,39 +1154,39 @@ Full list of MVP screens with route suggestions:
 **Empty state**: "No template yet. Create a weekly nutrition plan by adding products."
 
 **Important UX notes**:
+
 - Only one active template at a time
-- Template auto-applies to all 7 days
-- Items can be reordered (drag handles)
+- Applying a template seeds only empty factual daily logs; days already edited by the user are preserved
+- Items can be reordered if supported by the current implementation
 - Meal labels: dropdown (Breakfast, Lunch, Dinner, Snack, Pre-workout, Post-workout) or free text
 
 **Design assumption**: product selector is a searchable dropdown or modal showing product name + macros per 100g. After selecting, user enters grams.
 
 ---
 
-### 8.17 Daily Nutrition Override
+### 8.17 Daily Nutrition Override Compatibility
 
-**Purpose**: Override nutrition for a specific day.
+**Purpose**: Historical compatibility surface for legacy daily override records. The active UI should route users to the factual `/atlas/nutrition` daily food log.
 
-**Route**: `/nutrition/override?date=YYYY-MM-DD`
+**Route**: `/atlas/nutrition/overrides/new`
 
 **Primary user actions**:
-- View template-calculated macros for the day
-- Add/subtract/replace products
-- View recalculated macros
+
+- Redirect or link to the selected factual daily food log
+- Preserve legacy diagnostics in AI export when old override data exists
 
 **Main content blocks**:
-- Date display
-- **Template items**: shown as read-only list (what the template provides)
-- **Override items**: editable table — Product, Operation (add/subtract/replace), Amount (g), Meal Label
-- **Add override item button**
-- **Recalculated macro totals**: template ± overrides
 
-**Empty state**: No overrides yet — shows template values only with "Add override" button
+- Date display
+- Link back to `/atlas/nutrition`
+- Optional read-only legacy diagnostics if implemented later
+
+**Empty state**: Use the factual daily food log for this date.
 
 **Important UX notes**:
-- Override operations: "add" (extra), "subtract" (reduce), "replace" (swap product)
-- Template values are not editable here (edit template instead)
-- Changes affect only the selected date
+
+- Do not reintroduce target-only KJBJU override editing as the primary UI.
+- The factual daily log is the current source of truth for what was actually eaten.
 
 ---
 
@@ -1116,12 +1197,14 @@ Full list of MVP screens with route suggestions:
 **Route**: `/charts`
 
 **Primary user actions**:
+
 - Select chart category (Training, Body, Nutrition)
 - Select specific entity (exercise, measurement type)
 - Select date range
 - View chart with interactive tooltips
 
 **Main content blocks**:
+
 - **Category tabs**: Training | Body | Nutrition
 - **Entity selector**: dropdown (exercises for Training, measurements for Body, macro for Nutrition)
 - **Date range picker**: preset buttons (4 weeks, 3 months, 6 months, 1 year, All) or custom range
@@ -1135,6 +1218,7 @@ Full list of MVP screens with route suggestions:
 **Error state**: "Failed to load chart data. Retry."
 
 **Important UX notes**:
+
 - Charts should have clear labels, grid lines, and interactive tooltips
 - Chart type: line chart for trends, bar chart for weekly comparisons
 - Multiple metrics can be shown on one chart (e.g., working weight + volume overlay)
@@ -1149,9 +1233,10 @@ Full list of MVP screens with route suggestions:
 
 **Purpose**: Configure and generate AI export package.
 
-**Route**: `/ai/export`
+**Route**: `/atlas/ai-export`
 
 **Primary user actions**:
+
 - Select date range
 - Toggle data sections to include
 - Review persistent AI context
@@ -1163,6 +1248,7 @@ Full list of MVP screens with route suggestions:
 - Download ZIP
 
 **Main content blocks**:
+
 - **Date range**: preset (4 weeks default) or custom
 - **Persistent context**: read-only display of settings (goal, height, age, experience, etc.)
 - **Section toggles**: checkboxes — Workouts, Exercises, Sets, Comments, RPE/RIR, Cardio, Body Weight, Measurements, Photos (off by default), Nutrition
@@ -1181,6 +1267,7 @@ Full list of MVP screens with route suggestions:
 **Error state**: "Export failed." toast with retry
 
 **Important UX notes**:
+
 - Generation may take several seconds (especially with photos) — show progress
 - Photos toggle has a note: "Photos will be included in ZIP. File size may be large."
 - Prompt preview is scrollable/copyable
@@ -1197,11 +1284,13 @@ Full list of MVP screens with route suggestions:
 **Route**: `/ai/reviews`
 
 **Primary user actions**:
+
 - View list of saved reviews
 - Click to view detail
 - Delete review
 
 **Main content blocks**:
+
 - Page header: "AI Reviews" + "New Review" button
 - **Review list**: cards/table — date range, preview of response text (truncated), date saved, planned actions count
 
@@ -1212,6 +1301,7 @@ Full list of MVP screens with route suggestions:
 **Error state**: Error message with retry
 
 **Links/transitions**:
+
 - Row click → AI Review Detail
 - "New Review" → AI Review Create
 
@@ -1224,6 +1314,7 @@ Full list of MVP screens with route suggestions:
 **Route**: `/ai/reviews/new`
 
 **Primary user actions**:
+
 - Enter date range
 - Paste AI response text
 - Add user notes
@@ -1240,6 +1331,7 @@ Full list of MVP screens with route suggestions:
 | Planned Actions | Textarea | No |
 
 **Important UX notes**:
+
 - Date range should generally match the AI export date range
 - AI Response textarea should be generous in size (paste large responses)
 
@@ -1252,12 +1344,14 @@ Full list of MVP screens with route suggestions:
 **Route**: `/ai/reviews/:id`
 
 **Primary user actions**:
+
 - View full AI response text
 - View notes and planned actions
 - Edit
 - Delete
 
 **Main content blocks**:
+
 - Header: date range
 - **AI response**: scrollable text block (monospace or styled quote)
 - **Notes**: displayed text
@@ -1273,6 +1367,7 @@ Full list of MVP screens with route suggestions:
 **Route**: `/data`
 
 **Primary user actions**:
+
 - Export full backup
 - Toggle media inclusion
 - Upload backup file for import
@@ -1280,6 +1375,7 @@ Full list of MVP screens with route suggestions:
 - Confirm import
 
 **Main content blocks**:
+
 - **Export section**:
   - "Export All Data" button
   - "Include media" toggle (default: on)
@@ -1297,11 +1393,13 @@ Full list of MVP screens with route suggestions:
 **Loading state**: Spinner during export generation, spinner during validation, progress bar during import
 
 **Error state**:
+
 - Invalid ZIP format: "The uploaded file is not a valid backup."
 - Schema mismatch: "This backup was created by a different app version. Cannot import."
 - Validation failure: detailed error message
 
 **Important UX notes**:
+
 - Import is destructive — it replaces all existing data
 - Warning dialog on import: "This will replace ALL existing data. Are you sure?"
 - Progress indication for long-running imports
@@ -1316,6 +1414,7 @@ Full list of MVP screens with route suggestions:
 **Route**: `/settings`
 
 **Primary user actions**:
+
 - Enable/disable PIN
 - Change PIN
 - Edit AI context
@@ -1323,6 +1422,7 @@ Full list of MVP screens with route suggestions:
 - Change default export weeks
 
 **Main content blocks**:
+
 - **PIN section**:
   - Toggle: Enable/Disable PIN (with confirmation if disabling)
   - Change PIN: requires current PIN + new PIN (×2 confirm)
@@ -1341,12 +1441,14 @@ Full list of MVP screens with route suggestions:
 **Loading state**: Form disabled during save, spinner on toggle
 
 **Validation behavior**:
+
 - PIN: 4-20 digits only
 - Change PIN: current PIN must match, new PIN must match confirmation
 - Height: positive number
 - Age: positive integer
 
 **Important UX notes**:
+
 - Disabling PIN: confirmation "Are you sure? All data will be accessible without a PIN."
 - PIN change: current PIN, new PIN, confirm new PIN
 - Session lock: one-click, immediate, shows toast "Session locked"
@@ -1363,42 +1465,50 @@ The exercise list is the primary interface for managing the exercise library.
 **View modes**: Table view (default desktop). Card/grid view optional for small screens.
 
 **Search behavior**:
+
 - Search input at top of filter bar
 - Filters as user types (live filtering with debounce ~300ms)
 - Searches by name (case-insensitive contain match)
 - No full-text search in MVP — basic ILIKE/patter matching
 
 **Filter chips**:
+
 - Three mutually exclusive chips: Active (default) | Archived | All
 - Active filter: shows `isActive=true` exercises
 - Archived filter: shows `isActive=false` exercises
 - All filter: shows both
 
 **Pagination**:
+
 - Cursor-based pagination, 20 items per page
 - "Load more" button at bottom, or scroll-based infinite load
 - Total count displayed: "Showing 20 of 45 exercises"
 
 **Row actions**:
+
 - Row click: navigate to detail
 - Edit icon (pencil): opens edit modal directly from list
 - Archive/Restore icon: one-click with confirmation toast
 - Confirmation dialog for archive: "Archive [name]? It will be hidden from exercise selector."
 
 **Working weight display**:
+
 - Formatted with unit: "80 kg" or "175 lb"
 - If no working weight: "—" (dash)
 
 **Media count**:
+
 - Small camera icon + number
 - If 0: no icon shown (empty cell)
 
 **Status badge**:
+
 - Active: small green dot or "Active" label
 - Inactive: gray "Inactive" label
 - Badge next to name or in dedicated column
 
 **Sorting**:
+
 - Default sort: name (ascending, alphabetical)
 - Clickable column headers for sort: Name, Updated At
 - Single column sort at a time
@@ -1406,10 +1516,12 @@ The exercise list is the primary interface for managing the exercise library.
 ### 9.2 Create/Edit Exercise - Detailed UX
 
 **Mode detection**:
+
 - Create: form opens with empty fields, title "New Exercise"
 - Edit: form opens prefilled, title "Edit Exercise"
 
 **Name field**:
+
 - Text input, single line
 - Required indicator (asterisk)
 - On blur: trim whitespace, validate non-empty
@@ -1417,6 +1529,7 @@ The exercise list is the primary interface for managing the exercise library.
 - Warning is a yellow/info banner, not blocking. Save button remains enabled.
 
 **Muscle groups**:
+
 - Tag-style input: user types a muscle group, presses Enter or comma to create a tag
 - Tags are displayed as small chips with × to remove
 - Examples: Chest, Back, Shoulders, Biceps, Triceps, Quads, Hamstrings, Glutes, Abs, Calves, Forearms, Traps, Lats
@@ -1424,6 +1537,7 @@ The exercise list is the primary interface for managing the exercise library.
 - Empty by default
 
 **Working weight**:
+
 - Number input, optional
 - Label with unit indicator: "Working Weight (kg)" or "(lbs)"
 - Validation: if filled, must be > 0
@@ -1431,17 +1545,20 @@ The exercise list is the primary interface for managing the exercise library.
 - Helper text: "This weight will prefill when adding to workout"
 
 **Description**:
+
 - Textarea, multi-line
 - No rich text
 - Placeholder: "Technique notes, equipment needed, etc."
 
 **Personal Notes**:
+
 - Textarea, multi-line
 - Visually distinct from description (different border color or icon: lock/eye-off icon)
 - Placeholder: "Your private notes (not shown in AI export)"
 - This field is excluded from AI export
 
 **Media upload**:
+
 - Dropzone at bottom of form
 - Same constraints as detail page media upload
 - Upload during create: media is uploaded and associated when exercise is saved
@@ -1449,6 +1566,7 @@ The exercise list is the primary interface for managing the exercise library.
 - Existing media shown as thumbnails below dropzone
 
 **Save flow**:
+
 - Click "Save Exercise"
 - Client-side validation: name required
 - Server-side validation: name non-empty, working weight > 0 if provided
@@ -1458,6 +1576,7 @@ The exercise list is the primary interface for managing the exercise library.
 ### 9.3 Exercise Detail - Detailed UX
 
 **Layout**:
+
 - Top section: name (large), status badge (right), edit button (right)
 - Info card: working weight, muscle groups (tags), created/updated dates
 - Description card: full description text
@@ -1467,15 +1586,18 @@ The exercise list is the primary interface for managing the exercise library.
 - Future placeholder: subtle muted text "Exercise history and performance charts coming in a future update"
 
 **Status badge behaviors**:
+
 - Active: green badge "Active"
 - Inactive: gray badge "Inactive"
 
 **Archive button**:
+
 - When active: "Archive Exercise" button (secondary/destructive styling)
 - Confirmation: "Archive [name]? It will be hidden from the exercise selector. Media will be preserved."
 - After archive: badge changes to "Inactive", button changes to "Restore"
 
 **Restore button**:
+
 - When inactive: "Restore Exercise" button (primary styling)
 - Confirmation: "Restore [name] to active exercises?"
 - After restore: badge changes to "Active", button changes to "Archive"
@@ -1483,6 +1605,7 @@ The exercise list is the primary interface for managing the exercise library.
 ### 9.4 Archive/Restore - Detailed UX
 
 **Archive behavior**:
+
 - `isActive` set to `false`
 - Exercise removed from default lists and selectors
 - Exercise still accessible via direct URL or "Archived" filter
@@ -1491,6 +1614,7 @@ The exercise list is the primary interface for managing the exercise library.
 - Toast: "[Name] archived. Undo?" with undo option (5-second window)
 
 **Restore behavior**:
+
 - `isActive` set to `true`
 - Exercise returns to default lists and selectors
 - All media and history preserved
@@ -1499,6 +1623,7 @@ The exercise list is the primary interface for managing the exercise library.
 ### 9.5 Media Upload - Detailed UX
 
 **Upload flow**:
+
 1. User drops files or clicks dropzone area
 2. Client validates file type and size per file
 3. Each valid file shows a preview thumbnail with name and size
@@ -1509,12 +1634,14 @@ The exercise list is the primary interface for managing the exercise library.
 8. Failure: error on specific file, retry button
 
 **Delete flow**:
+
 1. Click trash icon on thumbnail
 2. Confirmation dialog: "Delete this media?"
 3. Confirm: API call, remove from UI
 4. Success toast: "Media deleted"
 
 **Gallery view**:
+
 - Grid layout: 3-4 columns on desktop, 2 on tablet, 1 on mobile
 - Thumbnails: 150-200px with consistent aspect ratio
 - Images: show actual thumbnail
@@ -1522,6 +1649,7 @@ The exercise list is the primary interface for managing the exercise library.
 - Hover: subtle overlay with file name, delete button
 
 **Lightbox**:
+
 - Click thumbnail → full-screen overlay
 - Image: centered, max dimensions respecting aspect ratio
 - Video: embedded player with controls
@@ -1531,6 +1659,7 @@ The exercise list is the primary interface for managing the exercise library.
 ### 9.6 Empty Libraries / Zero State
 
 When user has no exercises:
+
 - Exercise List shows empty state: "No exercises yet"
 - Subtitle: "Create your first exercise to build your training library."
 - Primary "Add Exercise" button
@@ -1540,6 +1669,7 @@ When user has no exercises:
 ### 9.7 Duplicate Name UX Note
 
 Because duplicate names are allowed:
+
 - List shows all exercises with the same name — differentiate by creation date or working weight
 - No uniqueness validation on name
 - Non-blocking warning on create/edit if duplicate detected
@@ -1551,6 +1681,7 @@ Because duplicate names are allowed:
 ## 10. Daily Log UX Details
 
 **Date navigation**:
+
 - Default: today
 - Arrows: ← Previous Day | Next Day → (disabled if future)
 - Calendar popover: click date display to open month calendar, click date to navigate
@@ -1558,6 +1689,7 @@ Because duplicate names are allowed:
 - Date with existing log data: subtle dot indicator on calendar
 
 **Adding exercises**:
+
 - "Add Exercise" button opens a searchable modal
 - Modal shows: search input, filtered list of active exercises (name + muscle groups)
 - Click exercise to add to day
@@ -1566,6 +1698,7 @@ Because duplicate names are allowed:
 - No duplicate prevention — same exercise can be added multiple times
 
 **Sets table** (per exercise):
+
 - Columns: #, Weight, Reps, RPE (opt), RIR (opt), [delete]
 - New set: last row with empty fields
 - Auto-incrementing set number
@@ -1573,12 +1706,14 @@ Because duplicate names are allowed:
 - Delete set: trash icon, no confirmation (undo via toast if needed)
 
 **Progression signals** (future display hints):
+
 - Currently metadata for AI export; when implemented visually, show small indicators:
   - Green up arrow: weight/volume increasing
   - Yellow dash: stable
   - Red down arrow: decreasing/regression
 
 **Save behavior**:
+
 - "Save" button in page header or bottom of page
 - Saves entire day: exercises, sets, comments, cardio
 - On save: toast "Saved" with timestamp
@@ -1589,6 +1724,7 @@ Because duplicate names are allowed:
 ## 11. Body Tracking UX Details
 
 **Weekly check-in flow**:
+
 1. Navigate to Body → click "New Check-in"
 2. Date defaults to today
 3. Enter weight (optional, numeric)
@@ -1605,11 +1741,13 @@ Because duplicate names are allowed:
 9. **Save button**
 
 **Standalone weight entry**:
+
 - Quick form on Body overview or Dashboard
 - Date + weight only
 - Source: "manual" (implied)
 
 **Progress photos grid**:
+
 - Thumbnails grouped by check-in date
 - Click opens lightbox
 - Angle label on thumbnail corner
@@ -1620,27 +1758,36 @@ Because duplicate names are allowed:
 ## 12. Nutrition UX Details
 
 **Product database**:
+
 - Simple list with search
 - Each row: Name, Calories, Protein, Fat, Carbs (per 100g)
-- Click row to edit, swipe/icon to delete
+- Click row to edit, archive/restore instead of hard delete where possible
 - Create form: inline or modal
 
+**Daily food log**:
+
+- Date selector defaults to today
+- Add entry: select active product, enter grams eaten, optional meal label and notes
+- Entry rows show product name snapshot, grams, per-100g KJBJU snapshot, calculated entry KJBJU, and edit/delete actions
+- Daily totals are derived from entries returned by the backend, not typed directly by the user
+
 **Weekly template**:
+
 - Shows week start date (default Monday of current week)
 - Items table: Product | Amount (g) | Meal Label | Actions
 - "Add Item" → product selector modal
 - Product selector: searchable list with macros per 100g
 - After selecting product, user enters grams and optional meal label
 - Macro totals calculated and displayed below table
-- Only one active template
+- Applying the template seeds empty factual daily logs for the selected week; existing factual food entries are not overwritten
 
-**Daily override**:
-- Click specific day in Nutrition overview
-- Shows template values (read-only) + override items (editable)
-- Add override item: select product, choose operation (add/subtract/replace), enter grams
-- Recalculated macros displayed
+**Daily override compatibility**:
+
+- Legacy daily overrides may still be represented in backend/export diagnostics
+- New user editing should happen through factual daily food entries
 
 **Macro summary**:
+
 - Card showing: Calories, Protein (g), Fat (g), Carbs (g)
 - Color-coded or bar indicators: protein in blue, fat in amber, carbs in purple (design choice)
 - Shows both absolute values and percentage breakdown
@@ -1652,6 +1799,7 @@ Because duplicate names are allowed:
 **Chart types per category**:
 
 **Training charts**:
+
 - Metric tabs: Working Weight | Best Set | e1RM | Volume | Total Reps | Working Sets
 - Exercise selector: dropdown of all exercises with data in period
 - Date range selector
@@ -1659,6 +1807,7 @@ Because duplicate names are allowed:
 - Each data point corresponds to a workout session
 
 **Body charts**:
+
 - Metric tabs: Weight | Body Fat % | Measurements
 - Measurements: multi-select (checkboxes) to overlay multiple measurements
 - Date range selector
@@ -1666,11 +1815,13 @@ Because duplicate names are allowed:
 - Overlay mode: each measurement in different color
 
 **Nutrition charts**:
+
 - Metric tabs: Calories | Protein | Fat | Carbs
 - Bar chart showing weekly averages
 - Date range selector
 
 **Common chart controls**:
+
 - Date range presets: 4w, 3m, 6m, 1y, All
 - Custom date range: from/to date pickers
 - Responsive: chart resizes with window
@@ -1696,18 +1847,22 @@ Because duplicate names are allowed:
     - Prompt preview shown in a styled code block
     - "Copy Prompt" button
     - "Download ZIP" button
+    - Nutrition export contains product names and grams consumed/planned, not only KJBJU totals
     - Summary: date range, sections included, file size
 
 ### Prompt Preview
+
 - Monospace font in a scrollable container
 - Copy button copies full prompt text to clipboard
 - No editing — prompt is generated
 
 ### Export Package
+
 - Downloaded as `.zip` file
 - Filename: `atlas-export-YYYY-MM-DD_YYYY-MM-DD.zip`
 
 ### AI Review
+
 - Create: form with date range, AI response textarea (large), notes, planned actions
 - List: cards with date range, response preview (truncated), date saved
 - Detail: full response, notes, planned actions
@@ -1717,6 +1872,7 @@ Because duplicate names are allowed:
 ## 15. Import / Export UX Details
 
 ### Export
+
 - Section title: "Export Data"
 - "Export All Data" button
 - Toggle: "Include media files" (default: on)
@@ -1726,6 +1882,7 @@ Because duplicate names are allowed:
 - File name: `atlas-backup-YYYY-MM-DD.zip`
 
 ### Import
+
 - Section title: "Import Data"
 - Warning banner: "Importing will replace ALL existing data. This cannot be undone."
 - File upload dropzone: accepts .zip files only
@@ -1738,6 +1895,7 @@ Because duplicate names are allowed:
 - Result: success message or detailed error
 
 ### Error scenarios
+
 - Invalid ZIP: error message "Not a valid backup file"
 - Wrong schema version: "Backup incompatible with current app version"
 
@@ -1748,6 +1906,7 @@ Because duplicate names are allowed:
 Settings page is organized into sections with clear headings:
 
 ### PIN Security
+
 - Toggle: PIN protection (On/Off)
 - When OFF: explanation text "Enable PIN to protect your data with a numeric code."
 - When ON:
@@ -1756,6 +1915,7 @@ Settings page is organized into sections with clear headings:
   - "Lock Session" button (ends current session immediately)
 
 ### AI Context
+
 - Text fields:
   - Goal (textarea): "e.g., Build muscle, improve strength"
   - Height (number)
@@ -1769,10 +1929,12 @@ Settings page is organized into sections with clear headings:
 - "Save" button
 
 ### Preferences
+
 - Units: dropdown (Metric / Imperial)
 - Default AI Export Weeks: number input (1-52, default 4)
 
 ### About
+
 - App version (from build)
 - Link to docs/GitHub (placeholder)
 
@@ -1780,22 +1942,23 @@ Settings page is organized into sections with clear headings:
 
 ## 17. UI State Matrix
 
-| Page | Loading | Empty | Error | Validation | Success | Unauthorized |
-|------|---------|-------|-------|------------|---------|--------------|
-| PIN Unlock | Spinner on submit button | N/A | Generic "Invalid PIN" or lockout message | Numeric only, length 4-20 | Redirect to Dashboard | N/A (auth page) |
-| Dashboard | Skeleton stat cards | Welcome + CTA | Error card + retry | N/A | Data displayed | PIN overlay |
-| Exercise List | Skeleton rows | "No exercises" + CTA | Error + retry | N/A | Table with rows | PIN overlay |
-| Exercise Form | Disabled form + spinner | Blank form (create) | Server error toast | Inline field errors | Close + refresh toast | PIN overlay |
-| Exercise Detail | Skeleton blocks | N/A (exists) | "Not found" | N/A | Data displayed | PIN overlay |
-| Exercise Media | Upload progress per file | Dropzone visible | Per-file error | Type/size rejection | Thumbnail in gallery | PIN overlay |
-| Daily Log | Skeleton exercises | "Add first exercise" | Save error toast | Set field errors | "Saved" toast | PIN overlay |
-| Body Check-in | Skeleton form | Blank form | Save error toast | Field validation | Close + refresh | PIN overlay |
-| Nutrition Template | Skeleton table | "Create template" | Save error toast | Gram amount >0 | "Saved" toast | PIN overlay |
-| Charts | Spinner in chart area | "No data" message | Error + retry | N/A | Chart rendered | PIN overlay |
-| AI Export | Progress spinner | "No data in period" | Generation error | N/A | Prompt + download | PIN overlay |
-| Import/Export | Export/import progress | "No backup yet" | Validation error | ZIP validity | Success summary | PIN overlay |
-| Settings | Form loading | Defaults shown | Save error toast | PIN field validation | "Saved" toast | PIN overlay (settings is guarded) |
-| AI Review List | Skeleton cards | "No reviews" | Error + retry | N/A | Cards/list | PIN overlay |
+| Page                | Loading                  | Empty                       | Error                                    | Validation                 | Success                     | Unauthorized                      |
+| ------------------- | ------------------------ | --------------------------- | ---------------------------------------- | -------------------------- | --------------------------- | --------------------------------- |
+| PIN Unlock          | Spinner on submit button | N/A                         | Generic "Invalid PIN" or lockout message | Numeric only, length 4-20  | Redirect to Dashboard       | N/A (auth page)                   |
+| Dashboard           | Skeleton stat cards      | Welcome + CTA               | Error card + retry                       | N/A                        | Data displayed              | PIN overlay                       |
+| Exercise List       | Skeleton rows            | "No exercises" + CTA        | Error + retry                            | N/A                        | Table with rows             | PIN overlay                       |
+| Exercise Form       | Disabled form + spinner  | Blank form (create)         | Server error toast                       | Inline field errors        | Close + refresh toast       | PIN overlay                       |
+| Exercise Detail     | Skeleton blocks          | N/A (exists)                | "Not found"                              | N/A                        | Data displayed              | PIN overlay                       |
+| Exercise Media      | Upload progress per file | Dropzone visible            | Per-file error                           | Type/size rejection        | Thumbnail in gallery        | PIN overlay                       |
+| Daily Log           | Skeleton exercises       | "Add first exercise"        | Save error toast                         | Set field errors           | "Saved" toast               | PIN overlay                       |
+| Body Check-in       | Skeleton form            | Blank form                  | Save error toast                         | Field validation           | Close + refresh             | PIN overlay                       |
+| Daily Nutrition Log | Skeleton table           | "Add your first food entry" | Load/save error + retry                  | Product required, grams >0 | Totals and entries rendered | PIN overlay                       |
+| Nutrition Template  | Skeleton table           | "Create template"           | Save/apply error toast                   | Gram amount >0             | "Saved" / apply summary     | PIN overlay                       |
+| Charts              | Spinner in chart area    | "No data" message           | Error + retry                            | N/A                        | Chart rendered              | PIN overlay                       |
+| AI Export           | Progress spinner         | "No data in period"         | Generation error                         | N/A                        | Prompt + download           | PIN overlay                       |
+| Import/Export       | Export/import progress   | "No backup yet"             | Validation error                         | ZIP validity               | Success summary             | PIN overlay                       |
+| Settings            | Form loading             | Defaults shown              | Save error toast                         | PIN field validation       | "Saved" toast               | PIN overlay (settings is guarded) |
+| AI Review List      | Skeleton cards           | "No reviews"                | Error + retry                            | N/A                        | Cards/list                  | PIN overlay                       |
 
 ---
 
@@ -1819,39 +1982,39 @@ Settings page is organized into sections with clear headings:
 
 ## 19. Suggested Component List
 
-| Component | Purpose |
-|-----------|---------|
-| **AppShell** | Top-level layout wrapper: sidebar + top bar + content area. Manages PIN state. |
-| **SidebarNav** | Left navigation with icon + label per section. Active state highlight. Collapsible on small screens. |
-| **TopBar** | Top bar with app name, session status indicator. |
-| **PageHeader** | Page title + optional primary action button + optional secondary actions. |
-| **StatCard** | Single metric display: label, large value, optional trend indicator. Used on Dashboard and Body overview. |
-| **DateSwitcher** | Horizontal date navigation: left arrow, date label, right arrow, "Today" button. Used on Daily Log. |
-| **CalendarPopover** | Dropdown month calendar for date selection. Supports single date and date range modes. |
-| **DataTable** | Sortable column table with optional row actions. Used on Exercise List, Product List, Check-in History. |
-| **EntityCard** | Card for an entity with key fields. Used as table row alternative on mobile. |
-| **ExerciseForm** | Create/Edit exercise form with all fields, validation, duplicate name warning, media upload. |
-| **ExerciseMediaGallery** | Thumbnail grid with upload dropzone, delete per item, lightbox viewer. |
-| **MediaUploadDropzone** | File dropzone with validation, progress, preview. Reused for exercise media and progress photos. |
-| **SetEditor** | Sets table: weight, reps, RPE, RIR, set number. Add/delete rows. Tab-friendly. |
-| **CardioForm** | Cardio entry form: type dropdown, duration, pulse, zone selector. |
-| **BodyCheckInForm** | Full check-in form: date, weight, body fat, measurement grid, photo upload, notes. |
-| **MeasurementGrid** | 10 measurement fields in grid layout. Paired L/R for forearm, biceps, thigh, calf. |
-| **ProgressPhotoGrid** | Photo thumbnails grouped by check-in, with angle badges, lightbox, delete. |
-| **NutritionProductForm** | Product create/edit: name, KJBJU per 100g fields. |
-| **NutritionTemplateTable** | Template items table: product, grams, meal label, actions. Macro totals row. |
-| **MacroSummaryCard** | KJBJU display with colored bars or values. |
-| **ChartCard** | Chart container with title, chart visualization, optional controls. |
-| **AIExportBuilder** | Full AI export configuration panel: date range, section toggles, context display, week flags, generate button. |
-| **PromptPreview** | Read-only styled code block with copy button. |
-| **BackupImportPanel** | Import section: file upload, validate button, summary display, confirm button. |
-| **PinUnlockForm** | Centered PIN input card on dimmed backdrop. |
-| **SettingsPanel** | Settings sections: PIN, AI context, preferences. |
-| **EmptyState** | Illustration + heading + description + action button. |
-| **ErrorState** | Error message + optional retry button. |
-| **LoadingState** | Skeleton/shimmer placeholder. |
-| **ConfirmDialog** | Modal dialog: title, description, Cancel + Confirm buttons. Support destructive variant. |
-| **Toast** | Brief notification: success message, optional undo action. Auto-dismiss. |
+| Component                  | Purpose                                                                                                        |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **AppShell**               | Top-level layout wrapper: sidebar + top bar + content area. Manages PIN state.                                 |
+| **SidebarNav**             | Left navigation with icon + label per section. Active state highlight. Collapsible on small screens.           |
+| **TopBar**                 | Top bar with app name, session status indicator.                                                               |
+| **PageHeader**             | Page title + optional primary action button + optional secondary actions.                                      |
+| **StatCard**               | Single metric display: label, large value, optional trend indicator. Used on Dashboard and Body overview.      |
+| **DateSwitcher**           | Horizontal date navigation: left arrow, date label, right arrow, "Today" button. Used on Daily Log.            |
+| **CalendarPopover**        | Dropdown month calendar for date selection. Supports single date and date range modes.                         |
+| **DataTable**              | Sortable column table with optional row actions. Used on Exercise List, Product List, Check-in History.        |
+| **EntityCard**             | Card for an entity with key fields. Used as table row alternative on mobile.                                   |
+| **ExerciseForm**           | Create/Edit exercise form with all fields, validation, duplicate name warning, media upload.                   |
+| **ExerciseMediaGallery**   | Thumbnail grid with upload dropzone, delete per item, lightbox viewer.                                         |
+| **MediaUploadDropzone**    | File dropzone with validation, progress, preview. Reused for exercise media and progress photos.               |
+| **SetEditor**              | Sets table: weight, reps, RPE, RIR, set number. Add/delete rows. Tab-friendly.                                 |
+| **CardioForm**             | Cardio entry form: type dropdown, duration, pulse, zone selector.                                              |
+| **BodyCheckInForm**        | Full check-in form: date, weight, body fat, measurement grid, photo upload, notes.                             |
+| **MeasurementGrid**        | 10 measurement fields in grid layout. Paired L/R for forearm, biceps, thigh, calf.                             |
+| **ProgressPhotoGrid**      | Photo thumbnails grouped by check-in, with angle badges, lightbox, delete.                                     |
+| **NutritionProductForm**   | Product create/edit: name, KJBJU per 100g fields.                                                              |
+| **NutritionTemplateTable** | Template items table: product, grams, meal label, actions. Macro totals row.                                   |
+| **MacroSummaryCard**       | KJBJU display with colored bars or values.                                                                     |
+| **ChartCard**              | Chart container with title, chart visualization, optional controls.                                            |
+| **AIExportBuilder**        | Full AI export configuration panel: date range, section toggles, context display, week flags, generate button. |
+| **PromptPreview**          | Read-only styled code block with copy button.                                                                  |
+| **BackupImportPanel**      | Import section: file upload, validate button, summary display, confirm button.                                 |
+| **PinUnlockForm**          | Centered PIN input card on dimmed backdrop.                                                                    |
+| **SettingsPanel**          | Settings sections: PIN, AI context, preferences.                                                               |
+| **EmptyState**             | Illustration + heading + description + action button.                                                          |
+| **ErrorState**             | Error message + optional retry button.                                                                         |
+| **LoadingState**           | Skeleton/shimmer placeholder.                                                                                  |
+| **ConfirmDialog**          | Modal dialog: title, description, Cancel + Confirm buttons. Support destructive variant.                       |
+| **Toast**                  | Brief notification: success message, optional undo action. Auto-dismiss.                                       |
 
 ---
 
@@ -1932,20 +2095,20 @@ Generate a cohesive UI design system with key screens and component library. Lig
 
 ## 21. Source Documents Status
 
-| Document | Status |
-|----------|--------|
-| `prd.md` | NOT FOUND — root path missing |
-| `docs/prd-wave-details/waves/wave-01.md` | READ |
-| `docs/prd-wave-details/waves/wave-02.md` | READ |
-| `docs/prd-waves/wave-map.md` | READ |
-| `docs/prd-waves/frontend-pages/*.md` | ALL READ (11 pages) |
-| `docs/product-verified/functional-spec.md` | READ |
-| `docs/product-verified/domain-model.md` | READ |
-| `docs/product-verified/acceptance-criteria.md` | READ |
-| `docs/technical-verified/api-contracts.md` | READ |
-| `docs/technical-verified/auth-security-compliance.md` | READ |
-| `docs/superpowers/specs/2026-06-19-wave-01-foundation-design.md` | READ |
-| `docs/superpowers/specs/2026-06-19-wave-02-exercise-library-design.md` | READ |
+| Document                                                               | Status                        |
+| ---------------------------------------------------------------------- | ----------------------------- |
+| `prd.md`                                                               | NOT FOUND — root path missing |
+| `docs/prd-wave-details/waves/wave-01.md`                               | READ                          |
+| `docs/prd-wave-details/waves/wave-02.md`                               | READ                          |
+| `docs/prd-waves/wave-map.md`                                           | READ                          |
+| `docs/prd-waves/frontend-pages/*.md`                                   | ALL READ (11 pages)           |
+| `docs/product-verified/functional-spec.md`                             | READ                          |
+| `docs/product-verified/domain-model.md`                                | READ                          |
+| `docs/product-verified/acceptance-criteria.md`                         | READ                          |
+| `docs/technical-verified/api-contracts.md`                             | READ                          |
+| `docs/technical-verified/auth-security-compliance.md`                  | READ                          |
+| `docs/superpowers/specs/2026-06-19-wave-01-foundation-design.md`       | READ                          |
+| `docs/superpowers/specs/2026-06-19-wave-02-exercise-library-design.md` | READ                          |
 
 **Missing**: `prd.md` (root). Not critical — all product context was reconstructed from verified docs and wave details.
 

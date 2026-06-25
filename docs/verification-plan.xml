@@ -328,6 +328,8 @@
         <file>apps/api/internal/middleware/admin_auth_test.go</file>
         <file>apps/api/internal/middleware/admin_origin_test.go</file>
         <file>apps/api/internal/middleware/cors_test.go</file>
+        <file>apps/api/internal/atlas/middleware/auth_separation_test.go</file>
+        <file>apps/api/internal/atlas/middleware/pin_guard_test.go</file>
         <file>apps/api/internal/service/user_service_test.go</file>
       </test-files>
       <module-checks>
@@ -343,6 +345,7 @@
         <check-10>cd apps/api &amp;&amp; go test ./internal/service -run TestAdminAuth -count=1</check-10>
         <check-11>cd apps/api &amp;&amp; go test ./internal/middleware -run 'TestCORS|TestAdmin' -count=1</check-11>
         <check-12>cd apps/api &amp;&amp; go test ./internal/graph -run 'Test(Admin|LoginAdmin|LogoutAdmin|Me|CreateAdmin|ProtectedUser|CreateUser|Users|User|UpdateUser|DeleteUser)' -count=1</check-12>
+        <check-atlas-browser-cors>cd apps/api &amp;&amp; go test ./internal/atlas/middleware -run 'TestAtlasAuthSeparation_(AtlasAiExportPreflight|AtlasDeletePreflight|AdminCookie_DoesNotWorkOnAtlasGraphQL|AtlasCookie_DoesNotWorkOnAdminGraphQL|AtlasGraphQL_PINEnabled_NoCookie|AtlasPINEnabled_WithValidCookie|AdminCookie_IgnoredByAtlasGuard)' -count=1</check-atlas-browser-cors>
       </module-checks>
       <scenarios>
         <scenario-1 kind="success">Health, admin GraphQL user operations, and public REST user operations return stable success shapes.</scenario-1>
@@ -351,6 +354,7 @@
         <scenario-4 kind="success">Login sets an httpOnly cookie, `me` resolves the current admin, logout revokes the Redis session and clears the cookie, and createAdmin requires an authenticated admin.</scenario-4>
         <scenario-5 kind="failure">Validation, auth, duplicate, and not-found paths return stable GraphQL unions or REST error envelopes without transport-specific business drift.</scenario-5>
         <scenario-6 kind="failure">Credentialed admin GraphQL requests from missing or rejected origins fail before protected resolver execution.</scenario-6>
+        <scenario-7 kind="success">Credentialed web-admin preflights for guarded Atlas POST and DELETE routes return CORS headers before PIN guard execution while unsafe guarded requests still require the allowed admin origin.</scenario-7>
       </scenarios>
       <required-trace-assertions>
         <assertion-1>Invalid user mutation input must not persist partial state.</assertion-1>
@@ -359,6 +363,7 @@
         <assertion-4>Users repository tests must prove sqlc-generated queries against the goose-created `monorepo_test` schema before final closeout.</assertion-4>
         <assertion-5>Admin auth logs must include `[AdminAuth]` seed, login, session, logout, guard, and csrf markers without passwords, password hashes, raw cookies, or raw session ids.</assertion-5>
         <assertion-6>Public REST `/api/users` remains public while protected GraphQL user/admin operations require admin session context.</assertion-6>
+        <assertion-7>Atlas browser REST/GraphQL route groups must apply credentialed web-admin CORS before Atlas PIN/auth handlers, include GET/POST/DELETE/OPTIONS in allowed methods, and keep unsafe guarded routes behind AdminOriginGuard.</assertion-7>
       </required-trace-assertions>
       <wave-follow-up>Run schema validation, web-admin generated typecheck, and web REST client tests when API contract changes.</wave-follow-up>
       <phase-follow-up>Run full root test and build gates.</phase-follow-up>
@@ -385,6 +390,11 @@
         <file>apps/web-admin/src/pages/user-detail-page.tsx</file>
         <file>apps/web-admin/src/pages/atlas/nutrition-api.ts</file>
         <file>apps/web-admin/src/pages/atlas/nutrition-api.test.ts</file>
+        <file>apps/web-admin/src/pages/atlas/product-library-page.test.tsx</file>
+        <file>apps/web-admin/src/pages/atlas/nutrition-overview-page.test.tsx</file>
+        <file>apps/web-admin/src/pages/atlas/weekly-nutrition-template-page.test.tsx</file>
+        <file>apps/web-admin/src/pages/atlas/ai-export-api.test.ts</file>
+        <file>apps/web-admin/src/pages/atlas/ai-export-builder-page.test.tsx</file>
         <file>apps/web-admin/src/entities/admin-auth</file>
         <file>apps/web-admin/src/shared/ui</file>
         <file>apps/web-admin/src/shared/ui/hooks/use-mobile.ts</file>
@@ -425,6 +435,9 @@
         <check-atlas-nutrition-api-2>cd apps/web-admin &amp;&amp; bun run typecheck</check-atlas-nutrition-api-2>
         <check-atlas-product-library-1>cd apps/web-admin &amp;&amp; bun run test -- src/pages/atlas/product-library-page.test.tsx src/pages/atlas/nutrition-api.test.ts</check-atlas-product-library-1>
         <check-atlas-product-library-2>cd apps/web-admin &amp;&amp; bun run typecheck</check-atlas-product-library-2>
+        <check-atlas-daily-nutrition-page>cd apps/web-admin &amp;&amp; bun run test -- src/pages/atlas/nutrition-overview-page.test.tsx src/pages/atlas/nutrition-api.test.ts src/App.test.tsx</check-atlas-daily-nutrition-page>
+        <check-atlas-weekly-template-page>cd apps/web-admin &amp;&amp; bun run test -- src/pages/atlas/weekly-nutrition-template-page.test.tsx src/pages/atlas/nutrition-api.test.ts src/App.test.tsx src/app/admin-navigation.test.ts</check-atlas-weekly-template-page>
+        <check-atlas-ai-export-page>cd apps/web-admin &amp;&amp; bun run test -- src/pages/atlas/ai-export-api.test.ts src/pages/atlas/ai-export-builder-page.test.tsx src/App.test.tsx</check-atlas-ai-export-page>
       </module-checks>
       <scenarios>
         <scenario-1 kind="success">Vite web-admin app renders the adapted sidebar-07 shell, admin user flow, and /ui-kit reference route with generated GraphQL types, React Router routes, approved @shared/ui components, and cookie credential transport.</scenario-1>
@@ -438,6 +451,10 @@
         <scenario-atlas-nutrition-api-2 kind="failure">Atlas nutrition adapter normalizes validation, not-found, and auth result envelopes into typed frontend errors with message, code, and displayable error type.</scenario-atlas-nutrition-api-2>
         <scenario-atlas-product-library-1 kind="success">`/atlas/nutrition/products` renders a real product catalog from the Atlas nutrition API, supports create/edit/archive/restore, and hides reference/mock placeholder states.</scenario-atlas-product-library-1>
         <scenario-atlas-product-library-2 kind="failure">Product Library validation catches missing names and negative macro values locally, while API validation errors remain visible in the form.</scenario-atlas-product-library-2>
+        <scenario-atlas-daily-nutrition-page-1 kind="success">`/atlas/nutrition` renders factual daily food entries from the Atlas API, allows adding/editing/deleting grams consumed for existing products, and derives daily KJBJU totals from returned entry snapshots.</scenario-atlas-daily-nutrition-page-1>
+        <scenario-atlas-daily-nutrition-page-2 kind="failure">Daily nutrition page gates working content when either the daily log or product catalog fails to load, and it avoids showing stale mutation success after the selected date changes.</scenario-atlas-daily-nutrition-page-2>
+        <scenario-atlas-weekly-template-page-1 kind="success">`/atlas/nutrition/template` edits real weekly product-plan rows, reconciles create/update/delete item mutations, and applies templates only through the seed-empty-days mode.</scenario-atlas-weekly-template-page-1>
+        <scenario-atlas-ai-export-page-1 kind="success">`/atlas/ai-export` calls the guarded local REST export endpoint with browser credentials, renders generated prompt/ZIP ready state, and builds download links from exportId only.</scenario-atlas-ai-export-page-1>
       </scenarios>
       <required-trace-assertions>
         <assertion-1>Schema changes must not leave stale generated web-admin client types.</assertion-1>
@@ -458,6 +475,8 @@
         <assertion-16>Web-admin e2e must prove logout revokes browser access by opening a fresh page after logout and observing protected route redirect.</assertion-16>
         <assertion-17>GRACE docs must not reference the removed aggregate admin-auth operation document.</assertion-17>
         <assertion-18>Atlas nutrition adapter must derive /graphql/atlas from the admin GraphQL endpoint or VITE_ATLAS_GRAPHQL_API_URL, include browser credentials, and leave the admin GraphQL client semantics unchanged.</assertion-18>
+        <assertion-19>Atlas nutrition UI must not reintroduce target-only mock blocks; product names and grams consumed/planned must remain visible for daily logs, weekly templates, and AI export payload expectations.</assertion-19>
+        <assertion-20>Atlas AI export frontend must not call external AI APIs, must not expose backend file paths, and must use a guarded local exportId download URL.</assertion-20>
       </required-trace-assertions>
       <wave-follow-up>Run Playwright e2e for UI flow changes.</wave-follow-up>
       <phase-follow-up>Run full web-admin test, typecheck, build, and e2e gate.</phase-follow-up>
@@ -576,6 +595,33 @@
       <wave-follow-up>Run service tests, executable GraphQL resolver tests, and codegen after nutrition service, schema, or query changes.</wave-follow-up>
       <phase-follow-up>Run integration migration smoke test and full API test suite.</phase-follow-up>
     </V-M-API-NUTRITION>
+
+    <V-M-API-AI-EXPORT MODULE="M-API-AI-EXPORT" PRIORITY="high">
+      <test-files>
+        <file>apps/api/internal/atlas/service/ai_export_service_test.go</file>
+        <file>apps/api/internal/atlas/service/atlas_ai_export_data_provider_test.go</file>
+        <file>apps/api/internal/atlas/service/ai_export_lifecycle_test.go</file>
+        <file>apps/api/internal/handler/ai_export_handler_test.go</file>
+      </test-files>
+      <module-checks>
+        <check-1>cd apps/api &amp;&amp; go test ./internal/atlas/service -run "TestAiExportService|TestExportZip|TestAtlasAiExport" -count=1</check-1>
+        <check-2>cd apps/api &amp;&amp; go test ./internal/handler -run TestAiExportHandler -count=1</check-2>
+        <check-3>cd apps/api &amp;&amp; go test ./internal/atlas/middleware -run 'TestAtlasAuthSeparation_(AtlasAiExportPreflight|AtlasDeletePreflight)' -count=1</check-3>
+      </module-checks>
+      <scenarios>
+        <scenario-1 kind="success">AI export generation includes detailed daily nutrition entries with product names, grams consumed, per-100g snapshots, entry macros, and daily totals.</scenario-1>
+        <scenario-2 kind="success">AI export generation includes weekly template planned entries with product names, planned grams, per-100g snapshots, planned macros, and date-aligned week-start selection.</scenario-2>
+        <scenario-3 kind="failure">Nutrition summary, template, or legacy provider failures abort export generation instead of silently producing an incomplete nutrition archive.</scenario-3>
+        <scenario-4 kind="success">Browser AI export POST preflight succeeds from the configured web-admin origin while guarded execution still requires Atlas session context.</scenario-4>
+      </scenarios>
+      <required-trace-assertions>
+        <assertion-1>AI export archives must remain local/private and must not call external AI APIs.</assertion-1>
+        <assertion-2>Export frontend/download flows must not trust or expose `exportFilePath`; browser downloads must address exports by user-scoped exportId.</assertion-2>
+        <assertion-3>Photos remain excluded unless explicitly selected.</assertion-3>
+      </required-trace-assertions>
+      <wave-follow-up>Run AI export service, handler, middleware preflight, and web-admin AI export page tests after export payload or route wiring changes.</wave-follow-up>
+      <phase-follow-up>Run broader API service tests and web-admin typecheck/lint before release handoff.</phase-follow-up>
+    </V-M-API-AI-EXPORT>
 
     <V-M-PRODUCT-DOCS MODULE="M-PRODUCT-DOCS" PRIORITY="medium">
       <test-files>
